@@ -1,3 +1,5 @@
+#include "Math/GameTimer.h"
+
 #include "Window/Window.h"
 #include "Window/RendererBase.h"
 
@@ -10,6 +12,8 @@
 using namespace Graphics::Application;
 
 int main() {
+	Math::GameTimer& timer = Math::GameTimer::getTimer();
+
 	Window::generateWindow(false);
 	if (!Window::getWindow().initSuccess())
 		return -1;
@@ -19,6 +23,8 @@ int main() {
 		return -1;
 
 	while (Window::getWindow().update() || Window::getKeyboard().isKeyPressed(KeyboardKey::KEYBOARD_ESCAPE)) {
+		timer.updateTime();
+		//Window::getWindow().setTitle(std::to_string(timer.getMS()).append("ms"));
 		renderer.update();
 		renderer.render();
 		renderer.swapBuffers();
