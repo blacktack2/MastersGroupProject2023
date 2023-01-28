@@ -79,9 +79,12 @@ Window::~Window() {
 	
 }
 
-bool Window::update() {
-	MSG msg;
+bool Window::update(float dt) {
+	getKeyboard().updateHolds();
+	getMouse().updateDoubleClick(dt);
+	getMouse().updateHolds();
 
+	MSG msg;
 	while (PeekMessage(&msg, mWindowHandle, 0, 0, PM_REMOVE)) {
 		handleInput(msg);
 	}

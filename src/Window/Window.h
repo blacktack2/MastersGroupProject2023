@@ -24,7 +24,7 @@ namespace Graphics {
 	namespace Application {
 		class Window {
 		public:
-			bool update();
+			bool update(float dt);
 
 			void setMouseLock(bool lockMouse);
 			void showOSPointer(bool show);
