@@ -10,9 +10,10 @@
 #endif
 
 using namespace Graphics::Application;
+using namespace Math;
 
 int main() {
-	Math::GameTimer& timer = Math::GameTimer::getTimer();
+	GameTimer& timer = GameTimer::getTimer();
 
 	Window::generateWindow(false);
 	if (!Window::getWindow().initSuccess())
@@ -22,7 +23,7 @@ int main() {
 	if (!renderer.initSuccess())
 		return -1;
 
-	while (Window::getWindow().update() || Window::getKeyboard().isKeyPressed(KeyboardKey::KEYBOARD_ESCAPE)) {
+	while (Window::getWindow().update(timer.getMS()) && !Window::getKeyboard().isKeyPressed(KeyboardKey::KEYBOARD_ESCAPE)) {
 		timer.updateTime();
 		//Window::getWindow().setTitle(std::to_string(timer.getMS()).append("ms"));
 		renderer.update();
