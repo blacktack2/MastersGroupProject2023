@@ -23,9 +23,11 @@ int main() {
 	if (!renderer.initSuccess())
 		return -1;
 
+	renderer.setVSync(Graphics::VSyncState::ON);
+
 	while (Window::getWindow().update(timer.getMS()) && !Window::getKeyboard().isKeyPressed(KeyboardKey::KEYBOARD_ESCAPE)) {
 		timer.updateTime();
-		//Window::getWindow().setTitle(std::to_string(timer.getMS()).append("ms"));
+		Window::getWindow().setTitle(std::to_string(timer.getMS()).append("ms"));
 		renderer.update();
 		renderer.render();
 		renderer.swapBuffers();

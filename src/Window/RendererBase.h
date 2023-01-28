@@ -12,10 +12,18 @@
 #include <glad/gl.h>
 
 namespace Graphics {
+	enum class VSyncState {
+		OFF      = 0,
+		ON       = 1,
+		ADAPTIVE = -1,
+	};
+
 	class RendererBase {
 	public:
 		RendererBase(Application::Window& window);
 		~RendererBase();
+
+		bool setVSync(VSyncState state);
 
 		void swapBuffers();
 
@@ -34,6 +42,7 @@ namespace Graphics {
 		HDC   mDeviceContext;
 		HGLRC mRenderContext;
 	private:
+		VSyncState mCurrentVSync = VSyncState::OFF;
 		bool mInitSuccess = false;
 	};
 }

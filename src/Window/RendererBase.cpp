@@ -113,6 +113,10 @@ RendererBase::~RendererBase() {
 	wglDeleteContext(mRenderContext);
 }
 
+bool RendererBase::setVSync(VSyncState state) {
+	return wglSwapIntervalEXT((int)state);
+}
+
 void RendererBase::swapBuffers() {
 	::SwapBuffers(mDeviceContext);
 }
