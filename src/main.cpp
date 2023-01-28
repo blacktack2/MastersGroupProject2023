@@ -1,5 +1,7 @@
 #include "Window/Window.h"
-#include "Window/Renderer.h"
+#include "Window/RendererBase.h"
+
+#include "Game/Renderer.h"
 
 #ifdef _MSC_VER
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
@@ -12,12 +14,13 @@ int main() {
 	if (!Window::getWindow().initSuccess())
 		return -1;
 
-	Graphics::Renderer renderer = Graphics::Renderer(Window::getWindow());
+	Renderer renderer = Renderer(Window::getWindow());
 	if (!renderer.initSuccess())
 		return -1;
 
 	while (Window::getWindow().update() || Window::getKeyboard().isKeyPressed(KeyboardKey::KEYBOARD_ESCAPE)) {
-		glClear(GL_COLOR_BUFFER_BIT);
+		renderer.update();
+		renderer.render();
 		renderer.swapBuffers();
 	}
 

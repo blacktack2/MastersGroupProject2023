@@ -1,5 +1,5 @@
 /**
- * @file   Renderer.h
+ * @file   RendererBase.h
  * @brief  
  * 
  * @author Rich Davidson
@@ -12,15 +12,18 @@
 #include <glad/gl.h>
 
 namespace Graphics {
-	class Renderer {
+	class RendererBase {
 	public:
-		Renderer(Application::Window& window);
-		~Renderer();
+		RendererBase(Application::Window& window);
+		~RendererBase();
 
 		void swapBuffers();
 
 		void onWindowResize(GLsizei width, GLsizei height);
 		void onWindowDetach();
+
+		virtual void update() = 0;
+		virtual void render() = 0;
 
 		inline bool initSuccess() const {
 			return mInitSuccess;

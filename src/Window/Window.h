@@ -19,7 +19,7 @@
 #include <string>
 
 namespace Graphics {
-	class Renderer;
+	class RendererBase;
 
 	namespace Application {
 		class Window {
@@ -41,8 +41,8 @@ namespace Graphics {
 				return mWindowInstance;
 			}
 
-			void setRenderer(Renderer* renderer);
-			Renderer* getRenderer() const;
+			void setRenderer(RendererBase* renderer);
+			RendererBase* getRenderer() const;
 
 			void resizeRenderer();
 
@@ -76,7 +76,7 @@ namespace Graphics {
 			HWND mWindowHandle;
 			HINSTANCE mWindowInstance;
 
-			Renderer* mRenderer = nullptr;
+			RendererBase* mRenderer = nullptr;
 
 			bool mIsFullScreen;
 			bool mIsMinimized = false;

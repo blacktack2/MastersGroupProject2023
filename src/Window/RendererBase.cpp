@@ -1,12 +1,12 @@
 /**
- * @file   Renderer.cpp
+ * @file   RendererBase.cpp
  * @brief  
  * 
  * @author Rich Davidson
  * @author Stuart Lewis
  * @date   January 2023
  */
-#include "Renderer.h"
+#include "RendererBase.h"
 
 #include <glad/gl.h>
 #include <glad/include/KHR/khrplatform.h>
@@ -20,7 +20,7 @@ PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = nullptr;
 static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 #endif
 
-Renderer::Renderer(Application::Window& window) : mWindow(window) {
+RendererBase::RendererBase(Application::Window& window) : mWindow(window) {
 	if (!(mDeviceContext = GetDC(mWindow.getHandle())))
 		return;
 
@@ -109,19 +109,19 @@ Renderer::Renderer(Application::Window& window) : mWindow(window) {
 	mInitSuccess = true;
 }
 
-Renderer::~Renderer() {
+RendererBase::~RendererBase() {
 	wglDeleteContext(mRenderContext);
 }
 
-void Renderer::swapBuffers() {
+void RendererBase::swapBuffers() {
 	::SwapBuffers(mDeviceContext);
 }
 
-void Renderer::onWindowResize(GLsizei width, GLsizei height) {
+void RendererBase::onWindowResize(GLsizei width, GLsizei height) {
 	glViewport(0, 0, width, height);
 }
 
-void Renderer::onWindowDetach() {
+void RendererBase::onWindowDetach() {
 }
 
 static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {

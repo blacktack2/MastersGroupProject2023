@@ -8,7 +8,7 @@
  */
 #include "Window.h"
 
-#include "Renderer.h"
+#include "RendererBase.h"
 
 #include <strsafe.h>
 #include <windowsx.h>
@@ -121,7 +121,7 @@ void Window::setTitle(const std::string& title) {
 	SetWindowText(mWindowHandle, mTitle.c_str());
 }
 
-void Window::setRenderer(Renderer* renderer) {
+void Window::setRenderer(RendererBase* renderer) {
 	if (mRenderer && mRenderer != renderer)
 		mRenderer->onWindowDetach();
 
@@ -130,7 +130,7 @@ void Window::setRenderer(Renderer* renderer) {
 	resizeRenderer();
 }
 
-Renderer* Window::getRenderer() const {
+RendererBase* Window::getRenderer() const {
 	return mRenderer;
 }
 
