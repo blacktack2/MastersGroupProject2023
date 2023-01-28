@@ -1,6 +1,6 @@
 /**
  * @file   Keyboard.cpp
- * @brief  
+ * @brief  See Keyboard.h.
  * 
  * @author Rich Davison
  * @author Stuart Lewis
@@ -27,7 +27,7 @@ Keyboard::~Keyboard() {
 }
 
 bool Keyboard::isKeyPressed(KeyboardKey key) {
-	return mKeyStates[(size_t)key];
+	return mKeyStates[(size_t)key] && !mHoldStates[(size_t)key];
 }
 
 bool Keyboard::isKeyReleased(KeyboardKey key) {
@@ -35,11 +35,7 @@ bool Keyboard::isKeyReleased(KeyboardKey key) {
 }
 
 bool Keyboard::isKeyHeld(KeyboardKey key) {
-	return isKeyPressed(key) && mHoldStates[(size_t)key];
-}
-
-bool Keyboard::isKeyTriggered(KeyboardKey key) {
-	return false;
+	return mKeyStates[(size_t)key] && mHoldStates[(size_t)key];
 }
 
 void Keyboard::updateHolds() {
@@ -50,11 +46,10 @@ void Keyboard::update(RAWINPUT* raw) {
 	if (mIsAwake) {
 		DWORD key = (DWORD)raw->data.keyboard.VKey;
 
-		if (key < 0 || key > (size_t)KeyboardKey::KEYBOARD_MAX) {
+		if (key >= (size_t)KeyboardKey::KEYBOARD_MAX)
 			return;
-		}
 
-		mKeyStates[key] = !(raw->data.keyboard.Flags & RI_KEY_BREAK);
+		mKeyStates[(size_t)key] = !(raw->data.keyboard.Flags & RI_KEY_BREAK);
 	}
 }
 

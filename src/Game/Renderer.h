@@ -1,6 +1,6 @@
 /**
  * @file   Renderer.h
- * @brief  
+ * @brief  Main Renderer implementation for the game.
  * 
  * @author Stuart Lewis
  * @date   January 2023
@@ -9,9 +9,11 @@
 #include "../Window/RendererBase.h"
 #include "../Window/Window.h"
 
-class Renderer : public Graphics::RendererBase {
+using namespace Graphics;
+
+class Renderer : public RendererBase {
 public:
-	Renderer(Graphics::Application::Window& window);
+	Renderer();
 	~Renderer();
 
 	virtual void update();

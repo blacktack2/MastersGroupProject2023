@@ -1,6 +1,6 @@
 /**
  * @file   Mouse.h
- * @brief  
+ * @brief  Handler class for mouse events.
  * 
  * @author Rich Davison
  * @author Stuart Lewis
@@ -20,24 +20,42 @@ namespace Graphics {
 			MOUSE_MAX,
 		};
 
-		struct MPos {
-			MPos() : x(0.0f), y(0.0f) {}
-			MPos(LONG x, LONG y) : x(x), y(y) {}
-			LONG x, y;
-		};
-
+		/**
+		 * @brief Handler class for mouse events.
+		 */
 		class Mouse : public InputDevice {
 		public:
 			friend class Window;
 
+			/**
+			 * @returns true if button was pressed this frame, otherwise false.
+			 */
 			bool isButtonDown(MouseButton button);
+			/**
+			 * @returns true if button is currently held down, otherwise false.
+			 */
 			bool isButtonHeld(MouseButton button);
+			/**
+			 * @returns true if button has double clicked this frame, otherwise
+			 * false.
+			 */
 			bool isButtonDoubleClicked(MouseButton button);
-
+			
+			/**
+			 * @returns 0 if the mouse wheel has not moved this frame, 1 if the
+			 * mouse wheel has scrolled up, and -1 if the mouse wheel has
+			 * scrolled down.
+			 */
 			int getMouseWheelMovement();
 
-			MPos getMousePosRelative();
-			MPos getMousePosAbsolute();
+			/**
+			 * @returns How much the mouse has moved since the previous frame.
+			 */
+			POINT getMousePosRelative();
+			/**
+			 * @returns Position of the mouse relative to the window.
+			 */
+			POINT getMousePosAbsolute();
 
 			void setDoubleClickLimit(float msec);
 			void setMouseSensitivity(float sensitivity);
@@ -45,18 +63,29 @@ namespace Graphics {
 			Mouse(HWND& hwnd);
 			~Mouse();
 
-			virtual void update(RAWINPUT* raw);
-			virtual void updateHolds();
-			virtual void sleep();
+			virtual void update(RAWINPUT* raw) override;
+			virtual void updateHolds() override;
+			virtual void sleep() override;
 
+			/**
+			 * @brief Update double click timers for each button.
+			 * @param dt Time since last frame (milliseconds).
+			 */
 			void updateDoubleClick(float dt);
 
-			void setAbsolutePosition(LONG x, LONG y);
-			void setAbsolutePositionBounds(LONG maxX, LONG maxY);
+			/**
+			 * @param pos Position to force the mouse to on the window.
+			 */
+			void setAbsolutePosition(POINT pos);
+			/**
+			 * @param bounds Maximum bounds the mouse can move (usually the
+			 * size of the window).
+			 */
+			void setAbsolutePositionBounds(POINT bounds);
 
-			MPos mAbsolutePosition;
-			MPos mAbsolutePositionBounds;
-			MPos mRelativePosition;
+			POINT mAbsolutePosition;
+			POINT mAbsolutePositionBounds;
+			POINT mRelativePosition;
 			
 			bool mButtons[(size_t)MouseButton::MOUSE_MAX];
 			bool mHoldButtons[(size_t)MouseButton::MOUSE_MAX];

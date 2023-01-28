@@ -1,6 +1,15 @@
+/**
+ * @file   Renderer.cpp
+ * @brief  See Renderer.h.
+ * 
+ * @author Stuart Lewis
+ * @date   January 2023
+ */
 #include "Renderer.h"
 
-Renderer::Renderer(Graphics::Application::Window& window) : RendererBase(window) {
+using namespace Graphics;
+
+Renderer::Renderer() : RendererBase() {
 }
 
 Renderer::~Renderer() {

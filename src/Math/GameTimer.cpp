@@ -1,3 +1,10 @@
+/**
+ * @file   GameTimer.cpp
+ * @brief  See GameTimer.h.
+ * 
+ * @author Stuart Lewis
+ * @date   January 2023
+ */
 #include "GameTimer.h"
 
 using namespace Math;

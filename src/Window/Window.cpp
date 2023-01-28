@@ -1,6 +1,6 @@
 /**
  * @file   Window.cpp
- * @brief  
+ * @brief  See Window.h.
  * 
  * @author Rich Davison
  * @author Stuart Lewis
@@ -66,7 +66,7 @@ mIsFullScreen(fullScreen), mWindowX(mIsFullScreen ? 0 : 100), mWindowY(mIsFullSc
 	if (!mWindowHandle)
 		return;
 
-	getMouse().setAbsolutePositionBounds(mWindowWidth, mWindowHeight);
+	getMouse().setAbsolutePositionBounds(POINT(mWindowWidth, mWindowHeight));
 
 	POINT pt;
 	GetCursorPos(&pt);
@@ -104,7 +104,7 @@ void Window::setMouseLock(bool lockMouse) {
 		POINT pt;
 		GetCursorPos(&pt);
 		ScreenToClient(mWindowHandle, &pt);
-		getMouse().setAbsolutePosition(pt.x, pt.y);
+		getMouse().setAbsolutePosition(pt);
 	} else {
 		ReleaseCapture();
 		ClipCursor(nullptr);
@@ -139,7 +139,7 @@ RendererBase* Window::getRenderer() const {
 
 void Window::resizeRenderer() {
 	if (mRenderer)
-		mRenderer->onWindowResize(mWindowWidth, mWindowHeight);
+		mRenderer->onWindowResize();
 }
 
 Keyboard& Window::getKeyboard() {
@@ -177,7 +177,7 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPAR
 				POINT pt;
 				GetCursorPos(&pt);
 				ScreenToClient(getWindow().mWindowHandle, &pt);
-				getMouse().setAbsolutePosition(pt.x, pt.y);
+				getMouse().setAbsolutePosition(pt);
 
 				if (getWindow().mLockMouse)
 					getWindow().setMouseLock(true);
@@ -203,7 +203,7 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPAR
 			POINT pt;
 			GetCursorPos(&pt);
 			ScreenToClient(getWindow().mWindowHandle, &pt);
-			getMouse().setAbsolutePosition(pt.x, pt.y);
+			getMouse().setAbsolutePosition(pt);
 		}break;
 		case WM_MOUSELEAVE: {
 			getWindow().mMouseLeftWindow = true;
@@ -245,7 +245,7 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPAR
 	if (doResize) {
 		getWindow().resizeRenderer();
 		if (getWindow().initSuccess()) {
-			getMouse().setAbsolutePositionBounds(getWindow().mWindowWidth, getWindow().mWindowHeight);
+			getMouse().setAbsolutePositionBounds(POINT(getWindow().mWindowWidth, getWindow().mWindowHeight));
 			getWindow().setMouseLock(getWindow().mLockMouse);
 		}
 	}

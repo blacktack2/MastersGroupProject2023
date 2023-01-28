@@ -1,6 +1,6 @@
 /**
  * @file   Mouse.cpp
- * @brief  
+ * @brief  See Mouse.h.
  * 
  * @author Rich Davison
  * @author Stuart Lewis
@@ -46,11 +46,11 @@ int Mouse::getMouseWheelMovement() {
 	return mFrameWheel;
 }
 
-MPos Mouse::getMousePosRelative() {
+POINT Mouse::getMousePosRelative() {
 	return mRelativePosition;
 }
 
-MPos Mouse::getMousePosAbsolute() {
+POINT Mouse::getMousePosAbsolute() {
 	return mAbsolutePosition;
 }
 
@@ -72,7 +72,7 @@ void Mouse::update(RAWINPUT* raw) {
 		const LONG screenWidth  = GetSystemMetrics(virtualDesktop ? SM_CXVIRTUALSCREEN : SM_CXSCREEN);
 		const LONG screenHeight = GetSystemMetrics(virtualDesktop ? SM_CYVIRTUALSCREEN : SM_CYSCREEN);
 
-		MPos prevAbsolute = mAbsolutePosition;
+		POINT prevAbsolute = mAbsolutePosition;
 		mAbsolutePosition.x = raw->data.mouse.lLastX * screenWidth  / USHRT_MAX;
 		mAbsolutePosition.y = raw->data.mouse.lLastY * screenHeight / USHRT_MAX;
 
@@ -126,7 +126,7 @@ void Mouse::update(RAWINPUT* raw) {
 
 void Mouse::updateHolds() {
 	memcpy(mHoldButtons, mButtons, (size_t)MouseButton::MOUSE_MAX * sizeof(bool));
-	mRelativePosition = MPos(0, 0);
+	mRelativePosition = POINT(0, 0);
 	mFrameWheel = 0;
 }
 
@@ -149,10 +149,10 @@ void Mouse::updateDoubleClick(float dt) {
 	}
 }
 
-void Mouse::setAbsolutePosition(LONG x, LONG y) {
-	mAbsolutePosition = MPos(x, y);
+void Mouse::setAbsolutePosition(POINT pos) {
+	mAbsolutePosition = pos;
 }
 
-void Mouse::setAbsolutePositionBounds(LONG maxX, LONG maxY) {
-	mAbsolutePositionBounds = MPos(maxX, maxY);
+void Mouse::setAbsolutePositionBounds(POINT bounds) {
+	mAbsolutePositionBounds = bounds;
 }

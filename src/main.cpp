@@ -15,11 +15,11 @@ using namespace Math;
 int main() {
 	GameTimer& timer = GameTimer::getTimer();
 
-	Window::generateWindow(false);
+	Window::createWindow(false);
 	if (!Window::getWindow().initSuccess())
 		return -1;
 
-	Renderer renderer = Renderer(Window::getWindow());
+	Renderer renderer = Renderer();
 	if (!renderer.initSuccess())
 		return -1;
 

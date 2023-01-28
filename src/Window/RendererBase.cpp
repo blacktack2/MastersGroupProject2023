@@ -1,6 +1,6 @@
 /**
  * @file   RendererBase.cpp
- * @brief  
+ * @brief  See RendererBase.h.
  * 
  * @author Rich Davidson
  * @author Stuart Lewis
@@ -8,11 +8,14 @@
  */
 #include "RendererBase.h"
 
+#include "Window.h"
+
 #include <glad/gl.h>
 #include <glad/include/KHR/khrplatform.h>
 #include <KHR/wglext.h>
 
 using namespace Graphics;
+using namespace Application;
 
 PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = nullptr;
 
@@ -20,8 +23,8 @@ PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = nullptr;
 static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 #endif
 
-RendererBase::RendererBase(Application::Window& window) : mWindow(window) {
-	if (!(mDeviceContext = GetDC(mWindow.getHandle())))
+RendererBase::RendererBase() {
+	if (!(mDeviceContext = GetDC(Window::getWindow().getHandle())))
 		return;
 
 	PIXELFORMATDESCRIPTOR pfd;
@@ -105,7 +108,7 @@ RendererBase::RendererBase(Application::Window& window) : mWindow(window) {
 
 	glClearColor(0, 0, 0, 1);
 
-	window.setRenderer(this);
+	Window::getWindow().setRenderer(this);
 	mInitSuccess = true;
 }
 
@@ -121,11 +124,8 @@ void RendererBase::swapBuffers() {
 	::SwapBuffers(mDeviceContext);
 }
 
-void RendererBase::onWindowResize(GLsizei width, GLsizei height) {
-	glViewport(0, 0, width, height);
-}
-
-void RendererBase::onWindowDetach() {
+void RendererBase::onWindowResize() {
+	glViewport(0, 0, Window::getWindow().getWidth(), Window::getWindow().getHeight());
 }
 
 static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {

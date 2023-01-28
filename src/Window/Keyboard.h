@@ -1,6 +1,6 @@
 /**
  * @file   Keyboard.h
- * @brief  
+ * @brief  Handler class for keyboard events.
  * 
  * @author Rich Davison
  * @author Stuart Lewis
@@ -159,21 +159,33 @@ namespace Graphics {
 			KEYBOARD_MAX = 0xFF
 		};
 
+		/**
+		 * @brief Handler class for keyboard events.
+		 */
 		class Keyboard : public InputDevice {
 		public:
 			friend class Window;
 
+			/**
+			 * @returns true if key was pressed this frame, otherwise false.
+			 */
 			bool isKeyPressed(KeyboardKey key);
+			/**
+			 * @brief TODO: Not yet implemented.
+			 * @returns true if key was released this frame, otherwise false.
+			 */
 			bool isKeyReleased(KeyboardKey key);
+			/**
+			 * @returns true if key is being held this frame, otherwise false.
+			 */
 			bool isKeyHeld(KeyboardKey key);
-			bool isKeyTriggered(KeyboardKey key);
 		protected:
 			Keyboard(HWND& hwnd);
 			~Keyboard();
 
-			virtual void updateHolds();
-			virtual void update(RAWINPUT* raw);
-			virtual void sleep();
+			virtual void updateHolds() override;
+			virtual void update(RAWINPUT* raw) override;
+			virtual void sleep() override;
 
 			bool mKeyStates[(size_t)KeyboardKey::KEYBOARD_MAX];
 			bool mHoldStates[(size_t)KeyboardKey::KEYBOARD_MAX];

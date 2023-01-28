@@ -1,6 +1,6 @@
 /**
  * @file   InputDevice.h
- * @brief  
+ * @brief  Base class for retrieving and handling user input from the OS.
  * 
  * @author Rich Davison
  * @author Stuart Lewis
@@ -26,15 +26,32 @@
 
 namespace Graphics {
 	namespace Application {
+		/**
+		 * @brief Base class for retrieving and handling user input from the OS.
+		 */
 		class InputDevice {
 		protected:
 			friend class Window;
 			InputDevice() : mIsAwake(true), mRid() {}
 			~InputDevice() {}
 
+			/**
+			 * @brief Update the state of the input source represented by raw.
+			 */
 			virtual void update(RAWINPUT* raw) = 0;
-			virtual void UpdateHolds() {}
+			/**
+			 * @brief Update the hold state of each input source.
+			 */
+			virtual void updateHolds() {}
+			/**
+			 * @brief Disable this input device, preventing reactions to any
+			 * input source.
+			 */
 			virtual void sleep() { mIsAwake = false; }
+			/**
+			 * @brief Re-enable this input device, allowing reactions to input
+			 * sources.
+			 */
 			virtual void wake() { mIsAwake = true; }
 
 			bool mIsAwake;
