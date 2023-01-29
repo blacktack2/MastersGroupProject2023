@@ -6,13 +6,13 @@
 using namespace paintHell::core;
 
 
-Transform::Transform() {
+/*Transform::Transform() {
 	scale = glm::vec3(1, 1, 1);
 	position = glm::vec4(0, 0, 0, 1);
 	rotation = glm::quat(0, 0, 0, 0);
 	parent = nullptr;
 	UpdateLocalMatrix();
-}
+}*/
 
 Transform::Transform(GameObject* gameObject) {
 	scale = glm::vec3(1, 1, 1);
@@ -61,7 +61,7 @@ void Transform::UpdateLocalMatrix() {
 }
 
 void Transform::UpdateWorldMatrix() {
-	worldMatrix = parent ? localMatrix * parent->GetWorldMatrix() : localMatrix;
+	worldMatrix = parent ? parent->GetWorldMatrix() * localMatrix : localMatrix;
 
 	for (std::vector<Transform*>::iterator child = children.begin(); child != children.end(); child++)
 	{

@@ -18,7 +18,7 @@ namespace {
 		}
 	}
 
-	void TestTransformTranslate(Transform& transform) {
+	bool TestTransformTranslate(Transform& transform) {
 		std::cout << "Testing Translation: \n";
 		transform.SetParent(nullptr);
 		transform.SetRotation(glm::quat(0, 0, 0, 0));
@@ -31,7 +31,7 @@ namespace {
 		if (glm::vec4(2, 5, 2, 1) == transform.GetLocalPosition()) std::cout << "Passed\n";
 		else {
 			std::cout << " Failed\n";
-			return;
+			return false;
 		}
 		std::cout << "Test2/2\n\tExpexted:\n";
 		glm::mat4 expexcted = glm::mat4(glm::vec4(1, 0, 0, 0), glm::vec4(0, 1, 0, 0), glm::vec4(0, 0, 1, 0), glm::vec4(2, 5, 2, 1));
@@ -41,11 +41,13 @@ namespace {
 		if (expexcted == transform.GetLocalMatrix()) std::cout << "Passed\n";
 		else {
 			std::cout << " Failed\n";
-			return;
+			return false;
 		}
+
+		return true;
 	}
 
-	void TestTransformScale(Transform& transform) {
+	bool TestTransformScale(Transform& transform) {
 		std::cout << "Testing Scale: \n";
 		transform.SetParent(nullptr);
 		transform.SetRotation(glm::quat(0, 0, 0, 0));
@@ -58,7 +60,7 @@ namespace {
 		if (glm::vec3(2, 4, 3) == transform.GetScale()) std::cout << "Passed\n";
 		else {
 			std::cout << " Failed\n";
-			return;
+			return false;
 		}
 		std::cout << "Test2/2\n\tExpexted:\n";
 		glm::mat4 expexcted = glm::mat4(glm::vec4(2, 0, 0, 0), glm::vec4(0, 4, 0, 0), glm::vec4(0, 0, 3, 0), glm::vec4(0, 0, 0, 1));
@@ -68,11 +70,13 @@ namespace {
 		if (expexcted == transform.GetLocalMatrix()) std::cout << "Passed\n";
 		else {
 			std::cout << " Failed\n";
-			return;
+			return false;
 		}
+
+		return true;
 	}
 
-	void TestTransformQuaternion(Transform& transform) {
+	bool TestTransformQuaternion(Transform& transform) {
 		std::cout << "Testing Rotation: \n";
 		transform.SetParent(nullptr);
 		transform.SetRotation(glm::quat(0.5, 0.5, 0.5, 0.5)); //is equal to 120 degree rotation around 1,1,1,1
@@ -85,7 +89,7 @@ namespace {
 		if (glm::quat(0.5, 0.5, 0.5, 0.5) == transform.GetRotation()) std::cout << "Passed\n";
 		else {
 			std::cout << " Failed\n";
-			return;
+			return false;
 		}
 		std::cout << "Test2/2\n\tExpexted:\n";
 		glm::mat4 expexcted = glm::mat4(glm::vec4(0, 1, 0, 0), glm::vec4(0, 0, 1, 0), glm::vec4(1, 0, 0, 0), glm::vec4(0, 0, 0, 1));
@@ -95,10 +99,12 @@ namespace {
 		if (expexcted == transform.GetLocalMatrix()) std::cout << "Passed\n";
 		else {
 			std::cout << " Failed\n";
-			return;
+			return false;
 		}
+
+		return true;
 	}
-	void TestTransformCombine(Transform& transform) {
+	bool TestTransformCombine(Transform& transform) {
 		transform.SetParent(nullptr);
 		transform.SetRotation(glm::quat(0.5, 0.5, 0.5, 0.5)); //is equal to 120 degree rotation around 1,1,1,1
 		transform.SetScale(glm::vec3(2, 4, 3));
@@ -112,8 +118,47 @@ namespace {
 		if (expexcted == transform.GetLocalMatrix()) std::cout << "Passed\n";
 		else {
 			std::cout << " Failed\n";
-			return;
+			return false;
 		}
+		return true;
+	}
+	bool TestTransformParent(Transform& transformA, Transform& transformB) {
+		transformA.SetParent(nullptr);
+		transformA.SetRotation(glm::quat(0.5, 0.5, 0.5, 0.5));
+		transformA.SetLocalPosition(glm::vec3(2, 5, 8));
+		transformA.SetScale(glm::vec3(1));
+
+		transformB.SetParent(&transformA);
+		transformB.SetRotation(glm::quat(0, 0, 0, 0));
+		transformB.SetLocalPosition(glm::vec3(0, 0, 0));
+		transformB.SetScale(glm::vec3(1));
+
+		glm::mat4 expexcted = glm::mat4(glm::vec4(0, 1, 0, 0), glm::vec4(0, 0, 1, 0), glm::vec4(1, 0, 0, 0), glm::vec4(2, 5, 8, 1));
+		std::cout << "Test1/2\n\tExpexted:\n";
+		DisplayMat4(expexcted);
+		std::cout << "\tRecieved:\n";
+		DisplayMat4(transformB.GetWorldMatrix());
+		if (expexcted == transformB.GetWorldMatrix()) std::cout << "Passed\n";
+		else {
+			std::cout << " Failed\n";
+			return false;
+		}
+
+		transformB.SetRotation(glm::quat(-0.5, 0.5, 0.5, 0.5));
+		transformB.SetLocalPosition(glm::vec3(2, 5, 8));
+		transformB.SetScale(glm::vec3(1));
+
+		expexcted = glm::mat4(glm::vec4(1, 0, 0, 0), glm::vec4(0, 1, 0, 0), glm::vec4(0, 0, 1, 0), glm::vec4(10, 7, 13, 1));
+		std::cout << "Test2/2\n\tExpexted:\n";
+		DisplayMat4(expexcted);
+		std::cout << "\tRecieved:\n";
+		DisplayMat4(transformB.GetWorldMatrix());
+		if (expexcted == transformB.GetWorldMatrix()) std::cout << "Passed\n";
+		else {
+			std::cout << " Failed\n";
+			return false;
+		}
+		return true;
 	}
 }
 
@@ -123,4 +168,6 @@ void paintHell::test::core::TestGameObjectTransform() {
 	TestTransformScale(objA.GetTransform());
 	TestTransformQuaternion(objA.GetTransform());
 	TestTransformCombine(objA.GetTransform());
+	GameObject objB;
+	TestTransformParent(objA.GetTransform(), objB.GetTransform());
 }

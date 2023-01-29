@@ -8,7 +8,7 @@ namespace paintHell::core {
 
 	class Transform {
 	public:
-		Transform();
+		//Transform();
 		Transform(GameObject* gameObject);
 		~Transform();
 
