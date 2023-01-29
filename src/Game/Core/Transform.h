@@ -3,27 +3,29 @@
 #include <vector>
 #include <glm/ext/quaternion_float.hpp>
 
-using namespace glm;
 namespace paintHell::core {
+	class GameObject;
+
 	class Transform {
 	public:
 		Transform();
+		Transform(GameObject* gameObject);
 		~Transform();
 
-		const mat4 GetLocalMatrix() { return localMatrix; }
-		const mat4 GetWorldMatrix() { return worldMatrix; }
+		const glm::mat4 GetLocalMatrix() { return localMatrix; }
+		const glm::mat4 GetWorldMatrix() { return worldMatrix; }
 		Transform* GetParent() { return parent; }
 
-		const vec4 GetLocalPosition() { return position; }
-		const vec3 GetScale() { return scale; }
-		const quat GetRotation() { return rotation; }
+		const glm::vec4 GetLocalPosition() { return position; }
+		const glm::vec3 GetScale() { return scale; }
+		const glm::quat GetRotation() { return rotation; }
 
-		const vec4 GetWorldPosition();
+		const glm::vec4 GetWorldPosition();
 
-		Transform& SetLocalPosition(const vec4& newPos);
-		Transform& SetLocalPosition(const vec3& newPos) { return SetLocalPosition(vec4(newPos, 1.0)); }
-		Transform& SetScale(const vec3& newScale);
-		Transform& SetRotation(const quat& newRot);
+		Transform& SetLocalPosition(const glm::vec4& newPos);
+		Transform& SetLocalPosition(const glm::vec3& newPos) { return SetLocalPosition(glm::vec4(newPos, 1.0)); }
+		Transform& SetScale(const glm::vec3& newScale);
+		Transform& SetRotation(const glm::quat& newRot);
 		Transform& SetParent(Transform* newParent) { parent = newParent; UpdateWorldMatrix(); return *this; }
 
 
@@ -35,17 +37,18 @@ namespace paintHell::core {
 		
 	private:
 		void UpdateLocalMatrix();
-		void LogMatrix(mat4 matrix);
+		void LogMatrix(glm::mat4 matrix);
 
 	private:
-		vec4 position;
-		vec3 scale;
+		glm::vec4 position;
+		glm::vec3 scale;
 
-		quat rotation;
+		glm::quat rotation;
 	
-		mat4 localMatrix;
-		mat4 worldMatrix;
+		glm::mat4 localMatrix;
+		glm::mat4 worldMatrix;
 		Transform* parent;
 		std::vector<Transform*> children;
+		GameObject* gameObject;
 	};
 }

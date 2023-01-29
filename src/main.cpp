@@ -1,4 +1,4 @@
-#include "Game/Core/Transform.h"
+#include "Game/Core/TestGameObject.h"
 #include <iostream>
 
 #include "Math/GameTimer.h"
@@ -21,22 +21,13 @@ void CreateConsole() {
 	freopen("CONIN$", "r", stdin);
 	freopen("CONOUT$", "w", stdout);
 	freopen("CONOUT$", "w", stderr);
-	std::cout << "hello world\n";
 }
 
 int main() {
 	GameTimer& timer = GameTimer::getTimer();
 
 	CreateConsole();
-
-	paintHell::core::Transform trans;
-	trans.SetLocalPosition(vec3(5, 8, 2));
-	trans.DebugLog();
-	paintHell::core::Transform trans2;
-	trans2.SetLocalPosition(vec3(2, 4, 2));
-	trans2.SetParent(&trans);
-	trans2.DebugLog();
-	std::cout << "World Pos: " << glm::to_string(trans2.GetWorldPosition());
+	paintHell::test::core::TestGameObjectTransform();
 
 	Window::createWindow(false);
 	if (!Window::getWindow().initSuccess())

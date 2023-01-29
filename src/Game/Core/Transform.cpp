@@ -1,14 +1,25 @@
 #include "Transform.h"
+#include "GameObject.h"
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
 
 using namespace paintHell::core;
+
 
 Transform::Transform() {
 	scale = glm::vec3(1, 1, 1);
 	position = glm::vec4(0, 0, 0, 1);
 	rotation = glm::quat(0, 0, 0, 0);
 	parent = nullptr;
+	UpdateLocalMatrix();
+}
+
+Transform::Transform(GameObject* gameObject) {
+	scale = glm::vec3(1, 1, 1);
+	position = glm::vec4(0, 0, 0, 1);
+	rotation = glm::quat(0, 0, 0, 0);
+	parent = nullptr;
+	this->gameObject = gameObject;
 	UpdateLocalMatrix();
 }
 
@@ -33,7 +44,7 @@ Transform& Transform::SetRotation(const glm::quat& newRot) {
 	return *this;
 }
 
-const vec4 Transform::GetWorldPosition() {
+const glm::vec4 Transform::GetWorldPosition() {
 	return parent ? parent->GetWorldMatrix() * position : position;
 }
 
@@ -42,8 +53,8 @@ const vec4 Transform::GetWorldPosition() {
 
 
 void Transform::UpdateLocalMatrix() {
-	mat4 rotationMatrix = glm::mat4(rotation); //likely can be better optimised for memory
-	localMatrix = glm::translate(glm::identity<mat4>(), glm::vec3(position)) * rotationMatrix;
+	glm::mat4 rotationMatrix = glm::mat4(rotation); //likely can be better optimised for memory
+	localMatrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(position)) * rotationMatrix;
 	localMatrix = glm::scale(localMatrix, scale);
 
 	UpdateWorldMatrix();
@@ -68,7 +79,7 @@ void Transform::DebugLog() {
 	LogMatrix(worldMatrix);
 }
 
-void Transform::LogMatrix(mat4 matrix) {
+void Transform::LogMatrix(glm::mat4 matrix) {
 	for (int col = 0; col < 4; ++col) {
 		std::cout << "| ";
 		for (int row = 0; row < 4; ++row) {
