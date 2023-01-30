@@ -13,6 +13,9 @@
 #include <memory>
 
 namespace Graphics {
+	/**
+	 * @brief Utility class for handling mesh geometry and OpenGL draw calls.
+	 */
 	class Mesh {
 	public:
 		Mesh();
@@ -29,7 +32,13 @@ namespace Graphics {
 			MAX
 		};
 
+		/**
+		 * @brief Upload vertex data to the GPU.
+		 */
 		void bufferData();
+		/**
+		 * @brief Upload specific vertex attribute to the GPU.
+		 */
 		void uploadAttribute(VBOIndex index, GLuint numElements, GLsizei dataTypeSize, GLint attribSize,
 			const void* data, const char* debugName);
 
