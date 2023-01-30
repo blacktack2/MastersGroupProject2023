@@ -30,18 +30,18 @@ Logger::Logger() {
 Logger::~Logger() {
 }
 
-void Logger::log(Severity severity, const std::string& message, const char* file, int line) {
+void Logger::log(LogLevel level, const std::string& message, const char* file, int line) {
 #ifndef ENABLE_VERBOSE_LOG
-	if ((unsigned int)severity & (unsigned int)Severity::VERBOSE_MASK)
+	if ((unsigned int)level & (unsigned int)LogLevel::VERBOSE_MASK)
 		return;
 #endif
-	logTo(cLogFileStandard, severity, message, file, line);
+	logTo(cLogFileStandard, level, message, file, line);
 #ifdef ENABLE_VERBOSE_LOG
-	logTo(cLogFileVerbose, severity, message, file, line);
+	logTo(cLogFileVerbose, level, message, file, line);
 #endif
 }
 
-void Logger::logTo(const std::string& logFile, Severity severity, const std::string& message, const char* file, int line) {
+void Logger::logTo(const std::string& logFile, LogLevel level, const std::string& message, const char* file, int line) {
 	auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	std::ofstream stream(logFile, std::ios_base::app);
 	if (!stream)
@@ -50,6 +50,6 @@ void Logger::logTo(const std::string& logFile, Severity severity, const std::str
 		<< (file == nullptr ? " " :
 			std::string(" Line: ").append(std::to_string(line))
 			.append(" File: ").append(file).append(" "))
-		<< cSeverityStrings.find(severity)->second << " " << message << "\n";
+		<< cSeverityStrings.find(level)->second << " " << message << "\n";
 	stream.close();
 }
