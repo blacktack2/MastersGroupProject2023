@@ -1,9 +1,13 @@
+#include "Game/Core/TestGameObject.h"
+#include <iostream>
+
 #include "Math/GameTimer.h"
 
 #include "Window/Window.h"
 #include "Window/RendererBase.h"
 
 #include "Game/Renderer.h"
+#include <glm/gtx/string_cast.hpp>
 
 #include "Debugging/Logger.h"
 
