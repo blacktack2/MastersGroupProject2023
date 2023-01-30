@@ -53,13 +53,13 @@ namespace Debug {
 		void log(LogLevel level, const std::string& message, const char* file = nullptr, int line = 0);
 
 		/**
-		 * @brief Log general information.
+		 * @param message Log general information.
 		 */
 		inline void info(const std::string& message) {
 			log(LogLevel::LOG_INFO, message);
 		}
 		/**
-		 * @brief Log verbose debugging information.
+		 * @param message Log verbose debugging information.
 		 */
 		inline void trace(const std::string& message) {
 #ifdef ENABLE_VERBOSE_LOG
@@ -67,7 +67,7 @@ namespace Debug {
 #endif
 		}
 		/**
-		 * @brief Log general debug information.
+		 * @param message Log general debug information.
 		 */
 		inline void debug(const std::string& message) {
 #ifdef ENABLE_VERBOSE_LOG
@@ -75,24 +75,36 @@ namespace Debug {
 #endif
 		}
 		/**
-		 * @brief Log warnings of events which may lead to errors.
+		 * @param message Log warnings of events which may lead to errors.
+		 * @param file    Filename being logged from. Should be defined using
+		 * the __FILE__ macro
+		 * @param line    Line of the file being logged from. Should be defined
+		 * using the __LINE__ macro
 		 */
-		inline void warn(const std::string& message) {
+		inline void warn(const std::string& message, const char* file, int line) {
 #ifdef ENABLE_VERBOSE_LOG
-			log(LogLevel::LOG_WARN, message);
+			log(LogLevel::LOG_WARN, message, file, line);
 #endif
 		}
 		/**
-		 * @brief Log non-fatal errors in the application.
+		 * @param message Log non-fatal errors in the application.
+		 * @param file    Filename being logged from. Should be defined using
+		 * the __FILE__ macro
+		 * @param line    Line of the file being logged from. Should be defined
+		 * using the __LINE__ macro
 		 */
-		inline void error(const std::string& message) {
-			log(LogLevel::LOG_ERROR, message);
+		inline void error(const std::string& message, const char* file, int line) {
+			log(LogLevel::LOG_ERROR, message, file, line);
 		}
 		/**
-		 * @brief Log errors which prevent the application from continuing.
+		 * @param message Log errors which prevent the application from continuing.
+		 * @param file    Filename being logged from. Should be defined using
+		 * the __FILE__ macro
+		 * @param line    Line of the file being logged from. Should be defined
+		 * using the __LINE__ macro
 		 */
-		inline void fatal(const std::string& message) {
-			log(LogLevel::LOG_FATAL, message);
+		inline void fatal(const std::string& message, const char* file, int line) {
+			log(LogLevel::LOG_FATAL, message, file, line);
 		}
 
 		inline bool initSuccess() {
