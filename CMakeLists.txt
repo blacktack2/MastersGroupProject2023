@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 20)
 
 find_package(OpenGL REQUIRED)
 
+file(COPY Shaders DESTINATION ${CMAKE_BINARY_DIR})
+
 file(GLOB_RECURSE SRC CMAKE_CONFIGURE_DEPENDS "src/*.h" "src/*.cpp")
 
 add_subdirectory(lib/)
