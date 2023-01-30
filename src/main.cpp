@@ -27,7 +27,7 @@ int main() {
 	GameTimer& timer = GameTimer::getTimer();
 
 	CreateConsole();
-	paintHell::test::core::TestGameObjectTransform();
+	//paintHell::test::core::TestGameObjectTransform();
 
 	Window::createWindow(false);
 	if (!Window::getWindow().initSuccess())

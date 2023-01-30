@@ -1,3 +1,10 @@
+/**
+ * @file   GameObject.cpp
+ * @brief  See GameObject.h
+ *
+ * @author Harry Brettell
+ * @date   January 2023
+*/
 #include "GameObject.h"
 #include "Transform.h"
 #include <iostream>

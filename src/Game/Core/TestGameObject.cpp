@@ -1,3 +1,11 @@
+/**
+ * @file   TestGameObject.cpp
+ * @brief  See TestGameObject.h
+ *
+ * @author Harry Brettell
+ * @date   January 2023
+*/
+
 #include "TestGameObject.h"
 
 #include "GameObject.h"

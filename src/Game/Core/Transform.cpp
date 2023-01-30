@@ -1,3 +1,11 @@
+/**
+ * @file   Transform.cpp
+ * @brief  See Transform.h
+ *
+ * @author Harry Brettell
+ * @date   January 2023
+*/
+
 #include "Transform.h"
 #include "GameObject.h"
 #include <glm/gtx/string_cast.hpp>

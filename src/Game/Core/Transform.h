@@ -1,3 +1,11 @@
+/**
+ * @file   Transform.h
+ * @brief  Stores object position information
+ *
+ * @author Harry Brettell
+ * @date   January 2023
+*/
+
 #pragma once
 #include <glm/glm.hpp>
 #include <vector>

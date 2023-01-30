@@ -1,3 +1,10 @@
+/**
+ * @file   GameObject.h
+ * @brief  main contatiner for all gameobjects
+ *
+ * @author Harry Brettell
+ * @date   January 2023
+*/
 #pragma once
 #include <string>
 #include "Transform.h"
