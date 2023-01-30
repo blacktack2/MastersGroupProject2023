@@ -18,7 +18,16 @@
 using namespace Graphics::Application;
 using namespace Math;
 
+void CreateConsole() {
+	AllocConsole();
+	freopen("CONIN$", "r", stdin);
+	freopen("CONOUT$", "w", stdout);
+	freopen("CONOUT$", "w", stderr);
+}
+
 int main() {
+	CreateConsole();
+
 	if (!Debug::Logger::getLogger().initSuccess())
 		return -1;
 	Debug::Logger::getLogger().info("Initialized logger.");
