@@ -13,7 +13,8 @@
 #include <ctime>
 #include <iomanip>
 
-using namespace Debug;
+using namespace paintHell;
+using namespace debug;
 
 Logger::Logger() {
 	std::ofstream stream(cLogFileStandard);

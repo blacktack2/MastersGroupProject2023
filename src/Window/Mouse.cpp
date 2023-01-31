@@ -11,8 +11,9 @@
 
 #include <algorithm>
 
-using namespace Graphics;
-using namespace Application;
+using namespace paintHell;
+using namespace core;
+using namespace system;
 
 Mouse::Mouse(HWND& hwnd) :
 mLastWheelTime(0), mFrameWheel(0), mSensitivity(0.07f), mClickLimit(0.2f), mSetAbsolute(false) {

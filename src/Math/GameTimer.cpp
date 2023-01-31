@@ -7,7 +7,9 @@
  */
 #include "GameTimer.h"
 
-using namespace Math;
+using namespace paintHell;
+using namespace core;
+using namespace maths;
 
 GameTimer::GameTimer() :
 mLastFrame(), mCurrentFrame(std::chrono::steady_clock::now()) {

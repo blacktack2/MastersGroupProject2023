@@ -8,7 +8,7 @@
 #pragma once
 #include <chrono>
 
-namespace Math {
+namespace paintHell::core::maths {
 	typedef std::chrono::duration<float, std::nano> time_delta_t;
 
 	/**

@@ -14,17 +14,19 @@
 
 #include <memory>
 
-using namespace Graphics;
+using namespace paintHell::core::graphics;
 
-class Renderer : public RendererBase {
-public:
-	Renderer();
-	~Renderer();
+namespace paintHell {
+	class Renderer : public RendererBase {
+	public:
+		Renderer();
+		~Renderer();
 
-	virtual void update();
-	virtual void render();
-private:
-	std::shared_ptr<Mesh> quad = nullptr;
+		virtual void update();
+		virtual void render();
+	private:
+		std::shared_ptr<Mesh> quad = nullptr;
 
-	std::shared_ptr<Shader> shader = nullptr;
-};
+		std::shared_ptr<Shader> shader = nullptr;
+	};
+}

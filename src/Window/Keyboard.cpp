@@ -8,8 +8,9 @@
  */
 #include "Keyboard.h"
 
-using namespace Graphics;
-using namespace Application;
+using namespace paintHell;
+using namespace core;
+using namespace system;
 
 Keyboard::Keyboard(HWND& hwnd) {
 	ZeroMemory(mKeyStates, (size_t)KeyboardKey::KEYBOARD_MAX * sizeof(bool));

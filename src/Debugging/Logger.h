@@ -15,7 +15,7 @@
 #define ENABLE_VERBOSE_LOG
 #endif
 
-namespace Debug {
+namespace paintHell::debug {
 	enum class LogLevel {
 		LOG_INFO  = 0b00000, /** General information */
 		LOG_TRACE = 0b01001, /** Finer-grained information */

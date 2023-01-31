@@ -10,7 +10,7 @@
 
 #include <string>
 
-namespace Graphics {
+namespace paintHell::core::graphics {
 	/**
 	 * @brief Wrapper class for handling OpenGL shaders.
 	 */

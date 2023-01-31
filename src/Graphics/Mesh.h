@@ -12,7 +12,7 @@
 
 #include <memory>
 
-namespace Graphics {
+namespace paintHell::core::graphics {
 	/**
 	 * @brief Utility class for handling mesh geometry and OpenGL draw calls.
 	 */

@@ -9,7 +9,11 @@
 
 #include "../Debugging/Logger.h"
 
-using namespace Graphics;
+using namespace paintHell;
+using namespace core;
+using namespace graphics;
+
+static debug::Logger& logger = debug::Logger::getLogger();
 
 Shader::Shader(const GLchar* vert, const GLchar* frag) : mProgramID(glCreateProgram()) {
 	loadShader(vert, GL_VERTEX_SHADER);
@@ -62,7 +66,7 @@ bool Shader::loadShader(const GLchar* code, GLenum type) {
 	if (success != GL_TRUE) {
 		GLchar infoLog[512];
 		glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-		Debug::Logger::getLogger().error(std::string("Failed to compile shader.\n").append(infoLog), __FILE__, __LINE__);
+		logger.error(std::string("Failed to compile shader.\n").append(infoLog), __FILE__, __LINE__);
 		return false;
 	}
 
@@ -79,7 +83,7 @@ bool Shader::linkShader() {
 	if (success != GL_TRUE) {
 		GLchar infoLog[512];
 		glGetProgramInfoLog(mProgramID, 512, nullptr, infoLog);
-		Debug::Logger::getLogger().error(std::string("Failed to link shader program.\n").append(infoLog), __FILE__, __LINE__);
+		logger.error(std::string("Failed to link shader program.\n").append(infoLog), __FILE__, __LINE__);
 		return false;
 	}
 	return true;

@@ -24,38 +24,36 @@
 
 #include <Windows.h>
 
-namespace Graphics {
-	namespace Application {
+namespace paintHell::core::system {
+	/**
+	 * @brief Base class for retrieving and handling user input from the OS.
+	 */
+	class InputDevice {
+	protected:
+		friend class Window;
+		InputDevice() : mIsAwake(true), mRid() {}
+		~InputDevice() {}
+
 		/**
-		 * @brief Base class for retrieving and handling user input from the OS.
+		 * @brief Update the state of the input source represented by raw.
 		 */
-		class InputDevice {
-		protected:
-			friend class Window;
-			InputDevice() : mIsAwake(true), mRid() {}
-			~InputDevice() {}
+		virtual void update(RAWINPUT* raw) = 0;
+		/**
+		 * @brief Update the hold state of each input source.
+		 */
+		virtual void updateHolds() {}
+		/**
+		 * @brief Disable this input device, preventing reactions to any
+		 * input source.
+		 */
+		virtual void sleep() { mIsAwake = false; }
+		/**
+		 * @brief Re-enable this input device, allowing reactions to input
+		 * sources.
+		 */
+		virtual void wake() { mIsAwake = true; }
 
-			/**
-			 * @brief Update the state of the input source represented by raw.
-			 */
-			virtual void update(RAWINPUT* raw) = 0;
-			/**
-			 * @brief Update the hold state of each input source.
-			 */
-			virtual void updateHolds() {}
-			/**
-			 * @brief Disable this input device, preventing reactions to any
-			 * input source.
-			 */
-			virtual void sleep() { mIsAwake = false; }
-			/**
-			 * @brief Re-enable this input device, allowing reactions to input
-			 * sources.
-			 */
-			virtual void wake() { mIsAwake = true; }
-
-			bool mIsAwake;
-			RAWINPUTDEVICE mRid;
-		};
-	}
+		bool mIsAwake;
+		RAWINPUTDEVICE mRid;
+	};
 }

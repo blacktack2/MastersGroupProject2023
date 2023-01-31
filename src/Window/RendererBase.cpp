@@ -16,8 +16,11 @@
 #include <glad/include/KHR/khrplatform.h>
 #include <KHR/wglext.h>
 
-using namespace Graphics;
-using namespace Application;
+using namespace paintHell;
+using namespace core;
+using namespace graphics;
+
+static debug::Logger& logger = debug::Logger::getLogger();
 
 PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = nullptr;
 
@@ -26,8 +29,8 @@ static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum
 #endif
 
 RendererBase::RendererBase() {
-	if (!(mDeviceContext = GetDC(Window::getWindow().getHandle()))) {
-		Debug::Logger::getLogger().fatal("Error getting device context.", __FILE__, __LINE__);
+	if (!(mDeviceContext = GetDC(system::Window::getWindow().getHandle()))) {
+		logger.fatal("Error getting device context.", __FILE__, __LINE__);
 		return;
 	}
 
@@ -45,48 +48,48 @@ RendererBase::RendererBase() {
 
 	GLuint pixelFormat;
 	if (!(pixelFormat = ChoosePixelFormat(mDeviceContext, &pfd))) {
-		Debug::Logger::getLogger().fatal("Error choosing pixel format.", __FILE__, __LINE__);
+		logger.fatal("Error choosing pixel format.", __FILE__, __LINE__);
 		return;
 	}
 
 	if (!SetPixelFormat(mDeviceContext, pixelFormat, &pfd)) {
-		Debug::Logger::getLogger().fatal("Error setting pixel format.", __FILE__, __LINE__);
+		logger.fatal("Error setting pixel format.", __FILE__, __LINE__);
 		return;
 	}
-	Debug::Logger::getLogger().trace("Pixel format set.");
+	logger.trace("Pixel format set.");
 
 	HGLRC tempContext;
 	if (!(tempContext = wglCreateContext(mDeviceContext))) {
-		Debug::Logger::getLogger().fatal("Error creating wgl device context.", __FILE__, __LINE__);
+		logger.fatal("Error creating wgl device context.", __FILE__, __LINE__);
 		wglDeleteContext(tempContext);
 		return;
 	}
 
 	if (!wglMakeCurrent(mDeviceContext, tempContext)) {
-		Debug::Logger::getLogger().fatal("Error setting temporary device context.", __FILE__, __LINE__);
+		logger.fatal("Error setting temporary device context.", __FILE__, __LINE__);
 		wglDeleteContext(tempContext);
 		return;
 	}
-	Debug::Logger::getLogger().trace("Temporary device context created.");
+	logger.trace("Temporary device context created.");
 
 	if (!gladLoaderLoadGL()) {
-		Debug::Logger::getLogger().fatal("Error initializing OpenGL.", __FILE__, __LINE__);
+		logger.fatal("Error initializing OpenGL.", __FILE__, __LINE__);
 		return;
 	}
-	Debug::Logger::getLogger().trace("OpenGL loaded");
+	logger.trace("OpenGL loaded");
 
 	char* ver = (char*)glGetString(GL_VERSION);
 	int major = ver[0] - '0';
 	int minor = ver[2] - '0';
 
 	if (major < 3) {
-		Debug::Logger::getLogger().fatal("Incompatible OpenGL major version (must be 3+).", __FILE__, __LINE__);
+		logger.fatal("Incompatible OpenGL major version (must be 3+).", __FILE__, __LINE__);
 		wglDeleteContext(tempContext);
 		return;
 	}
 
 	if (major == 4 && minor < 1) {
-		Debug::Logger::getLogger().fatal("Incompatible OpenGL minor version.", __FILE__, __LINE__);
+		logger.fatal("Incompatible OpenGL minor version.", __FILE__, __LINE__);
 		wglDeleteContext(tempContext);
 		return;
 	}
@@ -106,12 +109,12 @@ RendererBase::RendererBase() {
 	mRenderContext = wglCreateContextAttribsARB(mDeviceContext, 0, attribs);
 
 	if (!mRenderContext || !wglMakeCurrent(mDeviceContext, mRenderContext)) {
-		Debug::Logger::getLogger().fatal("Error setting main device context.", __FILE__, __LINE__);
+		logger.fatal("Error setting main device context.", __FILE__, __LINE__);
 		wglDeleteContext(mRenderContext);
 		wglDeleteContext(tempContext);
 		return;
 	}
-	Debug::Logger::getLogger().trace("Main device context created");
+	logger.trace("Main device context created");
 
 	wglDeleteContext(tempContext);
 
@@ -127,7 +130,7 @@ RendererBase::RendererBase() {
 
 	glClearColor(0, 0, 0, 1);
 
-	Window::getWindow().setRenderer(this);
+	system::Window::getWindow().setRenderer(this);
 	mInitSuccess = true;
 }
 
@@ -144,7 +147,7 @@ void RendererBase::swapBuffers() {
 }
 
 void RendererBase::onWindowResize() {
-	glViewport(0, 0, Window::getWindow().getWidth(), Window::getWindow().getHeight());
+	glViewport(0, 0, system::Window::getWindow().getWidth(), system::Window::getWindow().getHeight());
 }
 
 static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {

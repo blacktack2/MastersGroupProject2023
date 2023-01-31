@@ -10,7 +10,9 @@
 #include <string>
 #include <fstream>
 
-using namespace Graphics;
+using namespace paintHell;
+using namespace core;
+using namespace graphics;
 
 Renderer::Renderer() : RendererBase() {
 	std::string vert, frag;

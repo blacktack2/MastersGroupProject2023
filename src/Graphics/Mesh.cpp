@@ -7,7 +7,9 @@
  */
 #include "Mesh.h"
 
-using namespace Graphics;
+using namespace paintHell;
+using namespace core;
+using namespace graphics;
 
 Mesh::Mesh() {
 	glGenVertexArrays(1, &mArrayObject);

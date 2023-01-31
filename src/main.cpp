@@ -15,8 +15,13 @@
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
-using namespace Graphics::Application;
-using namespace Math;
+using namespace paintHell;
+using namespace core;
+using namespace graphics;
+using namespace system;
+using namespace maths;
+
+static debug::Logger& logger = debug::Logger::getLogger();
 
 void CreateConsole() {
 	AllocConsole();
@@ -28,31 +33,31 @@ void CreateConsole() {
 int main() {
 	CreateConsole();
 
-	if (!Debug::Logger::getLogger().initSuccess())
+	if (!logger.initSuccess())
 		return -1;
-	Debug::Logger::getLogger().info("Initialized logger.");
+	logger.info("Initialized logger.");
 
 	GameTimer& timer = GameTimer::getTimer();
-	Debug::Logger::getLogger().info("Initialized game timer.");
+	logger.info("Initialized game timer.");
 
 	Window::createWindow(false);
 	if (!Window::getWindow().initSuccess()) {
-		Debug::Logger::getLogger().fatal("Failed to initialize window", __FILE__, __LINE__);
+		logger.fatal("Failed to initialize window", __FILE__, __LINE__);
 		return -1;
 	}
-	Debug::Logger::getLogger().info("Initialized main window.");
+	logger.info("Initialized main window.");
 
 	Renderer renderer = Renderer();
 	if (!renderer.initSuccess()) {
-		Debug::Logger::getLogger().fatal("Failed to initialize renderer", __FILE__, __LINE__);
+		logger.fatal("Failed to initialize renderer", __FILE__, __LINE__);
 		return -1;
 	}
 
-	Debug::Logger::getLogger().info("Initialized main renderer.");
+	logger.info("Initialized main renderer.");
 
-	renderer.setVSync(Graphics::VSyncState::ON);
+	renderer.setVSync(VSyncState::ON);
 
-	Debug::Logger::getLogger().info("Primary initialization successful. Application starting normally.");
+	logger.info("Primary initialization successful. Application starting normally.");
 
 	while (Window::getWindow().update(timer.getMS()) && !Window::getKeyboard().isKeyPressed(KeyboardKey::KEYBOARD_ESCAPE)) {
 		timer.updateTime();
@@ -64,6 +69,6 @@ int main() {
 
 	Window::destroyWindow();
 
-	Debug::Logger::getLogger().info("Deconstruction successful. Application exiting normally.");
+	logger.info("Deconstruction successful. Application exiting normally.");
 	return 0;
 }

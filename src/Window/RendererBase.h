@@ -11,7 +11,7 @@
 
 #include <Windows.h>
 
-namespace Graphics {
+namespace paintHell::core::graphics {
 	enum class VSyncState {
 		OFF      =  0,
 		ON       =  1,

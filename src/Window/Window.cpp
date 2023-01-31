@@ -15,8 +15,12 @@
 #include <strsafe.h>
 #include <windowsx.h>
 
-using namespace Graphics;
-using namespace Application;
+using namespace paintHell;
+using namespace core;
+using namespace graphics;
+using namespace system;
+
+static debug::Logger& logger = debug::Logger::getLogger();
 
 Window* Window::sWindow = nullptr;
 
@@ -40,10 +44,10 @@ mIsFullScreen(fullScreen), mWindowX(mIsFullScreen ? 0 : 100), mWindowY(mIsFullSc
 		windowClass.lpszClassName = WINDOWCLASS;
 
 		if (!RegisterClassEx(&windowClass)) {
-			Debug::Logger::getLogger().fatal("Error registering window class.", __FILE__, __LINE__);
+			logger.fatal("Error registering window class.", __FILE__, __LINE__);
 			return;
 		}
-		Debug::Logger::getLogger().trace("Registered window class.");
+		logger.trace("Registered window class.");
 	}
 
 	if (mIsFullScreen) {
@@ -58,10 +62,10 @@ mIsFullScreen(fullScreen), mWindowX(mIsFullScreen ? 0 : 100), mWindowY(mIsFullSc
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
 
 		if (ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
-			Debug::Logger::getLogger().fatal("Error setting fullscreen.", __FILE__, __LINE__);
+			logger.fatal("Error setting fullscreen.", __FILE__, __LINE__);
 			return;
 		}
-		Debug::Logger::getLogger().trace("Initialized to fullscreen");
+		logger.trace("Initialized to fullscreen");
 	}
 
 	mWindowHandle = CreateWindowEx(
@@ -72,10 +76,10 @@ mIsFullScreen(fullScreen), mWindowX(mIsFullScreen ? 0 : 100), mWindowY(mIsFullSc
 	);
 
 	if (!mWindowHandle) {
-		Debug::Logger::getLogger().fatal("Error creating window handle.", __FILE__, __LINE__);
+		logger.fatal("Error creating window handle.", __FILE__, __LINE__);
 		return;
 	}
-	Debug::Logger::getLogger().trace("Created window handle");
+	logger.trace("Created window handle");
 
 	getMouse().setAbsolutePositionBounds(POINT(mWindowWidth, mWindowHeight));
 
@@ -116,11 +120,11 @@ void Window::setMouseLock(bool lockMouse) {
 		GetCursorPos(&pt);
 		ScreenToClient(mWindowHandle, &pt);
 		getMouse().setAbsolutePosition(pt);
-		Debug::Logger::getLogger().trace("Mouse pointer locked.");
+		logger.trace("Mouse pointer locked.");
 	} else {
 		ReleaseCapture();
 		ClipCursor(nullptr);
-		Debug::Logger::getLogger().trace("Mouse pointer unlocked.");
+		logger.trace("Mouse pointer unlocked.");
 	}
 }
 
@@ -130,7 +134,7 @@ void Window::showOSPointer(bool show) {
 
 	mShowMouse = show;
 	ShowCursor(mShowMouse ? 1 : 0);
-	Debug::Logger::getLogger().trace(show ? "Mouse pointer shown." : "Mouse pointer hidden.");
+	logger.trace(show ? "Mouse pointer shown." : "Mouse pointer hidden.");
 }
 
 void Window::setTitle(const std::string& title) {
