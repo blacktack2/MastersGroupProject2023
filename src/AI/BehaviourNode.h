@@ -6,6 +6,7 @@
  * @date   January 2023
  */
 #pragma once
+#include <string>
 
 namespace paintHell::core {
 	enum BehaviourState {
