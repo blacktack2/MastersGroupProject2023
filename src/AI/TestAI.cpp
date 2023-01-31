@@ -15,6 +15,7 @@
 #include "BehaviourSequence.h"
 #include "BehaviourAction.h"
 #include "BehaviourParallel.h"
+#include "BehaviourInvertor.h"
 
 #include "TestAI.h"
 
@@ -146,6 +147,10 @@ void TestAI::TestBehaviourTree() {
 		return state;
 		});
 
+	BehaviourInvertor* invertion = new BehaviourInvertor("Don't find item");
+	invertion->AddChild(findItems);
+	
+
 	BehaviourSequence* sequence = new BehaviourSequence("Room sequence");
 	sequence->AddChild(findKey);
 	sequence->AddChild(goToRoom);
@@ -153,12 +158,11 @@ void TestAI::TestBehaviourTree() {
 
 	BehaviourSelector* selection = new BehaviourSelector("Loot Selection");
 	selection->AddChild(findTreasure);
-	selection->AddChild(findItems);
+	selection->AddChild(invertion);
 
 	BehaviourSequence* rootSequence = new BehaviourSequence("Root Sequence");
 	rootSequence->AddChild(sequence);
 	rootSequence->AddChild(selection);
-
 
 	BehaviourParallel* rootParallel = new BehaviourParallel("Main parallel action");
 	rootParallel->AddChild(rootSequence);
