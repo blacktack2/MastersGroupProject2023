@@ -1,3 +1,4 @@
+#pragma once
 #include "PlayerObject.h"
 
 #include "AssetLibrary.h"
@@ -6,12 +7,12 @@
 #include "Constraint.h"
 #include "GameWorld.h"
 #include "NPCObject.h"
-#include "OrientationConstraint.h"
-#include "PositionConstraint.h"
 #include "PhysicsObject.h"
 #include "Window.h"
 
 #include "RenderObject.h"
+
+#include "InputKeyMap.h"
 
 #include <iostream>
 
@@ -19,86 +20,11 @@ using namespace NCL;
 using namespace CSC8503;
 
 PlayerObject::PlayerObject(GameWorld& gameWorld, int id, int& scoreCounter) : GameObject(gameWorld),
-id(id), scoreCounter(scoreCounter),
-behaviourRoot(std::string("Root-Player").append(std::to_string(id))),
-groundAirSelector(std::string("GroundAir-Player").append(std::to_string(id))) {
+id(id), scoreCounter(scoreCounter){
 	OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
 	};
 
-	groundTrigger = new GameObject(gameWorld, std::string("GroundTrigger-Player").append(std::to_string(id)));
-	groundTrigger->GetTransform().SetScale(Vector3(0.1f));
-	groundTrigger->SetBoundingVolume((CollisionVolume*)new AABBVolume(Vector3(0.1f), CollisionLayer::PlayerTrig));
-	groundTrigger->SetPhysicsObject(new PhysicsObject(&groundTrigger->GetTransform(), groundTrigger->GetBoundingVolume(), true));
-	groundTrigger->GetPhysicsObject()->SetInverseMass(0);
-	groundTrigger->GetPhysicsObject()->SetElasticity(0);
-	groundTrigger->GetPhysicsObject()->InitAxisAlignedInertia();
-	groundTrigger->OnTriggerBeginCallback = [&](GameObject* other) { groundTriggerOverlaps++; };
-	groundTrigger->OnTriggerEndCallback = [&](GameObject* other) { groundTriggerOverlaps--; };
-	gameWorld.AddGameObject(groundTrigger);
-
-	tounge = new GameObject(gameWorld, std::string("Tounge-Player").append(std::to_string(id)));
-	tounge->GetTransform().SetScale(Vector3(0.1f, 1.0f, 0.1f));
-	tounge->SetRenderObject(new RenderObject(&tounge->GetTransform(), AssetLibrary::GetMesh("cube"), nullptr, AssetLibrary::GetShader("basic")));
-	tounge->GetRenderObject()->SetColour(Vector4(1, 0.8f, 0.8f, 1));
-	tounge->SetActive(false);
-	gameWorld.AddGameObject(tounge);
-
-	groundOrientationConstraint = new OrientationConstraint(this, Vector3(0, 1, 0));
-
-	BehaviourAction* groundedActions = new BehaviourAction(std::string("Grounded-Player").append(std::to_string(id)),
-		[&](float dt, BehaviourState state)->BehaviourState {
-			switch (state) {
-				case Initialise:
-					if (groundTriggerOverlaps == 0) {
-						return Failure;
-					} else {
-						if (!isGrounded) {
-							gameWorld.AddConstraint(groundOrientationConstraint);
-							isGrounded = true;
-							std::cout << "Grounded\n";
-						}
-						HandleGroundInput(dt);
-						return Success;
-					}
-				case Ongoing: case Success: case Failure: default:
-					return state;
-			}
-		}
-	);
-
-	BehaviourAction* airborneActions = new BehaviourAction(std::string("Airborne-Player").append(std::to_string(id)),
-		[&](float dt, BehaviourState state)->BehaviourState {
-			switch (state) {
-				case Initialise:
-					if (groundTriggerOverlaps == 0) {
-						if (isGrounded) {
-							gameWorld.RemoveConstraint(groundOrientationConstraint);
-							isGrounded = false;
-							std::cout << "Airborn\n";
-						}
-						return Success;
-					} else {
-						return Failure;
-					}
-				case Ongoing: case Success: case Failure: default:
-					return state;
-			}
-		}
-	);
-
-	BehaviourAction* goatActions = new BehaviourAction(std::string("GoatActions-Player").append(std::to_string(id)),
-		[&](float dt, BehaviourState state)->BehaviourState {
-			HandleGoatActions(dt);
-			return Success;
-		}
-	);
-
-	groundAirSelector.AddChild(groundedActions);
-	groundAirSelector.AddChild(airborneActions);
-
-	behaviourRoot.AddChild(&groundAirSelector);
-	behaviourRoot.AddChild(goatActions);
 }
 
 PlayerObject::~PlayerObject() {
@@ -106,13 +32,65 @@ PlayerObject::~PlayerObject() {
 }
 
 void PlayerObject::Update(float dt) {
-	transform.SetPosition(Vector3(transform.GetPosition().x, std::max(1.0f, transform.GetPosition().y), transform.GetPosition().z));
+	jumpTimer -= dt;
+	CheckGround();
+	Move();
+}
 
-	lastGoosed += dt;
+void PlayerObject::Move() {
+	Vector3 dir = Vector3(0,0,0);
+	GetInput(dir);
+	this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
+}
 
-	groundTrigger->GetTransform().SetPosition(transform.GetPosition() + Vector3(0, -1, 0));
-	behaviourRoot.Reset();
-	while (behaviourRoot.Execute(dt) == Ongoing) {}
+void PlayerObject::GetInput(Vector3& dir) {
+	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	keyMap.Update();
+	if (keyMap.GetButton(InputType::Foward)) 
+	{
+		dir += Vector3(0, 0, -1);
+	}
+	if (keyMap.GetButton (InputType::Backward) )
+	{
+		dir += Vector3(0, 0, 1);
+	}
+	if (keyMap.GetButton(InputType::Left)) 
+	{
+		dir += Vector3(-1, 0, 0);
+	}
+	if (keyMap.GetButton(InputType::Right)) 
+	{
+		dir += Vector3(1, 0, 0);
+	}
+	if (keyMap.GetButton(InputType::Jump) && onGround && jumpTimer <= 0.0f ) 
+	{
+		jumpTimer = jumpCooldown;
+		std::cout << "JUMP" << std::endl;
+		this->GetPhysicsObject()->ApplyLinearImpulse(Vector3(0, 1, 0) * jumpSpeed);
+	}
+	if (keyMap.GetButton(InputType::Action1)) 
+	{
+		Shoot();
+	}
+	dir.Normalise();
+}
+
+void PlayerObject::CheckGround() {
+	Ray r = Ray(this->GetTransform().GetPosition(), Vector3(0,-1,0));
+	RayCollision closestCollision;
+	GameObject* objClosest;
+	onGround = false;
+	if (gameWorld.Raycast(r, closestCollision, true, this)) 
+	{
+		objClosest = (GameObject*)closestCollision.node;
+		float groundDist = (closestCollision.collidedAt - this->GetTransform().GetPosition()).Length();
+		//std::cout << "ground dist " << groundDist << std::endl;
+		if (groundDist < 1.02f)
+		{
+			
+			onGround = true;
+		}	
+	}
 }
 
 void PlayerObject::AddPoints(int points) {
@@ -132,7 +110,7 @@ void PlayerObject::CollisionWith(GameObject* other) {
 		}
 	}
 }
-
+/*
 void PlayerObject::HandleGroundInput(float dt) {
 	const float moveForce = 40;
 	const float rotateTorque = 4;
@@ -199,8 +177,9 @@ void PlayerObject::HandleGoatActions(float dt) {
 		}
 	}
 }
+*/
 
-void PlayerObject::FireLasers() {
+void PlayerObject::Shoot() {
 	Bullet* laserA = new Bullet(gameWorld, *(Bullet*)AssetLibrary::GetPrefab("bullet"));
 	laserA->SetLifespan(laserLifespan);
 	laserA->GetTransform().SetPosition(transform.GetOrientation() * eyePosL + transform.GetPosition());

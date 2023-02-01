@@ -1,16 +1,9 @@
 #pragma once
-#include "BehaviourNode.h"
-#include "BehaviourSelector.h"
-#include "BehaviourSequence.h"
-#include "BehaviourParallel.h"
-#include "BehaviourAction.h"
 #include "GameObject.h"
 
 namespace NCL {
 	namespace CSC8503 {
 		class Bullet;
-		class OrientationConstraint;
-		class PositionConstraint;
 
 		class PlayerObject : public GameObject {
 		public:
@@ -22,30 +15,28 @@ namespace NCL {
 			void AddPoints(int points);
 
 			void CollisionWith(GameObject* other);
+
 		protected:
 			int id;
-			BehaviourParallel behaviourRoot;
-			BehaviourSelector groundAirSelector;
-		private:
-			void HandleGroundInput(float dt);
-			void HandleGoatActions(float dt);
 
-			void FireLasers();
+		private:
+			void Move();
+			void GetInput(Vector3& dir);
+			void CheckGround();
+			void Shoot();
+
+			//jump related 
+			bool onGround = false;
+			float jumpTimer = 0.0f;
+			const float jumpCooldown = 0.1f;
+			float jumpSpeed = 10.0f;
+
+			//movement related
+			float moveSpeed = 0.3f;
 
 			int& scoreCounter;
 
 			std::set<int> collidedWith;
-
-			GameObject* groundTrigger;
-			GameObject* tounge;
-
-			GameObject* grappledObject = nullptr;
-
-			OrientationConstraint* groundOrientationConstraint;
-			PositionConstraint* grappleConstraint = nullptr;
-
-			int groundTriggerOverlaps = 0;
-			bool isGrounded = false;
 
 			float toungeMaxDistance = 10.0f;
 			const Vector3 toungePos = Vector3(0.0f, 0.8f, -1.0f);
