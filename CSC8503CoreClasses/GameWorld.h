@@ -1,16 +1,20 @@
 #pragma once
-#include <random>
-
-#include "Ray.h"
 #include "CollisionDetection.h"
+#include "GameObject.h"
+#include "QuadTree.h"
+#include "Ray.h"
 #include "StateMachine.h"
 
+#include <random>
+#include <string>
+
 namespace NCL {
-		class Camera;
-		using Maths::Ray;
+	class Camera;
+	using Maths::Ray;
 	namespace CSC8503 {
-		class GameObject;
 		class Constraint;
+		class GameObject;
+
 
 		typedef std::function<void(GameObject*)> GameObjectFunc;
 		typedef std::vector<GameObject*>::const_iterator GameObjectIterator;
@@ -42,10 +46,17 @@ namespace NCL {
 				shuffleObjects = state;
 			}
 
-			bool Raycast(Ray& r, RayCollision& closestCollision, bool closestObject = false, GameObject* ignore = nullptr) const;
+			bool Raycast(Ray& r, RayCollision& closestCollision, bool closestObject = false, GameObject* ignore = nullptr);
 
+			virtual void PreUpdateWorld();
 			virtual void UpdateWorld(float dt);
 			virtual void PostUpdateWorld();
+
+			void UpdateStaticTree();
+			void UpdateDynamicTree();
+
+			void OperateOnStaticTree(QuadTreeNode::QuadTreeFunc func, const Vector2* subsetPos = nullptr, const Vector2* subsetSize = nullptr);
+			void OperateOnDynamicTree(QuadTreeNode::QuadTreeFunc func, const Vector2* subsetPos = nullptr, const Vector2* subsetSize = nullptr);
 
 			void OperateOnContents(GameObjectFunc f);
 
@@ -60,10 +71,12 @@ namespace NCL {
 			int GetWorldStateID() const {
 				return worldStateCounter;
 			}
-
 		protected:
 			std::vector<GameObject*> gameObjects;
 			std::vector<Constraint*> constraints;
+
+			QuadTree dynamicQuadTree;
+			QuadTree staticQuadTree;
 
 			Camera* mainCamera;
 

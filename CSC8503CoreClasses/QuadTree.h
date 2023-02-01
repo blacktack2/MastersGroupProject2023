@@ -1,41 +1,42 @@
 #pragma once
 
 namespace NCL {
+	namespace Maths {
+		class Ray;
+	}
 	using namespace Maths;
 	namespace CSC8503 {
-		template<class T>
+
+		class GameObject;
 		class QuadTree;
-
-		template<class T>
 		class NodeStack;
-
-		template<class T>
+		
 		struct QuadTreeEntry {
 			Vector2 pos;
 			Vector2 size;
-			T object;
+			GameObject* object;
 
-			QuadTreeEntry(T obj, Vector2 pos, Vector2 size) {
+			QuadTreeEntry(GameObject* obj, Vector2 pos, Vector2 size) {
 				object = obj;
 				this->pos = pos;
 				this->size = size;
 			}
 		};
 
-		template<class T>
 		class QuadTreeNode {
 		public:
-			typedef std::function<void(std::list<QuadTreeEntry<T>>&, const Vector2& nodePos, const Vector2& nodeSize)> QuadTreeFunc;
-			friend class QuadTree<T>;
+			typedef std::function<void(std::list<QuadTreeEntry>&, const Vector2& nodePos, const Vector2& nodeSize)> QuadTreeFunc;
+			friend class QuadTree;
 
-			QuadTreeNode(NodeStack<T>& nodeStack);
+			QuadTreeNode(NodeStack& nodeStack);
 			~QuadTreeNode();
 
 			void Init(Vector2 pos, Vector2 size);
-			void Insert(T& object, const Vector2& objectPos, const Vector2& objectSize, int depthLeft, int maxSize);
+			void Insert(GameObject* object, const Vector2& objectPos, const Vector2& objectSize, int depthLeft, int maxSize);
 
 			void OperateOnContents(QuadTreeFunc& func);
 			void OperateOnContents(QuadTreeFunc& func, const Vector2& subsetPos, const Vector2& subsetSize);
+			void OperateOnContents(QuadTreeFunc& func, const Ray& ray);
 
 			void Split();
 			void Clear();
@@ -43,49 +44,46 @@ namespace NCL {
 
 			void DebugDraw();
 		protected:
-			NodeStack<T>& nodeStack;
+			NodeStack& nodeStack;
 
-			std::list<QuadTreeEntry<T>> contents{};
+			std::list<QuadTreeEntry> contents{};
 
 			Vector2 position;
 			Vector2 size;
 
-			QuadTreeNode<T>* children[4]{ nullptr, nullptr, nullptr, nullptr };
+			QuadTreeNode* children[4]{ nullptr, nullptr, nullptr, nullptr };
 			bool isSplit;
 		};
 
-		template<class T>
 		class NodeStack {
 		public:
 			explicit NodeStack(int maxNodes);
 
-			void Push(QuadTreeNode<T>* node);
-			QuadTreeNode<T>* Pop();
+			void Push(QuadTreeNode* node);
+			QuadTreeNode* Pop();
 		private:
-			std::vector<QuadTreeNode<T>> nodes;
-			std::stack<QuadTreeNode<T>*> stack;
+			std::vector<QuadTreeNode> nodes;
+			std::stack<QuadTreeNode*> stack;
 		};
-
-		template<class T>
+		
 		class QuadTree {
 		public:
 			QuadTree(Vector2 size, int maxDepth = 6, int maxSize = 5);
 			~QuadTree() = default;
 
-			void Insert(T object, const Vector2& pos, const Vector2& size);
-			void OperateOnContents(typename QuadTreeNode<T>::QuadTreeFunc func);
-			void OperateOnContents(typename QuadTreeNode<T>::QuadTreeFunc func, const Vector2& subsetPos, const Vector2& subsetSize);
+			void Insert(GameObject* object, const Vector2& pos, const Vector2& size);
+			void OperateOnContents(typename QuadTreeNode::QuadTreeFunc func);
+			void OperateOnContents(typename QuadTreeNode::QuadTreeFunc func, const Vector2& subsetPos, const Vector2& subsetSize);
+			void OperateOnContents(typename QuadTreeNode::QuadTreeFunc func, const Ray& ray);
 
 			void Clear();
 
 			void DebugDraw();
 		protected:
-			QuadTreeNode<T> root;
-			NodeStack<T> nodeStack;
+			QuadTreeNode root;
+			NodeStack nodeStack;
 			int maxDepth;
 			int maxSize;
 		};
 	}
 }
-
-#include "QuadTree.cpp"

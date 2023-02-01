@@ -334,7 +334,7 @@ hide or show the
 int main() {
 	//TestStateMachine();
 	//TestBehaviourTree();
-	TestPathfinding();
+	//TestPathfinding();
 	//TestNetworking();
 
 	Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
@@ -350,7 +350,7 @@ int main() {
 	TutorialGame* g = new TutorialGame();
 	g->InitWorld();
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
-	while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE)) {
+	while (w->UpdateWindow() && !g->IsQuit()) {
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
 			std::cout << "Skipping large time delta" << std::endl;
@@ -370,7 +370,7 @@ int main() {
 		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
 
 		g->UpdateGame(dt);
-		DisplayPathfinding();
+		//DisplayPathfinding();
 	}
 	Window::DestroyGameWindow();
 }

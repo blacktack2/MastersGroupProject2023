@@ -12,7 +12,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-PhysicsSystem::PhysicsSystem(GameWorld& g) : gameWorld(g), staticQuadTree(Vector2(1024, 1024), 7, 6), dynamicQuadTree(Vector2(1024, 1024), 7, 6) {
+PhysicsSystem::PhysicsSystem(GameWorld& g) : gameWorld(g) {
 	dTOffset		= 0.0f;
 	globalDamping	= 0.995f;
 	SetGravity(Vector3(0.0f, -9.8f, 0.0f));
@@ -38,8 +38,6 @@ any collisions they are in.
 void PhysicsSystem::Clear() {
 	allCollisions.clear();
 	allTriggers.clear();
-	dynamicQuadTree.Clear();
-	staticQuadTree.Clear();
 	std::cout << "Clear\n";
 }
 
@@ -132,26 +130,6 @@ void PhysicsSystem::Update(float dt) {
 			std::cout << "Raising iteration count due to short physics time...(now " << realHZ << ")\n";
 		}
 	}
-}
-
-void NCL::CSC8503::PhysicsSystem::UpdateStaticTree() {
-	staticQuadTree.Clear();
-	UpdateObjectAABBs();
-
-	std::vector<GameObject*>::const_iterator first;
-	std::vector<GameObject*>::const_iterator last;
-	gameWorld.GetObjectIterators(first, last);
-	for (auto i = first; i != last; i++) {
-		if ((*i)->GetPhysicsObject()->IsStatic()) {
-			Vector3 halfSizes;
-			if (!(*i)->GetBroadphaseAABB(halfSizes)) {
-				continue;
-			}
-			Vector3 pos = (*i)->GetTransform().GetPosition();
-			staticQuadTree.Insert(*i, Vector2(pos.x, pos.z), Vector2(halfSizes.x, halfSizes.z));
-		}
-	}
-	std::cout << "Static Tree Created\n";
 }
 
 /*
@@ -259,6 +237,10 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 
 	float totalMass = physA->GetInverseMass() + physB->GetInverseMass();
 
+	if (physA->IsStatic() || physB->IsStatic()) {
+		transformA.GetPosition();
+	}
+
 	if (totalMass == 0) {
 		return;
 	}
@@ -308,24 +290,9 @@ compare the collisions that we absolutely need to.
 void PhysicsSystem::BroadPhase() {
 	broadphaseCollisions.clear();
 	broadphaseTriggers.clear();
-	dynamicQuadTree.Clear();
 
-	std::vector<GameObject*>::const_iterator first;
-	std::vector<GameObject*>::const_iterator last;
-	gameWorld.GetObjectIterators(first, last);
-	for (auto i = first; i != last; i++) {
-		if (!(*i)->GetPhysicsObject()->IsStatic()) {
-			Vector3 halfSizes;
-			if (!(*i)->GetBroadphaseAABB(halfSizes)) {
-				continue;
-			}
-			Vector3 pos = (*i)->GetTransform().GetPosition();
-			dynamicQuadTree.Insert(*i, Vector2(pos.x, pos.z), Vector2(halfSizes.x, halfSizes.z));
-		}
-	}
-
-	dynamicQuadTree.OperateOnContents(
-		[&](std::list<QuadTreeEntry<GameObject*>>& data, const Vector2& subsetPos, const Vector2& subsetSize) {
+	gameWorld.OperateOnDynamicTree(
+		[&](std::list<QuadTreeEntry>& data, const Vector2& subsetPos, const Vector2& subsetSize) {
 			CollisionDetection::CollisionInfo collisionInfo{};
 			for (auto i = data.begin(); i != data.end(); i++) {
 				for (auto j = std::next(i); j != data.end(); j++) {
@@ -340,8 +307,8 @@ void PhysicsSystem::BroadPhase() {
 					}
 				}
 			}
-			staticQuadTree.OperateOnContents(
-				[&](std::list<QuadTreeEntry<GameObject*>>& staticData, const Vector2& staticPos, const Vector2& staticSize) {
+			gameWorld.OperateOnStaticTree(
+				[&](std::list<QuadTreeEntry>& staticData, const Vector2& staticPos, const Vector2& staticSize) {
 					CollisionDetection::CollisionInfo collisionInfo{};
 					for (auto i = data.begin(); i != data.end(); i++) {
 						for (auto j = staticData.begin(); j != staticData.end(); j++) {
@@ -356,13 +323,10 @@ void PhysicsSystem::BroadPhase() {
 							}
 						}
 					}
-				}, subsetPos, subsetSize
+				}, &subsetPos, &subsetSize
 			);
 		}
 	);
-
-	//dynamicQuadTree.DebugDraw();
-	//staticQuadTree.DebugDraw();
 }
 
 /*
@@ -374,7 +338,7 @@ void PhysicsSystem::NarrowPhase() {
 	for (auto i = broadphaseCollisions.begin(); i != broadphaseCollisions.end(); i++) {
 		auto info = *i;
 		if (CollisionDetection::ObjectIntersection(info.a, info.b, info)) {
-			auto& exists = allCollisions.find(info);
+			auto exists = allCollisions.find(info);
 			if (exists != allCollisions.end()) {
 				auto& eInfo = const_cast<CollisionDetection::CollisionInfo&>(*exists);
 				ImpulseResolveCollision(*eInfo.a, *eInfo.b, eInfo.point);
@@ -390,7 +354,7 @@ void PhysicsSystem::NarrowPhase() {
 	for (auto i = broadphaseTriggers.begin(); i != broadphaseTriggers.end(); i++) {
 		auto info = *i;
 		if (CollisionDetection::ObjectIntersection(info.a, info.b, info)) {
-			auto& exists = allTriggers.find(info);
+			auto exists = allTriggers.find(info);
 			if (exists != allTriggers.end()) {
 				const_cast<CollisionDetection::CollisionInfo&>(*exists).framesLeft = numCollisionFrames;
 			} else {
@@ -421,6 +385,7 @@ void PhysicsSystem::IntegrateAccel(float dt) {
 		if (object == nullptr) {
 			continue;
 		}
+
 		float inverseMass = object->GetInverseMass();
 
 		Vector3 linearVel = object->GetLinearVelocity();
@@ -461,7 +426,7 @@ void PhysicsSystem::IntegrateVelocity(float dt) {
 
 	for (auto i = first; i != last; i++) {
 		PhysicsObject* object = (*i)->GetPhysicsObject();
-		if (object == nullptr) {
+		if (object == nullptr || object->IsStatic()) {
 			continue;
 		}
 		Transform& transform = (*i)->GetTransform();
@@ -496,7 +461,9 @@ ones in the next 'game' frame.
 void PhysicsSystem::ClearForces() {
 	gameWorld.OperateOnContents(
 		[](GameObject* o) {
-			o->GetPhysicsObject()->ClearForces();
+			if (o->GetPhysicsObject()) {
+				o->GetPhysicsObject()->ClearForces();
+			}
 		}
 	);
 }

@@ -9,14 +9,19 @@
 namespace NCL {
 	namespace CSC8503 {
 		class Bullet;
-		class Constraint;
+		class OrientationConstraint;
+		class PositionConstraint;
 
 		class PlayerObject : public GameObject {
 		public:
-			PlayerObject(GameWorld& gameWorld, int id, Bullet& bulletPrefab);
+			PlayerObject(GameWorld& gameWorld, int id, int& scoreCounter);
 			~PlayerObject();
 
 			virtual void Update(float dt) override;
+
+			void AddPoints(int points);
+
+			void CollisionWith(GameObject* other);
 		protected:
 			int id;
 			BehaviourParallel behaviourRoot;
@@ -27,14 +32,24 @@ namespace NCL {
 
 			void FireLasers();
 
-			Bullet& bulletPrefab;
+			int& scoreCounter;
+
+			std::set<int> collidedWith;
 
 			GameObject* groundTrigger;
+			GameObject* tounge;
 
-			Constraint* groundOrientationConstraint;
+			GameObject* grappledObject = nullptr;
+
+			OrientationConstraint* groundOrientationConstraint;
+			PositionConstraint* grappleConstraint = nullptr;
 
 			int groundTriggerOverlaps = 0;
 			bool isGrounded = false;
+
+			float toungeMaxDistance = 10.0f;
+			const Vector3 toungePos = Vector3(0.0f, 0.8f, -1.0f);
+			Vector3 toungeContactPoint = Vector3(0);
 
 			const Vector3 eyePosL = Vector3(-0.1f, 0.9f, -1.0f);
 			const Vector3 eyePosR = Vector3( 0.1f, 0.9f, -1.0f);
@@ -43,6 +58,9 @@ namespace NCL {
 			float laserFireRate = 0.05f;
 			float laserDelay = 0.0f;
 			float laserLifespan = 1.0f;
+
+			float lastGoosed = 0.0f;
+			const float gooseDelay = 2.0f;
 		};
 	}
 }

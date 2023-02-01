@@ -10,6 +10,10 @@ using namespace CSC8503;
 Bullet::Bullet(GameWorld& gameWorld) : GameObject(gameWorld) {
 }
 
+Bullet::Bullet(GameWorld& gameWorld, Bullet& other) : GameObject(gameWorld, other) {
+	lifespan = other.lifespan;
+}
+
 Bullet::~Bullet() {
 }
 

@@ -2,30 +2,28 @@
 
 #include "CollisionDetection.h"
 #include "Debug.h"
+#include "Ray.h"
 #include "Vector2.h"
 #include "Vector3.h"
 using namespace NCL;
 using namespace CSC8503;
+using namespace Maths;
 
-template<class T>
-QuadTreeNode<T>::QuadTreeNode(NodeStack<T>& nodeStack) : nodeStack(nodeStack), isSplit(false) {
+QuadTreeNode::QuadTreeNode(NodeStack& nodeStack) : nodeStack(nodeStack), isSplit(false) {
 }
 
-template<class T>
-QuadTreeNode<T>::~QuadTreeNode() {
+QuadTreeNode::~QuadTreeNode() {
 	PushToStack();
 }
 
-template<class T>
-void QuadTreeNode<T>::Init(Vector2 pos, Vector2 size) {
+void QuadTreeNode::Init(Vector2 pos, Vector2 size) {
 	isSplit = false;
 	this->position = pos;
 	this->size = size;
 	contents.clear();
 }
 
-template<class T>
-void QuadTreeNode<T>::Insert(T& object, const Vector2& objectPos, const Vector2& objectSize, int depthLeft, int maxSize) {
+void QuadTreeNode::Insert(GameObject* object, const Vector2& objectPos, const Vector2& objectSize, int depthLeft, int maxSize) {
 	if (!CollisionDetection::AASquareTest(objectPos, position, objectSize, size)) {
 		return;
 	}
@@ -47,8 +45,7 @@ void QuadTreeNode<T>::Insert(T& object, const Vector2& objectPos, const Vector2&
 	}
 }
 
-template<class T>
-void QuadTreeNode<T>::OperateOnContents(QuadTreeFunc& func) {
+void QuadTreeNode::OperateOnContents(QuadTreeFunc& func) {
 	if (isSplit) {
 		for (int i = 0; i < 4; i++) {
 			children[i]->OperateOnContents(func);
@@ -58,8 +55,7 @@ void QuadTreeNode<T>::OperateOnContents(QuadTreeFunc& func) {
 	}
 }
 
-template<class T>
-void QuadTreeNode<T>::OperateOnContents(QuadTreeFunc& func, const Vector2& subsetPos, const Vector2& subsetSize) {
+void QuadTreeNode::OperateOnContents(QuadTreeFunc& func, const Vector2& subsetPos, const Vector2& subsetSize) {
 	if (!CollisionDetection::AASquareTest(subsetPos, position, subsetSize, size)) {
 		return;
 	}
@@ -72,8 +68,20 @@ void QuadTreeNode<T>::OperateOnContents(QuadTreeFunc& func, const Vector2& subse
 	}
 }
 
-template<class T>
-void QuadTreeNode<T>::Split() {
+void QuadTreeNode::OperateOnContents(QuadTreeFunc& func, const Ray& ray) {
+	if (!CollisionDetection::AASquareRayTest(position, size, Vector2(ray.GetPosition().x, ray.GetPosition().z), Vector2(ray.GetDirection().x, ray.GetDirection().z))) {
+		return;
+	}
+	if (isSplit) {
+		for (int i = 0; i < 4; i++) {
+			children[i]->OperateOnContents(func, ray);
+		}
+	} else if (!contents.empty()) {
+		func(contents, position, size);
+	}
+}
+
+void QuadTreeNode::Split() {
 	Vector2 halfSize = size * 0.5f;
 	static const Vector2 offsets[] = { Vector2(-1, 1), Vector2(1, 1), Vector2(-1, -1), Vector2(1, -1) };
 	for (int i = 0; i < 4; i++) {
@@ -83,8 +91,7 @@ void QuadTreeNode<T>::Split() {
 	isSplit = true;
 }
 
-template<class T>
-void QuadTreeNode<T>::Clear() {
+void QuadTreeNode::Clear() {
 	if (isSplit) {
 		for (int i = 0; i < 4; i++) {
 			children[i]->PushToStack();
@@ -95,8 +102,7 @@ void QuadTreeNode<T>::Clear() {
 	}
 }
 
-template<class T>
-void QuadTreeNode<T>::PushToStack() {
+void QuadTreeNode::PushToStack() {
 	if (isSplit) {
 		for (int i = 0; i < 4; i++) {
 			children[i]->PushToStack();
@@ -105,8 +111,7 @@ void QuadTreeNode<T>::PushToStack() {
 	nodeStack.Push(this);
 }
 
-template<class T>
-void QuadTreeNode<T>::DebugDraw() {
+void QuadTreeNode::DebugDraw() {
 	if (isSplit) {
 		for (int i = 0; i < 4; i++) {
 			children[i]->DebugDraw();
@@ -116,57 +121,52 @@ void QuadTreeNode<T>::DebugDraw() {
 	}
 }
 
-template<class T>
-NodeStack<T>::NodeStack(int maxNodes) : nodes(maxNodes, *this) {
+NodeStack::NodeStack(int maxNodes) : nodes(maxNodes, *this) {
 	for (auto& node : nodes) {
 		Push(&node);
 	}
 }
 
-template<class T>
-void NodeStack<T>::Push(QuadTreeNode<T>* node) {
+void NodeStack::Push(QuadTreeNode* node) {
 	stack.push(node);
 }
 
-template<class T>
-QuadTreeNode<T>* NodeStack<T>::Pop() {
+QuadTreeNode* NodeStack::Pop() {
 	if (stack.empty()) {
 		return nullptr;
 	} else {
-		QuadTreeNode<T>* top = stack.top();
+		QuadTreeNode* top = stack.top();
 		stack.pop();
 		return top;
 	}
 }
 
-template<class T>
-QuadTree<T>::QuadTree(Vector2 size, int maxDepth, int maxSize) : nodeStack(std::pow(4, maxDepth)), root(nodeStack) {
+QuadTree::QuadTree(Vector2 size, int maxDepth, int maxSize) : nodeStack(std::pow(4, maxDepth)), root(nodeStack) {
 	root.Init(Vector2(), size);
 	this->maxDepth = maxDepth;
-	this->maxSize  = maxSize;
+	this->maxSize = maxSize;
 }
 
-template<class T>
-void QuadTree<T>::Insert(T object, const Vector2& pos, const Vector2& size) {
+void QuadTree::Insert(GameObject* object, const Vector2& pos, const Vector2& size) {
 	root.Insert(object, pos, size, maxDepth, maxSize);
 }
 
-template<class T>
-void QuadTree<T>::OperateOnContents(typename QuadTreeNode<T>::QuadTreeFunc func) {
+void QuadTree::OperateOnContents(typename QuadTreeNode::QuadTreeFunc func) {
 	root.OperateOnContents(func);
 }
 
-template<class T>
-void QuadTree<T>::OperateOnContents(typename QuadTreeNode<T>::QuadTreeFunc func, const Vector2& subsetPos, const Vector2& subsetSize) {
+void QuadTree::OperateOnContents(typename QuadTreeNode::QuadTreeFunc func, const Vector2& subsetPos, const Vector2& subsetSize) {
 	root.OperateOnContents(func, subsetPos, subsetSize);
 }
 
-template<class T>
-void QuadTree<T>::Clear() {
+void QuadTree::OperateOnContents(typename QuadTreeNode::QuadTreeFunc func, const Ray& ray) {
+	root.OperateOnContents(func, ray);
+}
+
+void QuadTree::Clear() {
 	root.Clear();
 }
 
-template<class T>
-void QuadTree<T>::DebugDraw() {
+void QuadTree::DebugDraw() {
 	root.DebugDraw();
 }

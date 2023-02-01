@@ -289,11 +289,51 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
 	return false;
 }
 
-bool NCL::CollisionDetection::AASquareTest(const Vector2& posA, const Vector2& posB, const Vector2& halfSizeA, const Vector2& halfSizeB) {
+bool CollisionDetection::AASquareTest(const Vector2& posA, const Vector2& posB, const Vector2& halfSizeA, const Vector2& halfSizeB) {
 	Vector2 delta = posB - posA;
 	Vector2 totalSize = halfSizeA + halfSizeB;
 
 	return (std::abs(delta.x) < totalSize.x && std::abs(delta.y) < totalSize.y);
+}
+
+bool CollisionDetection::AASquareRayTest(const Vector2& squarePos, const Vector2& squareHalfSize, const Vector2& rayPos, const Vector2& rayDir) {
+	Vector2 squareMax = squarePos + squareHalfSize;
+	Vector2 squareMin = squarePos - squareHalfSize;
+
+	Vector2 rayMin = rayPos;
+	Vector2 rayMax = rayMin + rayDir * 1000.0f;
+
+	float minX = std::max(squareMin.x, std::min(rayMin.x, rayMax.x));
+	float maxX = std::min(squareMax.x, std::max(rayMin.x, rayMax.x));
+
+	if (minX > maxX) {
+		return false;
+	}
+
+	float minY = rayMin.y;
+	float maxY = rayMax.y;
+
+	float dx = rayMax.x - rayMin.x;
+
+	if (std::abs(dx) > 0.0000001f) {
+		float a = (rayMax.y - rayMin.y) / dx;
+		float b = rayMin.y - a * rayMin.x;
+		minY = a * minX + b;
+		maxY = a * maxX + b;
+	}
+
+	if (minY > maxY) {
+		std::swap(minY, maxY);
+	}
+
+	minY = std::max(squareMin.y, minY);
+	maxY = std::min(squareMax.y, maxY);
+
+	if (minY > maxY) {
+		return false;
+	}
+
+	return true;
 }
 
 bool CollisionDetection::AABBTest(const Vector3& posA, const Vector3& posB, const Vector3& halfSizeA, const Vector3& halfSizeB) {

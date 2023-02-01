@@ -8,10 +8,13 @@ using namespace NCL;
 using namespace Maths;
 using namespace CSC8503;
 
-PositionConstraint::PositionConstraint(GameObject* a, GameObject* b, float d) {
+PositionConstraint::PositionConstraint(GameObject* a, GameObject* b, float minD, float maxD, const Vector3& oA, const Vector3& oB) {
 	objectA  = a;
 	objectB  = b;
-	distance = d;
+	minDistance = minD;
+	maxDistance = maxD;
+	offsetA = oA;
+	offsetB = oB;
 
 	currentAction = &PositionConstraint::UpdateDistanced;
 }
@@ -19,7 +22,7 @@ PositionConstraint::PositionConstraint(GameObject* a, GameObject* b, float d) {
 PositionConstraint::PositionConstraint(GameObject* a, GameObject* b, Vector3 o) {
 	objectA        = a;
 	objectB        = b;
-	positionOffset = o;
+	offsetA = o;
 
 	currentAction = &PositionConstraint::UpdateOffset;
 }
@@ -35,9 +38,17 @@ void PositionConstraint::UpdateConstraint(float dt)	{
 }
 
 void PositionConstraint::UpdateDistanced(float dt) {
-	Vector3 relativePos = objectA->GetTransform().GetPosition() - objectB->GetTransform().GetPosition();
+	Vector3 relativePos = (objectA->GetTransform().GetPosition() + offsetA) - (objectB->GetTransform().GetPosition() + offsetB);
 	float currentDistance = relativePos.Length();
-	float offset = distance - currentDistance;
+
+	float offset;
+	if (currentDistance > maxDistance) {
+		offset = maxDistance - currentDistance;
+	} else if (currentDistance < minDistance) {
+		offset = minDistance - currentDistance;
+	} else {
+		return;
+	}
 
 	if (std::abs(offset) > 0.0f) {
 		Vector3 offsetDir = relativePos / currentDistance;
@@ -68,7 +79,7 @@ void PositionConstraint::UpdateDistanced(float dt) {
 
 void PositionConstraint::UpdateOffset(float dt) {
 	Vector3 actualPosition = objectA->GetTransform().GetPosition() - objectB->GetTransform().GetPosition();
-	Vector3 expectedPosition = objectA->GetTransform().GetPosition() + positionOffset;
+	Vector3 expectedPosition = objectA->GetTransform().GetPosition() + offsetA;
 
 	Vector3 positionDelta = expectedPosition - actualPosition;
 

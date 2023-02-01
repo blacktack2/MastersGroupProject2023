@@ -93,7 +93,7 @@ void Camera::UpdateCamera(float dt) {
 		pitch = std::clamp(pitch, -90.0f, 90.0f);
 		yaw += (yaw < 0) ? 360.0f : ((yaw > 360.0f) ? -360.0f : 0.0f);
 
-		followDistance = std::clamp(followDistance + (float)Window::GetMouse()->GetWheelMovement(), 5.0f, 10.0f);
+		followDistance = std::clamp(followDistance - (float)Window::GetMouse()->GetWheelMovement(), 5.0f, 40.0f);
 
 		position = followPos - Vector3(std::cos(-Maths::DegreesToRadians(90.0f + yaw)), Maths::DegreesToRadians(pitch), std::sin(-Maths::DegreesToRadians(90.0f + yaw))) * followDistance;
 	}

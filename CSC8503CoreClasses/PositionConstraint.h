@@ -9,7 +9,7 @@ namespace NCL {
 
 		class PositionConstraint : public Constraint	{
 		public:
-			PositionConstraint(GameObject* a, GameObject* b, float d);
+			PositionConstraint(GameObject* a, GameObject* b, float minD, float maxD, const Vector3& offsetA = Vector3(0), const Vector3& offsetB = Vector3(0));
 			PositionConstraint(GameObject* a, GameObject* b, Vector3 offsetB);
 			~PositionConstraint();
 
@@ -25,8 +25,10 @@ namespace NCL {
 			GameObject* objectA;
 			GameObject* objectB;
 
-			float distance;
-			Vector3 positionOffset;
+			float maxDistance;
+			float minDistance;
+			Vector3 offsetA;
+			Vector3 offsetB;
 		};
 	}
 }

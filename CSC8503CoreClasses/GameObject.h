@@ -18,8 +18,7 @@ namespace NCL::CSC8503 {
 
 		GameObject(GameWorld& gameWorld, std::string name = "");
 
-		GameObject(GameObject& other);
-		GameObject& operator=(GameObject other);
+		GameObject(GameWorld& gameWorld, GameObject& other);
 
 		~GameObject();
 
@@ -35,6 +34,10 @@ namespace NCL::CSC8503 {
 
 		bool IsActive() const {
 			return isActive;
+		}
+
+		void SetActive(bool active = true) {
+			isActive = active;
 		}
 
 		Transform& GetTransform() {
@@ -74,7 +77,6 @@ namespace NCL::CSC8503 {
 		}
 
 		virtual void OnTriggerBegin(GameObject* otherObject) {
-			std::cout << name << " Triggered with " << otherObject->name << "\n";
 			if (OnTriggerBeginCallback) OnTriggerBeginCallback(otherObject);
 		}
 
@@ -110,10 +112,10 @@ namespace NCL::CSC8503 {
 
 		Transform transform;
 
-		CollisionVolume* boundingVolume;
-		PhysicsObject*   physicsObject;
-		RenderObject*    renderObject;
-		NetworkObject*   networkObject;
+		CollisionVolume* boundingVolume = nullptr;
+		PhysicsObject*   physicsObject = nullptr;
+		RenderObject*    renderObject = nullptr;
+		NetworkObject*   networkObject = nullptr;
 
 		bool isActive;
 		int  worldID;

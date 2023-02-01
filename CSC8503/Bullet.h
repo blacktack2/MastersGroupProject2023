@@ -6,6 +6,7 @@ namespace NCL {
 		class Bullet : public GameObject {
 		public:
 			Bullet(GameWorld& gameWorld);
+			Bullet(GameWorld& gameWorld, Bullet& other);
 			~Bullet();
 
 			virtual void Update(float dt) override;

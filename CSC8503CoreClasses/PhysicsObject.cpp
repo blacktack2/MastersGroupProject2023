@@ -71,7 +71,7 @@ void PhysicsObject::ClearForces() {
 	torque				= Vector3();
 }
 
-void NCL::CSC8503::PhysicsObject::InitAxisAlignedInertia() {
+void PhysicsObject::InitAxisAlignedInertia() {
 	inverseInertia = Vector3(0.0f);
 }
 
@@ -117,6 +117,10 @@ void PhysicsObject::UpdateInertiaTensor() {
 	Matrix3 orientation		= Matrix3(q);
 
 	inverseInteriaTensor = orientation * Matrix3::Scale(inverseInertia) * invOrientation;
-	Vector3 inertia = Vector3(1.0f / inverseInertia.x, 1.0f / inverseInertia.y, 1.0f / inverseInertia.z);
+	Vector3 inertia = Vector3(
+		inverseInertia.x == 0 ? 0 : 1.0f / inverseInertia.x,
+		inverseInertia.y == 0 ? 0 : 1.0f / inverseInertia.y,
+		inverseInertia.z == 0 ? 0 : 1.0f / inverseInertia.z
+	);
 	inertiaTensor = invOrientation * Matrix3::Scale(inertia) * orientation;
 }

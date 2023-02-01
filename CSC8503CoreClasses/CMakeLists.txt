@@ -90,6 +90,7 @@ set(Physics
 source_group("Physics" FILES ${Physics})
 
 set(Header_Files
+	"AssetLibrary.h"
     "Debug.h"
     "GameObject.h"
     "GameWorld.h"
@@ -99,6 +100,7 @@ set(Header_Files
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
+	"AssetLibrary.cpp"
     "Debug.cpp"
     "GameObject.cpp"
     "GameWorld.cpp"

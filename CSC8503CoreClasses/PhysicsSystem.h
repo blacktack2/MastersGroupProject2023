@@ -12,7 +12,6 @@ namespace NCL {
 			void Clear();
 
 			void Update(float dt);
-			void UpdateStaticTree();
 
 			void SetGlobalDamping(float d) {
 				globalDamping = d;
@@ -41,9 +40,6 @@ namespace NCL {
 			Vector3 gravity;
 			float	dTOffset;
 			float	globalDamping;
-
-			QuadTree<GameObject*> dynamicQuadTree;
-			QuadTree<GameObject*> staticQuadTree;
 			
 			std::set<CollisionDetection::CollisionInfo> allTriggers;
 			std::set<CollisionDetection::CollisionInfo> broadphaseTriggers;

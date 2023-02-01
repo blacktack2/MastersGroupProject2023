@@ -17,7 +17,7 @@ GameObject::GameObject(GameWorld& gameWorld, string objectName) : gameWorld(game
 	networkObject	= nullptr;
 }
 
-GameObject::GameObject(GameObject& other) : gameWorld(other.gameWorld) {
+GameObject::GameObject(GameWorld& gameWorld, GameObject& other) : gameWorld(gameWorld) {
 	transform = other.transform;
 	boundingVolume = other.boundingVolume == nullptr ? nullptr : CollisionVolume::Clone(*other.boundingVolume);
 	physicsObject  = other.physicsObject  == nullptr ? nullptr : new PhysicsObject(*other.physicsObject, &transform);
@@ -29,23 +29,6 @@ GameObject::GameObject(GameObject& other) : gameWorld(other.gameWorld) {
 	name = other.name + "(Copy)";
 
 	broadphaseAABB = other.broadphaseAABB;
-}
-
-GameObject& GameObject::operator=(GameObject other) {
-	gameWorld = other.gameWorld;
-
-	transform = other.transform;
-	boundingVolume = other.boundingVolume == nullptr ? nullptr : CollisionVolume::Clone(*other.boundingVolume);
-	physicsObject  = other.physicsObject  == nullptr ? nullptr : new PhysicsObject(*other.physicsObject   );
-	renderObject   = other.renderObject   == nullptr ? nullptr : new RenderObject(*other.renderObject     );
-	networkObject  = other.networkObject  == nullptr ? nullptr : new NetworkObject(*other.networkObject   );
-
-	isActive = other.isActive;
-	worldID = -1;
-	name = other.name + "(Copy)";
-
-	broadphaseAABB = other.broadphaseAABB;
-	return *this;
 }
 
 GameObject::~GameObject()	{
