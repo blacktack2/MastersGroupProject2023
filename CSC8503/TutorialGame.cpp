@@ -17,7 +17,7 @@ using namespace NCL;
 using namespace CSC8503;
 
 TutorialGame::TutorialGame()	{
-	world		= new GameWorld();
+	world = &GameWorld::instance();
 #ifdef USEVULKAN
 	renderer	= new GameTechVulkanRenderer(*world);
 #else 
@@ -33,6 +33,8 @@ TutorialGame::TutorialGame()	{
 }
 
 TutorialGame::~TutorialGame() {
+	//world->ClearAndErase();
+
 	delete cubeMesh;
 	delete sphereMesh;
 	delete charMesh;
@@ -44,7 +46,6 @@ TutorialGame::~TutorialGame() {
 
 	delete physics;
 	delete renderer;
-	delete world;
 
 	delete[] mazes;
 
@@ -95,7 +96,7 @@ void TutorialGame::UpdateGame(float dt) {
 		Vector3 crossPos = CollisionDetection::Unproject(Vector3(screenSize * 0.5f, 0.99f), *world->GetMainCamera());
 		Debug::DrawAxisLines(Matrix4::Translation(crossPos), 1.0f);
 		if (lockedObject != nullptr) {
-			Vector3 objPos = lockedObject->GetTransform().GetPosition();
+			Vector3 objPos = lockedObject->GetTransform().GetGlobalPosition();
 			Vector3 camPos = objPos + lockedOffset;
 
 			Matrix4 temp = Matrix4::BuildViewMatrix(camPos, objPos, Vector3(0, 1, 0));
@@ -115,9 +116,9 @@ void TutorialGame::UpdateGame(float dt) {
 			Vector3 rayPos;
 			Vector3 rayDir;
 
-			rayDir = selectionObject->GetTransform().GetOrientation() * Vector3(0, 0, -1);
+			rayDir = selectionObject->GetTransform().GetGlobalOrientation() * Vector3(0, 0, -1);
 
-			rayPos = selectionObject->GetTransform().GetPosition();
+			rayPos = selectionObject->GetTransform().GetGlobalPosition();
 
 			Ray r = Ray(rayPos, rayDir);
 
@@ -653,7 +654,7 @@ bool TutorialGame::SelectObject() {
 
 			Debug::DrawLine(ray.GetPosition(), closestCollision.collidedAt, Vector4(0, 0, 1, 1), 5.0f);
 
-			Ray objectRay = Ray(selectionObject->GetTransform().GetPosition(), selectionObject->GetTransform().GetOrientation() * Vector3(0, 0, 1), selectionObject->GetBoundingVolume()->layer);
+			Ray objectRay = Ray(selectionObject->GetTransform().GetGlobalPosition(), selectionObject->GetTransform().GetGlobalOrientation() * Vector3(0, 0, 1), selectionObject->GetBoundingVolume()->layer);
 			return true;
 		}
 		else {

@@ -151,7 +151,7 @@ void PlayerObject::CollisionWith(GameObject* other) {
 		}
 	}
 }
-/*
+
 void PlayerObject::HandleGroundInput(float dt) {
 	const float moveForce = 40;
 	const float rotateTorque = 4;
@@ -176,7 +176,7 @@ void PlayerObject::HandleGroundInput(float dt) {
 		upwardThrust += jumpForce;
 		rotation += Vector3((rand() * (1.0f / (float)RAND_MAX)), 0, (rand() * (1.0f / (float)RAND_MAX))) * jumpTorque;
 	}
-	physicsObject->AddForce(transform.GetOrientation() * Vector3(0, 0, forwardThrust) + Vector3(0, upwardThrust, 0));
+	physicsObject->AddForce(transform.GetGlobalOrientation() * Vector3(0, 0, forwardThrust) + Vector3(0, upwardThrust, 0));
 	physicsObject->AddTorque(rotation);
 }
 
@@ -188,8 +188,8 @@ void PlayerObject::HandleGoatActions(float dt) {
 	}
 
 	if (grappledObject) {
-		Vector3 toungePosition = transform.GetPosition() + transform.GetOrientation() * toungePos;
-		Vector3 contactPosition = grappledObject->GetTransform().GetPosition() + toungeContactPoint;
+		Vector3 toungePosition = transform.GetGlobalPosition() + transform.GetGlobalOrientation() * toungePos;
+		Vector3 contactPosition = grappledObject->GetTransform().GetGlobalPosition() + toungeContactPoint;
 		Vector3 delta = contactPosition - toungePosition;
 		Vector3 deltaNorm = delta.Normalised();
 		float distance = delta.Length();
@@ -205,10 +205,10 @@ void PlayerObject::HandleGoatActions(float dt) {
 	} else {
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::E)) { // Grapple a new object
 			RayCollision collision;
-			Ray r = Ray(transform.GetPosition() + toungePos, transform.GetOrientation() * Vector3(0, 0, -1), CollisionLayer::Player);
+			Ray r = Ray(transform.GetGlobalPosition() + toungePos, transform.GetGlobalOrientation() * Vector3(0, 0, -1), CollisionLayer::Player);
 			if (gameWorld.Raycast(r, collision, true, this) && collision.rayDistance <= toungeMaxDistance) {
 				grappledObject = (GameObject*)collision.node;
-				toungeContactPoint = collision.collidedAt - grappledObject->GetTransform().GetPosition();
+				toungeContactPoint = collision.collidedAt - grappledObject->GetTransform().GetGlobalPosition();
 				grappleConstraint = new PositionConstraint(this, grappledObject, 0, toungeMaxDistance, Vector3(0), toungeContactPoint);
 				gameWorld.AddConstraint(grappleConstraint);
 				tounge->SetActive(true);
@@ -223,8 +223,8 @@ void PlayerObject::HandleGoatActions(float dt) {
 void PlayerObject::Shoot() {
 	Bullet* laserA = new Bullet(gameWorld, *(Bullet*)AssetLibrary::GetPrefab("bullet"));
 	laserA->SetLifespan(laserLifespan);
-	laserA->GetTransform().SetPosition(transform.GetOrientation() * eyePosL + transform.GetPosition());
-	laserA->GetPhysicsObject()->AddForce(transform.GetOrientation() * laserForce);
+	laserA->GetTransform().SetPosition(transform.GetGlobalOrientation() * eyePosL + transform.GetGlobalPosition());
+	laserA->GetPhysicsObject()->AddForce(transform.GetGlobalOrientation() * laserForce);
 	gameWorld.AddGameObject(laserA);
 	laserA->OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
@@ -232,8 +232,8 @@ void PlayerObject::Shoot() {
 
 	Bullet* laserB = new Bullet(gameWorld, *(Bullet*)AssetLibrary::GetPrefab("bullet"));
 	laserB->SetLifespan(laserLifespan);
-	laserB->GetTransform().SetPosition(transform.GetOrientation() * eyePosR + transform.GetPosition());
-	laserB->GetPhysicsObject()->AddForce(transform.GetOrientation() * laserForce);
+	laserB->GetTransform().SetPosition(transform.GetGlobalOrientation() * eyePosR + transform.GetGlobalPosition());
+	laserB->GetPhysicsObject()->AddForce(transform.GetGlobalOrientation() * laserForce);
 	gameWorld.AddGameObject(laserB);
 	laserB->OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);

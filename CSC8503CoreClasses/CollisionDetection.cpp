@@ -127,14 +127,14 @@ bool CollisionDetection::RayBoxIntersection(const Ray&r, const Vector3& boxPos, 
 }
 
 bool CollisionDetection::RayAABBIntersection(const Ray&r, const Transform& worldTransform, const AABBVolume& volume, RayCollision& collision) {
-	Vector3 boxPos = worldTransform.GetPosition();
+	Vector3 boxPos = worldTransform.GetGlobalPosition();
 	Vector3 boxSize = volume.GetHalfDimensions();
 	return RayBoxIntersection(r, boxPos, boxSize, collision);
 }
 
 bool CollisionDetection::RayOBBIntersection(const Ray&r, const Transform& worldTransform, const OBBVolume& volume, RayCollision& collision) {
-	Quaternion orientation = worldTransform.GetOrientation();
-	Vector3 position = worldTransform.GetPosition();
+	Quaternion orientation = worldTransform.GetGlobalOrientation();
+	Vector3 position = worldTransform.GetGlobalPosition();
 
 	Matrix3 transform = Matrix3(orientation);
 	Matrix3 invTransform = Matrix3(orientation.Conjugate());
@@ -151,7 +151,7 @@ bool CollisionDetection::RayOBBIntersection(const Ray&r, const Transform& worldT
 }
 
 bool CollisionDetection::RaySphereIntersection(const Ray&r, const Transform& worldTransform, const SphereVolume& volume, RayCollision& collision) {
-	Vector3 spherePos = worldTransform.GetPosition();
+	Vector3 spherePos = worldTransform.GetGlobalPosition();
 	float sphereRadius = volume.GetRadius();
 
 	Vector3 dir = spherePos - r.GetPosition();
@@ -179,8 +179,8 @@ bool CollisionDetection::RaySphereIntersection(const Ray&r, const Transform& wor
 }
 
 bool CollisionDetection::RayCapsuleIntersection(const Ray& r, const Transform& worldTransform, const CapsuleVolume& volume, RayCollision& collision) {
-	Vector3 position = worldTransform.GetPosition();
-	Quaternion orientation = worldTransform.GetOrientation();
+	Vector3 position = worldTransform.GetGlobalPosition();
+	Quaternion orientation = worldTransform.GetGlobalOrientation();
 	float radius = volume.GetRadius() * 0.5f;
 	float halfHeight = volume.GetHalfHeight();
 
@@ -345,8 +345,8 @@ bool CollisionDetection::AABBTest(const Vector3& posA, const Vector3& posB, cons
 
 bool CollisionDetection::AABBIntersection(const AABBVolume& volumeA, const Transform& worldTransformA,
 	const AABBVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
-	Vector3 boxAPos = worldTransformA.GetPosition();
-	Vector3 boxBPos = worldTransformB.GetPosition();
+	Vector3 boxAPos = worldTransformA.GetGlobalPosition();
+	Vector3 boxBPos = worldTransformB.GetGlobalPosition();
 
 	Vector3 boxASize = volumeA.GetHalfDimensions();
 	Vector3 boxBSize = volumeB.GetHalfDimensions();
@@ -392,15 +392,15 @@ bool CollisionDetection::AABBIntersection(const AABBVolume& volumeA, const Trans
 bool CollisionDetection::OBBIntersection(const OBBVolume& volumeA, const Transform& worldTransformA,
 	const OBBVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
 
-	Vector3 posA = worldTransformA.GetPosition();
+	Vector3 posA = worldTransformA.GetGlobalPosition();
 	Vector3 halfSizeA = volumeA.GetHalfDimensions();
-	Quaternion orientationA = worldTransformA.GetOrientation();
+	Quaternion orientationA = worldTransformA.GetGlobalOrientation();
 
 	Matrix3 orientationMatA = Matrix3(orientationA);
 
-	Vector3 posB = worldTransformB.GetPosition();
+	Vector3 posB = worldTransformB.GetGlobalPosition();
 	Vector3 halfSizeB = volumeB.GetHalfDimensions();
-	Quaternion orientationB = worldTransformB.GetOrientation();
+	Quaternion orientationB = worldTransformB.GetGlobalOrientation();
 
 	Matrix3 orientationMatB = Matrix3(orientationB);
 
@@ -437,14 +437,14 @@ bool CollisionDetection::OBBIntersection(const OBBVolume& volumeA, const Transfo
 bool CollisionDetection::SphereIntersection(const SphereVolume& volumeA, const Transform& worldTransformA,
 	const SphereVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
 	float radii = volumeA.GetRadius() + volumeB.GetRadius();
-	Vector3 delta = worldTransformB.GetPosition() - worldTransformA.GetPosition();
+	Vector3 delta = worldTransformB.GetGlobalPosition() - worldTransformA.GetGlobalPosition();
 
 	float deltaLength = delta.Length();
 
 	if (deltaLength < radii) {
 		float penetration = radii - deltaLength;
 		Vector3 normal = delta.Normalised();
-		Vector3 collisionPoint = worldTransformA.GetPosition() + (normal * (volumeA.GetRadius() - (penetration * 0.5f)));
+		Vector3 collisionPoint = worldTransformA.GetGlobalPosition() + (normal * (volumeA.GetRadius() - (penetration * 0.5f)));
 
 		collisionInfo.AddContactPoint(collisionPoint, normal, penetration);
 		return true;
@@ -454,10 +454,10 @@ bool CollisionDetection::SphereIntersection(const SphereVolume& volumeA, const T
 
 bool NCL::CollisionDetection::CapsuleIntersection(const CapsuleVolume& volumeA, const Transform& worldTransformA,
 	const CapsuleVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
-	Vector3 centerA = worldTransformA.GetPosition();
-	Vector3 centerB = worldTransformB.GetPosition();
-	Quaternion orientationA = worldTransformA.GetOrientation();
-	Quaternion orientationB = worldTransformB.GetOrientation();
+	Vector3 centerA = worldTransformA.GetGlobalPosition();
+	Vector3 centerB = worldTransformB.GetGlobalPosition();
+	Quaternion orientationA = worldTransformA.GetGlobalOrientation();
+	Quaternion orientationB = worldTransformB.GetGlobalOrientation();
 	float radiusA = volumeA.GetRadius() * 0.5f;
 	float radiusB = volumeB.GetRadius() * 0.5f;
 	float halfHeightA = volumeA.GetHalfHeight();
@@ -498,12 +498,12 @@ bool NCL::CollisionDetection::SeparatingPlane(const Vector3& delta, const Vector
 
 bool NCL::CollisionDetection::AABBOBBIntersection(const AABBVolume& volumeA, const Transform& worldTransformA,
 	const OBBVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
-	Vector3 posA = worldTransformA.GetPosition();
+	Vector3 posA = worldTransformA.GetGlobalPosition();
 	Vector3 halfSizeA = volumeA.GetHalfDimensions();
 
-	Vector3 posB = worldTransformB.GetPosition();
+	Vector3 posB = worldTransformB.GetGlobalPosition();
 	Vector3 halfSizeB = volumeB.GetHalfDimensions();
-	Quaternion orientationB = worldTransformB.GetOrientation();
+	Quaternion orientationB = worldTransformB.GetGlobalOrientation();
 
 	Matrix3 orientationMatB = Matrix3(orientationB);
 
@@ -540,7 +540,7 @@ bool CollisionDetection::AABBSphereIntersection(const AABBVolume& volumeA, const
 	const SphereVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
 	Vector3 boxSize = volumeA.GetHalfDimensions();
 
-	Vector3 delta = worldTransformB.GetPosition() - worldTransformA.GetPosition();
+	Vector3 delta = worldTransformB.GetGlobalPosition() - worldTransformA.GetGlobalPosition();
 
 	Vector3 closestPointOnBox = Maths::Clamp(delta, -boxSize, boxSize);
 
@@ -551,7 +551,7 @@ bool CollisionDetection::AABBSphereIntersection(const AABBVolume& volumeA, const
 		Vector3 normal = distance == 0 ? delta.Normalised() : localPoint.Normalised();
 		float penetration = volumeB.GetRadius() - distance;
 
-		collisionInfo.AddContactPoint(worldTransformA.GetPosition() + closestPointOnBox, normal, penetration);
+		collisionInfo.AddContactPoint(worldTransformA.GetGlobalPosition() + closestPointOnBox, normal, penetration);
 		return true;
 	}
 	return false;
@@ -559,11 +559,11 @@ bool CollisionDetection::AABBSphereIntersection(const AABBVolume& volumeA, const
 
 bool NCL::CollisionDetection::AABBCapsuleIntersection(const AABBVolume& volumeA, const Transform& worldTransformA,
 	const CapsuleVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
-	Vector3 boxPos = worldTransformA.GetPosition();
+	Vector3 boxPos = worldTransformA.GetGlobalPosition();
 	Vector3 boxSize = volumeA.GetHalfDimensions();
 
-	Vector3 capsulePos = worldTransformB.GetPosition();
-	Vector3 capsuleDir = worldTransformB.GetOrientation() * Vector3(0, 1, 0);
+	Vector3 capsulePos = worldTransformB.GetGlobalPosition();
+	Vector3 capsuleDir = worldTransformB.GetGlobalOrientation() * Vector3(0, 1, 0);
 	float capsuleRadius = volumeB.GetRadius() * 0.5f;
 	float capsuleHalfHeight = volumeB.GetHalfHeight();
 
@@ -601,10 +601,10 @@ bool NCL::CollisionDetection::AABBCapsuleIntersection(const AABBVolume& volumeA,
 bool  CollisionDetection::OBBSphereIntersection(const OBBVolume& volumeA, const Transform& worldTransformA,
 	const SphereVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
 	Vector3 boxSize = volumeA.GetHalfDimensions();
-	Quaternion orientation = worldTransformA.GetOrientation();
+	Quaternion orientation = worldTransformA.GetGlobalOrientation();
 
-	Vector3 obbPos = worldTransformA.GetPosition();
-	Vector3 spherePos = orientation.Conjugate() * (worldTransformB.GetPosition() - obbPos);
+	Vector3 obbPos = worldTransformA.GetGlobalPosition();
+	Vector3 spherePos = orientation.Conjugate() * (worldTransformB.GetGlobalPosition() - obbPos);
 
 	Vector3 closestPointOnBox = Maths::Clamp(spherePos, -boxSize, boxSize);
 
@@ -624,13 +624,13 @@ bool  CollisionDetection::OBBSphereIntersection(const OBBVolume& volumeA, const 
 
 bool NCL::CollisionDetection::OBBCapsuleIntersection(const OBBVolume& volumeA, const Transform& worldTransformA,
 	const CapsuleVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
-	Vector3 boxPos = worldTransformA.GetPosition();
+	Vector3 boxPos = worldTransformA.GetGlobalPosition();
 	Vector3 boxSize = volumeA.GetHalfDimensions();
-	Quaternion boxOrientation = worldTransformA.GetOrientation();
+	Quaternion boxOrientation = worldTransformA.GetGlobalOrientation();
 	Quaternion boxOrientationInv = boxOrientation.Conjugate();
 
-	Vector3 capsulePos = boxOrientationInv * (worldTransformB.GetPosition() - boxPos);
-	Vector3 capsuleDir = boxOrientationInv * worldTransformB.GetOrientation() * Vector3(0, 1, 0);
+	Vector3 capsulePos = boxOrientationInv * (worldTransformB.GetGlobalPosition() - boxPos);
+	Vector3 capsuleDir = boxOrientationInv * worldTransformB.GetGlobalOrientation() * Vector3(0, 1, 0);
 	float capsuleRadius = volumeB.GetRadius() * 0.5f;
 	float capsuleHalfHeight = volumeB.GetHalfHeight();
 
@@ -665,11 +665,11 @@ bool NCL::CollisionDetection::OBBCapsuleIntersection(const OBBVolume& volumeA, c
 
 bool NCL::CollisionDetection::SphereCapsuleIntersection(const SphereVolume& volumeA, const Transform& worldTransformA,
 	const CapsuleVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
-	Vector3 sphereCenter = worldTransformA.GetPosition();
+	Vector3 sphereCenter = worldTransformA.GetGlobalPosition();
 	float sphereRadius = volumeA.GetRadius();
 
-	Vector3 capsuleCenter = worldTransformB.GetPosition();
-	Quaternion capsuleOrientation = worldTransformB.GetOrientation();
+	Vector3 capsuleCenter = worldTransformB.GetGlobalPosition();
+	Quaternion capsuleOrientation = worldTransformB.GetGlobalOrientation();
 	float capsuleRadius = volumeB.GetRadius() * 0.5f;
 	float capsuleHalfHeight = volumeB.GetHalfHeight();
 	Vector3 capsuleDir = capsuleOrientation * Vector3(0, 1, 0);

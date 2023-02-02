@@ -20,9 +20,14 @@ namespace NCL {
 		typedef std::vector<GameObject*>::const_iterator GameObjectIterator;
 
 		class GameWorld	{
-		public:
+		private:
 			GameWorld();
 			~GameWorld();
+		public:
+			static GameWorld& instance() {
+				static GameWorld INSTANCE;
+				return INSTANCE;
+			}
 
 			void Clear();
 			void ClearAndErase();

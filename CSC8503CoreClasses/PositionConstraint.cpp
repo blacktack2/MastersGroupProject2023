@@ -38,7 +38,7 @@ void PositionConstraint::UpdateConstraint(float dt)	{
 }
 
 void PositionConstraint::UpdateDistanced(float dt) {
-	Vector3 relativePos = (objectA->GetTransform().GetPosition() + offsetA) - (objectB->GetTransform().GetPosition() + offsetB);
+	Vector3 relativePos = (objectA->GetTransform().GetGlobalPosition() + offsetA) - (objectB->GetTransform().GetGlobalPosition() + offsetB);
 	float currentDistance = relativePos.Length();
 
 	float offset;
@@ -78,8 +78,8 @@ void PositionConstraint::UpdateDistanced(float dt) {
 }
 
 void PositionConstraint::UpdateOffset(float dt) {
-	Vector3 actualPosition = objectA->GetTransform().GetPosition() - objectB->GetTransform().GetPosition();
-	Vector3 expectedPosition = objectA->GetTransform().GetPosition() + offsetA;
+	Vector3 actualPosition = objectA->GetTransform().GetGlobalPosition() - objectB->GetTransform().GetGlobalPosition();
+	Vector3 expectedPosition = objectA->GetTransform().GetGlobalPosition() + offsetA;
 
 	Vector3 positionDelta = expectedPosition - actualPosition;
 
