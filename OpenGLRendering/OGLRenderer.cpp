@@ -91,7 +91,7 @@ void OGLRenderer::BindShader(ShaderBase*s) {
 		boundShader = nullptr;
 	}
 	else if (OGLShader* oglShader = dynamic_cast<OGLShader*>(s)) {
-		glUseProgram(oglShader->programID);
+		glUseProgram(oglShader->GetProgramID());
 		boundShader = oglShader;
 	}
 	else {
@@ -170,7 +170,7 @@ void OGLRenderer::BindTextureToShader(const TextureBase*t, const std::string& un
 		return;//Debug message time!
 	}
 	
-	GLuint slot = glGetUniformLocation(boundShader->programID, uniform.c_str());
+	GLuint slot = glGetUniformLocation(boundShader->GetProgramID(), uniform.c_str());
 
 	if (slot < 0) {
 		return;
@@ -341,9 +341,9 @@ bool OGLRenderer::SetVerticalSync(VerticalSyncState s) {
 
 #ifdef OPENGL_DEBUGGING
 static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam) {
-	string sourceName;
-	string typeName;
-	string severityName;
+	std::string sourceName;
+	std::string typeName;
+	std::string severityName;
 
 	switch (source) {
 	case GL_DEBUG_SOURCE_API: sourceName = "Source(OpenGL)"; break;
@@ -369,6 +369,6 @@ static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum
 	case GL_DEBUG_SEVERITY_LOW: severityName = "Priority(Low)"; break;
 	}
 
-	std::cout << "OpenGL Debug Output: " + sourceName + ", " + typeName + ", " + severityName + ", " + string(message) << std::endl;
+	std::cout << "OpenGL Debug Output: " + sourceName + ", " + typeName + ", " + severityName + ", " + std::string(message) << std::endl;
 }
 #endif

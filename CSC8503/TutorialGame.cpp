@@ -13,6 +13,8 @@
 #include "TextureLoader.h"
 #include "TutorialGame.h"
 
+#include <string>
+
 using namespace NCL;
 using namespace CSC8503;
 

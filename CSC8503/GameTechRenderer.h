@@ -6,6 +6,8 @@
 
 #include "GameWorld.h"
 
+#include <string>
+
 namespace NCL {
 	class Maths::Vector3;
 	class Maths::Vector4;
@@ -17,9 +19,9 @@ namespace NCL {
 			GameTechRenderer(GameWorld& world);
 			~GameTechRenderer();
 
-			MeshGeometry*	LoadMesh(const string& name);
-			TextureBase*	LoadTexture(const string& name);
-			ShaderBase*		LoadShader(const string& vertex, const string& fragment);
+			MeshGeometry*	LoadMesh(const std::string& name);
+			TextureBase*	LoadTexture(const std::string& name);
+			ShaderBase*		LoadShader(const std::string& vertex, const std::string& fragment);
 
 			virtual void Update(float dt) override;
 

@@ -7,7 +7,7 @@
 
 using namespace NCL::CSC8503;
 
-GameObject::GameObject(GameWorld& gameWorld, string objectName) : gameWorld(gameWorld) {
+GameObject::GameObject(GameWorld& gameWorld, std::string objectName) : gameWorld(gameWorld) {
 	name			= objectName;
 	worldID			= -1;
 	isActive		= true;

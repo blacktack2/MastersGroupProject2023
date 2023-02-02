@@ -21,7 +21,6 @@ https://research.ncl.ac.uk/game/
 #define OPENGL_DEBUGGING
 #endif
 
-
 #include <string>
 #include <vector>
 
@@ -44,7 +43,6 @@ namespace NCL {
 		class OGLRenderer : public RendererBase
 		{
 		public:
-			friend class OGLRenderer;
 			OGLRenderer(Window& w);
 			~OGLRenderer();
 

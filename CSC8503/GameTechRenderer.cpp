@@ -264,7 +264,7 @@ void GameTechRenderer::RenderCamera() {
 	}
 }
 
-MeshGeometry* GameTechRenderer::LoadMesh(const string& name) {
+MeshGeometry* GameTechRenderer::LoadMesh(const std::string& name) {
 	OGLMesh* mesh = new OGLMesh(name);
 	mesh->SetPrimitiveType(GeometryPrimitive::Triangles);
 	mesh->UploadToGPU();
@@ -360,11 +360,11 @@ void GameTechRenderer::NewRenderText() {
 
 
 
-TextureBase* GameTechRenderer::LoadTexture(const string& name) {
+TextureBase* GameTechRenderer::LoadTexture(const std::string& name) {
 	return TextureLoader::LoadAPITexture(name);
 }
 
-ShaderBase* GameTechRenderer::LoadShader(const string& vertex, const string& fragment) {
+ShaderBase* GameTechRenderer::LoadShader(const std::string& vertex, const std::string& fragment) {
 	return new OGLShader(vertex, fragment);
 }
 
