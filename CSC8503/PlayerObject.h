@@ -1,16 +1,10 @@
 #pragma once
-#include "BehaviourNode.h"
-#include "BehaviourSelector.h"
-#include "BehaviourSequence.h"
-#include "BehaviourParallel.h"
-#include "BehaviourAction.h"
 #include "GameObject.h"
+
 
 namespace NCL {
 	namespace CSC8503 {
 		class Bullet;
-		class OrientationConstraint;
-		class PositionConstraint;
 
 		class PlayerObject : public GameObject {
 		public:
@@ -22,30 +16,42 @@ namespace NCL {
 			void AddPoints(int points);
 
 			void CollisionWith(GameObject* other);
+
+			void AttachedCamera() {
+				hasCamera = true;
+			};
+
 		protected:
 			int id;
-			BehaviourParallel behaviourRoot;
-			BehaviourSelector groundAirSelector;
-		private:
-			void HandleGroundInput(float dt);
-			void HandleGoatActions(float dt);
 
-			void FireLasers();
+		private:
+			void MoveTo(Vector3 position);
+			void Move();
+			void GetInput(Vector3& dir);
+
+			void RotateYaw(float yaw);
+			void RotateToCamera();
+
+			void CheckGround();
+			void Shoot();
+
+			//jump related 
+			bool onGround = false;
+			float jumpTimer = 0.0f;
+			const float jumpCooldown = 0.1f;
+			float jumpSpeed = 10.0f;
+
+			//movement related
+			float moveSpeed = 0.4f;
+			Vector3 lastDir = Vector3(0,0,0);
+
+			//camera related
+			bool hasCamera = false;
+			bool isFreeLook = false;
 
 			int& scoreCounter;
 
 			std::set<int> collidedWith;
-
-			GameObject* groundTrigger;
-			GameObject* tounge;
-
-			GameObject* grappledObject = nullptr;
-
-			OrientationConstraint* groundOrientationConstraint;
-			PositionConstraint* grappleConstraint = nullptr;
-
-			int groundTriggerOverlaps = 0;
-			bool isGrounded = false;
 
 			float toungeMaxDistance = 10.0f;
 			const Vector3 toungePos = Vector3(0.0f, 0.8f, -1.0f);

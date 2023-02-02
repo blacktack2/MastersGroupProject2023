@@ -238,18 +238,18 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 	float totalMass = physA->GetInverseMass() + physB->GetInverseMass();
 
 	if (physA->IsStatic() || physB->IsStatic()) {
-		transformA.GetPosition();
+		transformA.GetGlobalPosition();
 	}
 
 	if (totalMass == 0) {
 		return;
 	}
 
-	transformA.SetPosition(transformA.GetPosition() - (p.normal * p.penetration * (physA->GetInverseMass() / totalMass)));
-	transformB.SetPosition(transformB.GetPosition() + (p.normal * p.penetration * (physB->GetInverseMass() / totalMass)));
+	transformA.SetPosition(transformA.GetGlobalPosition() - (p.normal * p.penetration * (physA->GetInverseMass() / totalMass)));
+	transformB.SetPosition(transformB.GetGlobalPosition() + (p.normal * p.penetration * (physB->GetInverseMass() / totalMass)));
 
-	Vector3 relativeA = p.contactPoint - transformA.GetPosition();
-	Vector3 relativeB = p.contactPoint - transformB.GetPosition();
+	Vector3 relativeA = p.contactPoint - transformA.GetGlobalPosition();
+	Vector3 relativeB = p.contactPoint - transformB.GetGlobalPosition();
 
 	Vector3 angVelocityA = Vector3::Cross(physA->GetAngularVelocity(), relativeA);
 	Vector3 angVelocityB = Vector3::Cross(physB->GetAngularVelocity(), relativeB);
@@ -431,7 +431,7 @@ void PhysicsSystem::IntegrateVelocity(float dt) {
 		}
 		Transform& transform = (*i)->GetTransform();
 
-		Vector3 position  = transform.GetPosition();
+		Vector3 position  = transform.GetGlobalPosition();
 		Vector3 linearVel = object->GetLinearVelocity();
 
 		position += linearVel * dt;
@@ -439,7 +439,7 @@ void PhysicsSystem::IntegrateVelocity(float dt) {
 		linearVel *= frameLinearDamping;
 		object->SetLinearVelocity(linearVel);
 
-		Quaternion orientation = transform.GetOrientation();
+		Quaternion orientation = transform.GetGlobalOrientation();
 		Vector3 angVel = object->GetAngularVelocity();
 
 		orientation += Quaternion(angVel * dt * 0.5f, 0.0f) * orientation;

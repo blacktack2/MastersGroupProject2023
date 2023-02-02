@@ -88,8 +88,8 @@ bool NetworkObject::WriteDeltaPacket(GamePacket**p, int stateID) {
 	dp->fullID = stateID;
 	dp->objectID = networkID;
 
-	Vector3 currentPos = object.GetTransform().GetPosition();
-	Quaternion currentOrientation = object.GetTransform().GetOrientation();
+	Vector3 currentPos = object.GetTransform().GetGlobalPosition();
+	Quaternion currentOrientation = object.GetTransform().GetGlobalOrientation();
 
 	dp->pos[0] = (char)currentPos.x;
 	dp->pos[1] = (char)currentPos.y;
@@ -107,8 +107,8 @@ bool NetworkObject::WriteFullPacket(GamePacket**p) {
 	FullPacket* fp = new FullPacket();
 
 	fp->objectID = networkID;
-	fp->fullState.position = object.GetTransform().GetPosition();
-	fp->fullState.orientation = object.GetTransform().GetOrientation();
+	fp->fullState.position = object.GetTransform().GetGlobalPosition();
+	fp->fullState.orientation = object.GetTransform().GetGlobalOrientation();
 	fp->fullState.stateID = lastFullState.stateID++;
 	*p = fp;
 	return true;

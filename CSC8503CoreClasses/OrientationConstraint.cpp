@@ -31,10 +31,10 @@ void OrientationConstraint::UpdateConstraint(float dt) {
 }
 
 void OrientationConstraint::UpdateLookat(float dt) {
-	Vector3 relativePos = hingeObject->GetTransform().GetPosition() - primaryObject->GetTransform().GetPosition();
+	Vector3 relativePos = hingeObject->GetTransform().GetGlobalPosition() - primaryObject->GetTransform().GetGlobalPosition();
 
 	Vector3 expectedDirection = relativePos.Normalised();
-	Vector3 actualDirection = hingeObject->GetTransform().GetOrientation() * direction;
+	Vector3 actualDirection = hingeObject->GetTransform().GetGlobalOrientation() * direction;
 
 	Vector3 directionDelta = expectedDirection - actualDirection;
 
@@ -57,7 +57,7 @@ void OrientationConstraint::UpdateLookat(float dt) {
 }
 
 void OrientationConstraint::UpdateFixed(float dt) {
-	Vector3 actualDirection = primaryObject->GetTransform().GetOrientation() * direction;
+	Vector3 actualDirection = primaryObject->GetTransform().GetGlobalOrientation() * direction;
 
 	Vector3 directionDelta = direction - actualDirection;
 

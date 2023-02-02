@@ -69,9 +69,9 @@ NPCObject::~NPCObject() {
 }
 
 void NPCObject::Update(float dt) {
-	transform.SetPosition(Vector3(transform.GetPosition().x, std::max(1.0f, transform.GetPosition().y), transform.GetPosition().z));
+	transform.SetPosition(Vector3(transform.GetGlobalPosition().x, std::max(1.0f, transform.GetGlobalPosition().y), transform.GetGlobalPosition().z));
 
-	perceptionTrigger->GetTransform().SetPosition(transform.GetPosition());
+	perceptionTrigger->GetTransform().SetPosition(transform.GetGlobalPosition());
 
 	stateMachine.Update(dt);
 }
@@ -86,7 +86,7 @@ void NPCObject::Flee(float dt) {
 	if (objectOfFear == nullptr) {
 		return;
 	}
-	Vector3 delta = transform.GetPosition() - objectOfFear->GetTransform().GetPosition();
+	Vector3 delta = transform.GetGlobalPosition() - objectOfFear->GetTransform().GetGlobalPosition();
 	delta.y = 0;
 	delta.Normalise();
 	physicsObject->AddForce(delta * fleeForce);

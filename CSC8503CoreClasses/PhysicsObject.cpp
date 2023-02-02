@@ -56,7 +56,7 @@ void PhysicsObject::AddForce(const Vector3& addedForce) {
 }
 
 void PhysicsObject::AddForceAtPosition(const Vector3& addedForce, const Vector3& position) {
-	Vector3 localPos = position - transform->GetPosition();
+	Vector3 localPos = position - transform->GetGlobalPosition();
 
 	force  += addedForce;
 	torque += Vector3::Cross(localPos, addedForce);
@@ -111,7 +111,7 @@ void PhysicsObject::InitCapsuleInertia() {
 }
 
 void PhysicsObject::UpdateInertiaTensor() {
-	Quaternion q = transform->GetOrientation();
+	Quaternion q = transform->GetGlobalOrientation();
 	
 	Matrix3 invOrientation	= Matrix3(q.Conjugate());
 	Matrix3 orientation		= Matrix3(q);

@@ -23,7 +23,7 @@ EnemyObject::~EnemyObject() {
 }
 
 void EnemyObject::Update(float dt) {
-	transform.SetPosition(Vector3(transform.GetPosition().x, std::max(1.0f, transform.GetPosition().y), transform.GetPosition().z));
+	transform.SetPosition(Vector3(transform.GetGlobalPosition().x, std::max(1.0f, transform.GetGlobalPosition().y), transform.GetGlobalPosition().z));
 
 	lastHitByBullet += dt;
 	stateMachine.Update(dt);
@@ -35,14 +35,14 @@ void EnemyObject::Daze() {
 
 bool EnemyObject::CanSeePlayer() {
 	RayCollision collision;
-	Ray r = Ray(transform.GetPosition(), (player.GetTransform().GetPosition() - transform.GetPosition()).Normalised(), CollisionLayer::Enemy);
+	Ray r = Ray(transform.GetGlobalPosition(), (player.GetTransform().GetGlobalPosition() - transform.GetGlobalPosition()).Normalised(), CollisionLayer::Enemy);
 	return gameWorld.Raycast(r, collision, true, this) && collision.node == &player;
 }
 
 std::vector<Vector3> EnemyObject::GetRandomPatrolPoint() {
 	NavigationPath outPath;
 	int baseCounter = 20;
-	while (!navMap.FindPath(transform.GetPosition(), Vector3(rand() % 200, 0, rand() % 200), outPath) && --baseCounter >= 0) {
+	while (!navMap.FindPath(transform.GetGlobalPosition(), Vector3(rand() % 200, 0, rand() % 200), outPath) && --baseCounter >= 0) {
 
 	}
 	Vector3 pos;
@@ -54,16 +54,16 @@ std::vector<Vector3> EnemyObject::GetRandomPatrolPoint() {
 }
 
 void EnemyObject::FollowPlayer(float speed) {
-	MoveTo(player.GetTransform().GetPosition(), speed);
+	MoveTo(player.GetTransform().GetGlobalPosition(), speed);
 }
 
 void EnemyObject::MoveTo(const Vector3& position, float speed) {
-	Vector3 delta = position - transform.GetPosition();
+	Vector3 delta = position - transform.GetGlobalPosition();
 	delta.y = 0;
 	delta.Normalise();
 	physicsObject->AddForce(delta * speed);
 }
 
 float EnemyObject::SquareDistanceFrom(const Vector3& position) {
-	return (Vector3(transform.GetPosition().x, 0, transform.GetPosition().z) - position).LengthSquared();
+	return (Vector3(transform.GetGlobalPosition().x, 0, transform.GetGlobalPosition().z) - position).LengthSquared();
 }
