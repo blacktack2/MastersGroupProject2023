@@ -528,6 +528,7 @@ PlayerObject* TutorialGame::AddPlayerToWorld(const Vector3& position, bool camer
 
 	if (cameraFollow) {
 		world->GetMainCamera()->SetFollow(&character->GetTransform());
+		character->AttachedCamera();
 	}
 
 	return character;

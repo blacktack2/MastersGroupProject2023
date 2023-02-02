@@ -33,40 +33,64 @@ PlayerObject::~PlayerObject() {
 
 void PlayerObject::Update(float dt) {
 	jumpTimer -= dt;
+	RotateToCamera();
 	CheckGround();
 	Move();
+}
+
+void PlayerObject::MoveTo(Vector3 position) {
+	Vector3 diff = position - this->GetTransform().GetPosition();
+	
+	if (diff.Length() > 0.1f) {
+		Vector3 dir = (position - this->GetTransform().GetPosition()).Normalised();
+		this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
+	}
+		
 }
 
 void PlayerObject::Move() {
 	Vector3 dir = Vector3(0,0,0);
 	GetInput(dir);
 	this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
+	if (lastDir != Vector3(0, 0, 0)) {
+		Vector3 stopDir = dir - lastDir;
+		this->GetPhysicsObject()->ApplyLinearImpulse(-stopDir * moveSpeed);
+	}
+
+	lastDir = dir;
 }
 
 void PlayerObject::GetInput(Vector3& dir) {
 	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
 	keyMap.Update();
+
+	Vector3 fwdAxis = this->GetTransform().GetOrientation() * Vector3(0, 0, -1);
+
+	Vector3 leftAxis = this->GetTransform().GetOrientation() * Vector3(-1, 0, 0);
+
+	Vector3 upAxis = this->GetTransform().GetOrientation() * Vector3(0, 1, 0);
+
 	if (keyMap.GetButton(InputType::Foward)) 
 	{
-		dir += Vector3(0, 0, -1);
+		dir += fwdAxis;
 	}
 	if (keyMap.GetButton (InputType::Backward) )
 	{
-		dir += Vector3(0, 0, 1);
+		dir -= fwdAxis;
 	}
 	if (keyMap.GetButton(InputType::Left)) 
 	{
-		dir += Vector3(-1, 0, 0);
+		dir += leftAxis;
 	}
 	if (keyMap.GetButton(InputType::Right)) 
 	{
-		dir += Vector3(1, 0, 0);
+		dir -= leftAxis;
 	}
 	if (keyMap.GetButton(InputType::Jump) && onGround && jumpTimer <= 0.0f ) 
 	{
 		jumpTimer = jumpCooldown;
 		std::cout << "JUMP" << std::endl;
-		this->GetPhysicsObject()->ApplyLinearImpulse(Vector3(0, 1, 0) * jumpSpeed);
+		this->GetPhysicsObject()->ApplyLinearImpulse(upAxis * jumpSpeed);
 	}
 	if (keyMap.GetButton(InputType::Action1)) 
 	{
@@ -91,6 +115,16 @@ void PlayerObject::CheckGround() {
 			onGround = true;
 		}	
 	}
+}
+
+void PlayerObject::RotateYaw(float yaw) {
+	this->GetTransform().SetOrientation(Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), yaw));
+}
+void PlayerObject::RotateToCamera() {
+	if (hasCamera) {
+		RotateYaw(gameWorld.GetMainCamera()->GetYaw());
+	}
+	
 }
 
 void PlayerObject::AddPoints(int points) {

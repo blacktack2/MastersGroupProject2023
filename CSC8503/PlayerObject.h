@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 
+
 namespace NCL {
 	namespace CSC8503 {
 		class Bullet;
@@ -16,12 +17,21 @@ namespace NCL {
 
 			void CollisionWith(GameObject* other);
 
+			void AttachedCamera() {
+				hasCamera = true;
+			};
+
 		protected:
 			int id;
 
 		private:
+			void MoveTo(Vector3 position);
 			void Move();
 			void GetInput(Vector3& dir);
+
+			void RotateYaw(float yaw);
+			void RotateToCamera();
+
 			void CheckGround();
 			void Shoot();
 
@@ -32,7 +42,11 @@ namespace NCL {
 			float jumpSpeed = 10.0f;
 
 			//movement related
-			float moveSpeed = 0.3f;
+			float moveSpeed = 0.4f;
+			Vector3 lastDir = Vector3(0,0,0);
+
+			//camera related
+			bool hasCamera = false;
 
 			int& scoreCounter;
 
