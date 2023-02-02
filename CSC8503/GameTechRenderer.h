@@ -21,6 +21,8 @@ namespace NCL {
 			TextureBase*	LoadTexture(const string& name);
 			ShaderBase*		LoadShader(const string& vertex, const string& fragment);
 
+			virtual void Update(float dt) override;
+
 		protected:
 			void NewRenderLines();
 			void NewRenderText();
@@ -43,6 +45,8 @@ namespace NCL {
 			void SetDebugLineBufferSizes(size_t newVertCount);
 
 			vector<const RenderObject*> activeObjects;
+
+			float runTime = 0.0f;
 
 			OGLShader*  debugShader;
 			OGLShader*  skyboxShader;
