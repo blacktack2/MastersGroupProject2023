@@ -1,4 +1,5 @@
 #include "Transform.h"
+#include <vector>
 
 using namespace NCL;
 using namespace CSC8503;
@@ -10,7 +11,14 @@ Transform::Transform(GameObject* gameObject){
 }
 
 Transform::~Transform()	{
-
+	if (parent)
+	{
+		parent->RemoveChild(this);
+	}
+	for (Transform* child : children)
+	{
+		child->SetParent(nullptr);
+	}
 }
 
 void Transform::UpdateLocalMatrix() {
@@ -55,4 +63,15 @@ void Transform::UpdateGlobalOrientation() {
 	for (Transform* child : children) {
 		child->UpdateGlobalOrientation();
 	}
+}
+
+void Transform::AddChild(Transform* child) {
+	if (child)
+	{
+		children.emplace_back(child);
+	}
+}
+
+void Transform::RemoveChild(Transform* child) {
+	children.erase(std::remove(children.begin(), children.end(), child), children.end());
 }

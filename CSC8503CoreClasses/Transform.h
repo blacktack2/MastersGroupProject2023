@@ -39,9 +39,15 @@ namespace NCL {
 			Matrix4 GetGlobalMatrix() const {
 				return globalMatrix;
 			}
+
+			void SetParent(Transform* transform) { parent = transform; }
+
 			void UpdateGlobalOrientation();
 			void UpdateGlobalMatrix();
 			void UpdateLocalMatrix();
+
+			void RemoveChild(Transform* child);
+			void AddChild(Transform* child);
 
 		protected:
 			Matrix4		globalMatrix;
