@@ -43,6 +43,8 @@ set(Maths
 source_group("Maths" FILES ${Maths})
 
 set(Rendering
+    "FrameBuffer.cpp"
+    "FrameBuffer.h"
     "MeshAnimation.cpp"
     "MeshAnimation.h"
     "MeshGeometry.cpp"

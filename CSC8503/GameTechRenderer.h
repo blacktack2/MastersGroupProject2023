@@ -1,87 +1,84 @@
 #pragma once
+#include "OGLFrameBuffer.h"
+#include "OGLMesh.h"
 #include "OGLRenderer.h"
 #include "OGLShader.h"
 #include "OGLTexture.h"
-#include "OGLMesh.h"
 
 #include "GameWorld.h"
 
 #include <string>
 
-namespace NCL {
-	class Maths::Vector3;
-	class Maths::Vector4;
-	namespace CSC8503 {
-		class RenderObject;
+namespace NCL::Maths {
+	class Vector3;
+	class Vector4;
+}
+namespace NCL::CSC8503 {
+	class RenderObject;
 
-		class GameTechRenderer : public OGLRenderer	{
-		public:
-			GameTechRenderer(GameWorld& world);
-			~GameTechRenderer();
+	class GameTechRenderer : public OGLRenderer {
+	public:
+		GameTechRenderer(GameWorld& world);
+		~GameTechRenderer();
 
-			MeshGeometry*	LoadMesh(const std::string& name);
-			TextureBase*	LoadTexture(const std::string& name);
-			ShaderBase*		LoadShader(const std::string& vertex, const std::string& fragment);
+		MeshGeometry* LoadMesh(const std::string& name);
+		TextureBase*  LoadTexture(const std::string& name);
+		ShaderBase*   LoadShader(const std::string& vertex, const std::string& fragment);
 
-			virtual void Update(float dt) override;
+		virtual void Update(float dt) override;
+	protected:
+		void NewRenderLines();
+		void NewRenderText();
 
-		protected:
-			void NewRenderLines();
-			void NewRenderText();
+		void RenderFrame() override;
 
-			void RenderFrame()	override;
+		OGLShader* defaultShader;
 
-			OGLShader*		defaultShader;
+		GameWorld& gameWorld;
 
-			GameWorld&	gameWorld;
+		void BuildObjectList();
+		void SortObjectList();
+		void RenderShadowMap();
+		void RenderCamera(); 
+		void RenderSkybox();
 
-			void BuildObjectList();
-			void SortObjectList();
-			void RenderShadowMap();
-			void RenderCamera(); 
-			void RenderSkybox();
+		void LoadSkybox();
 
-			void LoadSkybox();
+		void SetDebugStringBufferSizes(size_t newVertCount);
+		void SetDebugLineBufferSizes(size_t newVertCount);
 
-			void SetDebugStringBufferSizes(size_t newVertCount);
-			void SetDebugLineBufferSizes(size_t newVertCount);
+		vector<const RenderObject*> activeObjects;
 
-			vector<const RenderObject*> activeObjects;
+		float runTime = 0.0f;
 
-			float runTime = 0.0f;
+		OGLShader* debugShader;
+		OGLShader* skyboxShader;
+		OGLMesh*   skyboxMesh;
 
-			OGLShader*  debugShader;
-			OGLShader*  skyboxShader;
-			OGLMesh*	skyboxMesh;
-			GLuint		skyboxTex;
+		OGLShader* shadowShader;
+		OGLTexture* shadowTex;
+		OGLFrameBuffer* shadowFBO;
+		Matrix4 shadowMatrix;
 
-			//shadow mapping things
-			OGLShader*	shadowShader;
-			GLuint		shadowTex;
-			GLuint		shadowFBO;
-			Matrix4     shadowMatrix;
+		Vector4 lightColour;
+		float   lightRadius;
+		Vector3 lightPosition;
 
-			Vector4		lightColour;
-			float		lightRadius;
-			Vector3		lightPosition;
+		vector<Vector3> debugLineData;
 
-			//Debug data storage things
-			vector<Vector3> debugLineData;
+		vector<Vector3> debugTextPos;
+		vector<Vector4> debugTextColours;
+		vector<Vector2> debugTextUVs;
 
-			vector<Vector3> debugTextPos;
-			vector<Vector4> debugTextColours;
-			vector<Vector2> debugTextUVs;
+		GLuint lineVAO;
+		GLuint lineVertVBO;
+		size_t lineCount;
 
-			GLuint lineVAO;
-			GLuint lineVertVBO;
-			size_t lineCount;
-
-			GLuint textVAO;
-			GLuint textVertVBO;
-			GLuint textColourVBO;
-			GLuint textTexVBO;
-			size_t textCount;
-		};
-	}
+		GLuint textVAO;
+		GLuint textVertVBO;
+		GLuint textColourVBO;
+		GLuint textTexVBO;
+		size_t textCount;
+	};
 }
 

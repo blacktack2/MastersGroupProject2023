@@ -1,17 +1,20 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   TextureBase.h
+ * @brief  Utility class for encapsulating texture functionality.
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
 #pragma once
 
 namespace NCL::Rendering {
-	class TextureBase	{
+	class TextureBase {
 	public:
 		virtual ~TextureBase();
+
+		virtual void Bind() = 0;
+		virtual void Unbind() = 0;
 	protected:
 		TextureBase();
 	};

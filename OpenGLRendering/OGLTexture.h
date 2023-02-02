@@ -12,26 +12,45 @@ https://research.ncl.ac.uk/game/
 
 #include <string>
 
-namespace NCL {
-	namespace Rendering {
-		class OGLTexture : public TextureBase
-		{
-		public:
-			//friend class OGLRenderer;
-			 OGLTexture();
-			 OGLTexture(GLuint texToOwn);
-			~OGLTexture();
+constexpr GLsizei SHADOWSIZE = 4096;
 
-			static TextureBase* RGBATextureFromData(char* data, int width, int height, int channels);
+namespace NCL::Rendering {
+	enum class TexType {
+		Colour,
+		Depth,
+		Stencil,
+		Shadow,
+	};
+	class OGLTexture : public TextureBase {
+	public:
+		OGLTexture(TexType type = TexType::Colour);
+		~OGLTexture();
 
-			static TextureBase* RGBATextureFromFilename(const std::string&name);
+		virtual void Bind() override;
+		virtual void Unbind() override;
 
-			GLuint GetObjectID() const	{
-				return texID;
-			}
-		protected:						
-			GLuint texID;
-		};
-	}
+		void SetEdgeClamp();
+		void SetEdgeRepeat();
+
+		inline GLuint GetObjectID() const {
+			return texID;
+		}
+
+		inline TexType GetType() const {
+			return type;
+		}
+
+		static TextureBase* RGBATextureFromData(char* data, int width, int height, int channels);
+
+		static TextureBase* RGBATextureFromFilename(const std::string&name);
+	protected:
+		GLuint texID;
+		TexType type;
+	private:
+		void InitColour();
+		void InitDepth();
+		void InitStencil();
+		void InitShadow();
+	};
 }
 
