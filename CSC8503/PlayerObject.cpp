@@ -39,10 +39,10 @@ void PlayerObject::Update(float dt) {
 }
 
 void PlayerObject::MoveTo(Vector3 position) {
-	Vector3 diff = position - this->GetTransform().GetPosition();
+	Vector3 diff = position - this->GetTransform().GetGlobalPosition();
 	
 	if (diff.Length() > 0.1f) {
-		Vector3 dir = (position - this->GetTransform().GetPosition()).Normalised();
+		Vector3 dir = (position - this->GetTransform().GetGlobalPosition()).Normalised();
 		this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
 	}
 		
@@ -64,11 +64,11 @@ void PlayerObject::GetInput(Vector3& dir) {
 	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
 	keyMap.Update();
 
-	Vector3 fwdAxis = this->GetTransform().GetOrientation() * Vector3(0, 0, -1);
+	Vector3 fwdAxis = this->GetTransform().GetGlobalOrientation() * Vector3(0, 0, -1);
 
-	Vector3 leftAxis = this->GetTransform().GetOrientation() * Vector3(-1, 0, 0);
+	Vector3 leftAxis = this->GetTransform().GetGlobalOrientation() * Vector3(-1, 0, 0);
 
-	Vector3 upAxis = this->GetTransform().GetOrientation() * Vector3(0, 1, 0);
+	Vector3 upAxis = this->GetTransform().GetGlobalOrientation() * Vector3(0, 1, 0);
 
 	isFreeLook = false;
 
@@ -106,14 +106,14 @@ void PlayerObject::GetInput(Vector3& dir) {
 }
 
 void PlayerObject::CheckGround() {
-	Ray r = Ray(this->GetTransform().GetPosition(), Vector3(0,-1,0));
+	Ray r = Ray(this->GetTransform().GetGlobalPosition(), Vector3(0,-1,0));
 	RayCollision closestCollision;
 	GameObject* objClosest;
 	onGround = false;
 	if (gameWorld.Raycast(r, closestCollision, true, this)) 
 	{
 		objClosest = (GameObject*)closestCollision.node;
-		float groundDist = (closestCollision.collidedAt - this->GetTransform().GetPosition()).Length();
+		float groundDist = (closestCollision.collidedAt - this->GetTransform().GetGlobalPosition()).Length();
 		//std::cout << "ground dist " << groundDist << std::endl;
 		if (groundDist < 1.02f)
 		{
@@ -151,7 +151,7 @@ void PlayerObject::CollisionWith(GameObject* other) {
 		}
 	}
 }
-
+/*
 void PlayerObject::HandleGroundInput(float dt) {
 	const float moveForce = 40;
 	const float rotateTorque = 4;
