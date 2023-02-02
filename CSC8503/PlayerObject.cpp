@@ -67,7 +67,7 @@ void PlayerObject::Move() {
 
 void PlayerObject::MoveCamera() {
 	if (hasCamera) {
-		gameWorld.GetMainCamera()->SetPosition(transform.GetGlobalPosition() + cameraOffset);
+		//gameWorld.GetMainCamera()->SetPosition(transform.GetGlobalPosition() + cameraOffset);
 	}
 }
 

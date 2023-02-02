@@ -57,7 +57,7 @@ namespace NCL {
 
 			//shooting related
 			float projectileForce = 10;
-			const Vector3 projectileSpawnPoint = Vector3(1.0f, 0.9f, -1.0f);
+			const Vector3 projectileSpawnPoint = Vector3(0.0f, 0.9f, -1.0f);
 			float projectileLifespan = 5.0f;
 			float projectileFireRate = 0.1f;
 			float projectileFireRateTimer = 0;
