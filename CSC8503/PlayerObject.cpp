@@ -70,6 +70,8 @@ void PlayerObject::GetInput(Vector3& dir) {
 
 	Vector3 upAxis = this->GetTransform().GetOrientation() * Vector3(0, 1, 0);
 
+	isFreeLook = false;
+
 	if (keyMap.GetButton(InputType::Foward)) 
 	{
 		dir += fwdAxis;
@@ -96,6 +98,10 @@ void PlayerObject::GetInput(Vector3& dir) {
 	{
 		Shoot();
 	}
+	if (keyMap.GetButton(InputType::FreeLook))
+	{
+		isFreeLook = true;
+	}
 	dir.Normalise();
 }
 
@@ -118,10 +124,11 @@ void PlayerObject::CheckGround() {
 }
 
 void PlayerObject::RotateYaw(float yaw) {
+	//Quaternion::Lerp(const Quaternion & from, const Quaternion & to, float by)
 	this->GetTransform().SetOrientation(Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), yaw));
 }
 void PlayerObject::RotateToCamera() {
-	if (hasCamera) {
+	if (hasCamera && !isFreeLook) {
 		RotateYaw(gameWorld.GetMainCamera()->GetYaw());
 	}
 	

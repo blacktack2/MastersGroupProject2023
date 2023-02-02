@@ -47,6 +47,7 @@ namespace NCL {
 
 			//camera related
 			bool hasCamera = false;
+			bool isFreeLook = false;
 
 			int& scoreCounter;
 
