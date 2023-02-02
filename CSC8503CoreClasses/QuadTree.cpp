@@ -13,7 +13,7 @@ QuadTreeNode::QuadTreeNode(NodeStack& nodeStack) : nodeStack(nodeStack), isSplit
 }
 
 QuadTreeNode::~QuadTreeNode() {
-	PushToStack();
+	//PushToStack();
 }
 
 void QuadTreeNode::Init(Vector2 pos, Vector2 size) {
@@ -105,7 +105,10 @@ void QuadTreeNode::Clear() {
 void QuadTreeNode::PushToStack() {
 	if (isSplit) {
 		for (int i = 0; i < 4; i++) {
-			children[i]->PushToStack();
+			if (children[i])
+			{
+				children[i]->PushToStack();
+			}
 		}
 	}
 	nodeStack.Push(this);

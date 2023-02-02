@@ -119,7 +119,7 @@ void GameWorld::UpdateStaticTree() {
 			if (!(*i)->GetBroadphaseAABB(halfSizes)) {
 				continue;
 			}
-			Vector3 pos = (*i)->GetTransform().GetPosition();
+			Vector3 pos = (*i)->GetTransform().GetGlobalPosition();
 			staticQuadTree.Insert(*i, Vector2(pos.x, pos.z), Vector2(halfSizes.x, halfSizes.z));
 		}
 	}
@@ -134,7 +134,7 @@ void GameWorld::UpdateDynamicTree() {
 			if (!(*i)->GetBroadphaseAABB(halfSizes)) {
 				continue;
 			}
-			Vector3 pos = (*i)->GetTransform().GetPosition();
+			Vector3 pos = (*i)->GetTransform().GetGlobalPosition();
 			dynamicQuadTree.Insert(*i, Vector2(pos.x, pos.z), Vector2(halfSizes.x, halfSizes.z));
 		}
 	}

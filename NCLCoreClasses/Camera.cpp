@@ -86,7 +86,7 @@ void Camera::UpdateCamera(float dt) {
 			position.y += frameSpeed;
 		}
 	} else {
-		Vector3 followPos = follow->GetPosition();
+		Vector3 followPos = follow->GetGlobalPosition();
 		pitch -= (Window::GetMouse()->GetRelativePosition().y);
 		yaw -= (Window::GetMouse()->GetRelativePosition().x);
 

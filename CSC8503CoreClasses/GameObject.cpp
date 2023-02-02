@@ -7,7 +7,7 @@
 
 using namespace NCL::CSC8503;
 
-GameObject::GameObject(GameWorld& gameWorld, string objectName) : gameWorld(gameWorld) {
+GameObject::GameObject(GameWorld& gameWorld, string objectName) : gameWorld(gameWorld), transform(this) {
 	name			= objectName;
 	worldID			= -1;
 	isActive		= true;
@@ -17,7 +17,7 @@ GameObject::GameObject(GameWorld& gameWorld, string objectName) : gameWorld(game
 	networkObject	= nullptr;
 }
 
-GameObject::GameObject(GameWorld& gameWorld, GameObject& other) : gameWorld(gameWorld) {
+GameObject::GameObject(GameWorld& gameWorld, GameObject& other) : gameWorld(gameWorld), transform(this) {
 	transform = other.transform;
 	boundingVolume = other.boundingVolume == nullptr ? nullptr : CollisionVolume::Clone(*other.boundingVolume);
 	physicsObject  = other.physicsObject  == nullptr ? nullptr : new PhysicsObject(*other.physicsObject, &transform);
@@ -53,7 +53,7 @@ void GameObject::UpdateBroadphaseAABB() {
 	if (boundingVolume->type == VolumeType::AABB) {
 		broadphaseAABB = ((AABBVolume&) *boundingVolume).GetHalfDimensions();
 	} else if (boundingVolume->type == VolumeType::OBB) {
-		Matrix3 mat = Matrix3(transform.GetOrientation());
+		Matrix3 mat = Matrix3(transform.GetGlobalOrientation());
 		mat = mat.Absolute();
 		Vector3 halfSizes = ((OBBVolume&) *boundingVolume).GetHalfDimensions();
 
@@ -63,7 +63,7 @@ void GameObject::UpdateBroadphaseAABB() {
 
 		broadphaseAABB = Vector3(r, r, r);
 	} else if (boundingVolume->type == VolumeType::Capsule) {
-		Matrix3 mat = Matrix3(transform.GetOrientation());
+		Matrix3 mat = Matrix3(transform.GetGlobalOrientation());
 		mat = mat.Absolute();
 		float r = ((CapsuleVolume&) *boundingVolume).GetRadius();
 		float h = ((CapsuleVolume&) *boundingVolume).GetHalfHeight();

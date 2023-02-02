@@ -24,5 +24,5 @@ void Bullet::Update(float dt) {
 		return;
 	}
 
-	Debug::DrawLine(transform.GetPosition(), transform.GetPosition() + Vector3(0, 1, 0), Vector4(0, 1, 1, 1));
+	Debug::DrawLine(transform.GetGlobalPosition(), transform.GetGlobalPosition() + Vector3(0, 1, 0), Vector4(0, 1, 1, 1));
 }

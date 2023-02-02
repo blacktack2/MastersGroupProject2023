@@ -58,6 +58,7 @@ namespace NCL {
 		class NodeStack {
 		public:
 			explicit NodeStack(int maxNodes);
+			~NodeStack() {}
 
 			void Push(QuadTreeNode* node);
 			QuadTreeNode* Pop();
