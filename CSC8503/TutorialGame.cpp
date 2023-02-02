@@ -28,6 +28,7 @@ TutorialGame::TutorialGame()	{
 
 	forceMagnitude	= 10.0f;
 	inSelectionMode = false;
+	debugViewPoint = new paintHell::debug::DebugViewPoint();
 
 	InitialiseAssets();
 }
@@ -50,6 +51,7 @@ TutorialGame::~TutorialGame() {
 	delete[] mazes;
 
 	delete bulletPrefab;
+	delete debugViewPoint;
 }
 
 void TutorialGame::InitWorld(InitMode mode) {
@@ -83,6 +85,9 @@ void TutorialGame::InitWorld(InitMode mode) {
 }
 
 void TutorialGame::UpdateGame(float dt) {
+	debugViewPoint->BeginFrame();
+	debugViewPoint->MarkTime("Update");
+
 	UpdateKeys();
 
 	if (gameState == GameState::OnGoing) {
@@ -153,9 +158,12 @@ void TutorialGame::UpdateGame(float dt) {
 			gameState = GameState::Win;
 		}
 	}
-
+	debugViewPoint->FinishTime("Update");
+	debugViewPoint->MarkTime("Render");
 	renderer->Render();
+	
 	Debug::UpdateRenderables(dt);
+	debugViewPoint->FinishTime("Render");
 }
 
 void TutorialGame::InitialiseAssets() {

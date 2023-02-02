@@ -8,6 +8,7 @@
 #include "PhysicsSystem.h"
 #include "PlayerObject.h"
 #include "StateGameObject.h"
+#include "DebugViewPoint.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -123,6 +124,8 @@ namespace NCL {
 			PlayerObject* player = nullptr;
 
 			int score;
+
+			paintHell::debug::DebugViewPoint* debugViewPoint;
 		};
 	}
 }
