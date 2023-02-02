@@ -33,9 +33,11 @@ PlayerObject::~PlayerObject() {
 
 void PlayerObject::Update(float dt) {
 	jumpTimer -= dt;
+	projectileFireRateTimer -= dt;
 	RotateToCamera();
 	CheckGround();
 	Move();
+	MoveCamera();
 }
 
 void PlayerObject::MoveTo(Vector3 position) {
@@ -53,17 +55,26 @@ void PlayerObject::Move() {
 	GetInput(dir);
 	this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
 	if (lastDir != Vector3(0, 0, 0)) {
-		Vector3 stopDir = dir - lastDir;
-		this->GetPhysicsObject()->ApplyLinearImpulse(-stopDir * moveSpeed);
+		//Vector3 stopDir = dir - lastDir;
+		if (paintHell::InputKeyMap::instance().GetButtonState() != lastKey) {
+			this->GetPhysicsObject()->ApplyLinearImpulse(-lastDir * moveSpeed);
+		}
+		
 	}
 
 	lastDir = dir;
 }
 
+void PlayerObject::MoveCamera() {
+	if (hasCamera) {
+		gameWorld.GetMainCamera()->SetPosition(transform.GetGlobalPosition() + cameraOffset);
+	}
+}
+
 void PlayerObject::GetInput(Vector3& dir) {
 	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	lastKey = keyMap.GetButtonState();
 	keyMap.Update();
-
 	Vector3 fwdAxis = this->GetTransform().GetGlobalOrientation() * Vector3(0, 0, -1);
 
 	Vector3 leftAxis = this->GetTransform().GetGlobalOrientation() * Vector3(-1, 0, 0);
@@ -124,9 +135,9 @@ void PlayerObject::CheckGround() {
 }
 
 void PlayerObject::RotateYaw(float yaw) {
-	//Quaternion::Lerp(const Quaternion & from, const Quaternion & to, float by)
-	this->GetTransform().SetOrientation(Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), yaw));
+	this->GetTransform().SetOrientation(Quaternion::Lerp(this->GetTransform().GetGlobalOrientation(), Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), yaw), camTurnSpeed));
 }
+
 void PlayerObject::RotateToCamera() {
 	if (hasCamera && !isFreeLook) {
 		RotateYaw(gameWorld.GetMainCamera()->GetYaw());
@@ -134,6 +145,7 @@ void PlayerObject::RotateToCamera() {
 	
 }
 
+//legacy 
 void PlayerObject::AddPoints(int points) {
 	if (lastGoosed > gooseDelay) {
 		lastGoosed = 0.0f;
@@ -142,6 +154,7 @@ void PlayerObject::AddPoints(int points) {
 }
 
 void PlayerObject::CollisionWith(GameObject* other) {
+	/*
 	if (other->GetPhysicsObject() != nullptr && !collidedWith.contains(other->GetWorldID()) && !other->GetPhysicsObject()->IsStatic()) {
 		collidedWith.insert(other->GetWorldID());
 		if (dynamic_cast<NPCObject*>(other)) {
@@ -150,92 +163,21 @@ void PlayerObject::CollisionWith(GameObject* other) {
 			scoreCounter += 100;
 		}
 	}
-}
-/*
-void PlayerObject::HandleGroundInput(float dt) {
-	const float moveForce = 40;
-	const float rotateTorque = 4;
-	const float jumpForce = 1000;
-	const Vector3 jumpTorque = Vector3(1, 0, 1) * 500;
-	float forwardThrust = 0;
-	float upwardThrust = 0;
-	Vector3 rotation = Vector3(0);
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A)) {
-		rotation.y += rotateTorque;
-	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D)) {
-		rotation.y -= rotateTorque;
-	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W)) {
-		forwardThrust -= moveForce;
-	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S)) {
-		forwardThrust += moveForce;
-	}
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) {
-		upwardThrust += jumpForce;
-		rotation += Vector3((rand() * (1.0f / (float)RAND_MAX)), 0, (rand() * (1.0f / (float)RAND_MAX))) * jumpTorque;
-	}
-	physicsObject->AddForce(transform.GetGlobalOrientation() * Vector3(0, 0, forwardThrust) + Vector3(0, upwardThrust, 0));
-	physicsObject->AddTorque(rotation);
+	*/
+	//gameWorld.RemoveGameObject(this);
 }
 
-void PlayerObject::HandleGoatActions(float dt) {
-	laserDelay -= dt;
-	if (laserDelay < 0 && Window::GetKeyboard()->KeyDown(KeyboardKeys::R)) {
-		laserDelay = laserFireRate;
-		FireLasers();
-	}
-
-	if (grappledObject) {
-		Vector3 toungePosition = transform.GetGlobalPosition() + transform.GetGlobalOrientation() * toungePos;
-		Vector3 contactPosition = grappledObject->GetTransform().GetGlobalPosition() + toungeContactPoint;
-		Vector3 delta = contactPosition - toungePosition;
-		Vector3 deltaNorm = delta.Normalised();
-		float distance = delta.Length();
-		static const float as = std::sin(3.14159 * 0.25), ac = std::cos(3.14159 * 0.25);
-		tounge->GetTransform().SetPosition(toungePosition + delta * 0.5f)
-			                  .SetOrientation(Quaternion(Vector3::Cross(deltaNorm, Vector3(0, 1, 0)) * as, ac))
-			                  .SetScale(Vector3(0.1f, distance, 0.1f));
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::E)) { // Release grappled object
-			gameWorld.RemoveConstraint(grappleConstraint, true);
-			grappledObject = nullptr;
-			tounge->SetActive(false);
-		}
-	} else {
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::E)) { // Grapple a new object
-			RayCollision collision;
-			Ray r = Ray(transform.GetGlobalPosition() + toungePos, transform.GetGlobalOrientation() * Vector3(0, 0, -1), CollisionLayer::Player);
-			if (gameWorld.Raycast(r, collision, true, this) && collision.rayDistance <= toungeMaxDistance) {
-				grappledObject = (GameObject*)collision.node;
-				toungeContactPoint = collision.collidedAt - grappledObject->GetTransform().GetGlobalPosition();
-				grappleConstraint = new PositionConstraint(this, grappledObject, 0, toungeMaxDistance, Vector3(0), toungeContactPoint);
-				gameWorld.AddConstraint(grappleConstraint);
-				tounge->SetActive(true);
-
-				CollisionWith(grappledObject);
-			}
-		}
-	}
-}
-*/
 
 void PlayerObject::Shoot() {
-	Bullet* laserA = new Bullet(gameWorld, *(Bullet*)AssetLibrary::GetPrefab("bullet"));
-	laserA->SetLifespan(laserLifespan);
-	laserA->GetTransform().SetPosition(transform.GetGlobalOrientation() * eyePosL + transform.GetGlobalPosition());
-	laserA->GetPhysicsObject()->AddForce(transform.GetGlobalOrientation() * laserForce);
-	gameWorld.AddGameObject(laserA);
-	laserA->OnCollisionBeginCallback = [&](GameObject* other) {
-		CollisionWith(other);
-	};
-
-	Bullet* laserB = new Bullet(gameWorld, *(Bullet*)AssetLibrary::GetPrefab("bullet"));
-	laserB->SetLifespan(laserLifespan);
-	laserB->GetTransform().SetPosition(transform.GetGlobalOrientation() * eyePosR + transform.GetGlobalPosition());
-	laserB->GetPhysicsObject()->AddForce(transform.GetGlobalOrientation() * laserForce);
-	gameWorld.AddGameObject(laserB);
-	laserB->OnCollisionBeginCallback = [&](GameObject* other) {
+	if (projectileFireRateTimer>0)
+		return;
+	projectileFireRateTimer = projectileFireRate;
+	Bullet* ink = new Bullet(gameWorld, *(Bullet*)AssetLibrary::GetPrefab("bullet"));
+	ink->SetLifespan(projectileLifespan);
+	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
+	ink->GetPhysicsObject()->ApplyLinearImpulse(transform.GetGlobalOrientation() * Vector3(0, 0, -1) * projectileForce);
+	gameWorld.AddGameObject(ink);
+	ink->OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
 	};
 }

@@ -32,6 +32,8 @@ namespace NCL {
 			void RotateYaw(float yaw);
 			void RotateToCamera();
 
+			void MoveCamera();
+
 			void CheckGround();
 			void Shoot();
 
@@ -44,26 +46,26 @@ namespace NCL {
 			//movement related
 			float moveSpeed = 0.4f;
 			Vector3 lastDir = Vector3(0,0,0);
+			unsigned int lastKey;
 
 			//camera related
 			bool hasCamera = false;
 			bool isFreeLook = false;
+			float camTurnSpeed = 0.5f;
+			Vector3 cameraOffset = Vector3(0.5f, 5.0f, 2.0f);
 
+
+			//shooting related
+			float projectileForce = 10;
+			const Vector3 projectileSpawnPoint = Vector3(1.0f, 0.9f, -1.0f);
+			float projectileLifespan = 5.0f;
+			float projectileFireRate = 0.1f;
+			float projectileFireRateTimer = 0;
+
+			// legacy variables
 			int& scoreCounter;
 
 			std::set<int> collidedWith;
-
-			float toungeMaxDistance = 10.0f;
-			const Vector3 toungePos = Vector3(0.0f, 0.8f, -1.0f);
-			Vector3 toungeContactPoint = Vector3(0);
-
-			const Vector3 eyePosL = Vector3(-0.1f, 0.9f, -1.0f);
-			const Vector3 eyePosR = Vector3( 0.1f, 0.9f, -1.0f);
-
-			Vector3 laserForce = Vector3(0, 0, -1000);
-			float laserFireRate = 0.05f;
-			float laserDelay = 0.0f;
-			float laserLifespan = 1.0f;
 
 			float lastGoosed = 0.0f;
 			const float gooseDelay = 2.0f;

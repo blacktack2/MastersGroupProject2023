@@ -295,7 +295,7 @@ void TutorialGame::InitMazeWorld(int numRows, int numCols, float size) {
 
 	Vector3 position;
 	while (!mazes[0].ValidPoint(position = Vector3(((rand() % 400) - 200), 5, (rand() % 400) - 200))) {}
-	AddEnemyToWorld(position, nav);
+	//AddEnemyToWorld(position, nav);
 
 	for (int i = 0; i < 20; i++) {
 		while (!mazes[0].ValidPoint(position = Vector3(((rand() % 400) - 200), 4, (rand() % 400) - 200))) {}
