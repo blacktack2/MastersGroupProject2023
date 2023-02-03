@@ -123,6 +123,8 @@ namespace NCL {
 			PlayerObject* player = nullptr;
 
 			int score;
+
+			bool isNetwork = false;
 		};
 	}
 }

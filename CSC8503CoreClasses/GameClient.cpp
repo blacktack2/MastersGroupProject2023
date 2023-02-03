@@ -1,10 +1,12 @@
 #include "GameClient.h"
 #include "./enet/enet.h"
+#include <iostream>
 using namespace NCL;
 using namespace CSC8503;
 
 GameClient::GameClient()	{
 	netHandle = enet_host_create(nullptr, 1, 1, 0, 0);
+	std::cout << "created host " << netHandle;
 }
 
 GameClient::~GameClient()	{

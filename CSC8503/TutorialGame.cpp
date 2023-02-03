@@ -59,7 +59,6 @@ void TutorialGame::InitWorld(InitMode mode) {
 	mazes = nullptr;
 	world->ClearAndErase();
 	physics->Clear();
-
 	player = AddPlayerToWorld(Vector3(0, 0, 0));
 	switch (mode) {
 		case InitMode::MAZE             : InitMazeWorld(20, 20, 20.0f)                            ; break;
@@ -243,7 +242,7 @@ void TutorialGame::UpdateKeys() {
 			InitWorld(InitMode::PERFORMANCE_TEST);
 		}
 
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F10)) {
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F11)) {
 			world->ShuffleConstraints(false);
 		}
 
