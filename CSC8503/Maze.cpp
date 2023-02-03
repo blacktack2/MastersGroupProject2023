@@ -20,7 +20,7 @@ Maze::Maze(GameWorld& gameWorld, float size, float height, int boundsX, int boun
 	for (int z = -minZ; z < maxZ; z++) {
 		for (int x = -minX; x < maxX; x++) {
 			if (rand() % 3 == 0) {
-				GameObject* cell = new GameObject(gameWorld, std::string("MazeCell[").append(std::to_string(x)).append(",").append(std::to_string(z)).append("]"));
+				GameObject* cell = new GameObject(std::string("MazeCell[").append(std::to_string(x)).append(",").append(std::to_string(z)).append("]"));
 				cell->SetBoundingVolume((CollisionVolume*)new AABBVolume(cellSize * 0.5f));
 				cell->SetPhysicsObject(new PhysicsObject(&cell->GetTransform(), cell->GetBoundingVolume()));
 				cell->SetRenderObject(new RenderObject(&cell->GetTransform(), AssetLibrary::GetMesh("cube"), AssetLibrary::GetTexture("basic"), AssetLibrary::GetShader("basic")));

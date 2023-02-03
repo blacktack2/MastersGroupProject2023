@@ -8,7 +8,7 @@ namespace NCL {
 
 		class NPCObject : public GameObject {
 		public:
-			NPCObject(GameWorld& gameWorld);
+			NPCObject();
 			~NPCObject();
 
 			virtual void Update(float dt) override;

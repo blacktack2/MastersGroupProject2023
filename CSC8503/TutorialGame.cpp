@@ -185,7 +185,7 @@ void TutorialGame::InitialiseAssets() {
 void TutorialGame::InitialisePrefabs() {
 	float bulletRadius = 0.1f;
 
-	bulletPrefab = new Bullet(*world);
+	bulletPrefab = new Bullet();
 
 	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::PlayerProj));
 	bulletPrefab->GetTransform().SetScale(Vector3(bulletRadius));
@@ -389,7 +389,7 @@ void TutorialGame::InitDefaultFloor() {
 }
 
 GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
-	GameObject* floor = new GameObject(*world, "Floor");
+	GameObject* floor = new GameObject("Floor");
 
 	Vector3 floorSize = Vector3(500, 2, 500);
 	AABBVolume* volume = new AABBVolume(floorSize);
@@ -412,7 +412,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 
 GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius, float inverseMass) {
 	static int id = 0;
-	GameObject* sphere = new GameObject(*world, std::string("Sphere").append(std::to_string(id++)));
+	GameObject* sphere = new GameObject( std::string("Sphere").append(std::to_string(id++)));
 
 	Vector3 sphereSize = Vector3(radius, radius, radius);
 	SphereVolume* volume = new SphereVolume(radius);
@@ -435,7 +435,7 @@ GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius
 
 GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass, bool axisAligned) {
 	static int id = 0;
-	GameObject* cube = new GameObject(*world, std::string("Cube").append(std::to_string(id++)));
+	GameObject* cube = new GameObject( std::string("Cube").append(std::to_string(id++)));
 
 	cube->SetBoundingVolume(axisAligned ? ((CollisionVolume*)new AABBVolume(dimensions)) : ((CollisionVolume*)new OBBVolume(dimensions)));
 
@@ -465,7 +465,7 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 
 GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius, float inverseMass) {
 	static int id = 0;
-	GameObject* capsule = new GameObject(*world, std::string("Capsule").append(std::to_string(id++)));
+	GameObject* capsule = new GameObject( std::string("Capsule").append(std::to_string(id++)));
 
 	Vector3 capsuleSize = Vector3(radius, halfHeight, radius);
 	CapsuleVolume* volume = new CapsuleVolume(halfHeight, radius);
@@ -488,7 +488,7 @@ GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfH
 
 StateGameObject* TutorialGame::AddStateObjectToWorld(const Vector3& position) {
 	static int id = 0;
-	StateGameObject* sgo = new StateGameObject(*world, std::string("StateGameObject").append(std::to_string(id++)));
+	StateGameObject* sgo = new StateGameObject(std::string("StateGameObject").append(std::to_string(id++)));
 	SphereVolume* volume = new SphereVolume(1.0f);
 
 	sgo->SetBoundingVolume((CollisionVolume*)volume);
@@ -536,7 +536,7 @@ PlayerObject* TutorialGame::AddPlayerToWorld(const Vector3& position, bool camer
 }
 
 EnemyObject* TutorialGame::AddEnemyToWorld(const Vector3& position, NavigationMap& navMap) {
-	EnemyObject* enemy = new EnemyObject(*world, *player, navMap);
+	EnemyObject* enemy = new EnemyObject(*player, navMap);
 	SphereVolume* volume = new SphereVolume(1.0f, CollisionLayer::Enemy);
 
 	enemy->SetBoundingVolume((CollisionVolume*)volume);
@@ -559,7 +559,7 @@ EnemyObject* TutorialGame::AddEnemyToWorld(const Vector3& position, NavigationMa
 }
 
 NPCObject* TutorialGame::AddNPCToWorld(const Vector3& position) {
-	NPCObject* npc = new NPCObject(*world);
+	NPCObject* npc = new NPCObject();
 	CapsuleVolume* volume = new CapsuleVolume(1.5f, 1.0f);
 
 	npc->SetBoundingVolume((CollisionVolume*)volume);
@@ -582,7 +582,7 @@ NPCObject* TutorialGame::AddNPCToWorld(const Vector3& position) {
 }
 
 GameObject* TutorialGame::AddBonusToWorld(const Vector3& position) {
-	GameObject* bonus = new BonusObject(*world);
+	GameObject* bonus = new BonusObject();
 	SphereVolume* volume = new SphereVolume(1.5f);
 
 	bonus->SetBoundingVolume((CollisionVolume*)volume);
@@ -605,7 +605,7 @@ GameObject* TutorialGame::AddBonusToWorld(const Vector3& position) {
 }
 
 GameObject* TutorialGame::AddTriggerToWorld(const Vector3& position, float size) {
-	GameObject* trigger = new GameObject(*world, "Trigger");
+	GameObject* trigger = new GameObject("Trigger");
 
 	SphereVolume* volume = new SphereVolume(size);
 	trigger->SetBoundingVolume((CollisionVolume*)volume);

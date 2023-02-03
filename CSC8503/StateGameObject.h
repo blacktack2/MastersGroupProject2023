@@ -10,7 +10,7 @@ namespace NCL {
 
         class StateGameObject : public GameObject  {
         public:
-            StateGameObject(GameWorld& gameWorld, std::string name = "");
+            StateGameObject(std::string name = "");
             ~StateGameObject();
 
             virtual void Update(float dt);

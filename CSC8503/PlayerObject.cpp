@@ -19,7 +19,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-PlayerObject::PlayerObject(int id, int& scoreCounter) : GameObject(GameWorld::instance()),
+PlayerObject::PlayerObject(int id, int& scoreCounter) : GameObject(),
 id(id), scoreCounter(scoreCounter){
 	OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
@@ -171,7 +171,7 @@ void PlayerObject::Shoot() {
 	if (projectileFireRateTimer>0)
 		return;
 	projectileFireRateTimer = projectileFireRate;
-	Bullet* ink = new Bullet(gameWorld, *(Bullet*)AssetLibrary::GetPrefab("bullet"));
+	Bullet* ink = new Bullet(*(Bullet*)AssetLibrary::GetPrefab("bullet"));
 	ink->SetLifespan(projectileLifespan);
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
 	ink->GetPhysicsObject()->ApplyLinearImpulse(transform.GetGlobalOrientation() * Vector3(0, 0, -1) * projectileForce);
