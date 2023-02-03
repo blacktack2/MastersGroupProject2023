@@ -11,7 +11,8 @@ PhysicsObject::PhysicsObject(Transform* parentTransform, const CollisionVolume* 
 	inverseMass = 1.0f;
 	elasticity	= 0.8f;
 	friction	= 0.8f;
-	gravWeight  = 1.0f;
+	gravScale  = 1.0f;
+	linearDamping = 0.995f;
 
 	isTrigger = trigger;
 	isStatic = false;
@@ -27,9 +28,10 @@ PhysicsObject::PhysicsObject(PhysicsObject& other, Transform* parentTransform) {
 	inverseMass = other.inverseMass;
 	elasticity = other.elasticity;
 	friction = other.friction;
-	gravWeight = other.gravWeight;
+	gravScale = other.gravScale;
 
 	linearVelocity = other.linearVelocity;
+	linearDamping = other.linearDamping;
 	force = other.force;
 
 	angularVelocity = other.angularVelocity;

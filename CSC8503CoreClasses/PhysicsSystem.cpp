@@ -235,9 +235,9 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 	Transform& transformA = a.GetTransform();
 	Transform& transformB = b.GetTransform();
 
-	float totalMass = physA->GetInverseMass() + physB->GetInverseMass();
+	float totalMass = physA->inverseMass + physB->inverseMass;
 
-	if (physA->IsStatic() || physB->IsStatic()) {
+	if (physA->isStatic || physB->isStatic) {
 		transformA.GetGlobalPosition();
 	}
 
@@ -245,17 +245,17 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 		return;
 	}
 
-	transformA.SetPosition(transformA.GetGlobalPosition() - (p.normal * p.penetration * (physA->GetInverseMass() / totalMass)));
-	transformB.SetPosition(transformB.GetGlobalPosition() + (p.normal * p.penetration * (physB->GetInverseMass() / totalMass)));
+	transformA.SetPosition(transformA.GetGlobalPosition() - (p.normal * p.penetration * (physA->inverseMass / totalMass)));
+	transformB.SetPosition(transformB.GetGlobalPosition() + (p.normal * p.penetration * (physB->inverseMass / totalMass)));
 
 	Vector3 relativeA = p.contactPoint - transformA.GetGlobalPosition();
 	Vector3 relativeB = p.contactPoint - transformB.GetGlobalPosition();
 
-	Vector3 angVelocityA = Vector3::Cross(physA->GetAngularVelocity(), relativeA);
-	Vector3 angVelocityB = Vector3::Cross(physB->GetAngularVelocity(), relativeB);
+	Vector3 angVelocityA = Vector3::Cross(physA->angularVelocity, relativeA);
+	Vector3 angVelocityB = Vector3::Cross(physB->angularVelocity, relativeB);
 
-	Vector3 fullVelocityA = physA->GetLinearVelocity() + angVelocityA;
-	Vector3 fullVelocityB = physB->GetLinearVelocity() + angVelocityB;
+	Vector3 fullVelocityA = physA->linearVelocity + angVelocityA;
+	Vector3 fullVelocityB = physB->linearVelocity + angVelocityB;
 
 	Vector3 contactVelocity = fullVelocityB - fullVelocityA;
 
@@ -386,28 +386,28 @@ void PhysicsSystem::IntegrateAccel(float dt) {
 			continue;
 		}
 
-		float inverseMass = object->GetInverseMass();
+		float inverseMass = object->inverseMass;
 
-		Vector3 linearVel = object->GetLinearVelocity();
+		Vector3 linearVel = object->linearVelocity;
 		Vector3 force     = object->GetForce();
 		Vector3 accel     = force * inverseMass;
 
-		if (inverseMass > 0 && object->GetGravWeight() != 0) {
-			accel += gravity * object->GetGravWeight();
+		if (inverseMass > 0 && object->gravScale != 0) {
+			accel += gravity * object->gravScale;
 		}
 
 		linearVel += accel * dt;
-		object->SetLinearVelocity(linearVel);
+		object->linearVelocity = linearVel;
 
 		Vector3 torque = object->GetTorque();
-		Vector3 angVel = object->GetAngularVelocity();
+		Vector3 angVel = object->angularVelocity;
 
 		object->UpdateInertiaTensor();
 
 		Vector3 angAccel = object->GetInverseInertiaTensor() * torque;
 
 		angVel += angAccel * dt;
-		object->SetAngularVelocity(angVel);
+		object->angularVelocity = angVel;
 	}
 }
 
@@ -426,21 +426,21 @@ void PhysicsSystem::IntegrateVelocity(float dt) {
 
 	for (auto i = first; i != last; i++) {
 		PhysicsObject* object = (*i)->GetPhysicsObject();
-		if (object == nullptr || object->IsStatic()) {
+		if (object == nullptr || object->isStatic) {
 			continue;
 		}
 		Transform& transform = (*i)->GetTransform();
 
 		Vector3 position  = transform.GetGlobalPosition();
-		Vector3 linearVel = object->GetLinearVelocity();
+		Vector3 linearVel = object->linearVelocity;
 
 		position += linearVel * dt;
 		transform.SetPosition(position);
 		linearVel *= frameLinearDamping;
-		object->SetLinearVelocity(linearVel);
+		object->linearVelocity = linearVel;
 
 		Quaternion orientation = transform.GetGlobalOrientation();
-		Vector3 angVel = object->GetAngularVelocity();
+		Vector3 angVel = object->angularVelocity;
 
 		orientation += Quaternion(angVel * dt * 0.5f, 0.0f) * orientation;
 		orientation.Normalise();
@@ -449,7 +449,7 @@ void PhysicsSystem::IntegrateVelocity(float dt) {
 
 		float frameAngularDamping = 1.0f - (globalDamping * dt);
 		angVel = angVel * frameAngularDamping;
-		object->SetAngularVelocity(angVel);
+		object->angularVelocity = angVel;
 	}
 }
 

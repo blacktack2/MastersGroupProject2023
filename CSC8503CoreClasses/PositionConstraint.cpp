@@ -56,12 +56,12 @@ void PositionConstraint::UpdateDistanced(float dt) {
 		PhysicsObject* physA = objectA->GetPhysicsObject();
 		PhysicsObject* physB = objectB->GetPhysicsObject();
 
-		float constraintMass = physA->GetInverseMass() + physB->GetInverseMass();
+		float constraintMass = physA->inverseMass + physB->inverseMass;
 
 		if (constraintMass <= 0) {
 			return;
 		}
-		Vector3 relativeVelocity = physA->GetLinearVelocity() - physB->GetLinearVelocity();
+		Vector3 relativeVelocity = physA->linearVelocity - physB->linearVelocity;
 
 		float velocityDot = Vector3::Dot(relativeVelocity, offsetDir);
 		float biasFactor = 0.01f;
@@ -94,12 +94,12 @@ void PositionConstraint::UpdateOffset(float dt) {
 	PhysicsObject* physA = objectA->GetPhysicsObject();
 	PhysicsObject* physB = objectB->GetPhysicsObject();
 
-	float constraintMass = physA->GetInverseMass() + physB->GetInverseMass();
+	float constraintMass = physA->inverseMass + physB->inverseMass;
 
 	if (constraintMass <= 0) {
 		return;
 	}
-	Vector3 relativeVelocity = physA->GetLinearVelocity() - physB->GetLinearVelocity();
+	Vector3 relativeVelocity = physA->linearVelocity - physB->linearVelocity;
 
 	float velocityDot = Vector3::Dot(relativeVelocity, offsetDir);
 	float biasFactor = 0.01f;
