@@ -25,13 +25,13 @@ void GameClient::UpdateClient() {
 	if (netHandle == nullptr) {
 		return;
 	}
-
 	ENetEvent event;
 	while (enet_host_service(netHandle, &event, 0) > 0) {
-		if (event.type == ENET_EVENT_TYPE_CONNECT) {
-			std::cout << "Connected to server!\n";
-		} else if (event.type == ENET_EVENT_TYPE_RECEIVE) {
-			std::cout << "Client: Packet received...\n";
+		if(event.type == ENET_EVENT_TYPE_CONNECT){
+			std::cout << "CLient : Connected to server!" << std::endl;
+			std::cout << event.peer << " " << event.channelID << std::endl;
+		}
+		else if (event.type == ENET_EVENT_TYPE_RECEIVE) {
 			GamePacket* packet = (GamePacket*)event.packet->data;
 			ProcessPacket(packet);
 		}
@@ -39,7 +39,7 @@ void GameClient::UpdateClient() {
 	}
 }
 
-void GameClient::SendPacket(GamePacket&  payload) {
-	ENetPacket* dataPacket = enet_packet_create(&payload, payload.GetTotalSize(), 0);
+void GameClient::SendPacket(GamePacket*  payload) {
+	ENetPacket* dataPacket = enet_packet_create(payload, payload->GetTotalSize(), 0);
 	enet_peer_send(netPeer, 0, dataPacket);
 }

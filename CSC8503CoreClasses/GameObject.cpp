@@ -7,7 +7,7 @@
 
 using namespace NCL::CSC8503;
 
-GameObject::GameObject(GameWorld& gameWorld, string objectName) : gameWorld(gameWorld), transform(this) {
+GameObject::GameObject(GameWorld& gameWorld, string objectName) :gameWorld(GameWorld::instance()), transform(this) {
 	name			= objectName;
 	worldID			= -1;
 	isActive		= true;
@@ -17,7 +17,7 @@ GameObject::GameObject(GameWorld& gameWorld, string objectName) : gameWorld(game
 	networkObject	= nullptr;
 }
 
-GameObject::GameObject(GameWorld& gameWorld, GameObject& other) : gameWorld(gameWorld), transform(this) {
+GameObject::GameObject(GameWorld& gameWorld, GameObject& other) : gameWorld(GameWorld::instance()), transform(this) {
 	transform = other.transform;
 	boundingVolume = other.boundingVolume == nullptr ? nullptr : CollisionVolume::Clone(*other.boundingVolume);
 	physicsObject  = other.physicsObject  == nullptr ? nullptr : new PhysicsObject(*other.physicsObject, &transform);

@@ -14,7 +14,9 @@ enum BasicNetworkMessages {
 	Received_State, //received from a client, informs that its received packet n
 	Player_Connected,
 	Player_Disconnected,
-	Shutdown
+	Shutdown,
+	Handshake_Message,
+	Handshake_Ack,
 };
 
 struct GamePacket {
@@ -37,20 +39,26 @@ struct GamePacket {
 
 struct StringPacket : public GamePacket {
 	char stringData[256];
-
 	StringPacket(const std::string& message) {
 		type = BasicNetworkMessages::String_Message;
 		size = (short)message.length();
-
 		memcpy(stringData, message.data(), size);
 	}
-
 	std::string GetStringFromData() {
 		std::string realString(stringData);
 		realString.resize(size);
 		return realString;
 	}
 };
+struct PlayerConnectionPacket : public GamePacket {
+	int		playerID = -1;
+
+	PlayerConnectionPacket() {
+		type = Player_Connected;
+		size = sizeof(PlayerConnectionPacket) - sizeof(GamePacket);
+	}
+};
+
 
 class PacketReceiver {
 public:

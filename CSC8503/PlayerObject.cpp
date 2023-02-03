@@ -19,7 +19,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-PlayerObject::PlayerObject(GameWorld& gameWorld, int id, int& scoreCounter) : GameObject(gameWorld),
+PlayerObject::PlayerObject(int id, int& scoreCounter) : GameObject(GameWorld::instance()),
 id(id), scoreCounter(scoreCounter){
 	OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
@@ -102,7 +102,6 @@ void PlayerObject::GetInput(Vector3& dir) {
 	if (keyMap.GetButton(InputType::Jump) && onGround && jumpTimer <= 0.0f ) 
 	{
 		jumpTimer = jumpCooldown;
-		std::cout << "JUMP" << std::endl;
 		this->GetPhysicsObject()->ApplyLinearImpulse(upAxis * jumpSpeed);
 	}
 	if (keyMap.GetButton(InputType::Action1)) 

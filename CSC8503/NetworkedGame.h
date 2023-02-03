@@ -1,6 +1,7 @@
 #pragma once
 #include "TutorialGame.h"
 #include "NetworkBase.h"
+#include "InputKeyMap.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -18,7 +19,7 @@ namespace NCL {
 
 			void UpdateGame(float dt) override;
 
-			void SpawnPlayer();
+			GameObject* SpawnPlayer(int playerID, bool isSelf = false);
 
 			void StartLevel();
 
@@ -26,23 +27,46 @@ namespace NCL {
 
 			void OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b);
 
+			void SetName(string name) {
+				this->name = name;
+			}
+			string GetName() {
+				return this->name;
+			}
+
 		protected:
 			void UpdateAsServer(float dt);
 			void UpdateAsClient(float dt);
 
 			void BroadcastSnapshot(bool deltaFrame);
+			void SendSnapshot(bool deltaFrame,int playerID);
 			void UpdateMinimumState();
+
+			void ClientProcessNetworkObject(GamePacket* payload, int objID);
+			void ServerProcessNetworkObject(GamePacket* payload, int playerID);
+
+			void PlayerJoined(int playerID);
+			void PlayerLeft(int playerID);
+
+			NetworkPlayer* AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID);
+
 			std::map<int, int> stateIDs;
 
 			GameServer* thisServer;
 			GameClient* thisClient;
 			float timeToNextPacket;
+			float game_dt;
 			int packetsToSnapshot;
 
+			int stateID;
+			int selfID;
+
 			std::vector<NetworkObject*> networkObjects;
+			//std::map<int, NetworkObject*> networkObjects;
 
 			std::map<int, GameObject*> serverPlayers;
 			GameObject* localPlayer;
+			string name;
 		};
 	}
 }
