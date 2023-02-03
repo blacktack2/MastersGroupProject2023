@@ -58,7 +58,7 @@ namespace paintHell {
 			{
 				buttonstates |= InputType::Jump;
 			}
-			if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
+			if (Window::GetMouse()->ButtonDown(MouseButtons::LEFT))
 			{
 				buttonstates |= InputType::Action1;
 			}

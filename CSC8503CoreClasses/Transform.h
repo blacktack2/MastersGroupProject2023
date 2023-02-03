@@ -40,7 +40,7 @@ namespace NCL {
 				return globalMatrix;
 			}
 
-			void SetParent(Transform* transform) { parent = transform; }
+			void SetParent(Transform* transform) { parent = transform; UpdateGlobalMatrix(); UpdateGlobalOrientation(); }
 
 			void UpdateGlobalOrientation();
 			void UpdateGlobalMatrix();
