@@ -8,9 +8,9 @@ namespace NCL {
 		class GameWorld;
 		class NetworkedGame;
 
-		class NetworkPlayer : public PlayerObject {
+		class NetworkPlayer : public GameObject {
 		public:
-			NetworkPlayer(NetworkedGame* game, int playerID, int& scoreCounter);
+			NetworkPlayer(NetworkedGame* game,int playerID);
 			~NetworkPlayer();
 
 			void OnCollisionBegin(GameObject* otherObject) override;

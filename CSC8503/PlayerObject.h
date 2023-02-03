@@ -1,7 +1,6 @@
 #pragma once
 #include "GameObject.h"
 
-
 namespace NCL {
 	namespace CSC8503 {
 		class Bullet;
@@ -54,13 +53,15 @@ namespace NCL {
 			float camTurnSpeed = 0.5f;
 			Vector3 cameraOffset = Vector3(0.5f, 5.0f, 2.0f);
 
-
 			//shooting related
 			float projectileForce = 10;
 			const Vector3 projectileSpawnPoint = Vector3(0.0f, 0.9f, -1.0f);
 			float projectileLifespan = 5.0f;
 			float projectileFireRate = 0.1f;
 			float projectileFireRateTimer = 0;
+
+			//network
+			bool networkPlayer = false;
 
 			// legacy variables
 			int& scoreCounter;

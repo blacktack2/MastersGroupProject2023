@@ -282,45 +282,53 @@ protected:
 	std::string name;
 };
 
-/*
+
 void TestNetworking() {
 	NetworkBase::Initialise();
 
 	TestPacketReceiver serverReceiver("Server");
-	TestPacketReceiver clientReceivers[2]{ TestPacketReceiver("Client1"), TestPacketReceiver("Client2") };
+	TestPacketReceiver clientReceiver("Client");
+	TestPacketReceiver clientReceiver2("Client");
 
 	int port = NetworkBase::GetDefaultPort();
 
-	const int numClients = 2;
-	GameServer* server = new GameServer(port, numClients);
-	GameClient* clients = new GameClient[numClients];
+	GameServer* server = new GameServer(port, 2);
+	GameClient* client = new GameClient();
+	GameClient* client02 = new GameClient();
 
 	server->RegisterPacketHandler(String_Message, &serverReceiver);
-	for (int i = 0; i < numClients; i++) {
-		clients[i].RegisterPacketHandler(String_Message, &clientReceivers[i]);
-	}
+	client->RegisterPacketHandler(String_Message, &clientReceiver);
+	client02->RegisterPacketHandler(String_Message, &clientReceiver2);
+	server->RegisterPacketHandler(Player_Connected, &serverReceiver);
+	server->RegisterPacketHandler(Player_Disconnected, &serverReceiver);
 
-	bool canConnect[numClients];
-	for (int i = 0; i < numClients; i++) {
-		canConnect[i] = clients[i].Connect(127, 0, 0, 1, port);
-	}
+	std::cout << "thisServer mem address " << &serverReceiver << std::endl;
 
-	for (int i = 0; i < 100; i++) {
-		server->SendGlobalPacket((GamePacket&)StringPacket("Server says hello!" + std::to_string(i)));
-		for (int j = 0; j < numClients; j++) {
-			clients[j].SendPacket((GamePacket&)StringPacket("Client says hello!" + std::to_string(i)));
-		}
+	bool canConnect = client->Connect(127, 0, 0, 1, port);
+	bool canConnect02 = client02->Connect(127, 0, 0, 1, port);
+
+	std::cout << canConnect << " " << canConnect02 << std::endl;
+
+	for (int i = 0; i < 10; ++i) {
+
+		StringPacket ssh("Server says hello! " + std::to_string(i));
+		StringPacket csh("Client says hello! " + std::to_string(i));
+		StringPacket csh2("Client02 says hello! " + std::to_string(i));
+		server->SendGlobalPacket(&ssh, false);
+
+		client->SendPacket(&csh);
+		client02->SendPacket(&csh);
+
 
 		server->UpdateServer();
-		for (int j = 0; j < numClients; j++) {
-			clients[j].UpdateClient();
-		}
+		client->UpdateClient();
+		client02->UpdateClient();
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 	NetworkBase::Destroy();
 }
-*/
+
 /*
 
 The main function should look pretty familar to you!
@@ -349,7 +357,7 @@ int main() {
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
 
-	TutorialGame* g = new TutorialGame();
+	NetworkedGame* g = new NetworkedGame();
 	g->InitWorld();
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
 	while (w->UpdateWindow() && !g->IsQuit()) {

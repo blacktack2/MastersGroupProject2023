@@ -260,7 +260,14 @@ void TutorialGame::UpdateKeys() {
 			DebugObjectMovement();
 		}
 		break;
+
+		Window::GetWindow()->ShowOSPointer(false);
+		Window::GetWindow()->LockMouseToWindow(true);
+
 		case GameState::Paused:
+			Window::GetWindow()->ShowOSPointer(true);
+			Window::GetWindow()->LockMouseToWindow(false);
+
 			Debug::Print("Press [Escape] to resume", Vector2(5, 80), Vector4(1, 1, 1, 1));
 			Debug::Print("Press [q] to quit", Vector2(5, 90), Vector4(1, 1, 1, 1));
 

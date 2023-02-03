@@ -218,7 +218,8 @@ GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 		colour = Vector4(0, 1, 1, 1);
 	}
 
-	GameObject* newPlayer = AddNetworkPlayerToWorld(Vector3(5, 5, 5), isSelf, playerID);
+	PlayerObject* newPlayer = AddNetworkPlayerToWorld(Vector3(5, 5, 5), isSelf, playerID);
+	
 	networkObjects.push_back(new NetworkObject(*newPlayer, playerID));
 	serverPlayers[playerID] = newPlayer;
 	stateIDs[playerID] = -1;
@@ -226,15 +227,17 @@ GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 }
 
 void NetworkedGame::StartLevel() {
-	world->Clear();
+	world->ClearAndErase();
+	physics->Clear();
 	if (thisServer) {
-		localPlayer = SpawnPlayer(0);
-		lockedObject = localPlayer;
+		localPlayer = SpawnPlayer(0, true);
 	}
 	int id = OBJECTID_START;
 	int idOffset = 0;
 	GameObject* newObj;
 	newObj = AddFloorToWorld(Vector3(0, -20, 0));
+
+	world->UpdateStaticTree();
 }
 
 void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID) {
@@ -384,10 +387,10 @@ void NetworkedGame::OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b) {
 	}
 }
 
-NetworkPlayer* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID) {
+PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID) {
 	static int id = 0;
 
-	NetworkPlayer* character = new NetworkPlayer( this, playerID, score);
+	PlayerObject* character = new PlayerObject(playerID, score);
 	SphereVolume* volume = new SphereVolume(1.0f, CollisionLayer::Player);
 
 	character->SetBoundingVolume((CollisionVolume*)volume);
