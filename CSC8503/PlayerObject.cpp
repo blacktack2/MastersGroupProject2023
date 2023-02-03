@@ -34,10 +34,13 @@ PlayerObject::~PlayerObject() {
 void PlayerObject::Update(float dt) {
 	jumpTimer -= dt;
 	projectileFireRateTimer -= dt;
-	RotateToCamera();
 	CheckGround();
-	Move();
-	MoveCamera();
+	if (!networkPlayer) {
+		RotateToCamera();
+		Move();
+		MoveCamera();
+	}
+	
 }
 
 void PlayerObject::MoveTo(Vector3 position) {

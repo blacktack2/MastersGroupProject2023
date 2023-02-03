@@ -8,6 +8,7 @@
 #include "PhysicsSystem.h"
 #include "PlayerObject.h"
 #include "StateGameObject.h"
+#include "DebugViewPoint.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -124,7 +125,7 @@ namespace NCL {
 
 			int score;
 
-			bool isNetwork = false;
+			paintHell::debug::DebugViewPoint* debugViewPoint;
 		};
 	}
 }

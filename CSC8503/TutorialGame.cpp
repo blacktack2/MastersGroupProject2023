@@ -16,7 +16,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-TutorialGame::TutorialGame()	{
+TutorialGame::TutorialGame(){
 	world = &GameWorld::instance();
 #ifdef USEVULKAN
 	renderer	= new GameTechVulkanRenderer(*world);
@@ -28,6 +28,7 @@ TutorialGame::TutorialGame()	{
 
 	forceMagnitude	= 10.0f;
 	inSelectionMode = false;
+	debugViewPoint = &paintHell::debug::DebugViewPoint::Instance();
 
 	InitialiseAssets();
 }
@@ -82,6 +83,9 @@ void TutorialGame::InitWorld(InitMode mode) {
 }
 
 void TutorialGame::UpdateGame(float dt) {
+	debugViewPoint->BeginFrame();
+	debugViewPoint->MarkTime("Update");
+
 	UpdateKeys();
 
 	if (gameState == GameState::OnGoing) {
@@ -152,9 +156,12 @@ void TutorialGame::UpdateGame(float dt) {
 			gameState = GameState::Win;
 		}
 	}
-
+	debugViewPoint->FinishTime("Update");
+	debugViewPoint->MarkTime("Render");
 	renderer->Render();
+	
 	Debug::UpdateRenderables(dt);
+	debugViewPoint->FinishTime("Render");
 }
 
 void TutorialGame::InitialiseAssets() {
@@ -252,7 +259,14 @@ void TutorialGame::UpdateKeys() {
 			DebugObjectMovement();
 		}
 		break;
+
+		Window::GetWindow()->ShowOSPointer(false);
+		Window::GetWindow()->LockMouseToWindow(true);
+
 		case GameState::Paused:
+			Window::GetWindow()->ShowOSPointer(true);
+			Window::GetWindow()->LockMouseToWindow(false);
+
 			Debug::Print("Press [Escape] to resume", Vector2(5, 80), Vector4(1, 1, 1, 1));
 			Debug::Print("Press [q] to quit", Vector2(5, 90), Vector4(1, 1, 1, 1));
 

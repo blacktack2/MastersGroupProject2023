@@ -15,6 +15,7 @@ set(Header_Files
 	"PlayerObject.h"
     "StateGameObject.h"
     "TutorialGame.h"
+    "DebugViewPoint.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -31,6 +32,7 @@ set(Source_Files
 	"PlayerObject.cpp"
     "StateGameObject.cpp"
     "TutorialGame.cpp"
+    "DebugViewPoint.cpp"
 )
 
 if(USE_VULKAN)
