@@ -43,13 +43,11 @@ GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetW
 	lightPosition = Vector3(-200.0f, 60.0f, -200.0f);
 
 	//Skybox!
-	skyboxShader = new OGLShader("skybox.vert", "skybox.frag");
+	skyboxPass = new SkyboxRPass(*this, gameWorld);
 	skyboxMesh = new OGLMesh();
 	skyboxMesh->SetVertexPositions({Vector3(-1, 1,-1), Vector3(-1,-1,-1) , Vector3(1,-1,-1) , Vector3(1,1,-1) });
 	skyboxMesh->SetVertexIndices({ 0,1,2,2,3,0 });
 	skyboxMesh->UploadToGPU();
-
-	LoadSkybox();
 
 	glGenVertexArrays(1, &lineVAO);
 	glGenVertexArrays(1, &textVAO);
@@ -66,21 +64,14 @@ GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetW
 GameTechRenderer::~GameTechRenderer() {
 }
 
-void GameTechRenderer::LoadSkybox() {
-	skyboxShader->Bind();
-	glUniform3f(glGetUniformLocation(skyboxShader->GetProgramID(), "sunDir"), 0.1f, 0.6f, 0.2f);
-	glUniform1f(glGetUniformLocation(skyboxShader->GetProgramID(), "cirrus"), 0.5f);
-	glUniform1f(glGetUniformLocation(skyboxShader->GetProgramID(), "cumulus"), 0.5f);
-	skyboxShader->Unbind();
-}
-
 void GameTechRenderer::RenderFrame() {
 	glEnable(GL_CULL_FACE);
 	glClearColor(1, 1, 1, 1);
 	BuildObjectList();
 	SortObjectList();
 	RenderShadowMap();
-	RenderSkybox();
+	skyboxPass->PreRender();
+	skyboxPass->Render();
 	RenderCamera();
 	glDisable(GL_CULL_FACE); //Todo - text indices are going the wrong way...
 	glDisable(GL_BLEND);
@@ -147,35 +138,6 @@ void GameTechRenderer::RenderShadowMap() {
 	shadowFBO->Unbind();
 
 	glCullFace(GL_BACK);
-}
-
-void GameTechRenderer::RenderSkybox() {
-	glDisable(GL_CULL_FACE);
-	glDisable(GL_BLEND);
-	glDisable(GL_DEPTH_TEST);
-
-	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
-
-	skyboxShader->Bind();
-
-	int projLocation = glGetUniformLocation(skyboxShader->GetProgramID(), "projMatrix");
-	int viewLocation = glGetUniformLocation(skyboxShader->GetProgramID(), "viewMatrix");
-	int texLocation  = glGetUniformLocation(skyboxShader->GetProgramID(), "cubeTex");
-
-	glUniform1f(glGetUniformLocation(skyboxShader->GetProgramID(), "time"), runTime);
-
-	glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
-	glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
-
-	skyboxMesh->Draw();
-
-	skyboxShader->Unbind();
-
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
 }
 
 void GameTechRenderer::RenderCamera() {
@@ -370,7 +332,6 @@ ShaderBase* GameTechRenderer::LoadShader(const std::string& vertex, const std::s
 }
 
 void GameTechRenderer::Update(float dt) {
-	runTime += dt;
 }
 
 void GameTechRenderer::SetDebugStringBufferSizes(size_t newVertCount) {

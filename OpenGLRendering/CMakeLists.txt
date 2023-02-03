@@ -8,6 +8,7 @@ set(Header_Files
     "OGLFrameBuffer.h"
     "OGLMesh.h"
     "OGLRenderer.h"
+    "OGLRenderPass.h"
     "OGLShader.h"
     "OGLTexture.h"
 )
@@ -18,6 +19,7 @@ set(Source_Files
     "OGLFrameBuffer.cpp"
     "OGLMesh.cpp"
     "OGLRenderer.cpp"
+    "OGLRenderPass.cpp"
     "OGLShader.cpp"
     "OGLTexture.cpp"
 )

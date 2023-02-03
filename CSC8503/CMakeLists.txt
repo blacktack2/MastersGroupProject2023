@@ -8,11 +8,15 @@ set(Header_Files
 	"Bonus.h"
 	"EnemyObject.h"
     "GameTechRenderer.h"
+    "GBufferRPass.h"
+    "LightingRPass.h"
 	"Maze.h"
+    "ModelRPass.h"
     "NetworkedGame.h"
     "NetworkPlayer.h"
 	"NPCObject.h"
 	"PlayerObject.h"
+    "SkyboxRPass.h"
     "StateGameObject.h"
     "TutorialGame.h"
 )
@@ -23,24 +27,25 @@ set(Source_Files
 	"Bonus.cpp"
 	"EnemyObject.cpp"
     "GameTechRenderer.cpp"
+    "GBufferRPass.cpp"
+    "LightingRPass.cpp"
     "Main.cpp"
 	"Maze.cpp"
+    "ModelRPass.cpp"
     "NetworkedGame.cpp"
     "NetworkPlayer.cpp"
 	"NPCObject.cpp"
 	"PlayerObject.cpp"
+    "SkyboxRPass.cpp"
     "StateGameObject.cpp"
     "TutorialGame.cpp"
 )
 
 if(USE_VULKAN)
-list(APPEND Header_Files "GameTechVulkanRenderer.h")
-list(APPEND Source_Files "GameTechVulkanRenderer.cpp")
+    list(APPEND Header_Files "GameTechVulkanRenderer.h")
+    list(APPEND Source_Files "GameTechVulkanRenderer.cpp")
 
-
-
-file(GLOB SHADER_FILES ${ASSET_ROOT}/Shaders/VK/*.*)
-
+    file(GLOB SHADER_FILES ${ASSET_ROOT}/Shaders/VK/*.*)
 endif()
 
 source_group("Source Files" FILES ${Source_Files})

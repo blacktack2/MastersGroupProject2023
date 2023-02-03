@@ -81,6 +81,8 @@ void GameWorld::PreUpdateWorld() {
 }
 
 void GameWorld::UpdateWorld(float dt) {
+	runTime += dt;
+
 	auto rng = std::default_random_engine{};
 
 	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();

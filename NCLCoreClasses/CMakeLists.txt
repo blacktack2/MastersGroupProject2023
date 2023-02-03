@@ -53,6 +53,8 @@ set(Rendering
     "MeshMaterial.h"
     "RendererBase.cpp"
     "RendererBase.h"
+    "RenderPassBase.cpp"
+    "RenderPassBase.h"
     "ShaderBase.cpp"
     "ShaderBase.h"
     "TextureBase.cpp"

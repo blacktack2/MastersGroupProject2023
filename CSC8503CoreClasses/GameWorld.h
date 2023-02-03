@@ -19,7 +19,7 @@ namespace NCL {
 		typedef std::function<void(GameObject*)> GameObjectFunc;
 		typedef std::vector<GameObject*>::const_iterator GameObjectIterator;
 
-		class GameWorld	{
+		class GameWorld {
 		private:
 			GameWorld();
 			~GameWorld();
@@ -73,8 +73,12 @@ namespace NCL {
 				std::vector<Constraint*>::const_iterator& first,
 				std::vector<Constraint*>::const_iterator& last) const;
 
-			int GetWorldStateID() const {
+			inline int GetWorldStateID() const {
 				return worldStateCounter;
+			}
+
+			inline float GetRunTime() const {
+				return runTime;
 			}
 		protected:
 			std::vector<GameObject*> gameObjects;
@@ -87,8 +91,10 @@ namespace NCL {
 
 			bool shuffleConstraints;
 			bool shuffleObjects;
-			int		worldIDCounter;
-			int		worldStateCounter;
+			int worldIDCounter;
+			int worldStateCounter;
+
+			float runTime;
 		};
 	}
 }

@@ -13,6 +13,8 @@
 #include "OGLShader.h"
 #include "OGLTexture.h"
 
+#include "SkyboxRPass.h"
+
 #include "GameWorld.h"
 
 #include <string>
@@ -47,20 +49,16 @@ namespace NCL::CSC8503 {
 		void BuildObjectList();
 		void SortObjectList();
 		void RenderShadowMap();
-		void RenderCamera(); 
-		void RenderSkybox();
-
-		void LoadSkybox();
+		void RenderCamera();
 
 		void SetDebugStringBufferSizes(size_t newVertCount);
 		void SetDebugLineBufferSizes(size_t newVertCount);
 
 		vector<const RenderObject*> activeObjects;
 
-		float runTime = 0.0f;
+		SkyboxRPass* skyboxPass;
 
 		OGLShader* debugShader;
-		OGLShader* skyboxShader;
 		OGLMesh*   skyboxMesh;
 
 		OGLShader* shadowShader;
