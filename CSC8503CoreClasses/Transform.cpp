@@ -69,6 +69,7 @@ void Transform::AddChild(Transform* child) {
 	if (child)
 	{
 		children.emplace_back(child);
+		child->SetParent(this);
 	}
 }
 

@@ -40,7 +40,7 @@ namespace NCL {
 				return globalMatrix;
 			}
 
-			void SetParent(Transform* transform) { parent = transform; UpdateGlobalMatrix(); UpdateGlobalOrientation(); }
+			
 
 			void UpdateGlobalOrientation();
 			void UpdateGlobalMatrix();
@@ -50,6 +50,8 @@ namespace NCL {
 			void AddChild(Transform* child);
 
 		protected:
+			void SetParent(Transform* transform) { parent = transform; UpdateGlobalMatrix(); UpdateGlobalOrientation(); }
+
 			Matrix4		globalMatrix;
 			Matrix4		localMatrix;
 			Quaternion	orientation;
