@@ -39,6 +39,14 @@ OGLShader::~OGLShader() {
 	DeleteIDs();
 }
 
+void OGLShader::Bind() {
+	glUseProgram(programID);
+}
+
+void OGLShader::Unbind() {
+	glUseProgram(0);
+}
+
 void OGLShader::ReloadShader() {
 	DeleteIDs();
 	programID = glCreateProgram();

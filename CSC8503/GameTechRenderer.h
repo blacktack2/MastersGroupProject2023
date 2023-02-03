@@ -1,3 +1,11 @@
+/**
+ * @file   GameTechRenderer.h
+ * @brief  
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
 #pragma once
 #include "OGLFrameBuffer.h"
 #include "OGLMesh.h"

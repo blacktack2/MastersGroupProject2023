@@ -14,6 +14,8 @@ namespace NCL::Rendering {
 		virtual ~TextureBase();
 
 		virtual void Bind() = 0;
+		virtual void Bind(int slot) = 0;
+		virtual void Bind(int slot, int uniform) = 0;
 		virtual void Unbind() = 0;
 	protected:
 		TextureBase();

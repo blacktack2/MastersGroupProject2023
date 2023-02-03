@@ -35,6 +35,16 @@ void OGLTexture::Bind() {
 	glBindTexture(GL_TEXTURE_2D, texID);
 }
 
+void OGLTexture::Bind(GLint slot) {
+	glActiveTexture(GL_TEXTURE0 + slot);
+	Bind();
+}
+
+void OGLTexture::Bind(GLint slot, GLint uniform) {
+	Bind(slot);
+	glUniform1i(uniform, slot);
+}
+
 void OGLTexture::Unbind() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

@@ -19,6 +19,8 @@ namespace NCL {
 			OGLShader(const std::string& vert, const std::string& frag, const std::string& tesc = "", const std::string& tese = "", const std::string& geom = "");
 			~OGLShader();
 
+			virtual void Bind() override;
+			virtual void Unbind() override;
 			void ReloadShader() override;
 
 			bool LoadSuccess() const {

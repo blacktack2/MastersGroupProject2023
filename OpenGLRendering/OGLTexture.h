@@ -27,6 +27,8 @@ namespace NCL::Rendering {
 		~OGLTexture();
 
 		virtual void Bind() override;
+		virtual void Bind(GLint slot) override;
+		virtual void Bind(GLint slot, GLint uniform) override;
 		virtual void Unbind() override;
 
 		void SetEdgeClamp();

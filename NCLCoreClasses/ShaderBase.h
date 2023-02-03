@@ -23,6 +23,8 @@ namespace NCL::Rendering {
 		ShaderBase(const std::string& vert, const std::string& frag, const std::string& tesc, const std::string& tese, const std::string& geom);
 		virtual ~ShaderBase();
 
+		virtual void Bind() = 0;
+		virtual void Unbind() = 0;
 		virtual void ReloadShader() = 0;
 	protected:
 		std::string shaderFiles[(size_t)ShaderStage::Max];
