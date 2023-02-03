@@ -7,10 +7,10 @@
 using namespace NCL;
 using namespace CSC8503;
 
-Bullet::Bullet(GameWorld& gameWorld) : GameObject(gameWorld) {
+Bullet::Bullet() : GameObject() {
 }
 
-Bullet::Bullet(GameWorld& gameWorld, Bullet& other) : GameObject(gameWorld, other) {
+Bullet::Bullet(Bullet& other) : GameObject(other) {
 	lifespan = other.lifespan;
 }
 

@@ -6,9 +6,9 @@
 using namespace NCL;
 using namespace CSC8503;
 
-NetworkPlayer::NetworkPlayer(GameWorld& gameWorld, NetworkedGame* game, int num) : GameObject(gameWorld) {
+NetworkPlayer::NetworkPlayer(NetworkedGame* game, int playerID, int& scoreCounter) : PlayerObject(1, scoreCounter) {
 	this->game = game;
-	playerNum  = num;
+	this->playerID  = playerID;
 }
 
 NetworkPlayer::~NetworkPlayer()	{

@@ -16,9 +16,9 @@ namespace NCL::CSC8503 {
 	public:
 		typedef std::function<void(GameObject*)> overlap_func;
 
-		GameObject(GameWorld& gameWorld, std::string name = "");
+		GameObject(std::string name = "");
 
-		GameObject(GameWorld& gameWorld, GameObject& other);
+		GameObject(GameObject& other);
 
 		~GameObject();
 
@@ -62,6 +62,10 @@ namespace NCL::CSC8503 {
 
 		void SetPhysicsObject(PhysicsObject* newObject) {
 			physicsObject = newObject;
+		}
+
+		void SetNetworkObject(NetworkObject* newObject) {
+			networkObject = newObject;
 		}
 
 		const std::string& GetName() const {

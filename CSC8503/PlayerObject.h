@@ -8,7 +8,7 @@ namespace NCL {
 
 		class PlayerObject : public GameObject {
 		public:
-			PlayerObject(GameWorld& gameWorld, int id, int& scoreCounter);
+			PlayerObject(int id, int& scoreCounter);
 			~PlayerObject();
 
 			virtual void Update(float dt) override;

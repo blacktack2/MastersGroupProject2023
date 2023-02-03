@@ -19,7 +19,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-PlayerObject::PlayerObject(GameWorld& gameWorld, int id, int& scoreCounter) : GameObject(gameWorld),
+PlayerObject::PlayerObject(int id, int& scoreCounter) : GameObject(),
 id(id), scoreCounter(scoreCounter){
 	OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
@@ -102,7 +102,6 @@ void PlayerObject::GetInput(Vector3& dir) {
 	if (keyMap.GetButton(InputType::Jump) && onGround && jumpTimer <= 0.0f ) 
 	{
 		jumpTimer = jumpCooldown;
-		std::cout << "JUMP" << std::endl;
 		this->GetPhysicsObject()->ApplyLinearImpulse(upAxis * jumpSpeed);
 	}
 	if (keyMap.GetButton(InputType::Action1)) 
@@ -172,7 +171,7 @@ void PlayerObject::Shoot() {
 	if (projectileFireRateTimer>0)
 		return;
 	projectileFireRateTimer = projectileFireRate;
-	Bullet* ink = new Bullet(gameWorld, *(Bullet*)AssetLibrary::GetPrefab("bullet"));
+	Bullet* ink = new Bullet(*(Bullet*)AssetLibrary::GetPrefab("bullet"));
 	ink->SetLifespan(projectileLifespan);
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
 	ink->GetPhysicsObject()->ApplyLinearImpulse(transform.GetGlobalOrientation() * Vector3(0, 0, -1) * projectileForce);

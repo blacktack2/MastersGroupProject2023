@@ -11,6 +11,8 @@ namespace NCL {
 
 			Vector3		position;
 			Quaternion	orientation;
+			Vector3		linearVelocity;
+			Vector3		angularVelocity;
 			int			stateID;
 		};
 	}

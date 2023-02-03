@@ -15,7 +15,7 @@ namespace NCL {
 
 		class EnemyObject : public GameObject {
 		public:
-			EnemyObject(GameWorld& gameWorld, PlayerObject& player, NavigationMap& navMap);
+			EnemyObject(PlayerObject& player, NavigationMap& navMap);
 			~EnemyObject();
 
 			virtual void Update(float dt) override;

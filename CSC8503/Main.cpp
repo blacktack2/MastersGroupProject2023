@@ -282,6 +282,7 @@ protected:
 	std::string name;
 };
 
+/*
 void TestNetworking() {
 	NetworkBase::Initialise();
 
@@ -319,7 +320,7 @@ void TestNetworking() {
 	}
 	NetworkBase::Destroy();
 }
-
+*/
 /*
 
 The main function should look pretty familar to you!

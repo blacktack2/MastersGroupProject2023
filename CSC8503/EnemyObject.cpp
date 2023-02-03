@@ -8,7 +8,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-EnemyObject::EnemyObject(GameWorld& gameWorld, PlayerObject& player, NavigationMap& navMap) : GameObject(gameWorld),
+EnemyObject::EnemyObject(PlayerObject& player, NavigationMap& navMap) : GameObject(),
 player(player), navMap(navMap), stateMachine(new PatrolEnemyState(*this)) {
 	OnCollisionBeginCallback = [&](GameObject* other) {
 		if (dynamic_cast<Bullet*>(other)) {

@@ -1,14 +1,32 @@
 #pragma once
 #include "GameObject.h"
+#include "PhysicsObject.h"
 #include "NetworkBase.h"
 #include "NetworkState.h"
 
 namespace NCL::CSC8503 {
 	class GameObject;
 
+	struct HandshakePacket : public GamePacket {
+		int		objectID = -1;
+
+		HandshakePacket() {
+			type = Handshake_Message;
+			size = sizeof(HandshakePacket) - sizeof(GamePacket);
+		}
+	};
+	struct HandshakeAckPacket : public GamePacket {
+		int		objectID = -1;
+
+		HandshakeAckPacket() {
+			type = Handshake_Ack;
+			size = sizeof(HandshakeAckPacket) - sizeof(GamePacket);
+		}
+	};
 	struct FullPacket : public GamePacket {
 		int		objectID = -1;
 		NetworkState fullState;
+		int score = 0;
 
 		FullPacket() {
 			type = Full_State;
@@ -17,10 +35,10 @@ namespace NCL::CSC8503 {
 	};
 
 	struct DeltaPacket : public GamePacket {
-		int		fullID		= -1;
-		int		objectID	= -1;
-		char	pos[3];
-		char	orientation[4];
+		int			fullID		= -1;
+		int			objectID	= -1;
+		int			pos[3];
+		short int	orientation[4];
 
 		DeltaPacket() {
 			type = Delta_State;
@@ -30,9 +48,11 @@ namespace NCL::CSC8503 {
 
 	struct ClientPacket : public GamePacket {
 		int		lastID;
-		char	buttonstates[8];
+		unsigned int buttonstates;
+		unsigned short int yaw;
 
 		ClientPacket() {
+			type = Received_State;
 			size = sizeof(ClientPacket);
 		}
 	};
@@ -40,24 +60,27 @@ namespace NCL::CSC8503 {
 	class NetworkObject		{
 	public:
 		NetworkObject(GameObject& o, int id);
-
-		NetworkObject(NetworkObject& other, GameObject& o);
-
 		virtual ~NetworkObject();
 
 		//Called by clients
-		virtual bool ReadPacket(GamePacket& p);
+		virtual bool ReadPacket(GamePacket& p, float dt);
 		//Called by servers
 		virtual bool WritePacket(GamePacket** p, bool deltaFrame, int stateID);
 
 		void UpdateStateHistory(int minID);
+
+		int GetNetworkID(){
+			return networkID;
+		}
+
 	protected:
+
 		NetworkState& GetLatestNetworkState();
 
 		bool GetNetworkState(int frameID, NetworkState& state);
 
-		virtual bool ReadDeltaPacket(DeltaPacket &p);
-		virtual bool ReadFullPacket(FullPacket &p);
+		virtual bool ReadDeltaPacket(DeltaPacket &p, float dt);
+		virtual bool ReadFullPacket(FullPacket &p, float dt);
 
 		virtual bool WriteDeltaPacket(GamePacket**p, int stateID);
 		virtual bool WriteFullPacket(GamePacket**p);

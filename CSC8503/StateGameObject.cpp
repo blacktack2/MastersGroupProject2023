@@ -7,7 +7,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-StateGameObject::StateGameObject(GameWorld& gameWorld, std::string name) : GameObject(gameWorld, name) {
+StateGameObject::StateGameObject(std::string name) : GameObject( name) {
 	counter = 0.0f;
 	stateMachine = new StateMachine();
 

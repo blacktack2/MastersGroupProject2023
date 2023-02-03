@@ -5,8 +5,8 @@ namespace NCL {
 	namespace CSC8503 {
 		class Bullet : public GameObject {
 		public:
-			Bullet(GameWorld& gameWorld);
-			Bullet(GameWorld& gameWorld, Bullet& other);
+			Bullet();
+			Bullet(Bullet& other);
 			~Bullet();
 
 			virtual void Update(float dt) override;

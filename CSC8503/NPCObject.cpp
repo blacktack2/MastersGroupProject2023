@@ -13,8 +13,8 @@ using namespace CSC8503;
 
 static int id = 0;
 
-NPCObject::NPCObject(GameWorld& gameWorld) : GameObject(gameWorld, std::string("NPC").append(std::to_string(id++))), stateMachine() {
-	perceptionTrigger = new GameObject(gameWorld, std::string("PerceptionTrigger-").append(name));
+NPCObject::NPCObject() : GameObject( std::string("NPC").append(std::to_string(id++))), stateMachine() {
+	perceptionTrigger = new GameObject( std::string("PerceptionTrigger-").append(name));
 	perceptionTrigger->GetTransform().SetScale(Vector3(10.0f));
 	perceptionTrigger->SetBoundingVolume((CollisionVolume*)new SphereVolume(10.0f));
 	perceptionTrigger->SetPhysicsObject(new PhysicsObject(&perceptionTrigger->GetTransform(), perceptionTrigger->GetBoundingVolume(), true));

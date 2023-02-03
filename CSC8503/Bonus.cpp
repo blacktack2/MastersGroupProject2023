@@ -9,7 +9,7 @@ using namespace CSC8503;
 
 static int id = 0;
 
-BonusObject::BonusObject(GameWorld& gameWorld) : GameObject(gameWorld, std::string("Bonus").append(std::to_string(id++))) {
+BonusObject::BonusObject() : GameObject(std::string("Bonus").append(std::to_string(id++))) {
 	OnTriggerBeginCallback = [&](GameObject* other) {
 		if (PlayerObject* player = dynamic_cast<PlayerObject*>(other)) {
 			player->AddPoints(1000);
