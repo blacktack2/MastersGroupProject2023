@@ -16,7 +16,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-TutorialGame::TutorialGame()	{
+TutorialGame::TutorialGame(){
 	world = &GameWorld::instance();
 #ifdef USEVULKAN
 	renderer	= new GameTechVulkanRenderer(*world);
@@ -28,7 +28,7 @@ TutorialGame::TutorialGame()	{
 
 	forceMagnitude	= 10.0f;
 	inSelectionMode = false;
-	debugViewPoint = new paintHell::debug::DebugViewPoint();
+	debugViewPoint = &paintHell::debug::DebugViewPoint::Instance();
 
 	InitialiseAssets();
 }
@@ -51,7 +51,6 @@ TutorialGame::~TutorialGame() {
 	delete[] mazes;
 
 	delete bulletPrefab;
-	delete debugViewPoint;
 }
 
 void TutorialGame::InitWorld(InitMode mode) {

@@ -8,16 +8,25 @@ namespace paintHell::debug {
 	public:
 		bool enabled;
 
-		DebugViewPoint() { enabled = false; itemsPrinted = 0; }
-		~DebugViewPoint() {}
+		static DebugViewPoint& Instance() {
+			static DebugViewPoint INSTANCE;
+			return INSTANCE;
+		}
+		
 
-		void BeginFrame() { startingPoints.clear(); itemsPrinted = 0; }
+		void BeginFrame();
 		void MarkTime(std::string name);
 		void FinishTime(std::string name);
 
+		
+
 	private:
+		size_t CalculateMemory();
+
 		std::map<std::string, std::chrono::steady_clock::time_point> startingPoints;
 		int itemsPrinted;
+		DebugViewPoint();
+		~DebugViewPoint() {}
 	};
 }
 
