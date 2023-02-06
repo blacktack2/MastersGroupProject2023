@@ -27,6 +27,16 @@ namespace NCL {
 				MoveCamera();
 			}
 
+			void Test() {
+				RotateToCamera();
+				Vector3 dir = Vector3(0, 0, 0);
+				lastKey = keyMap.GetButtonState();
+				keyMap.Update();
+				GetInput(dir, keyMap.GetButtonState());
+				Move(dir);
+				MoveCamera();
+			}
+
 			int GetPlayerNum() const {
 				return playerID;
 			}

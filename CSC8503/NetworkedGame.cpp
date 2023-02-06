@@ -50,9 +50,9 @@ void NetworkedGame::StartAsServer() {
 	thisServer->RegisterPacketHandler(Player_Disconnected, this);
 	thisServer->RegisterPacketHandler(Handshake_Ack, this);
 
-	localPlayer = SpawnPlayer(0, true);
-	//((NetworkPlayer*)localPlayer)->isNetwork = false;
 	StartLevel();
+	
+	localPlayer = SpawnPlayer(0, true);
 }
 
 void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
@@ -110,6 +110,11 @@ void NetworkedGame::UpdateAsServer(float dt) {
 			SendSnapshot(true, i);
 		}
 	}
+
+	//move main player
+	((NetworkPlayer*)localPlayer)->Update(dt);
+	((NetworkPlayer*)localPlayer)->Test();
+
 }
 
 void NetworkedGame::UpdateAsClient(float dt) {
