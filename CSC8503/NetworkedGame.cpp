@@ -123,9 +123,10 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	newPacket.lastID = stateID;
 	keyMap.Update();
 	newPacket.buttonstates = keyMap.GetButtonState();
-	std::cout << "client: " << std::bitset<16>(newPacket.buttonstates) << std::endl;
+	//std::cout << "client: " << std::bitset<16>(newPacket.buttonstates) << std::endl;
+	std::cout << "client yaw: " << world->GetMainCamera()->GetYaw() << std::endl;
 	if (!Window::GetKeyboard()->KeyDown(KeyboardKeys::C)) {
-		newPacket.yaw = world->GetMainCamera()->GetYaw() * 100;
+		newPacket.yaw = world->GetMainCamera()->GetYaw() * 10;
 	}
 	else {
 		newPacket.yaw = NULL;
@@ -245,12 +246,12 @@ void NetworkedGame::StartLevel() {
 
 void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID) {
 	//rotation
-	
-	std::cout << "Server: " << std::bitset<16>(((ClientPacket*)payload)->buttonstates) << std::endl;
+	//std::cout << "Server: " << std::bitset<16>(((ClientPacket*)payload)->buttonstates) << std::endl;
+	std::cout << "Server yaw : " << ((ClientPacket*)payload)->yaw * 0.1 << std::endl;
 	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(((ClientPacket*)payload)->buttonstates);
 
 	if (((ClientPacket*)payload)->yaw != NULL) {
-		((NetworkPlayer*)serverPlayers[playerID])->RotateYaw(((ClientPacket*)payload)->yaw*0.01);
+		((NetworkPlayer*)serverPlayers[playerID])->RotateYaw(((ClientPacket*)payload)->yaw*0.1);
 	}
 
 	if (((ClientPacket*)payload)->lastID > stateIDs[playerID]) {
@@ -304,7 +305,6 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 			//send server object;
 			if (localPlayer) {
 				//send server player for new player
-				//std::cout << "Server sending create player " << 0 << " to : " << playerID << std::endl;
 				PlayerConnectionPacket existingPacket;
 				existingPacket.playerID = 0;
 				thisServer->SendPacket(&existingPacket, playerID, true);
@@ -355,7 +355,6 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		if (thisClient && localPlayer == nullptr) {
 			std::cout << name << " " << selfID << " Creating localhost player "<< selfID << std::endl;
 			localPlayer = SpawnPlayer(selfID,true);
-			lockedObject = localPlayer;
 		}
 	}
 }
@@ -379,6 +378,7 @@ void NetworkedGame::PlayerLeft(int playerID) {
 }
 
 void NetworkedGame::OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b) {
+	/*
 	if (thisServer) { //detected a collision between players!
 		MessagePacket newPacket;
 		newPacket.messageID = COLLISION_MSG;
@@ -389,6 +389,7 @@ void NetworkedGame::OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b) {
 		newPacket.playerID = b->GetPlayerNum();
 		thisClient->SendPacket(&newPacket);
 	}
+	*/
 }
 
 PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID) {

@@ -49,7 +49,7 @@ namespace NCL::CSC8503 {
 	struct ClientPacket : public GamePacket {
 		int		lastID;
 		unsigned int buttonstates;
-		unsigned short int yaw;
+		short int yaw;
 
 		ClientPacket() {
 			type = Received_State;

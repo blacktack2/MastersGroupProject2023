@@ -40,7 +40,7 @@ void GameClient::UpdateClient() {
 	}
 }
 
-void GameClient::SendPacket(GamePacket*  payload) {
+void GameClient::SendPacket(GamePacket* payload) {
 	ENetPacket* dataPacket = enet_packet_create(payload, payload->GetTotalSize(), 0);
 	enet_peer_send(netPeer, 0, dataPacket);
 }
