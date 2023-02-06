@@ -40,8 +40,6 @@ namespace NCL {
 				return globalMatrix;
 			}
 
-			
-
 			void UpdateGlobalOrientation();
 			void UpdateGlobalMatrix();
 			void UpdateLocalMatrix();

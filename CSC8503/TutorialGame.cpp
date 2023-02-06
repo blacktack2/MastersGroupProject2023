@@ -521,7 +521,7 @@ StateGameObject* TutorialGame::AddStateObjectToWorld(const Vector3& position) {
 PlayerObject* TutorialGame::AddPlayerToWorld(const Vector3& position, bool cameraFollow) {
 	static int id = 0;
 
-	PlayerObject* character = new PlayerObject(id++, score);
+	PlayerObject* character = new PlayerObject(id++);
 	SphereVolume* volume = new SphereVolume(1.0f, CollisionLayer::Player);
 
 	character->SetBoundingVolume((CollisionVolume*)volume);

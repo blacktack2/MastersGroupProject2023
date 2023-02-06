@@ -4,13 +4,18 @@
 using namespace NCL;
 using namespace CSC8503;
 
-NetworkPlayer::NetworkPlayer(NetworkedGame* game, int playerID) {
+NetworkPlayer::NetworkPlayer(NetworkedGame* game, int playerID):PlayerObject(playerID) {
 	this->game = game;
 	this->playerID = playerID;
+
 }
 
 NetworkPlayer::~NetworkPlayer() {
 
+}
+
+void NetworkPlayer::Update(float dt) {
+	PlayerObject::Update(dt);
 }
 
 void NetworkPlayer::OnCollisionBegin(GameObject* otherObject) {

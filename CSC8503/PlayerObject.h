@@ -7,7 +7,7 @@ namespace NCL {
 
 		class PlayerObject : public GameObject {
 		public:
-			PlayerObject(int id, int& scoreCounter);
+			PlayerObject(int id);
 			~PlayerObject();
 
 			virtual void Update(float dt) override;
@@ -39,7 +39,7 @@ namespace NCL {
 			//jump related 
 			bool onGround = false;
 			float jumpTimer = 0.0f;
-			const float jumpCooldown = 0.1f;
+			const float jumpCooldown = 0.005f;
 			float jumpSpeed = 10.0f;
 
 			//movement related
@@ -64,7 +64,6 @@ namespace NCL {
 			bool networkPlayer = false;
 
 			// legacy variables
-			int& scoreCounter;
 
 			std::set<int> collidedWith;
 

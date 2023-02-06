@@ -19,8 +19,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-PlayerObject::PlayerObject(int id, int& scoreCounter) : GameObject(),
-id(id), scoreCounter(scoreCounter){
+PlayerObject::PlayerObject(int id) : GameObject(), id(id){
 	OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
 	};
@@ -151,7 +150,7 @@ void PlayerObject::RotateToCamera() {
 void PlayerObject::AddPoints(int points) {
 	if (lastGoosed > gooseDelay) {
 		lastGoosed = 0.0f;
-		scoreCounter += points;
+		//scoreCounter += points;
 	}
 }
 

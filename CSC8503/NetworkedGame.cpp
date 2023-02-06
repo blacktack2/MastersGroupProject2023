@@ -53,9 +53,7 @@ void NetworkedGame::StartAsServer() {
 
 void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient = new GameClient();
-	std::cout << "client connection" << std::endl;
 	thisClient->Connect(a, b, c, d, NetworkBase::GetDefaultPort());
-	std::cout << "client connection2" << std::endl;
 	thisClient->RegisterPacketHandler(Delta_State, this);
 	thisClient->RegisterPacketHandler(Full_State, this);
 	thisClient->RegisterPacketHandler(Player_Connected, this);
@@ -85,8 +83,8 @@ void NetworkedGame::UpdateGame(float dt) {
 	if (!thisClient && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F10)) {
 		SetName("client");
 		StartAsClient(127,0,0,1);
+		
 	}
-
 	TutorialGame::UpdateGame(dt);
 }
 
@@ -111,6 +109,7 @@ void NetworkedGame::UpdateAsServer(float dt) {
 }
 
 void NetworkedGame::UpdateAsClient(float dt) {
+	std::cout <<"selfID"<< selfID << std::endl;
 	thisClient->UpdateClient();
 	ClientPacket newPacket;
 	newPacket.lastID = stateID;
@@ -227,7 +226,7 @@ GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 }
 
 void NetworkedGame::StartLevel() {
-	world->ClearAndErase();
+	world->Clear();
 	physics->Clear();
 	if (thisServer) {
 		localPlayer = SpawnPlayer(0, true);
@@ -386,8 +385,8 @@ void NetworkedGame::OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b) {
 	}
 }
 
-NetworkPlayer* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID) {
-	NetworkPlayer* character = new NetworkPlayer( this, playerID, score);
+PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID) {
+	NetworkPlayer* character = new NetworkPlayer( this, playerID);
 	SphereVolume* volume = new SphereVolume(1.0f, CollisionLayer::Player);
 
 	character->SetBoundingVolume((CollisionVolume*)volume);

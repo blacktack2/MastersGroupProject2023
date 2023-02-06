@@ -8,11 +8,12 @@ namespace NCL {
 		class GameWorld;
 		class NetworkedGame;
 
-		class NetworkPlayer : public GameObject {
+		class NetworkPlayer : public PlayerObject {
 		public:
 			NetworkPlayer(NetworkedGame* game,int playerID);
 			~NetworkPlayer();
 
+			void Update(float dt);
 			void OnCollisionBegin(GameObject* otherObject) override;
 
 			int GetPlayerNum() const {

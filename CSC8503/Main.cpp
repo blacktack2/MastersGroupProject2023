@@ -353,7 +353,7 @@ int main() {
 		return -1;
 	}	
 
-	TestNetworking();
+	//TestNetworking();
 
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
