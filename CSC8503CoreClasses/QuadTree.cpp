@@ -23,21 +23,24 @@ void QuadTreeNode::Init(Vector2 pos, Vector2 size) {
 	contents.clear();
 }
 
-void QuadTreeNode::Insert(GameObject* object, const Vector2& objectPos, const Vector2& objectSize, int depthLeft, int maxSize) {
+void QuadTreeNode::Insert(GameObject* object, const Vector2& objectPos, const Vector2& objectSize, int depthLeft, int maxSize, bool isStatic) {
 	if (!CollisionDetection::AASquareTest(objectPos, position, objectSize, size)) {
 		return;
 	}
+
 	if (isSplit) {
 		for (int i = 0; i < 4; i++) {
-			children[i]->Insert(object, objectPos, objectSize, depthLeft - 1, maxSize);
+			children[i]->Insert(object, objectPos, objectSize, depthLeft - 1, maxSize, isStatic);
 		}
 	} else {
-		contents.emplace_back(object, objectPos, objectSize);
-		if ((int)contents.size() > 4 && depthLeft > 0) {
+		if (isStatic) staticContents.emplace_back(object, objectPos, objectSize);
+		else contents.emplace_back(object, objectPos, objectSize);
+
+		if ((int)contents.size() + (int)staticContents.size() > 4 && depthLeft > 0) {
 			Split();
 			for (auto& entry : contents) {
 				for (int c = 0; c < 4; c++) {
-					children[c]->Insert(entry.object, entry.pos, entry.size, depthLeft - 1, maxSize);
+					children[c]->Insert(entry.object, entry.pos, entry.size, depthLeft - 1, maxSize, isStatic);
 				}
 			}
 			contents.clear();

@@ -18,7 +18,7 @@ NPCObject::NPCObject(GameWorld& gameWorld) : GameObject(gameWorld, std::string("
 	perceptionTrigger->GetTransform().SetScale(Vector3(10.0f));
 	perceptionTrigger->SetBoundingVolume((CollisionVolume*)new SphereVolume(10.0f));
 	perceptionTrigger->SetPhysicsObject(new PhysicsObject(&perceptionTrigger->GetTransform(), perceptionTrigger->GetBoundingVolume(), true));
-	perceptionTrigger->GetPhysicsObject()->SetInverseMass(0);
+	perceptionTrigger->GetPhysicsObject()->inverseMass = 0;
 	perceptionTrigger->GetPhysicsObject()->InitAxisAlignedInertia();
 	perceptionTrigger->OnTriggerBeginCallback = [&](GameObject* other) {
 		if (objectOfFear == nullptr && (dynamic_cast<PlayerObject*>(other) || dynamic_cast<EnemyObject*>(other))) {

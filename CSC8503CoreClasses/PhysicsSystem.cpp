@@ -65,10 +65,6 @@ int realHZ		= idealHZ;
 float realDT	= idealDT;
 
 void PhysicsSystem::Update(float dt) {	
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::N)) {
-		useSimpleContainer = !useSimpleContainer;
-		std::cout << "Setting broad container to " << useSimpleContainer << std::endl;
-	}
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::I)) {
 		constraintIterationCount--;
 		std::cout << "Setting constraint iterations to " << constraintIterationCount << std::endl;
@@ -79,9 +75,6 @@ void PhysicsSystem::Update(float dt) {
 	}
 
 	dTOffset += dt; //We accumulate time delta here - there might be remainders from previous frame!
-
-	GameTimer t;
-	t.GetTimeDeltaSeconds();
 
 	UpdateObjectAABBs();
 	int iteratorCount = 0;
@@ -108,11 +101,8 @@ void PhysicsSystem::Update(float dt) {
 
 	UpdateCollisionList(); //Remove any old collisions
 
-	t.Tick();
-	float updateTime = t.GetTimeDeltaSeconds();
-
 	//Uh oh, physics is taking too long...
-	if (updateTime > realDT) {
+	if (dt > realDT) {
 		realHZ /= 2;
 		realDT *= 2;
 		std::cout << "Dropping iteration count due to long physics time...(now " << realHZ << ")\n";
@@ -293,7 +283,7 @@ void PhysicsSystem::BroadPhase() {
 
 	gameWorld.OperateOnDynamicTree(
 		[&](std::list<QuadTreeEntry>& data, const Vector2& subsetPos, const Vector2& subsetSize) {
-			CollisionDetection::CollisionInfo collisionInfo{};
+			CollisionDetection::CollisionInfo collisionInfo;
 			for (auto i = data.begin(); i != data.end(); i++) {
 				for (auto j = std::next(i); j != data.end(); j++) {
 					auto a = i->object;
@@ -309,7 +299,7 @@ void PhysicsSystem::BroadPhase() {
 			}
 			gameWorld.OperateOnStaticTree(
 				[&](std::list<QuadTreeEntry>& staticData, const Vector2& staticPos, const Vector2& staticSize) {
-					CollisionDetection::CollisionInfo collisionInfo{};
+					CollisionDetection::CollisionInfo collisionInfo;
 					for (auto i = data.begin(); i != data.end(); i++) {
 						for (auto j = staticData.begin(); j != staticData.end(); j++) {
 							auto a = i->object;

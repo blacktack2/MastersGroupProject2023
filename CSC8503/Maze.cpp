@@ -24,8 +24,8 @@ Maze::Maze(GameWorld& gameWorld, float size, float height, int boundsX, int boun
 				cell->SetBoundingVolume((CollisionVolume*)new AABBVolume(cellSize * 0.5f));
 				cell->SetPhysicsObject(new PhysicsObject(&cell->GetTransform(), cell->GetBoundingVolume()));
 				cell->SetRenderObject(new RenderObject(&cell->GetTransform(), AssetLibrary::GetMesh("cube"), AssetLibrary::GetTexture("basic"), AssetLibrary::GetShader("basic")));
-				cell->GetPhysicsObject()->SetStatic();
-				cell->GetPhysicsObject()->SetInverseMass(0);
+				cell->GetPhysicsObject()->isStatic = true;
+				cell->GetPhysicsObject()->inverseMass = 0;
 				cell->GetRenderObject()->SetColour(Vector4(0, 0.6f, 0, 1));
 				cell->GetTransform().SetPosition(position + cellSize * Vector3(x, 0.5f, z))
 					                .SetScale(cellSize);

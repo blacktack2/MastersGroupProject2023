@@ -32,7 +32,7 @@ namespace NCL {
 			~QuadTreeNode();
 
 			void Init(Vector2 pos, Vector2 size);
-			void Insert(GameObject* object, const Vector2& objectPos, const Vector2& objectSize, int depthLeft, int maxSize);
+			void Insert(GameObject* object, const Vector2& objectPos, const Vector2& objectSize, int depthLeft, int maxSize, bool isStatic = false);
 
 			void OperateOnContents(QuadTreeFunc& func);
 			void OperateOnContents(QuadTreeFunc& func, const Vector2& subsetPos, const Vector2& subsetSize);
@@ -46,7 +46,8 @@ namespace NCL {
 		protected:
 			NodeStack& nodeStack;
 
-			std::list<QuadTreeEntry> contents{};
+			std::list<QuadTreeEntry> contents;
+			std::list<QuadTreeEntry> staticContents;
 
 			Vector2 position;
 			Vector2 size;

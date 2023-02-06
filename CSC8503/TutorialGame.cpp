@@ -202,8 +202,8 @@ void TutorialGame::InitialisePrefabs() {
 
 	bulletPrefab->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.8f, 1.0f));
 
-	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
-	bulletPrefab->GetPhysicsObject()->SetGravWeight(0.1f);
+	bulletPrefab->GetPhysicsObject()->inverseMass = 1.0f;
+	bulletPrefab->GetPhysicsObject()->gravScale = 0.1f;
 	bulletPrefab->GetPhysicsObject()->InitCapsuleInertia();
 
 	AssetLibrary::AddPrefab("bullet", bulletPrefab);
@@ -408,8 +408,8 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
 	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));
 
-	floor->GetPhysicsObject()->SetStatic();
-	floor->GetPhysicsObject()->SetInverseMass(0);
+	floor->GetPhysicsObject()->isStatic = true;
+	floor->GetPhysicsObject()->inverseMass = 0;
 	floor->GetPhysicsObject()->InitCubeInertia();
 
 	world->AddGameObject(floor);
@@ -432,7 +432,7 @@ GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius
 	sphere->SetRenderObject(new RenderObject(&sphere->GetTransform(), sphereMesh, basicTex, basicShader));
 	sphere->SetPhysicsObject(new PhysicsObject(&sphere->GetTransform(), sphere->GetBoundingVolume()));
 
-	sphere->GetPhysicsObject()->SetInverseMass(inverseMass);
+	sphere->GetPhysicsObject()->inverseMass = inverseMass;
 	sphere->GetPhysicsObject()->InitSphereInertia();
 
 	world->AddGameObject(sphere);
@@ -453,7 +453,7 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, basicTex, basicShader));
 	cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
 
-	cube->GetPhysicsObject()->SetInverseMass(inverseMass);
+	cube->GetPhysicsObject()->inverseMass = inverseMass;
 	if (axisAligned) {
 		cube->GetPhysicsObject()->InitAxisAlignedInertia();
 		cube->GetRenderObject()->SetColour(Vector4(0.8f, 0.8f, 1, 1));
@@ -461,7 +461,7 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 		cube->GetPhysicsObject()->InitCubeInertia();
 	}
 	if (inverseMass == 0) {
-		cube->GetPhysicsObject()->SetStatic();
+		cube->GetPhysicsObject()->isStatic = true;
 		cube->GetRenderObject()->SetColour(Vector4(1, 0.8f, 0.8f, 1));
 	}
 
@@ -485,7 +485,7 @@ GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfH
 	capsule->SetRenderObject(new RenderObject(&capsule->GetTransform(), capsuleMesh, basicTex, basicShader));
 	capsule->SetPhysicsObject(new PhysicsObject(&capsule->GetTransform(), capsule->GetBoundingVolume()));
 
-	capsule->GetPhysicsObject()->SetInverseMass(inverseMass);
+	capsule->GetPhysicsObject()->inverseMass = inverseMass;
 	capsule->GetPhysicsObject()->InitCapsuleInertia();
 
 	world->AddGameObject(capsule);
@@ -504,7 +504,7 @@ StateGameObject* TutorialGame::AddStateObjectToWorld(const Vector3& position) {
 
 	sgo->GetTransform().SetPosition(position);
 
-	sgo->GetPhysicsObject()->SetInverseMass(5.0f);
+	sgo->GetPhysicsObject()->inverseMass = 5.0f;
 	sgo->GetPhysicsObject()->InitSphereInertia();
 
 	world->AddGameObject(sgo);
@@ -529,7 +529,7 @@ PlayerObject* TutorialGame::AddPlayerToWorld(const Vector3& position, bool camer
 
 	character->GetRenderObject()->SetColour(Vector4(1, 0.9f, 0.8f, 1));
 
-	character->GetPhysicsObject()->SetInverseMass(1);
+	character->GetPhysicsObject()->inverseMass = 1.0f;
 	character->GetPhysicsObject()->InitSphereInertia();
 
 	world->AddGameObject(character);
@@ -557,7 +557,7 @@ EnemyObject* TutorialGame::AddEnemyToWorld(const Vector3& position, NavigationMa
 
 	enemy->GetRenderObject()->SetColour(Vector4(1, 0.9f, 0.8f, 1));
 
-	enemy->GetPhysicsObject()->SetInverseMass(1);
+	enemy->GetPhysicsObject()->inverseMass = 1.0f;
 	enemy->GetPhysicsObject()->InitSphereInertia();
 
 	world->AddGameObject(enemy);
@@ -580,7 +580,7 @@ NPCObject* TutorialGame::AddNPCToWorld(const Vector3& position) {
 
 	npc->GetRenderObject()->SetColour(Vector4(1, 1, 0.8f, 1));
 
-	npc->GetPhysicsObject()->SetInverseMass(1);
+	npc->GetPhysicsObject()->inverseMass = 1.0f;
 	npc->GetPhysicsObject()->InitCapsuleInertia();
 
 	world->AddGameObject(npc);
@@ -603,7 +603,7 @@ GameObject* TutorialGame::AddBonusToWorld(const Vector3& position) {
 
 	bonus->GetRenderObject()->SetColour(Vector4(1, 0.2f, 0.2f, 1));
 
-	bonus->GetPhysicsObject()->SetInverseMass(0.0f);
+	bonus->GetPhysicsObject()->inverseMass = 0.0f;
 	bonus->GetPhysicsObject()->InitSphereInertia();
 
 	world->AddGameObject(bonus);
@@ -624,9 +624,9 @@ GameObject* TutorialGame::AddTriggerToWorld(const Vector3& position, float size)
 	trigger->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.5f, 0.5f));
 
 	trigger->SetPhysicsObject(new PhysicsObject(&trigger->GetTransform(), trigger->GetBoundingVolume(), true));
-	trigger->GetPhysicsObject()->SetInverseMass(0);
+	trigger->GetPhysicsObject()->inverseMass = 0.0f;
 	trigger->GetPhysicsObject()->InitAxisAlignedInertia();
-	trigger->GetPhysicsObject()->SetStatic();
+	trigger->GetPhysicsObject()->isStatic = true;
 
 	world->AddGameObject(trigger);
 
