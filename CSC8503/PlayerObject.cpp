@@ -12,18 +12,15 @@
 
 #include "RenderObject.h"
 
-#include "InputKeyMap.h"
-
 #include <iostream>
 
 using namespace NCL;
 using namespace CSC8503;
 
-PlayerObject::PlayerObject(int id) : GameObject(), id(id){
+PlayerObject::PlayerObject(int id) : GameObject(), id(id), keyMap(paintHell::InputKeyMap::instance()) {
 	OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
 	};
-
 }
 
 PlayerObject::~PlayerObject() {
@@ -34,11 +31,16 @@ void PlayerObject::Update(float dt) {
 	jumpTimer -= dt;
 	projectileFireRateTimer -= dt;
 	CheckGround();
-	if (!networkPlayer) {
+	if (!isNetwork) {
 		RotateToCamera();
-		Move();
+		Vector3 dir = Vector3(0, 0, 0);
+		lastKey = keyMap.GetButtonState();
+		keyMap.Update();
+		GetInput(dir, keyMap.GetButtonState());
+		Move(dir);
 		MoveCamera();
 	}
+	
 	
 }
 
@@ -52,9 +54,7 @@ void PlayerObject::MoveTo(Vector3 position) {
 		
 }
 
-void PlayerObject::Move() {
-	Vector3 dir = Vector3(0,0,0);
-	GetInput(dir);
+void PlayerObject::Move(Vector3 dir) {
 	this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
 	if (lastDir != Vector3(0, 0, 0)) {
 		//Vector3 stopDir = dir - lastDir;
@@ -63,7 +63,6 @@ void PlayerObject::Move() {
 		}
 		
 	}
-
 	lastDir = dir;
 }
 
@@ -73,10 +72,9 @@ void PlayerObject::MoveCamera() {
 	}
 }
 
-void PlayerObject::GetInput(Vector3& dir) {
+void PlayerObject::GetInput(Vector3& dir, unsigned int keyPress) {
 	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
-	lastKey = keyMap.GetButtonState();
-	keyMap.Update();
+	
 	Vector3 fwdAxis = this->GetTransform().GetGlobalOrientation() * Vector3(0, 0, -1);
 
 	Vector3 leftAxis = this->GetTransform().GetGlobalOrientation() * Vector3(-1, 0, 0);
@@ -85,32 +83,32 @@ void PlayerObject::GetInput(Vector3& dir) {
 
 	isFreeLook = false;
 
-	if (keyMap.GetButton(InputType::Foward)) 
+	if (keyMap.CheckButtonPressed(keyPress, InputType::Foward))
 	{
 		dir += fwdAxis;
 	}
-	if (keyMap.GetButton (InputType::Backward) )
+	if (keyMap.CheckButtonPressed(keyPress, InputType::Backward) )
 	{
 		dir -= fwdAxis;
 	}
-	if (keyMap.GetButton(InputType::Left)) 
+	if (keyMap.CheckButtonPressed(keyPress, InputType::Left))
 	{
 		dir += leftAxis;
 	}
-	if (keyMap.GetButton(InputType::Right)) 
+	if (keyMap.CheckButtonPressed(keyPress, InputType::Right))
 	{
 		dir -= leftAxis;
 	}
-	if (keyMap.GetButton(InputType::Jump) && onGround && jumpTimer <= 0.0f ) 
+	if (keyMap.CheckButtonPressed(keyPress,InputType::Jump) && onGround && jumpTimer <= 0.0f ) 
 	{
 		jumpTimer = jumpCooldown;
 		this->GetPhysicsObject()->ApplyLinearImpulse(upAxis * jumpSpeed);
 	}
-	if (keyMap.GetButton(InputType::Action1)) 
+	if (keyMap.CheckButtonPressed(keyPress,InputType::Action1)) 
 	{
 		Shoot();
 	}
-	if (keyMap.GetButton(InputType::FreeLook))
+	if (keyMap.CheckButtonPressed(keyPress,InputType::FreeLook))
 	{
 		isFreeLook = true;
 	}

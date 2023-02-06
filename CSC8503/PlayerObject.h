@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "InputKeyMap.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -10,7 +11,7 @@ namespace NCL {
 			PlayerObject(int id);
 			~PlayerObject();
 
-			virtual void Update(float dt) override;
+			void Update(float dt);
 
 			void AddPoints(int points);
 
@@ -21,12 +22,9 @@ namespace NCL {
 			};
 
 		protected:
-			int id;
-
-		private:
 			void MoveTo(Vector3 position);
-			void Move();
-			void GetInput(Vector3& dir);
+			void Move(Vector3 dir);
+			void GetInput(Vector3& dir, unsigned int keyPress = InputType::Empty);
 
 			void RotateYaw(float yaw);
 			void RotateToCamera();
@@ -35,6 +33,17 @@ namespace NCL {
 
 			void CheckGround();
 			void Shoot();
+
+			int id;
+
+			//network
+			bool isNetwork = false;
+
+			//keymap
+			paintHell::InputKeyMap& keyMap;
+			unsigned int lastKey;
+
+		private:
 
 			//jump related 
 			bool onGround = false;
@@ -45,8 +54,7 @@ namespace NCL {
 			//movement related
 			float moveSpeed = 0.4f;
 			Vector3 lastDir = Vector3(0,0,0);
-			unsigned int lastKey;
-
+			
 			//camera related
 			bool hasCamera = false;
 			bool isFreeLook = false;
@@ -59,9 +67,6 @@ namespace NCL {
 			float projectileLifespan = 5.0f;
 			float projectileFireRate = 0.1f;
 			float projectileFireRateTimer = 0;
-
-			//network
-			bool networkPlayer = false;
 
 			// legacy variables
 

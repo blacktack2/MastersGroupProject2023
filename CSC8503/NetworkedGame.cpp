@@ -8,6 +8,8 @@
 #include "PlayerObject.h"
 #include "TutorialGame.h"
 
+#include <bitset>
+
 #define COLLISION_MSG 30
 #define OBJECTID_START 10; //reserve 0-4 for playerID
 
@@ -48,6 +50,8 @@ void NetworkedGame::StartAsServer() {
 	thisServer->RegisterPacketHandler(Player_Disconnected, this);
 	thisServer->RegisterPacketHandler(Handshake_Ack, this);
 
+	localPlayer = SpawnPlayer(0, true);
+	//((NetworkPlayer*)localPlayer)->isNetwork = false;
 	StartLevel();
 }
 
@@ -109,12 +113,12 @@ void NetworkedGame::UpdateAsServer(float dt) {
 }
 
 void NetworkedGame::UpdateAsClient(float dt) {
-	std::cout <<"selfID"<< selfID << std::endl;
 	thisClient->UpdateClient();
 	ClientPacket newPacket;
 	newPacket.lastID = stateID;
-	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	keyMap.Update();
 	newPacket.buttonstates = keyMap.GetButtonState();
+	std::cout << "client: " << std::bitset<16>(newPacket.buttonstates) << std::endl;
 	if (!Window::GetKeyboard()->KeyDown(KeyboardKeys::C)) {
 		newPacket.yaw = world->GetMainCamera()->GetYaw() * 100;
 	}
@@ -217,7 +221,6 @@ GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 	else if (playerID == 3) {
 		colour = Vector4(0, 1, 1, 1);
 	}
-	//GameObject* newPlayer = AddPlayerToWorld(Vector3(0, 0, 0));
 	GameObject* newPlayer = AddNetworkPlayerToWorld(Vector3(5, 5, 5), isSelf, playerID);
 	networkObjects.push_back(new NetworkObject(*newPlayer, playerID));
 	serverPlayers[playerID] = newPlayer;
@@ -228,9 +231,6 @@ GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 void NetworkedGame::StartLevel() {
 	world->Clear();
 	physics->Clear();
-	if (thisServer) {
-		localPlayer = SpawnPlayer(0, true);
-	}
 	int id = OBJECTID_START;
 	int idOffset = 0;
 	InitGameExamples();
@@ -240,10 +240,14 @@ void NetworkedGame::StartLevel() {
 
 void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID) {
 	//rotation
+	
+	std::cout << "Server: " << std::bitset<16>(((ClientPacket*)payload)->buttonstates) << std::endl;
+	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(((ClientPacket*)payload)->buttonstates);
+
 	if (((ClientPacket*)payload)->yaw != NULL) {
-	//	((NetworkPlayer*)serverPlayers[playerID])->RotateTo(((ClientPacket*)payload)->yaw*0.01);
+		((NetworkPlayer*)serverPlayers[playerID])->RotateYaw(((ClientPacket*)payload)->yaw*0.01);
 	}
-	//PlayerObjectMovement(((NetworkPlayer*)serverPlayers[playerID]), ((ClientPacket*)payload)->buttonstates);
+
 	if (((ClientPacket*)payload)->lastID > stateIDs[playerID]) {
 		stateIDs[playerID] = ((ClientPacket*)payload)->lastID;
 	}
@@ -348,9 +352,6 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 			localPlayer = SpawnPlayer(selfID,true);
 			lockedObject = localPlayer;
 		}
-		//sendAck
-		//HandshakeAckPacket payload;
-		//thisClient->SendPacket(&payload);
 	}
 }
 

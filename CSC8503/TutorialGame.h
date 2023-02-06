@@ -88,6 +88,8 @@ namespace NCL {
 			PhysicsSystem*		physics;
 			GameWorld*			world;
 
+			paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+
 			GameState gameState;
 			bool inSelectionMode;
 

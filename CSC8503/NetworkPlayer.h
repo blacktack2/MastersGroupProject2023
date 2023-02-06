@@ -16,6 +16,17 @@ namespace NCL {
 			void Update(float dt);
 			void OnCollisionBegin(GameObject* otherObject) override;
 
+			void RotateYaw(float yaw) {
+				PlayerObject::RotateYaw(yaw);
+			}
+
+			void MoveInput(unsigned int keyPress) {
+				Vector3 dir = Vector3(0, 0, 0);
+				GetInput(dir, keyPress);
+				Move(dir);
+				MoveCamera();
+			}
+
 			int GetPlayerNum() const {
 				return playerID;
 			}
