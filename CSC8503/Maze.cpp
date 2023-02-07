@@ -23,7 +23,7 @@ Maze::Maze(GameWorld& gameWorld, float size, float height, int boundsX, int boun
 				GameObject* cell = new GameObject(gameWorld, std::string("MazeCell[").append(std::to_string(x)).append(",").append(std::to_string(z)).append("]"));
 				cell->SetBoundingVolume((CollisionVolume*)new AABBVolume(cellSize * 0.5f));
 				cell->SetPhysicsObject(new PhysicsObject(&cell->GetTransform(), cell->GetBoundingVolume()));
-				cell->SetRenderObject(new RenderObject(&cell->GetTransform(), AssetLibrary::GetMesh("cube"), AssetLibrary::GetTexture("basic"), AssetLibrary::GetShader("basic")));
+				cell->SetRenderObject(new RenderObject(&cell->GetTransform(), AssetLibrary::GetMesh("cube"), AssetLibrary::GetTexture("basic"), nullptr));
 				cell->GetPhysicsObject()->SetStatic();
 				cell->GetPhysicsObject()->SetInverseMass(0);
 				cell->GetRenderObject()->SetColour(Vector4(0, 0.6f, 0, 1));

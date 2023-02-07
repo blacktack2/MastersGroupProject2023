@@ -14,6 +14,11 @@
 #include "OGLTexture.h"
 
 #include "SkyboxRPass.h"
+#include "ModelRPass.h"
+#include "LightingRPass.h"
+#include "GBufferRPass.h"
+#include "DebugRPass.h"
+#include "PresentRPass.h"
 
 #include "GameWorld.h"
 
@@ -42,14 +47,10 @@ namespace NCL::CSC8503 {
 
 		void RenderFrame() override;
 
-		OGLShader* defaultShader;
-
 		GameWorld& gameWorld;
 
 		void BuildObjectList();
 		void SortObjectList();
-		void RenderShadowMap();
-		void RenderCamera();
 
 		void SetDebugStringBufferSizes(size_t newVertCount);
 		void SetDebugLineBufferSizes(size_t newVertCount);
@@ -57,18 +58,11 @@ namespace NCL::CSC8503 {
 		vector<const RenderObject*> activeObjects;
 
 		SkyboxRPass* skyboxPass;
-
-		OGLShader* debugShader;
-		OGLMesh*   skyboxMesh;
-
-		OGLShader* shadowShader;
-		OGLTexture* shadowTex;
-		OGLFrameBuffer* shadowFBO;
-		Matrix4 shadowMatrix;
-
-		Vector4 lightColour;
-		float   lightRadius;
-		Vector3 lightPosition;
+		ModelRPass* modelPass;
+		LightingRPass* lightingPass;
+		GBufferRPass* gbufferPass;
+		// DebugRPass* debugPass;
+		PresentRPass* presentPass;
 
 		vector<Vector3> debugLineData;
 

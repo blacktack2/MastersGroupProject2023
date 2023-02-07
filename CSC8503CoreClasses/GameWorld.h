@@ -1,12 +1,15 @@
 #pragma once
 #include "CollisionDetection.h"
 #include "GameObject.h"
+#include "Light.h"
 #include "QuadTree.h"
 #include "Ray.h"
 #include "StateMachine.h"
 
+#include <functional>
 #include <random>
 #include <string>
+#include <vector>
 
 namespace NCL {
 	class Camera;
@@ -17,7 +20,12 @@ namespace NCL {
 
 
 		typedef std::function<void(GameObject*)> GameObjectFunc;
+		typedef std::function<void(Constraint*)> ConstraintFunc;
+		typedef std::function<void(const Light&)> LightFunc;
+
 		typedef std::vector<GameObject*>::const_iterator GameObjectIterator;
+		typedef std::vector<Constraint*>::const_iterator ConstraintIterator;
+		typedef std::vector<Light>::const_iterator LightIterator;
 
 		class GameWorld {
 		private:
@@ -38,6 +46,9 @@ namespace NCL {
 			void AddConstraint(Constraint* c);
 			void RemoveConstraint(Constraint* c, bool andDelete = false);
 			void RemoveConstraint(std::vector<Constraint*>::const_iterator c, bool andDelete = false);
+
+			Light& AddLight(const Light& l);
+			void RemoveLight(std::vector<Light>::const_iterator l);
 
 			Camera* GetMainCamera() const {
 				return mainCamera;
@@ -64,14 +75,12 @@ namespace NCL {
 			void OperateOnDynamicTree(QuadTreeNode::QuadTreeFunc func, const Vector2* subsetPos = nullptr, const Vector2* subsetSize = nullptr);
 
 			void OperateOnContents(GameObjectFunc f);
+			void OperateOnConstraints(ConstraintFunc f);
+			void OperateOnLights(LightFunc f);
 
-			void GetObjectIterators(
-				GameObjectIterator& first,
-				GameObjectIterator& last) const;
-
-			void GetConstraintIterators(
-				std::vector<Constraint*>::const_iterator& first,
-				std::vector<Constraint*>::const_iterator& last) const;
+			void GetObjectIterators(GameObjectIterator& first, GameObjectIterator& last) const;
+			void GetConstraintIterators(ConstraintIterator& first, ConstraintIterator& last) const;
+			void GetLightIterators(LightIterator& first, LightIterator& last) const;
 
 			inline int GetWorldStateID() const {
 				return worldStateCounter;
@@ -83,6 +92,7 @@ namespace NCL {
 		protected:
 			std::vector<GameObject*> gameObjects;
 			std::vector<Constraint*> constraints;
+			std::vector<Light> lights;
 
 			QuadTree dynamicQuadTree;
 			QuadTree staticQuadTree;

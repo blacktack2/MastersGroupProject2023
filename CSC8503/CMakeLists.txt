@@ -6,6 +6,7 @@ set(PROJECT_NAME CSC8503)
 set(Header_Files
 	"Bullet.h"
 	"Bonus.h"
+    "DebugRPass.h"
 	"EnemyObject.h"
     "GameTechRenderer.h"
     "GBufferRPass.h"
@@ -16,6 +17,7 @@ set(Header_Files
     "NetworkPlayer.h"
 	"NPCObject.h"
 	"PlayerObject.h"
+    "PresentRPass.h"
     "SkyboxRPass.h"
     "StateGameObject.h"
     "TutorialGame.h"
@@ -25,6 +27,7 @@ source_group("Header Files" FILES ${Header_Files})
 set(Source_Files
 	"Bullet.cpp"
 	"Bonus.cpp"
+    "DebugRPass.cpp"
 	"EnemyObject.cpp"
     "GameTechRenderer.cpp"
     "GBufferRPass.cpp"
@@ -36,6 +39,7 @@ set(Source_Files
     "NetworkPlayer.cpp"
 	"NPCObject.cpp"
 	"PlayerObject.cpp"
+    "PresentRPass.cpp"
     "SkyboxRPass.cpp"
     "StateGameObject.cpp"
     "TutorialGame.cpp"

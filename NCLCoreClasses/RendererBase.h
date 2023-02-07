@@ -40,6 +40,12 @@ namespace NCL::Rendering {
 		inline float GetAspect() const {
 			return (float)windowWidth / (float)windowHeight;
 		}
+		inline int GetWidth() const {
+			return windowWidth;
+		}
+		inline int GetHeight() const {
+			return windowHeight;
+		}
 	protected:
 		virtual void OnWindowResize(int w, int h) = 0;
 		virtual void OnWindowDetach() {};

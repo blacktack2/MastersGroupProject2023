@@ -18,10 +18,11 @@
 using namespace NCL;
 using namespace CSC8503;
 
-TutorialGame::TutorialGame()	{
+TutorialGame::TutorialGame() {
 	world = &GameWorld::instance();
+	sunLight = &world->AddLight(Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
 #ifdef USEVULKAN
-	renderer	= new GameTechVulkanRenderer(*world);
+	renderer = new GameTechVulkanRenderer(*world);
 #else 
 	renderer = new GameTechRenderer(*world);
 #endif
@@ -44,7 +45,6 @@ TutorialGame::~TutorialGame() {
 	delete bonusMesh;
 
 	delete basicTex;
-	delete basicShader;
 
 	delete physics;
 	delete renderer;
@@ -86,6 +86,8 @@ void TutorialGame::InitWorld(InitMode mode) {
 
 void TutorialGame::UpdateGame(float dt) {
 	UpdateKeys();
+	float runtime = world->GetRunTime();
+	sunLight->direction = Vector3(std::sin(runtime), std::cos(runtime), 0.2f);
 
 	if (gameState == GameState::OnGoing) {
 		Vector2 screenSize = Window::GetWindow()->GetScreenSize();
@@ -178,9 +180,6 @@ void TutorialGame::InitialiseAssets() {
 	basicTex = renderer->LoadTexture("checkerboard.png");
 	AssetLibrary::AddTexture("basic", basicTex);
 
-	basicShader = renderer->LoadShader("scene.vert", "scene.frag");
-	AssetLibrary::AddShader("basic", basicShader);
-
 	InitialisePrefabs();
 }
 
@@ -192,7 +191,7 @@ void TutorialGame::InitialisePrefabs() {
 	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::PlayerProj));
 	bulletPrefab->GetTransform().SetScale(Vector3(bulletRadius));
 
-	bulletPrefab->SetRenderObject(new RenderObject(&bulletPrefab->GetTransform(), sphereMesh, nullptr, basicShader));
+	bulletPrefab->SetRenderObject(new RenderObject(&bulletPrefab->GetTransform(), sphereMesh, nullptr, nullptr));
 	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume()));
 
 	bulletPrefab->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.8f, 1.0f));
@@ -400,7 +399,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 		.SetScale(floorSize * 2)
 		.SetPosition(position);
 
-	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
+	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, nullptr));
 	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));
 
 	floor->GetPhysicsObject()->SetStatic();
@@ -424,7 +423,7 @@ GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius
 		.SetScale(sphereSize)
 		.SetPosition(position);
 
-	sphere->SetRenderObject(new RenderObject(&sphere->GetTransform(), sphereMesh, basicTex, basicShader));
+	sphere->SetRenderObject(new RenderObject(&sphere->GetTransform(), sphereMesh, basicTex, nullptr));
 	sphere->SetPhysicsObject(new PhysicsObject(&sphere->GetTransform(), sphere->GetBoundingVolume()));
 
 	sphere->GetPhysicsObject()->SetInverseMass(inverseMass);
@@ -445,7 +444,7 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 		.SetPosition(position)
 		.SetScale(dimensions * 2);
 
-	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, basicTex, basicShader));
+	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, basicTex, nullptr));
 	cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
 
 	cube->GetPhysicsObject()->SetInverseMass(inverseMass);
@@ -477,7 +476,7 @@ GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfH
 		.SetScale(capsuleSize)
 		.SetPosition(position);
 
-	capsule->SetRenderObject(new RenderObject(&capsule->GetTransform(), capsuleMesh, basicTex, basicShader));
+	capsule->SetRenderObject(new RenderObject(&capsule->GetTransform(), capsuleMesh, basicTex, nullptr));
 	capsule->SetPhysicsObject(new PhysicsObject(&capsule->GetTransform(), capsule->GetBoundingVolume()));
 
 	capsule->GetPhysicsObject()->SetInverseMass(inverseMass);
@@ -494,7 +493,7 @@ StateGameObject* TutorialGame::AddStateObjectToWorld(const Vector3& position) {
 	SphereVolume* volume = new SphereVolume(1.0f);
 
 	sgo->SetBoundingVolume((CollisionVolume*)volume);
-	sgo->SetRenderObject(new RenderObject(&sgo->GetTransform(), sphereMesh, basicTex, basicShader));
+	sgo->SetRenderObject(new RenderObject(&sgo->GetTransform(), sphereMesh, basicTex, nullptr));
 	sgo->SetPhysicsObject(new PhysicsObject(&sgo->GetTransform(), sgo->GetBoundingVolume()));
 
 	sgo->GetTransform().SetPosition(position);
@@ -519,7 +518,7 @@ PlayerObject* TutorialGame::AddPlayerToWorld(const Vector3& position, bool camer
 		.SetScale(Vector3(1, 1, 1))
 		.SetPosition(position);
 
-	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMesh, nullptr, basicShader));
+	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMesh, nullptr, nullptr));
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 
 	character->GetRenderObject()->SetColour(Vector4(1, 0.9f, 0.8f, 1));
@@ -547,7 +546,7 @@ EnemyObject* TutorialGame::AddEnemyToWorld(const Vector3& position, NavigationMa
 		.SetScale(Vector3(1.0f))
 		.SetPosition(position);
 
-	enemy->SetRenderObject(new RenderObject(&enemy->GetTransform(), enemyMesh, nullptr, basicShader));
+	enemy->SetRenderObject(new RenderObject(&enemy->GetTransform(), enemyMesh, nullptr, nullptr));
 	enemy->SetPhysicsObject(new PhysicsObject(&enemy->GetTransform(), enemy->GetBoundingVolume()));
 
 	enemy->GetRenderObject()->SetColour(Vector4(1, 0.9f, 0.8f, 1));
@@ -570,7 +569,7 @@ NPCObject* TutorialGame::AddNPCToWorld(const Vector3& position) {
 		.SetScale(Vector3(2.0f))
 		.SetPosition(position);
 
-	npc->SetRenderObject(new RenderObject(&npc->GetTransform(), npcMesh, nullptr, basicShader));
+	npc->SetRenderObject(new RenderObject(&npc->GetTransform(), npcMesh, nullptr, nullptr));
 	npc->SetPhysicsObject(new PhysicsObject(&npc->GetTransform(), npc->GetBoundingVolume()));
 
 	npc->GetRenderObject()->SetColour(Vector4(1, 1, 0.8f, 1));
@@ -593,7 +592,7 @@ GameObject* TutorialGame::AddBonusToWorld(const Vector3& position) {
 		.SetScale(Vector3(1))
 		.SetPosition(position);
 
-	bonus->SetRenderObject(new RenderObject(&bonus->GetTransform(), bonusMesh, nullptr, basicShader));
+	bonus->SetRenderObject(new RenderObject(&bonus->GetTransform(), bonusMesh, nullptr, nullptr));
 	bonus->SetPhysicsObject(new PhysicsObject(&bonus->GetTransform(), bonus->GetBoundingVolume(), true));
 
 	bonus->GetRenderObject()->SetColour(Vector4(1, 0.2f, 0.2f, 1));
@@ -615,7 +614,7 @@ GameObject* TutorialGame::AddTriggerToWorld(const Vector3& position, float size)
 		.SetScale(Vector3(size))
 		.SetPosition(position);
 
-	trigger->SetRenderObject(new RenderObject(&trigger->GetTransform(), sphereMesh, nullptr, basicShader));
+	trigger->SetRenderObject(new RenderObject(&trigger->GetTransform(), sphereMesh, nullptr, nullptr));
 	trigger->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.5f, 0.5f));
 
 	trigger->SetPhysicsObject(new PhysicsObject(&trigger->GetTransform(), trigger->GetBoundingVolume(), true));

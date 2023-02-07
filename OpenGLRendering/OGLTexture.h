@@ -1,11 +1,11 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   OGLTexture.h
+ * @brief  
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
 #pragma once
 #include "TextureBase.h"
 #include "glad\gl.h"
@@ -16,16 +16,18 @@ constexpr GLsizei SHADOWSIZE = 4096;
 
 namespace NCL::Rendering {
 	enum class TexType {
-		Colour,
+		Colour8,
+		Colour32,
 		Depth,
 		Stencil,
 		Shadow,
 	};
 	class OGLTexture : public TextureBase {
 	public:
-		OGLTexture(TexType type = TexType::Colour);
+		OGLTexture(GLsizei width, GLsizei height, TexType texType = TexType::Colour32);
 		~OGLTexture();
 
+		virtual void Resize(GLsizei width, GLsizei height) override;
 		virtual void Bind() override;
 		virtual void Bind(GLint slot) override;
 		virtual void Bind(GLint slot, GLint uniform) override;
@@ -39,20 +41,25 @@ namespace NCL::Rendering {
 		}
 
 		inline TexType GetType() const {
-			return type;
+			return texType;
 		}
 
 		static TextureBase* RGBATextureFromData(char* data, int width, int height, int channels);
 
-		static TextureBase* RGBATextureFromFilename(const std::string&name);
+		static TextureBase* RGBATextureFromFilename(const std::string& filename);
 	protected:
 		GLuint texID;
-		TexType type;
+		TexType texType;
 	private:
-		void InitColour();
+		void InitColour8();
+		void InitColour32();
 		void InitDepth();
 		void InitStencil();
 		void InitShadow();
+
+		GLint internalFormat;
+		GLenum format;
+		GLenum type;
 	};
 }
 

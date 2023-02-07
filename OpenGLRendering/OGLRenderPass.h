@@ -15,7 +15,7 @@
 
 
 namespace NCL::Rendering {
-	class OGLRenderPass : RenderPassBase {
+	class OGLRenderPass : public RenderPassBase {
 	public:
 		virtual ~OGLRenderPass();
 	protected:

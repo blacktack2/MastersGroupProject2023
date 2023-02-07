@@ -87,6 +87,8 @@ namespace NCL {
 			PhysicsSystem*		physics;
 			GameWorld*			world;
 
+			Light* sunLight;
+
 			GameState gameState;
 			bool inSelectionMode;
 
@@ -101,7 +103,6 @@ namespace NCL {
 			MeshGeometry*	sphereMesh  = nullptr;
 
 			TextureBase*	basicTex    = nullptr;
-			ShaderBase*		basicShader = nullptr;
 
 			//Coursework Meshes
 			MeshGeometry*	charMesh = nullptr;

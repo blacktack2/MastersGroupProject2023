@@ -1,14 +1,16 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   OGLRenderer.cpp
+ * @brief  See OGLRenderer.h
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
 #include "OGLRenderer.h"
-#include "OGLShader.h"
+
 #include "OGLMesh.h"
+#include "OGLRenderPass.h"
+#include "OGLShader.h"
 #include "OGLTexture.h"
 
 #include "SimpleFont.h"
@@ -58,18 +60,24 @@ OGLRenderer::~OGLRenderer() {
 #endif
 }
 
-void OGLRenderer::OnWindowResize(int w, int h) {
-	windowWidth  = w;
-	windowHeight = h;
+void OGLRenderer::OnWindowResize(int width, int height) {
+	windowWidth  = width;
+	windowHeight = height;
+
 	glViewport(0, 0, windowWidth, windowHeight);
+
+	for (OGLRenderPass* pass : renderPasses) {
+		pass->OnWindowResize(width, height);
+	}
 }
 
 void OGLRenderer::BeginFrame() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void OGLRenderer::RenderFrame() {
-
+	for (auto pass : renderPasses) {
+		pass->Render();
+	}
 }
 
 void OGLRenderer::EndFrame() {

@@ -1,5 +1,5 @@
 /**
- * @file   SkyboxRPass.h
+ * @file   PresentRPass.h
  * @brief  
  * 
  * @author Stuart Lewis
@@ -19,25 +19,17 @@ namespace NCL::Rendering {
 using namespace NCL::Rendering;
 
 namespace NCL::CSC8503 {
-	class SkyboxRPass : public OGLRenderPass {
+	class PresentRPass : public OGLRenderPass {
 	public:
-		SkyboxRPass(OGLRenderer& renderer, GameWorld& gameWorld);
-		~SkyboxRPass();
+		PresentRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn);
+		~PresentRPass();
 
 		virtual void Render() override;
-
-		inline OGLTexture* GetOutTex() const {
-			return colourOutTex;
-		}
 	private:
-		GameWorld& gameWorld;
-
-		OGLFrameBuffer* frameBuffer;
-		OGLTexture* colourOutTex;
+		OGLTexture* sceneTexIn;
 
 		OGLMesh* quad;
-		OGLShader* shader;
 
-		GLint viewMatrixUniform;
+		OGLShader* shader;
 	};
 }

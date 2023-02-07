@@ -94,9 +94,10 @@ set(Header_Files
     "Debug.h"
     "GameObject.h"
     "GameWorld.h"
+    "InputKeyMap.h"
+    "Light.h"
     "RenderObject.h"
     "Transform.h"
-    "InputKeyMap.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -105,6 +106,7 @@ set(Source_Files
     "Debug.cpp"
     "GameObject.cpp"
     "GameWorld.cpp"
+    "Light.cpp"
     "RenderObject.cpp"
     "Transform.cpp"
 )

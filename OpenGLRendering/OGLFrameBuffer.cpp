@@ -45,8 +45,8 @@ void OGLFrameBuffer::AddTexture(OGLTexture* texture) {
 	textures.emplace_back(texture);
 	GLenum attachment;
 	switch (texture->GetType()) {
-		default               :
-		case TexType::Colour  : attachment = GL_COLOR_ATTACHMENT0 + numColourTexs++; break;
+		default: case TexType::Colour32:
+		case TexType::Colour8 : attachment = GL_COLOR_ATTACHMENT0 + numColourTexs++; break;
 		case TexType::Depth   :
 		case TexType::Shadow  : attachment = GL_DEPTH_ATTACHMENT  ; break;
 		case TexType::Stencil : attachment = GL_STENCIL_ATTACHMENT; break;

@@ -27,8 +27,7 @@ namespace NCL::Rendering {
 		void DrawBuffers();
 
 		bool InitSuccess() {
-			GLint status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-			return status;
+			return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
 		}
 	private:
 		GLuint fboID;
