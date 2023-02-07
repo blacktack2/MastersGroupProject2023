@@ -260,9 +260,6 @@ void TutorialGame::UpdateKeys() {
 		}
 		break;
 
-		Window::GetWindow()->ShowOSPointer(false);
-		Window::GetWindow()->LockMouseToWindow(true);
-
 		case GameState::Paused:
 			Window::GetWindow()->ShowOSPointer(true);
 			Window::GetWindow()->LockMouseToWindow(false);
@@ -275,6 +272,8 @@ void TutorialGame::UpdateKeys() {
 			}
 			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
 				gameState = GameState::OnGoing;
+				Window::GetWindow()->ShowOSPointer(false);
+				Window::GetWindow()->LockMouseToWindow(true);
 			}
 			break;
 		case GameState::Win:

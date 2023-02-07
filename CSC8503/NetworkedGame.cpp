@@ -68,6 +68,7 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 }
 
 void NetworkedGame::UpdateGame(float dt) {
+	TutorialGame::UpdateGame(dt);
 	game_dt = dt;
 	timeToNextPacket -= dt;
 	if (timeToNextPacket < 0) {
@@ -89,7 +90,6 @@ void NetworkedGame::UpdateGame(float dt) {
 		StartAsClient(127,0,0,1);
 		
 	}
-	TutorialGame::UpdateGame(dt);
 }
 
 void NetworkedGame::UpdateAsServer(float dt) {
@@ -107,7 +107,7 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	}
 	else {
 		for (auto i : connectedClients) {
-			SendSnapshot(true, i);
+			SendSnapshot(false, i);
 		}
 	}
 
@@ -119,6 +119,26 @@ void NetworkedGame::UpdateAsServer(float dt) {
 
 void NetworkedGame::UpdateAsClient(float dt) {
 	thisClient->UpdateClient();
+
+	//move obj
+	///*
+	std::vector<NetworkObject*>::const_iterator first;
+	std::vector<NetworkObject*>::const_iterator last;
+	first = networkObjects.begin();
+	last = networkObjects.end();
+	bool processed = false;
+	for (auto i = first; i != last; ++i) {
+		if ((*i)->smoothFrameCount > 0) {
+			(*i)->UpdateFull();
+			(*i)->smoothFrameCount--;
+		}
+		else {
+			//(*i)->UpdateDelta(dt);
+		}
+		
+	}
+	//*/
+	//send self data to server
 	ClientPacket newPacket;
 	newPacket.lastID = stateID;
 	keyMap.Update();

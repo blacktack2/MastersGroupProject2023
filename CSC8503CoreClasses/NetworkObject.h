@@ -73,6 +73,12 @@ namespace NCL::CSC8503 {
 			return networkID;
 		}
 
+		void UpdateDelta(float dt);
+		void UpdateFull();
+
+		int smoothFrameCount = 0;
+		int smoothFrameTotal = 10;
+
 	protected:
 
 		NetworkState& GetLatestNetworkState();
@@ -89,6 +95,8 @@ namespace NCL::CSC8503 {
 
 		NetworkState lastFullState;
 
+		NetworkState lastDeltaState;
+
 		std::vector<NetworkState> stateHistory;
 
 		int deltaErrors;
@@ -101,5 +109,7 @@ namespace NCL::CSC8503 {
 
 		float deltaPosDivisor = 1000;
 		float deltaPosDivisorInverse = 1 / deltaPosDivisor;
+
+		float smoothFrameInverse = 1.0f / smoothFrameTotal;
 	};
 }
