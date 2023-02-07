@@ -53,17 +53,36 @@ void GameWorld::RemoveGameObject(GameObject* o, bool andDelete) {
 	worldStateCounter++;
 }
 
-void GameWorld::GetObjectIterators(
-	GameObjectIterator& first,
-	GameObjectIterator& last) const {
-
+void GameWorld::GetObjectIterators(GameObjectIterator& first, GameObjectIterator& last) const {
 	first	= gameObjects.begin();
 	last	= gameObjects.end();
+}
+
+void GameWorld::GetConstraintIterators(ConstraintIterator& first, ConstraintIterator& last) const {
+	first = constraints.begin();
+	last = constraints.end();
+}
+
+void GameWorld::GetLightIterators(LightIterator& first, LightIterator& last) const {
+	first = lights.begin();
+	last = lights.begin();
 }
 
 void GameWorld::OperateOnContents(GameObjectFunc f) {
 	for (GameObject* g : gameObjects) {
 		f(g);
+	}
+}
+
+void GameWorld::OperateOnConstraints(ConstraintFunc f) {
+	for (Constraint* c : constraints) {
+		f(c);
+	}
+}
+
+void GameWorld::OperateOnLights(LightFunc f) {
+	for (const Light& l : lights) {
+		f(l);
 	}
 }
 
@@ -81,6 +100,8 @@ void GameWorld::PreUpdateWorld() {
 }
 
 void GameWorld::UpdateWorld(float dt) {
+	runTime += dt;
+
 	auto rng = std::default_random_engine{};
 
 	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -239,9 +260,10 @@ void GameWorld::RemoveConstraint(std::vector<Constraint*>::const_iterator c, boo
 	}
 }
 
-void GameWorld::GetConstraintIterators(
-	std::vector<Constraint*>::const_iterator& first,
-	std::vector<Constraint*>::const_iterator& last) const {
-	first	= constraints.begin();
-	last	= constraints.end();
+Light& GameWorld::AddLight(const Light& l) {
+	return lights.emplace_back(l);
+}
+
+void GameWorld::RemoveLight(std::vector<Light>::const_iterator l) {
+	lights.erase(l);
 }

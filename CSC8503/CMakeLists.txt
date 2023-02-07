@@ -6,9 +6,10 @@ set(PROJECT_NAME CSC8503)
 set(Header_Files
 	"Bullet.h"
 	"Bonus.h"
+    
 	"EnemyObject.h"
-    "GameTechRenderer.h"
 	"Maze.h"
+    "ModelRPass.h"
     "NetworkedGame.h"
     "NetworkPlayer.h"
 	"NPCObject.h"
@@ -23,9 +24,9 @@ set(Source_Files
 	"Bullet.cpp"
 	"Bonus.cpp"
 	"EnemyObject.cpp"
-    "GameTechRenderer.cpp"
     "Main.cpp"
 	"Maze.cpp"
+    "ModelRPass.cpp"
     "NetworkedGame.cpp"
     "NetworkPlayer.cpp"
 	"NPCObject.cpp"
@@ -35,21 +36,35 @@ set(Source_Files
     "DebugViewPoint.cpp"
 )
 
+set(Render_Files
+    "SkyboxRPass.h"
+    "SkyboxRPass.cpp"
+    "GameTechRenderer.h"
+    "GameTechRenderer.cpp"
+    "GBufferRPass.h"
+    "GBufferRPass.cpp"
+    "LightingRPass.h"
+    "LightingRPass.cpp"
+    "DebugRPass.h"
+    "DebugRPass.cpp"
+    "PresentRPass.h"
+    "PresentRPass.cpp"   
+)
+
 if(USE_VULKAN)
-list(APPEND Header_Files "GameTechVulkanRenderer.h")
-list(APPEND Source_Files "GameTechVulkanRenderer.cpp")
+    list(APPEND Header_Files "GameTechVulkanRenderer.h")
+    list(APPEND Source_Files "GameTechVulkanRenderer.cpp")
 
-
-
-file(GLOB SHADER_FILES ${ASSET_ROOT}/Shaders/VK/*.*)
-
+    file(GLOB SHADER_FILES ${ASSET_ROOT}/Shaders/VK/*.*)
 endif()
 
 source_group("Source Files" FILES ${Source_Files})
+source_group("Rendering" FILES ${Render_Files})
 
 set(ALL_FILES
     ${Header_Files}
     ${Source_Files}
+    ${Render_Files}
 )
 
 if(USE_VULKAN)

@@ -19,8 +19,10 @@ namespace NCL {
 		public:
 			friend class OGLRenderer;
 			OGLMesh();
-			OGLMesh(const std::string&filename);
+			OGLMesh(const std::string& filename);
 			~OGLMesh();
+
+			virtual void Draw(unsigned int subLayer = 0) override;
 
 			void RecalculateNormals();
 
@@ -28,10 +30,10 @@ namespace NCL {
 			void UpdateGPUBuffers(unsigned int startVertex, unsigned int vertexCount);
 
 		protected:
-			GLuint	GetVAO()			const { return vao;			}
+			GLuint GetVAO() const { return vao; }
 			void BindVertexAttribute(int attribSlot, int bufferID, int bindingID, int elementCount, int elementSize, int elementOffset);
 
-			int		subCount;
+			int subCount;
 
 			GLuint vao;
 			GLuint oglType;

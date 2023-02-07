@@ -1,4 +1,14 @@
-#version 330 core
+#version 460 core
+/**
+ * @file   skybox.frag
+ * @brief  Fragment shader for a realistic procedural skybox with configurable
+ * atmosphere and simplex-noise based clouds.
+ * Procedural skybox adapted from (https://github.com/shff/opengl_sky).
+ * Simplex noise adapted from (https://stegu.github.io/webgl-noise/webdemo/).
+ * 
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
 
 uniform vec3 sunDir;
 
@@ -104,7 +114,6 @@ in Vertex {
 
 out vec4 fragColour[2];
 
-// Adapted from https://github.com/shff/opengl_sky
 void main() {
 	vec3 view = IN.viewDir;
 	vec3 sun = -sunDir;

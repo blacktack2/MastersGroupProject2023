@@ -1,39 +1,32 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   ShaderBase.h
+ * @brief  Base shader class and relevant supporting structures.
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
 #pragma once
 #include <string>
-using std::string;
+
 namespace NCL::Rendering {
-	enum class ShaderStages {
-		Vertex,
+	enum class ShaderStage {
+		Vertex = 0ull,
 		Fragment,
 		Geometry,
-		Domain,
-		Hull,
-		Mesh,
-		Task,
-		MAXSIZE,
-		//Aliases
-		TessControl = Domain,
-		TessEval	= Hull,
+		TessCont,
+		TessEval,
+		Max,
 	};
-
-	class ShaderBase	{
+	class ShaderBase {
 	public:
-		ShaderBase() {
-		}
-		ShaderBase(const string& vertex, const string& fragment, const string& geometry = "", const string& domain = "", const string& hull = "");
+		ShaderBase(const std::string& vert, const std::string& frag, const std::string& tesc, const std::string& tese, const std::string& geom);
 		virtual ~ShaderBase();
 
+		virtual void Bind() = 0;
+		virtual void Unbind() = 0;
 		virtual void ReloadShader() = 0;
 	protected:
-
-		string shaderFiles[(int)ShaderStages::MAXSIZE];
+		std::string shaderFiles[(size_t)ShaderStage::Max];
 	};
 }

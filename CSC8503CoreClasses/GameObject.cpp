@@ -7,7 +7,7 @@
 
 using namespace NCL::CSC8503;
 
-GameObject::GameObject(string objectName) :gameWorld(GameWorld::instance()), transform(this) {
+GameObject::GameObject(std::string objectName) : gameWorld(GameWorld::instance()), transform(this) {
 	name			= objectName;
 	worldID			= -1;
 	isActive		= true;
