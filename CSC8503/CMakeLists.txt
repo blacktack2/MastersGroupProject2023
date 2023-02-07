@@ -6,19 +6,14 @@ set(PROJECT_NAME CSC8503)
 set(Header_Files
 	"Bullet.h"
 	"Bonus.h"
-    "DebugRPass.h"
+    
 	"EnemyObject.h"
-    "GameTechRenderer.h"
-    "GBufferRPass.h"
-    "LightingRPass.h"
 	"Maze.h"
     "ModelRPass.h"
     "NetworkedGame.h"
     "NetworkPlayer.h"
 	"NPCObject.h"
 	"PlayerObject.h"
-    "PresentRPass.h"
-    "SkyboxRPass.h"
     "StateGameObject.h"
     "TutorialGame.h"
 )
@@ -27,11 +22,7 @@ source_group("Header Files" FILES ${Header_Files})
 set(Source_Files
 	"Bullet.cpp"
 	"Bonus.cpp"
-    "DebugRPass.cpp"
 	"EnemyObject.cpp"
-    "GameTechRenderer.cpp"
-    "GBufferRPass.cpp"
-    "LightingRPass.cpp"
     "Main.cpp"
 	"Maze.cpp"
     "ModelRPass.cpp"
@@ -39,10 +30,23 @@ set(Source_Files
     "NetworkPlayer.cpp"
 	"NPCObject.cpp"
 	"PlayerObject.cpp"
-    "PresentRPass.cpp"
-    "SkyboxRPass.cpp"
     "StateGameObject.cpp"
     "TutorialGame.cpp"
+)
+
+set(Render_Files
+    "SkyboxRPass.h"
+    "SkyboxRPass.cpp"
+    "GameTechRenderer.h"
+    "GameTechRenderer.cpp"
+    "GBufferRPass.h"
+    "GBufferRPass.cpp"
+    "LightingRPass.h"
+    "LightingRPass.cpp"
+    "DebugRPass.h"
+    "DebugRPass.cpp"
+    "PresentRPass.h"
+    "PresentRPass.cpp"   
 )
 
 if(USE_VULKAN)
@@ -53,10 +57,12 @@ if(USE_VULKAN)
 endif()
 
 source_group("Source Files" FILES ${Source_Files})
+source_group("Rendering" FILES ${Render_Files})
 
 set(ALL_FILES
     ${Header_Files}
     ${Source_Files}
+    ${Render_Files}
 )
 
 if(USE_VULKAN)
