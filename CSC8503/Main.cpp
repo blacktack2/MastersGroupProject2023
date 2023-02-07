@@ -24,6 +24,7 @@
 #include "BehaviourSelector.h"
 #include "BehaviourSequence.h"
 #include "BehaviourParallel.h"
+#include "BehaviourParallelSelector.h"
 #include "BehaviourAction.h"
 
 using namespace NCL;
@@ -141,7 +142,7 @@ void TestBehaviourTree() {
 	roomSequence->AddChild(goToRoom);
 	roomSequence->AddChild(openDoor);
 
-	BehaviourParallel* lootSelection = new BehaviourParallel("Loot Selection");
+	BehaviourParallelSelector* lootSelection = new BehaviourParallelSelector("Loot Selection");
 	lootSelection->AddChild(lookForTreasure);
 	lootSelection->AddChild(lookForItems);
 
