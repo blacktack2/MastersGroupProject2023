@@ -93,3 +93,11 @@ void GBufferRPass::Render() {
 	shader->Unbind();
 	frameBuffer->Unbind();
 }
+
+void GBufferRPass::SetRenderMode(RenderMode mode) {
+	shader->Bind();
+
+	glUniform1i(modeUniform, (GLint)mode);
+
+	shader->Unbind();
+}

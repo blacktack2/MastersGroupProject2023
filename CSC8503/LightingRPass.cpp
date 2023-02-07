@@ -108,8 +108,8 @@ void LightingRPass::Render() {
 	gameWorld.OperateOnLights([&](const Light& light) {
 		Matrix4 projView;
 		if (light.position.w == 0.0f) {
-			projView = Matrix4::Orthographic(-1000.0f, 1000.0f, -1000.0f, 1000.0f, -1.0f, 1000.0f) *
-				       Matrix4::BuildViewMatrix(light.direction * 500.0f, Vector3(0.0f), Vector3(0.0f, 1.0f, 0.0f));
+			projView = Matrix4::Orthographic(-50.0f, 50.0f, -50.0f, 50.0f, -1.0f, 50.0f) *
+				       Matrix4::BuildViewMatrix(light.direction * 20.0f, Vector3(0.0f), Vector3(0.0f, 1.0f, 0.0f));
 		} else {
 			projView = Matrix4::Perspective(1.0f, 100.0f, 1.0f, 170.0f) *
 				       Matrix4::BuildViewMatrix(Vector3(light.position), Vector3(0.0f), Vector3(0.0f, 1.0f, 0.0f));

@@ -26,6 +26,8 @@ namespace NCL::CSC8503 {
 
 		virtual void Render() override;
 
+		void SetSunDir(const Vector3& direction);
+
 		inline OGLTexture* GetOutTex() const {
 			return colourOutTex;
 		}
@@ -39,5 +41,7 @@ namespace NCL::CSC8503 {
 		OGLShader* shader;
 
 		GLint viewMatrixUniform;
+		GLint sunDirUniform;
+		GLint timeUniform;
 	};
 }

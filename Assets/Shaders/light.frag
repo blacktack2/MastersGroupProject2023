@@ -37,10 +37,10 @@ void main() {
 
 	vec3 incident;
 	float attenuation;
-	if (lightPosition.w == 0) {
+	if (lightPosition.w == 0) { // Directional Light
 		incident = normalize(lightDirection);
 		attenuation = 1.0;
-	} else {
+	} else { // Point/Spot light
 		vec3 lPos = lightPosition.xyz / lightPosition.w;
 		incident = normalize(lPos - worldPos);
 		if (lightAngle < 360.0 && degrees(acos(dot(-incident, lightDirection))) > lightAngle)
@@ -55,8 +55,8 @@ void main() {
 	vec3 viewDir = normalize(cameraPos - worldPos);
 	vec3 halfDir = normalize(incident + viewDir);
 
-	vec4 pushVal = vec4(normal, 0.0) * dot(viewDir, normal) * 0.1;
-	vec4 shadowProj = shadowMatrix * (vec4(worldPos, 1) + pushVal);
+	vec4 pushVal = vec4(normal, 0.0) * dot(viewDir, normal) * 1.0;
+	vec4 shadowProj = shadowMatrix * (vec4(worldPos, 1.0) + pushVal);
 
 	float shadow = 1.0;
 	vec3 shadowNDC = shadowProj.xyz / shadowProj.w;
@@ -72,6 +72,6 @@ void main() {
 
 	vec3 attenuated = lightColour.xyz * attenuation;
 
-	diffuseOutput  = vec4(attenuated * lambert * shadow, 1.0);
-	specularOutput = vec4(attenuated * specFactor * 0.33 * shadow, 1.0);
+	diffuseOutput  = vec4(attenuated * lambert * 1, 1.0);
+	specularOutput = vec4(attenuated * specFactor * 0.33 * 1, 1.0);
 }

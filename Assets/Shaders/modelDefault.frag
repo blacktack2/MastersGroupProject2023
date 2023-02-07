@@ -28,6 +28,7 @@ void main() {
 					normalize(IN.normal));
 
 	vec3 normal = texture(bumpTex, IN.texCoord).rgb * 2.0 - 1.0;
+	normal = dot(normal, normal) == 0.0 ? vec3(0, 0, 1) : normal;
 	normal = normalize(TBN * normalize(normal));
 
 	diffuseOut = texture(diffuseTex, IN.texCoord) + IN.colour;

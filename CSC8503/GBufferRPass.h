@@ -17,6 +17,11 @@ namespace NCL::Rendering {
 using namespace NCL::Rendering;
 
 namespace NCL::CSC8503 {
+	enum class RenderMode {
+		Default = 0,
+		Normals,
+		Depth,
+	};
 	class GBufferRPass : public OGLRenderPass {
 	public:
 		GBufferRPass(OGLRenderer& renderer,
@@ -26,6 +31,8 @@ namespace NCL::CSC8503 {
 		~GBufferRPass();
 
 		virtual void Render() override;
+
+		void SetRenderMode(RenderMode mode);
 
 		inline OGLTexture* GetOutTex() const {
 			return colourOutTex;

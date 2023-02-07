@@ -87,7 +87,18 @@ void TutorialGame::InitWorld(InitMode mode) {
 void TutorialGame::UpdateGame(float dt) {
 	UpdateKeys();
 	float runtime = world->GetRunTime();
-	sunLight->direction = Vector3(std::sin(runtime), std::cos(runtime), 0.2f);
+	sunLight->direction = Vector3(std::sin(runtime), std::cos(runtime), 0.0f);
+	renderer->GetSkyboxPass().SetSunDir(-sunLight->direction);
+
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM1)) {
+		renderer->GetGBufferPass().SetRenderMode(RenderMode::Default);
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM2)) {
+		renderer->GetGBufferPass().SetRenderMode(RenderMode::Normals);
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM3)) {
+		renderer->GetGBufferPass().SetRenderMode(RenderMode::Depth);
+	}
 
 	if (gameState == GameState::OnGoing) {
 		Vector2 screenSize = Window::GetWindow()->GetScreenSize();

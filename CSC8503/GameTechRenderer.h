@@ -40,6 +40,22 @@ namespace NCL::CSC8503 {
 		TextureBase*  LoadTexture(const std::string& name);
 		ShaderBase*   LoadShader(const std::string& vertex, const std::string& fragment);
 
+		inline SkyboxRPass& GetSkyboxPass() {
+			return *skyboxPass;
+		}
+		inline ModelRPass& GetModelPass() {
+			return *modelPass;
+		}
+		inline LightingRPass& GetLightingPass() {
+			return *lightingPass;
+		}
+		inline GBufferRPass& GetGBufferPass() {
+			return *gbufferPass;
+		}
+		inline PresentRPass& GetPresentPass() {
+			return *presentPass;
+		}
+
 		virtual void Update(float dt) override;
 	protected:
 		void NewRenderLines();

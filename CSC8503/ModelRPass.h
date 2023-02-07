@@ -51,6 +51,7 @@ namespace NCL::CSC8503 {
 		OGLTexture* defaultBump;
 
 		OGLShader* defaultShader;
+
 		std::vector<OGLShader*> modelShaders{};
 	};
 }
