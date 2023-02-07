@@ -51,7 +51,7 @@ void main() {
 			discard;
 	}
 
-	vec3 normal  = normalize(texture(normalTex, texCoord).xyz * 2.0 - 1.0);
+	vec3 normal  = normalize(texture(normalTex, texCoord).xyz * 2.0 - 1.0).grb;
 	vec3 viewDir = normalize(cameraPos - worldPos);
 	vec3 halfDir = normalize(incident + viewDir);
 

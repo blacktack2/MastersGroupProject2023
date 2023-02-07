@@ -72,6 +72,7 @@ OGLRenderPass(renderer), gameWorld(gameWorld), depthTexIn(depthTexIn), normalTex
 	lightAngleUniform      = glGetUniformLocation(lightShader->GetProgramID(), "lightAngle");
 
 	shadowMatrixUniform    = glGetUniformLocation(lightShader->GetProgramID(), "shadowMatrix");
+	modelMatrixUniform     = glGetUniformLocation(lightShader->GetProgramID(), "modelMatrix");
 	viewMatrixUniform      = glGetUniformLocation(lightShader->GetProgramID(), "viewMatrix");
 	projMatrixUniform      = glGetUniformLocation(lightShader->GetProgramID(), "projMatrix");
 
@@ -183,6 +184,8 @@ void LightingRPass::DrawLight(const Light& light, const Matrix4& projView) {
 	shadowTex->Bind(2);
 
 	glUniform3fv(cameraPosUniform, 1, (GLfloat*)&gameWorld.GetMainCamera()->GetPosition()[0]);
+	Matrix4 modelMatrix = Matrix4();
+	modelMatrix.SetDiagonal(Vector3(1));
 	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix();
 	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
 	Matrix4 inverseViewProj = (projMatrix * viewMatrix).Inverse();
@@ -194,7 +197,8 @@ void LightingRPass::DrawLight(const Light& light, const Matrix4& projView) {
 	glUniform3fv(lightDirectionUniform, 1, (GLfloat*)&light.direction);
 	glUniform1f(lightAngleUniform, light.angle);
 
-	glUniformMatrix4fv(shadowMatrixUniform, 1, GL_FALSE, (GLfloat*)&projView);
+	glUniformMatrix4fv(shadowMatrixUniform, 1, GL_FALSE, (GLfloat*)projView.array);
+	glUniformMatrix4fv(modelMatrixUniform, 1, GL_FALSE, (GLfloat*)modelMatrix.array);
 	glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, (GLfloat*)viewMatrix.array);
 	glUniformMatrix4fv(projMatrixUniform, 1, GL_FALSE, (GLfloat*)projMatrix.array);
 

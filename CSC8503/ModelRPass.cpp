@@ -25,7 +25,7 @@ OGLRenderPass(renderer), gameWorld(gameWorld) {
 	AddScreenTexture(depthOutTex);
 
 	defaultDiffuse = (OGLTexture*)OGLTexture::RGBATextureFromFilename("GoatBody.png");
-	defaultBump = (OGLTexture*)OGLTexture::RGBATextureFromFilename("GoatBlack2.png");
+	defaultBump = (OGLTexture*)OGLTexture::RGBATextureFromFilename("DefaultBump.png");
 
 	frameBuffer = new OGLFrameBuffer();
 	frameBuffer->Bind();

@@ -70,6 +70,7 @@ namespace NCL::CSC8503 {
 		GLint lightAngleUniform;
 
 		GLint shadowMatrixUniform;
+		GLint modelMatrixUniform;
 		GLint viewMatrixUniform;
 		GLint projMatrixUniform;
 

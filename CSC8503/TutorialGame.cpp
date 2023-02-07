@@ -65,7 +65,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 	player = AddPlayerToWorld(Vector3(0, 0, 0));
 	switch (mode) {
 		case InitMode::MAZE             : InitMazeWorld(20, 20, 20.0f)                            ; break;
-		case InitMode::MIXED_GRID       : InitMixedGridWorld(15, 15, 3.5f, 3.5f)                  ; break;
+		case InitMode::MIXED_GRID       : InitMixedGridWorld(1, 1, 3.5f, 3.5f)                  ; break;
 		case InitMode::CUBE_GRID        : InitCubeGridWorld(15, 15, 3.5f, 3.5f, Vector3(1), true) ; break;
 		case InitMode::OBB_GRID         : InitCubeGridWorld(15, 15, 3.5f, 3.5f, Vector3(1), false); break;
 		case InitMode::SPHERE_GRID      : InitSphereGridWorld(15, 15, 3.5f, 3.5f, 1.0f)           ; break;
@@ -86,9 +86,15 @@ void TutorialGame::InitWorld(InitMode mode) {
 
 void TutorialGame::UpdateGame(float dt) {
 	UpdateKeys();
-	float runtime = world->GetRunTime();
-	sunLight->direction = Vector3(std::sin(runtime), std::cos(runtime), 0.0f);
-	renderer->GetSkyboxPass().SetSunDir(-sunLight->direction);
+	static bool moveSun = false;
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM0)) {
+		moveSun = !moveSun;
+	}
+	if (moveSun) {
+		float runtime = world->GetRunTime();
+		sunLight->direction = Vector3(std::sin(runtime), std::cos(runtime), 0.0f);
+		renderer->GetSkyboxPass().SetSunDir(sunLight->direction);
+	}
 
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM1)) {
 		renderer->GetGBufferPass().SetRenderMode(RenderMode::Default);
