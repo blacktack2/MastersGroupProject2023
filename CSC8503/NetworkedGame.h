@@ -48,7 +48,7 @@ namespace NCL {
 			void PlayerJoined(int playerID);
 			void PlayerLeft(int playerID);
 
-			NetworkPlayer* AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID);
+			PlayerObject* AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID);
 
 			std::map<int, int> stateIDs;
 

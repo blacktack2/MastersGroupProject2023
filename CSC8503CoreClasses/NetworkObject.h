@@ -38,7 +38,7 @@ namespace NCL::CSC8503 {
 		int			fullID		= -1;
 		int			objectID	= -1;
 		int			pos[3];
-		short int	orientation[4];
+		int			orientation[4];
 
 		DeltaPacket() {
 			type = Delta_State;
@@ -49,7 +49,7 @@ namespace NCL::CSC8503 {
 	struct ClientPacket : public GamePacket {
 		int		lastID;
 		unsigned int buttonstates;
-		unsigned short int yaw;
+		int yaw;
 
 		ClientPacket() {
 			type = Received_State;
@@ -95,5 +95,11 @@ namespace NCL::CSC8503 {
 		int fullErrors;
 
 		int networkID;
+		
+		float deltaOrientationDivisor = 10000000;
+		float deltaOrientationDivisorInverse = 1 / deltaOrientationDivisor;
+
+		float deltaPosDivisor = 1000;
+		float deltaPosDivisorInverse = 1 / deltaPosDivisor;
 	};
 }
