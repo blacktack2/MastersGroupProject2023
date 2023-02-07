@@ -124,9 +124,9 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	keyMap.Update();
 	newPacket.buttonstates = keyMap.GetButtonState();
 	//std::cout << "client: " << std::bitset<16>(newPacket.buttonstates) << std::endl;
-	std::cout << "client yaw: " << world->GetMainCamera()->GetYaw() << std::endl;
+	//std::cout << "client yaw: " << world->GetMainCamera()->GetYaw() << std::endl;
 	if (!Window::GetKeyboard()->KeyDown(KeyboardKeys::C)) {
-		newPacket.yaw = world->GetMainCamera()->GetYaw() * 10;
+		newPacket.yaw = world->GetMainCamera()->GetYaw() * 1000;
 	}
 	else {
 		newPacket.yaw = NULL;
@@ -172,11 +172,6 @@ void NetworkedGame::SendSnapshot(bool deltaFrame, int playerID) {
 		if (!o) {
 			continue;
 		}
-		//TODO - you'll need some way of determining
-		//when a player has sent the server an acknowledgement
-		//and store the lastID somewhere. A map between player
-		//and an int could work, or it could be part of a 
-		//NetworkPlayer struct. 
 
 		int playerState = stateIDs[playerID];
 
@@ -247,11 +242,11 @@ void NetworkedGame::StartLevel() {
 void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID) {
 	//rotation
 	//std::cout << "Server: " << std::bitset<16>(((ClientPacket*)payload)->buttonstates) << std::endl;
-	std::cout << "Server yaw : " << ((ClientPacket*)payload)->yaw * 0.1 << std::endl;
+	//std::cout << "Server yaw : " << ((ClientPacket*)payload)->yaw * 0.001 << std::endl;
 	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(((ClientPacket*)payload)->buttonstates);
 
 	if (((ClientPacket*)payload)->yaw != NULL) {
-		((NetworkPlayer*)serverPlayers[playerID])->RotateYaw(((ClientPacket*)payload)->yaw*0.1);
+		((NetworkPlayer*)serverPlayers[playerID])->RotateYaw(((ClientPacket*)payload)->yaw*0.001);
 	}
 
 	if (((ClientPacket*)payload)->lastID > stateIDs[playerID]) {
@@ -416,6 +411,8 @@ PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, bo
 		world->GetMainCamera()->SetFollow(&character->GetTransform());
 		character->AttachedCamera();
 	}
+
+	character->GetPhysicsObject()->SetGravWeight(0);
 
 	return character;
 }
