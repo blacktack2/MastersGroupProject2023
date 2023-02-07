@@ -27,10 +27,10 @@ namespace NCL {
 
 			void OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b);
 
-			void SetName(string name) {
+			void SetName(std::string name) {
 				this->name = name;
 			}
-			string GetName() {
+			std::string GetName() {
 				return this->name;
 			}
 
@@ -66,7 +66,7 @@ namespace NCL {
 
 			std::map<int, GameObject*> serverPlayers;
 			GameObject* localPlayer;
-			string name;
+			std::string name;
 		};
 	}
 }

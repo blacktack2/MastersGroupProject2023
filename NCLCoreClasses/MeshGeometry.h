@@ -73,6 +73,8 @@ namespace NCL {
 	public:		
 		virtual ~MeshGeometry();
 
+		virtual void Draw(unsigned int subLayer = 0) = 0;
+
 		GeometryPrimitive GetPrimitiveType() const {
 			return primType;
 		}

@@ -1,24 +1,26 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   OGLShader.h
+ * @brief  OpenGL based implementation of a shader.
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
 #pragma once
 #include "ShaderBase.h"
 #include "glad\gl.h"
 
+#include <string>
+
 namespace NCL {
 	namespace Rendering {
-		class OGLShader : public ShaderBase
-		{
+		class OGLShader : public ShaderBase {
 		public:
-			friend class OGLRenderer;
-			OGLShader(const string& vertex, const string& fragment, const string& geometry = "", const string& domain = "", const string& hull = "");
+			OGLShader(const std::string& vert, const std::string& frag, const std::string& tesc = "", const std::string& tese = "", const std::string& geom = "");
 			~OGLShader();
 
+			virtual void Bind() override;
+			virtual void Unbind() override;
 			void ReloadShader() override;
 
 			bool LoadSuccess() const {
@@ -27,18 +29,18 @@ namespace NCL {
 
 			int GetProgramID() const {
 				return programID;
-			}	
-			
-			static void	PrintCompileLog(GLuint object);
-			static void	PrintLinkLog(GLuint program);
+			}
 
+			static void PrintCompileLog(GLuint object);
+			static void PrintLinkLog(GLuint program);
 		protected:
-			void	DeleteIDs();
+			void LoadPass(const GLchar* code, ShaderStage type);
+			void Clear();
+			void DeleteIDs();
 
-			GLuint	programID;
-			GLuint	shaderIDs[(int)ShaderStages::MAXSIZE];
-			int		shaderValid[(int)ShaderStages::MAXSIZE];
-			int		programValid;
+			GLuint programID;
+			GLint shaderValid[(size_t)ShaderStage::Max];
+			GLint programValid;
 		};
 	}
 }

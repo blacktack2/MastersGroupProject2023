@@ -43,6 +43,8 @@ set(Maths
 source_group("Maths" FILES ${Maths})
 
 set(Rendering
+    "FrameBuffer.cpp"
+    "FrameBuffer.h"
     "MeshAnimation.cpp"
     "MeshAnimation.h"
     "MeshGeometry.cpp"
@@ -51,6 +53,8 @@ set(Rendering
     "MeshMaterial.h"
     "RendererBase.cpp"
     "RendererBase.h"
+    "RenderPassBase.cpp"
+    "RenderPassBase.h"
     "ShaderBase.cpp"
     "ShaderBase.h"
     "TextureBase.cpp"

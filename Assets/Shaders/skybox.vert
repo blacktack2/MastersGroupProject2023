@@ -1,9 +1,17 @@
-#version 330 core
+#version 460 core
+/**
+ * @file   skybox.vert
+ * @brief  Vertex shader for a procedural skybox. See skybox.frag for more
+ * info.
+ * 
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
 
 uniform mat4 viewMatrix;
 uniform mat4 projMatrix;
 
-in vec3 position;
+layout(location = 0) in vec3 position;
 
 out Vertex {
 	vec3 viewDir;

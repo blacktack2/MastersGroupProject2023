@@ -1,85 +1,100 @@
+/**
+ * @file   GameTechRenderer.h
+ * @brief  
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
 #pragma once
+#include "OGLFrameBuffer.h"
+#include "OGLMesh.h"
 #include "OGLRenderer.h"
 #include "OGLShader.h"
 #include "OGLTexture.h"
-#include "OGLMesh.h"
+
+#include "SkyboxRPass.h"
+#include "ModelRPass.h"
+#include "LightingRPass.h"
+#include "GBufferRPass.h"
+#include "DebugRPass.h"
+#include "PresentRPass.h"
 
 #include "GameWorld.h"
 
-namespace NCL {
-	class Maths::Vector3;
-	class Maths::Vector4;
-	namespace CSC8503 {
-		class RenderObject;
+#include <string>
 
-		class GameTechRenderer : public OGLRenderer	{
-		public:
-			GameTechRenderer(GameWorld& world);
-			~GameTechRenderer();
+namespace NCL::Maths {
+	class Vector3;
+	class Vector4;
+}
+namespace NCL::CSC8503 {
+	class RenderObject;
 
-			MeshGeometry*	LoadMesh(const string& name);
-			TextureBase*	LoadTexture(const string& name);
-			ShaderBase*		LoadShader(const string& vertex, const string& fragment);
+	class GameTechRenderer : public OGLRenderer {
+	public:
+		GameTechRenderer(GameWorld& world);
+		~GameTechRenderer();
 
-			virtual void Update(float dt) override;
+		MeshGeometry* LoadMesh(const std::string& name);
+		TextureBase*  LoadTexture(const std::string& name);
+		ShaderBase*   LoadShader(const std::string& vertex, const std::string& fragment);
 
-		protected:
-			void NewRenderLines();
-			void NewRenderText();
+		inline SkyboxRPass& GetSkyboxPass() {
+			return *skyboxPass;
+		}
+		inline ModelRPass& GetModelPass() {
+			return *modelPass;
+		}
+		inline LightingRPass& GetLightingPass() {
+			return *lightingPass;
+		}
+		inline GBufferRPass& GetGBufferPass() {
+			return *gbufferPass;
+		}
+		inline PresentRPass& GetPresentPass() {
+			return *presentPass;
+		}
 
-			void RenderFrame()	override;
+		virtual void Update(float dt) override;
+	protected:
+		void NewRenderLines();
+		void NewRenderText();
 
-			OGLShader*		defaultShader;
+		void RenderFrame() override;
 
-			GameWorld&	gameWorld;
+		GameWorld& gameWorld;
 
-			void BuildObjectList();
-			void SortObjectList();
-			void RenderShadowMap();
-			void RenderCamera(); 
-			void RenderSkybox();
+		void BuildObjectList();
+		void SortObjectList();
 
-			void LoadSkybox();
+		void SetDebugStringBufferSizes(size_t newVertCount);
+		void SetDebugLineBufferSizes(size_t newVertCount);
 
-			void SetDebugStringBufferSizes(size_t newVertCount);
-			void SetDebugLineBufferSizes(size_t newVertCount);
+		vector<const RenderObject*> activeObjects;
 
-			vector<const RenderObject*> activeObjects;
+		SkyboxRPass* skyboxPass;
+		ModelRPass* modelPass;
+		LightingRPass* lightingPass;
+		GBufferRPass* gbufferPass;
+		// DebugRPass* debugPass;
+		PresentRPass* presentPass;
 
-			float runTime = 0.0f;
+		vector<Vector3> debugLineData;
 
-			OGLShader*  debugShader;
-			OGLShader*  skyboxShader;
-			OGLMesh*	skyboxMesh;
-			GLuint		skyboxTex;
+		vector<Vector3> debugTextPos;
+		vector<Vector4> debugTextColours;
+		vector<Vector2> debugTextUVs;
 
-			//shadow mapping things
-			OGLShader*	shadowShader;
-			GLuint		shadowTex;
-			GLuint		shadowFBO;
-			Matrix4     shadowMatrix;
+		GLuint lineVAO;
+		GLuint lineVertVBO;
+		size_t lineCount;
 
-			Vector4		lightColour;
-			float		lightRadius;
-			Vector3		lightPosition;
-
-			//Debug data storage things
-			vector<Vector3> debugLineData;
-
-			vector<Vector3> debugTextPos;
-			vector<Vector4> debugTextColours;
-			vector<Vector2> debugTextUVs;
-
-			GLuint lineVAO;
-			GLuint lineVertVBO;
-			size_t lineCount;
-
-			GLuint textVAO;
-			GLuint textVertVBO;
-			GLuint textColourVBO;
-			GLuint textTexVBO;
-			size_t textCount;
-		};
-	}
+		GLuint textVAO;
+		GLuint textVertVBO;
+		GLuint textColourVBO;
+		GLuint textTexVBO;
+		size_t textCount;
+	};
 }
 

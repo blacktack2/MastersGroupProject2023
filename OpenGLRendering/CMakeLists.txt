@@ -5,8 +5,10 @@ set(PROJECT_NAME OpenGLRendering)
 ################################################################################
 set(Header_Files
     "OGLComputeShader.h"
+    "OGLFrameBuffer.h"
     "OGLMesh.h"
     "OGLRenderer.h"
+    "OGLRenderPass.h"
     "OGLShader.h"
     "OGLTexture.h"
 )
@@ -14,8 +16,10 @@ source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
     "OGLComputeShader.cpp"
+    "OGLFrameBuffer.cpp"
     "OGLMesh.cpp"
     "OGLRenderer.cpp"
+    "OGLRenderPass.cpp"
     "OGLShader.cpp"
     "OGLTexture.cpp"
 )

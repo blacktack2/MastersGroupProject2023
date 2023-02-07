@@ -3,8 +3,7 @@
 #include "Transform.h"
 
 #include <functional>
-
-using std::vector;
+#include <string>
 
 namespace NCL::CSC8503 {
 	class GameWorld;
