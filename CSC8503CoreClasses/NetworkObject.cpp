@@ -167,6 +167,9 @@ void NetworkObject::UpdateStateHistory(int minID) {
 
 void NetworkObject::UpdateDelta(float dt) {
 	Debug::DrawLine(object.GetTransform().GetGlobalPosition(), object.GetTransform().GetGlobalPosition() + Vector3(0, 0.5, 0), Debug::RED, 0.01f);
-	renderTransform.SetPosition(Vector3::Lerp(renderTransform.GetGlobalPosition(), lastDeltaState.position, dt * 10));
+
+	float posT = std::clamp(dt * 10, 0.1f, 1.0f);
+
+	renderTransform.SetPosition(Vector3::Lerp(renderTransform.GetGlobalPosition(), lastDeltaState.position, posT));
 	renderTransform.SetOrientation(Quaternion::Lerp(renderTransform.GetGlobalOrientation(), lastDeltaState.orientation, 0.2));
 }
