@@ -78,7 +78,16 @@ namespace NCL::CSC8503 {
 		int smoothFrameCount = 0;
 		int smoothFrameTotal = 10;
 
+		Transform& GetRenderTransform() {
+			return renderTransform;
+		}
+
+		void ServerUpdate() {
+			renderTransform = object.GetTransform();
+		}
+
 	protected:
+		Transform renderTransform;
 
 		NetworkState& GetLatestNetworkState();
 

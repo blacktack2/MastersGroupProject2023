@@ -117,7 +117,7 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	//move main player
 	//((NetworkPlayer*)localPlayer)->Update(dt);
 	((NetworkPlayer*)localPlayer)->Test();
-
+	localPlayer->GetNetworkObject()->ServerUpdate();
 }
 
 void NetworkedGame::UpdateAsClient(float dt) {
@@ -131,13 +131,6 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	last = networkObjects.end();
 	bool processed = false;
 	for (auto i = first; i != last; ++i) {
-		/*
-		if ((*i)->smoothFrameCount > 0) {
-			(*i)->UpdateFull();
-			(*i)->smoothFrameCount--;
-		}
-		std::cout << (*i)->smoothFrameCount << std::endl;
-		*/
 		(*i)->UpdateDelta(dt);
 	}
 	
@@ -196,7 +189,7 @@ void NetworkedGame::SendSnapshot(bool deltaFrame, int playerID) {
 		if (!o) {
 			continue;
 		}
-
+		o->ServerUpdate();
 		int playerState = stateIDs[playerID];
 
 		GamePacket* newPacket = nullptr;
@@ -247,7 +240,11 @@ GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 		colour = Vector4(0, 1, 1, 1);
 	}
 	GameObject* newPlayer = AddNetworkPlayerToWorld(Vector3(5, 5, 5), isSelf, playerID);
-	networkObjects.push_back(new NetworkObject(*newPlayer, playerID));
+	NetworkObject* newNetObj = new NetworkObject(*newPlayer, playerID);
+	if (isSelf) {
+		world->GetMainCamera()->SetFollow(&(newNetObj->GetRenderTransform()));
+	}
+	networkObjects.push_back(newNetObj);
 	serverPlayers[playerID] = newPlayer;
 	stateIDs[playerID] = -1;
 	return newPlayer;
