@@ -17,8 +17,9 @@
 #include "ModelRPass.h"
 #include "LightingRPass.h"
 #include "GBufferRPass.h"
-#include "DebugRPass.h"
+#include "BloomRPass.h"
 #include "PresentRPass.h"
+#include "DebugRPass.h"
 
 #include "GameWorld.h"
 
@@ -75,6 +76,7 @@ namespace NCL::CSC8503 {
 		ModelRPass* modelPass;
 		LightingRPass* lightingPass;
 		GBufferRPass* gbufferPass;
+		BloomRPass* bloomPass;
 		PresentRPass* presentPass;
 		DebugRPass* debugPass;
 	};
