@@ -28,7 +28,7 @@ namespace NCL {
 
 		~Camera(void) = default;
 
-		void SetFollow(Transform* transform);
+		void SetFollow(Transform* transform, bool isSmooth = false);
 
 		void UpdateCamera(float dt);
 
@@ -77,6 +77,11 @@ namespace NCL {
 
 		static Camera BuildPerspectiveCamera(const Vector3& pos, float pitch, float yaw, float fov, float near, float far);
 		static Camera BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, float left, float right, float top, float bottom, float near, float far);
+
+		//smoothing
+		bool isSmooth;
+		Vector3 LastPos;
+		float smoothFactor = 0.7f;
 	protected:
 		CameraType camType;
 

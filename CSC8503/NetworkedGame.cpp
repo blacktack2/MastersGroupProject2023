@@ -90,6 +90,11 @@ void NetworkedGame::UpdateGame(float dt) {
 		StartAsClient(127,0,0,1);
 		
 	}
+	
+	float smoothFactor = world->GetMainCamera()->smoothFactor;
+	//world->GetMainCamera()->smoothFactor = 0.3;
+	world->GetMainCamera()->UpdateCamera(dt);
+	//world->GetMainCamera()->smoothFactor = smoothFactor;
 }
 
 void NetworkedGame::UpdateAsServer(float dt) {
@@ -112,7 +117,7 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	}
 
 	//move main player
-	((NetworkPlayer*)localPlayer)->Update(dt);
+	//((NetworkPlayer*)localPlayer)->Update(dt);
 	((NetworkPlayer*)localPlayer)->Test();
 
 }

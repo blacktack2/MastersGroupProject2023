@@ -202,7 +202,7 @@ void TutorialGame::InitialisePrefabs() {
 	bulletPrefab->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.8f, 1.0f));
 
 	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
-	bulletPrefab->GetPhysicsObject()->SetGravWeight(0.1f);
+	bulletPrefab->GetPhysicsObject()->SetGravWeight(1.0f);
 	bulletPrefab->GetPhysicsObject()->InitCapsuleInertia();
 
 	AssetLibrary::AddPrefab("bullet", bulletPrefab);
