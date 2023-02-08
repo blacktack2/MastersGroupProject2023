@@ -62,7 +62,6 @@ void TutorialGame::InitWorld(InitMode mode) {
 	mazes = nullptr;
 	world->ClearAndErase();
 	physics->Clear();
-
 	player = AddPlayerToWorld(Vector3(0, 0, 0));
 	switch (mode) {
 		case InitMode::MAZE             : InitMazeWorld(20, 20, 20.0f)                            ; break;
@@ -268,7 +267,7 @@ void TutorialGame::UpdateKeys() {
 			InitWorld(InitMode::PERFORMANCE_TEST);
 		}
 
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F10)) {
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F11)) {
 			world->ShuffleConstraints(false);
 		}
 
@@ -278,7 +277,14 @@ void TutorialGame::UpdateKeys() {
 			DebugObjectMovement();
 		}
 		break;
+
+		Window::GetWindow()->ShowOSPointer(false);
+		Window::GetWindow()->LockMouseToWindow(true);
+
 		case GameState::Paused:
+			Window::GetWindow()->ShowOSPointer(true);
+			Window::GetWindow()->LockMouseToWindow(false);
+
 			Debug::Print("Press [Escape] to resume", Vector2(5, 80), Vector4(1, 1, 1, 1));
 			Debug::Print("Press [q] to quit", Vector2(5, 90), Vector4(1, 1, 1, 1));
 
@@ -533,7 +539,7 @@ StateGameObject* TutorialGame::AddStateObjectToWorld(const Vector3& position) {
 PlayerObject* TutorialGame::AddPlayerToWorld(const Vector3& position, bool cameraFollow) {
 	static int id = 0;
 
-	PlayerObject* character = new PlayerObject(id++, score);
+	PlayerObject* character = new PlayerObject(id++);
 	SphereVolume* volume = new SphereVolume(1.0f, CollisionLayer::Player);
 
 	character->SetBoundingVolume((CollisionVolume*)volume);

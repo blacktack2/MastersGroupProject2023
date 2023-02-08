@@ -20,7 +20,7 @@ void DebugViewPoint::BeginFrame() {
 	auto startFrame = startingPoints["FrameStart"];
 	startingPoints.clear();
 	startingPoints["FrameStart"] = endFrame;
-	NCL::Debug::Print(std::format("{:3}FPS", (1000 / chrono::duration_cast<chrono::milliseconds>(endFrame - startFrame).count())), NCL::Vector2(2, 10), NCL::Debug::WHITE, 12.0f);
+	NCL::Debug::Print(std::format("{:3}FPS", (1000 / max(chrono::duration_cast<chrono::milliseconds>(endFrame - startFrame).count(),1))), NCL::Vector2(2, 10), NCL::Debug::WHITE, 12.0f);
 	itemsPrinted = 0;
 	NCL::Debug::Print(std::format("memory : {}MB", (CalculateMemory() / (1024 * 1024))), NCL::Vector2(2, 12), NCL::Debug::WHITE, 12.0f);
 }
