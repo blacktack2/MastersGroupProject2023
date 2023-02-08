@@ -35,6 +35,9 @@ set(Source_Files
     "DebugViewPoint.cpp"
 )
 
+
+
+
 if(USE_VULKAN)
 list(APPEND Header_Files "GameTechVulkanRenderer.h")
 list(APPEND Source_Files "GameTechVulkanRenderer.cpp")
@@ -47,9 +50,23 @@ endif()
 
 source_group("Source Files" FILES ${Source_Files})
 
+set(Audio_Files 
+    "dr_wav_impl.cpp"
+    "SoundSystem.h"
+    "SoundSystem.cpp"
+    "Sound.h"
+    "Sound.cpp"
+    "SoundSource.h"
+    "SoundSource.cpp"
+    "SoundDevice.h"
+    "SoundDevice.cpp"
+)
+source_group("Audio Files" FILES ${Audio_Files})
+
 set(ALL_FILES
     ${Header_Files}
     ${Source_Files}
+    ${Audio_Files}
 )
 
 if(USE_VULKAN)
@@ -57,6 +74,7 @@ if(USE_VULKAN)
         ${Header_Files}
         ${Source_Files}
         ${SHADER_FILES}
+        ${Audio_Files}
     )
 
 foreach (file ${SHADER_FILES})
@@ -226,3 +244,11 @@ add_custom_target(
 add_dependencies(${PROJECT_NAME} SHADER_FILES)
 
 endif()
+
+################################################################################
+# OpenAL config
+################################################################################
+include_directories("../include/")
+link_directories("../lib/Debug/OpenAL/")
+
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC  ${CMAKE_SOURCE_DIR}/lib/Debug/OpenAL/OpenAL32.lib)

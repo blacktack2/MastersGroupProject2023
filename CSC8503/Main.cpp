@@ -27,6 +27,8 @@
 #include "BehaviourParallelSelector.h"
 #include "BehaviourAction.h"
 
+#include "TestAudio.h"
+
 using namespace NCL;
 using namespace CSC8503;
 
@@ -343,6 +345,7 @@ int main() {
 	Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
 	//TestPushdownAutomata(w);
 
+	TestAudio::TestAudio1();
 	if (!w->HasInitialised()) {
 		return -1;
 	}	
