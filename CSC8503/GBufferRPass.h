@@ -34,8 +34,11 @@ namespace NCL::CSC8503 {
 
 		void SetRenderMode(RenderMode mode);
 
-		inline OGLTexture* GetOutTex() const {
-			return colourOutTex;
+		inline OGLTexture* GetSceneOutTex() const {
+			return sceneOutTex;
+		}
+		inline OGLTexture* GetBloomOutTex() const {
+			return bloomOutTex;
 		}
 	private:
 		OGLFrameBuffer* frameBuffer;
@@ -47,7 +50,8 @@ namespace NCL::CSC8503 {
 		OGLTexture* normalTexIn;
 		OGLTexture* depthTexIn;
 
-		OGLTexture* colourOutTex;
+		OGLTexture* sceneOutTex;
+		OGLTexture* bloomOutTex;
 
 		OGLMesh* quad;
 

@@ -24,6 +24,7 @@
 #include "BehaviourSelector.h"
 #include "BehaviourSequence.h"
 #include "BehaviourParallel.h"
+#include "BehaviourParallelSelector.h"
 #include "BehaviourAction.h"
 
 using namespace NCL;
@@ -141,7 +142,7 @@ void TestBehaviourTree() {
 	roomSequence->AddChild(goToRoom);
 	roomSequence->AddChild(openDoor);
 
-	BehaviourParallel* lootSelection = new BehaviourParallel("Loot Selection");
+	BehaviourParallelSelector* lootSelection = new BehaviourParallelSelector("Loot Selection");
 	lootSelection->AddChild(lookForTreasure);
 	lootSelection->AddChild(lookForItems);
 
@@ -345,7 +346,6 @@ int main() {
 	//TestStateMachine();
 	//TestBehaviourTree();
 	//TestPathfinding();
-	//TestNetworking();
 
 	Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
 	//TestPushdownAutomata(w);
@@ -353,6 +353,8 @@ int main() {
 	if (!w->HasInitialised()) {
 		return -1;
 	}	
+
+	//TestNetworking();
 
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
