@@ -41,6 +41,13 @@ OGLMesh::~OGLMesh() {
 	glDeleteBuffers(1, &indexBuffer);
 }
 
+void OGLMesh::Draw() {
+	Draw(0);
+	for (unsigned int layer = 1; layer < GetSubMeshCount(); layer++) {
+		Draw(layer);
+	}
+}
+
 void OGLMesh::Draw(unsigned int subLayer) {
 	glBindVertexArray(GetVAO());
 
