@@ -106,6 +106,12 @@ void LightingRPass::OnWindowResize(int width, int height) {
 }
 
 void LightingRPass::Render() {
+	lightFrameBuffer->Bind();
+
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	lightFrameBuffer->Unbind();
+
 	gameWorld.OperateOnLights([&](const Light& light) {
 		Matrix4 projView;
 		if (light.position.w == 0.0f) {
@@ -170,7 +176,6 @@ void LightingRPass::DrawShadows(const Light& light, const Matrix4& projView) {
 
 void LightingRPass::DrawLight(const Light& light, const Matrix4& projView) {
 	lightFrameBuffer->Bind();
-	glClear(GL_COLOR_BUFFER_BIT);
 
 	glBlendFunc(GL_ONE, GL_ONE);
 	glCullFace(GL_FRONT);
