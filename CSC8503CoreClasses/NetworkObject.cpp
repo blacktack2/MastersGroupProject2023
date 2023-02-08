@@ -1,4 +1,5 @@
 #include "NetworkObject.h"
+#include "Debug.h"
 #include "./enet/enet.h"
 using namespace NCL;
 using namespace CSC8503;
@@ -61,13 +62,11 @@ bool NetworkObject::ReadDeltaPacket(DeltaPacket &p, float dt) {
 	fullOrientation.z += ((float)p.orientation[2]) * deltaOrientationDivisorInverse;
 	fullOrientation.w += ((float)p.orientation[3]) * deltaOrientationDivisorInverse;
 
-	//moveObject(dt, fullPos, object.GetTransform().GetGlobalPosition(), &object);
-
-	//object.GetTransform().SetOrientation(fullOrientation);
-
 	lastDeltaState = NetworkState();
 	lastDeltaState.position = fullPos;
 	lastDeltaState.orientation = fullOrientation;
+	Debug::DrawLine(lastDeltaState.position, lastDeltaState.position + Vector3(0, 0.1, 0), Debug::YELLOW, 5.0f);
+
 
 	return true;
 }
@@ -80,9 +79,7 @@ bool NetworkObject::ReadFullPacket(FullPacket &p, float dt) {
 
 	lastDeltaState = p.fullState;
 
-	//object.GetTransform().SetPosition(lastFullState.position);
-
-	//object.GetTransform().SetOrientation(lastFullState.orientation);
+	Debug::DrawLine(p.fullState.position, p.fullState.position + Vector3(0,0.1,0), Debug::BLUE, 5.0f);
 
 	stateHistory.emplace_back(lastFullState);
 
@@ -164,13 +161,10 @@ void NetworkObject::UpdateStateHistory(int minID) {
 }
 
 void NetworkObject::UpdateDelta(float dt) {
-	moveObject(dt, lastDeltaState.position, object.GetTransform().GetGlobalPosition(), &object);
-	//object.GetTransform().SetOrientation(Quaternion::Lerp(object.GetTransform().GetGlobalOrientation(), lastFullState.orientation,0.2));
-
-	//object.GetTransform().SetPosition(lastFullState.position);
-	object.GetTransform().SetOrientation(lastDeltaState.orientation);
+	object.GetTransform().SetPosition(Vector3::Lerp(object.GetTransform().GetGlobalPosition(), lastDeltaState.position, dt * 10));
+	object.GetTransform().SetOrientation(Quaternion::Lerp(object.GetTransform().GetGlobalOrientation(), lastDeltaState.orientation, 0.2));
 }
 void NetworkObject::UpdateFull() {
-	object.GetTransform().SetPosition(object.GetTransform().GetGlobalPosition() + (lastFullState.position - object.GetTransform().GetGlobalPosition()) * smoothFrameInverse);
+	object.GetTransform().SetPosition(Vector3::Lerp(object.GetTransform().GetGlobalPosition(), lastFullState.position, 0.5));
 	object.GetTransform().SetOrientation(Quaternion::Lerp(object.GetTransform().GetGlobalOrientation(), lastFullState.orientation, 2*smoothFrameInverse));
 }

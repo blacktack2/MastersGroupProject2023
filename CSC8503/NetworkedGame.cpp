@@ -68,7 +68,6 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 }
 
 void NetworkedGame::UpdateGame(float dt) {
-	TutorialGame::UpdateGame(dt);
 	game_dt = dt;
 	timeToNextPacket -= dt;
 	if (timeToNextPacket < 0) {
@@ -90,7 +89,9 @@ void NetworkedGame::UpdateGame(float dt) {
 		StartAsClient(127,0,0,1);
 		
 	}
-	
+
+	TutorialGame::UpdateGame(dt);
+
 	float smoothFactor = world->GetMainCamera()->smoothFactor;
 	//world->GetMainCamera()->smoothFactor = 0.3;
 	world->GetMainCamera()->UpdateCamera(dt);
@@ -112,7 +113,7 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	}
 	else {
 		for (auto i : connectedClients) {
-			SendSnapshot(false, i);
+			SendSnapshot(true, i);
 		}
 	}
 
@@ -133,15 +134,16 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	last = networkObjects.end();
 	bool processed = false;
 	for (auto i = first; i != last; ++i) {
+		/*
 		if ((*i)->smoothFrameCount > 0) {
 			(*i)->UpdateFull();
 			(*i)->smoothFrameCount--;
 		}
-		else {
-			//(*i)->UpdateDelta(dt);
-		}
-		
+		std::cout << (*i)->smoothFrameCount << std::endl;
+		*/
+		(*i)->UpdateDelta(dt);
 	}
+	
 	//*/
 	//send self data to server
 	ClientPacket newPacket;

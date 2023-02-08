@@ -81,7 +81,7 @@ namespace NCL {
 		//smoothing
 		bool isSmooth;
 		Vector3 LastPos;
-		float smoothFactor = 0.7f;
+		float smoothFactor = 60.0f;
 	protected:
 		CameraType camType;
 

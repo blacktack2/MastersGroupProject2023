@@ -88,7 +88,7 @@ void Camera::UpdateCamera(float dt) {
 		}
 	} else {
 		Vector3 followPos = follow->GetGlobalPosition();
-		followPos = Vector3::Lerp(LastPos, followPos, smoothFactor);
+		followPos = Vector3::Lerp(LastPos, followPos, smoothFactor * dt);
 		LastPos = followPos;
 		pitch -= (Window::GetMouse()->GetRelativePosition().y);
 		yaw -= (Window::GetMouse()->GetRelativePosition().x);
