@@ -55,11 +55,12 @@ namespace NCL::CSC8503 {
 		inline PresentRPass& GetPresentPass() {
 			return *presentPass;
 		}
+		inline DebugRPass& GetDebugRPass() {
+			return *debugPass;
+		}
 
 		virtual void Update(float dt) override;
 	protected:
-		void NewRenderLines();
-		void NewRenderText();
 
 		void RenderFrame() override;
 
@@ -68,33 +69,14 @@ namespace NCL::CSC8503 {
 		void BuildObjectList();
 		void SortObjectList();
 
-		void SetDebugStringBufferSizes(size_t newVertCount);
-		void SetDebugLineBufferSizes(size_t newVertCount);
-
 		vector<const RenderObject*> activeObjects;
 
 		SkyboxRPass* skyboxPass;
 		ModelRPass* modelPass;
 		LightingRPass* lightingPass;
 		GBufferRPass* gbufferPass;
-		// DebugRPass* debugPass;
 		PresentRPass* presentPass;
-
-		vector<Vector3> debugLineData;
-
-		vector<Vector3> debugTextPos;
-		vector<Vector4> debugTextColours;
-		vector<Vector2> debugTextUVs;
-
-		GLuint lineVAO;
-		GLuint lineVertVBO;
-		size_t lineCount;
-
-		GLuint textVAO;
-		GLuint textVertVBO;
-		GLuint textColourVBO;
-		GLuint textTexVBO;
-		size_t textCount;
+		DebugRPass* debugPass;
 	};
 }
 
