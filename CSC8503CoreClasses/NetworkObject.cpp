@@ -164,7 +164,3 @@ void NetworkObject::UpdateDelta(float dt) {
 	object.GetTransform().SetPosition(Vector3::Lerp(object.GetTransform().GetGlobalPosition(), lastDeltaState.position, dt * 10));
 	object.GetTransform().SetOrientation(Quaternion::Lerp(object.GetTransform().GetGlobalOrientation(), lastDeltaState.orientation, 0.2));
 }
-void NetworkObject::UpdateFull() {
-	object.GetTransform().SetPosition(Vector3::Lerp(object.GetTransform().GetGlobalPosition(), lastFullState.position, 0.5));
-	object.GetTransform().SetOrientation(Quaternion::Lerp(object.GetTransform().GetGlobalOrientation(), lastFullState.orientation, 2*smoothFrameInverse));
-}

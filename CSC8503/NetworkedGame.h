@@ -67,6 +67,8 @@ namespace NCL {
 			std::map<int, GameObject*> serverPlayers;
 			GameObject* localPlayer;
 			string name;
+
+			float refreshRate = 1.0f / 120.0f; //120hz server/client update
 		};
 	}
 }

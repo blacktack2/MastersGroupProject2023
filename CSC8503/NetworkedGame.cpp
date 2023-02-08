@@ -77,7 +77,7 @@ void NetworkedGame::UpdateGame(float dt) {
 		else if (thisClient) {
 			UpdateAsClient(dt);
 		}
-		timeToNextPacket += 1.0f / 20.0f; //20hz server/client update
+		timeToNextPacket += refreshRate;
 	}
 
 	if (!thisServer && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9)) {
@@ -92,10 +92,7 @@ void NetworkedGame::UpdateGame(float dt) {
 
 	TutorialGame::UpdateGame(dt);
 
-	float smoothFactor = world->GetMainCamera()->smoothFactor;
-	//world->GetMainCamera()->smoothFactor = 0.3;
 	world->GetMainCamera()->UpdateCamera(dt);
-	//world->GetMainCamera()->smoothFactor = smoothFactor;
 }
 
 void NetworkedGame::UpdateAsServer(float dt) {

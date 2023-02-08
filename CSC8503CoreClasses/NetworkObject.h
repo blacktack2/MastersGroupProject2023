@@ -74,7 +74,6 @@ namespace NCL::CSC8503 {
 		}
 
 		void UpdateDelta(float dt);
-		void UpdateFull();
 
 		int smoothFrameCount = 0;
 		int smoothFrameTotal = 10;
