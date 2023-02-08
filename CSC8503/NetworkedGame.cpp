@@ -77,7 +77,7 @@ void NetworkedGame::UpdateGame(float dt) {
 		else if (thisClient) {
 			UpdateAsClient(dt);
 		}
-		timeToNextPacket += refreshRate;
+		timeToNextPacket = packetGap;
 	}
 
 	if (!thisServer && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9)) {
@@ -106,7 +106,7 @@ void NetworkedGame::UpdateAsServer(float dt) {
 		for (auto i : connectedClients) {
 			SendSnapshot(false, i);
 		}
-		packetsToSnapshot = 10;
+		packetsToSnapshot = fullPacketToDeltaRate;
 	}
 	else {
 		for (auto i : connectedClients) {

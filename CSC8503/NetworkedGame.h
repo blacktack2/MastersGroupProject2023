@@ -68,7 +68,8 @@ namespace NCL {
 			GameObject* localPlayer;
 			string name;
 
-			float refreshRate = 1.0f / 120.0f; //120hz server/client update
+			float packetGap = 1.0f / 120.0f; //120hz server/client update
+			int fullPacketToDeltaRate = 30;
 		};
 	}
 }
