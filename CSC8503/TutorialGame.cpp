@@ -220,7 +220,7 @@ void TutorialGame::InitialisePrefabs() {
 	bulletPrefab->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.8f, 1.0f));
 
 	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
-	bulletPrefab->GetPhysicsObject()->SetGravWeight(0.1f);
+	bulletPrefab->GetPhysicsObject()->SetGravWeight(1.0f);
 	bulletPrefab->GetPhysicsObject()->InitCapsuleInertia();
 
 	AssetLibrary::AddPrefab("bullet", bulletPrefab);
@@ -278,9 +278,6 @@ void TutorialGame::UpdateKeys() {
 		}
 		break;
 
-		Window::GetWindow()->ShowOSPointer(false);
-		Window::GetWindow()->LockMouseToWindow(true);
-
 		case GameState::Paused:
 			Window::GetWindow()->ShowOSPointer(true);
 			Window::GetWindow()->LockMouseToWindow(false);
@@ -293,6 +290,8 @@ void TutorialGame::UpdateKeys() {
 			}
 			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
 				gameState = GameState::OnGoing;
+				Window::GetWindow()->ShowOSPointer(false);
+				Window::GetWindow()->LockMouseToWindow(true);
 			}
 			break;
 		case GameState::Win:

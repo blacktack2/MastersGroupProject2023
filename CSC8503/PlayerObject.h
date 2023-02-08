@@ -19,6 +19,7 @@ namespace NCL {
 
 			void AttachedCamera() {
 				hasCamera = true;
+				//camera = cam;
 			};
 
 		protected:
@@ -56,6 +57,7 @@ namespace NCL {
 			Vector3 lastDir = Vector3(0,0,0);
 			
 			//camera related
+			//Camera& camera;
 			bool hasCamera = false;
 			bool isFreeLook = false;
 			float camTurnSpeed = 0.5f;

@@ -7,8 +7,9 @@
 using namespace NCL;
 using namespace CSC8503;
 
-void Camera::SetFollow(Transform* transform) {
+void Camera::SetFollow(Transform* transform, bool isSmooth) {
 	follow = transform;
+	this->isSmooth = isSmooth;
 }
 
 Camera::Camera() {
@@ -87,6 +88,8 @@ void Camera::UpdateCamera(float dt) {
 		}
 	} else {
 		Vector3 followPos = follow->GetGlobalPosition();
+		followPos = Vector3::Lerp(LastPos, followPos, smoothFactor * dt);
+		LastPos = followPos;
 		pitch -= (Window::GetMouse()->GetRelativePosition().y);
 		yaw -= (Window::GetMouse()->GetRelativePosition().x);
 

@@ -77,7 +77,7 @@ void NetworkedGame::UpdateGame(float dt) {
 		else if (thisClient) {
 			UpdateAsClient(dt);
 		}
-		timeToNextPacket += 1.0f / 20.0f; //20hz server/client update
+		timeToNextPacket = packetGap;
 	}
 
 	if (!thisServer && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9)) {
@@ -89,7 +89,10 @@ void NetworkedGame::UpdateGame(float dt) {
 		StartAsClient(127,0,0,1);
 		
 	}
+
 	TutorialGame::UpdateGame(dt);
+
+	world->GetMainCamera()->UpdateCamera(dt);
 }
 
 void NetworkedGame::UpdateAsServer(float dt) {
@@ -103,7 +106,7 @@ void NetworkedGame::UpdateAsServer(float dt) {
 		for (auto i : connectedClients) {
 			SendSnapshot(false, i);
 		}
-		packetsToSnapshot = 10;
+		packetsToSnapshot = fullPacketToDeltaRate;
 	}
 	else {
 		for (auto i : connectedClients) {
@@ -112,13 +115,27 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	}
 
 	//move main player
-	((NetworkPlayer*)localPlayer)->Update(dt);
+	//((NetworkPlayer*)localPlayer)->Update(dt);
 	((NetworkPlayer*)localPlayer)->Test();
-
+	localPlayer->GetNetworkObject()->ServerUpdate();
 }
 
 void NetworkedGame::UpdateAsClient(float dt) {
 	thisClient->UpdateClient();
+
+	//move obj
+	///*
+	std::vector<NetworkObject*>::const_iterator first;
+	std::vector<NetworkObject*>::const_iterator last;
+	first = networkObjects.begin();
+	last = networkObjects.end();
+	bool processed = false;
+	for (auto i = first; i != last; ++i) {
+		(*i)->UpdateDelta(dt);
+	}
+	
+	//*/
+	//send self data to server
 	ClientPacket newPacket;
 	newPacket.lastID = stateID;
 	keyMap.Update();
@@ -172,7 +189,7 @@ void NetworkedGame::SendSnapshot(bool deltaFrame, int playerID) {
 		if (!o) {
 			continue;
 		}
-
+		o->ServerUpdate();
 		int playerState = stateIDs[playerID];
 
 		GamePacket* newPacket = nullptr;
@@ -223,7 +240,11 @@ GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 		colour = Vector4(0, 1, 1, 1);
 	}
 	GameObject* newPlayer = AddNetworkPlayerToWorld(Vector3(5, 5, 5), isSelf, playerID);
-	networkObjects.push_back(new NetworkObject(*newPlayer, playerID));
+	NetworkObject* newNetObj = new NetworkObject(*newPlayer, playerID);
+	if (isSelf) {
+		world->GetMainCamera()->SetFollow(&(newNetObj->GetRenderTransform()));
+	}
+	networkObjects.push_back(newNetObj);
 	serverPlayers[playerID] = newPlayer;
 	stateIDs[playerID] = -1;
 	return newPlayer;

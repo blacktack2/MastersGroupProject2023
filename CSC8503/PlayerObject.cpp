@@ -174,8 +174,10 @@ void PlayerObject::Shoot() {
 	Bullet* ink = new Bullet(*(Bullet*)AssetLibrary::GetPrefab("bullet"));
 	ink->SetLifespan(projectileLifespan);
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
+	ink->GetPhysicsObject()->SetInverseMass(2.0f);
 	ink->GetPhysicsObject()->ApplyLinearImpulse(transform.GetGlobalOrientation() * Vector3(0, 0, -1) * projectileForce);
 	gameWorld.AddGameObject(ink);
+
 	ink->OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
 	};
