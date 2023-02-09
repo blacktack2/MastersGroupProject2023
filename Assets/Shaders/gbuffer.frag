@@ -43,6 +43,18 @@ vec3 displayDepth(vec2 texCoord) {
 	return vec3((texture(depthTex, texCoord).r - 0.98) * (1.0 / 0.02));
 }
 
+vec3 displayDiffuse(vec2 texCoord) {
+	return texture(diffuseTex, texCoord).rgb;
+}
+
+vec3 displayDiffuseLight(vec2 texCoord) {
+	return texture(diffuseLightTex, texCoord).rgb;
+}
+
+vec3 displaySpecularLight(vec2 texCoord) {
+	return texture(specularLightTex, texCoord).rgb;
+}
+
 in Vertex {
 	vec2 texCoord;
 } IN;
@@ -55,6 +67,12 @@ void main() {
 		fragColour.rgb = displayNormals(IN.texCoord);
 	} else if (mode == 2) {
 		fragColour.rgb = displayDepth(IN.texCoord);
+	} else if (mode == 3) {
+		fragColour.rgb = displayDiffuse(IN.texCoord);
+	} else if (mode == 4) {
+		fragColour.rgb = displayDiffuseLight(IN.texCoord);
+	} else if (mode == 5) {
+		fragColour.rgb = displaySpecularLight(IN.texCoord);
 	} else {
 		fragColour.rgb = displayDefault(IN.texCoord);
 	}

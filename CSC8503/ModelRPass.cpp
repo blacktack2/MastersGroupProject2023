@@ -17,8 +17,8 @@ using namespace NCL::CSC8503;
 
 ModelRPass::ModelRPass(OGLRenderer& renderer, GameWorld& gameWorld) :
 OGLRenderPass(renderer), gameWorld(gameWorld) {
-	diffuseOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), TexType::Colour8);
-	normalOutTex  = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), TexType::Colour8);
+	diffuseOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight());
+	normalOutTex  = new OGLTexture(renderer.GetWidth(), renderer.GetHeight());
 	depthOutTex   = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), TexType::Depth);
 	AddScreenTexture(diffuseOutTex);
 	AddScreenTexture(normalOutTex);

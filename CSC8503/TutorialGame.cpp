@@ -20,7 +20,8 @@ using namespace CSC8503;
 
 TutorialGame::TutorialGame() {
 	world = &GameWorld::instance();
-	sunLight = &world->AddLight(Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
+	sunLight = world->AddLight(new Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
+	world->AddLight(new Light({ 0.0f, 5.0f, -10.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, 10.0f));
 #ifdef USEVULKAN
 	renderer = new GameTechVulkanRenderer(*world);
 #else 
@@ -107,6 +108,15 @@ void TutorialGame::UpdateGame(float dt) {
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM3)) {
 		renderer->GetGBufferPass().SetRenderMode(RenderMode::Depth);
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM4)) {
+		renderer->GetGBufferPass().SetRenderMode(RenderMode::Diffuse);
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM5)) {
+		renderer->GetGBufferPass().SetRenderMode(RenderMode::DiffuseLight);
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM6)) {
+		renderer->GetGBufferPass().SetRenderMode(RenderMode::SpecularLight);
 	}
 
 	if (gameState == GameState::OnGoing) {

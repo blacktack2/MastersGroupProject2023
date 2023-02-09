@@ -23,6 +23,8 @@ uniform vec4  lightColour;
 uniform vec3  lightDirection;
 uniform float lightAngle;
 
+uniform float gamma = 2.2;
+
 out vec4 diffuseOutput;
 out vec4 specularOutput;
 
@@ -40,14 +42,16 @@ void main() {
 	if (lightPosition.w == 0) { // Directional Light
 		incident = normalize(lightDirection);
 		attenuation = 1.0;
-	} else { // Point/Spot light
+	} else {                    // Point/Spot light
 		vec3 lPos = lightPosition.xyz / lightPosition.w;
 		incident = normalize(lPos - worldPos);
 		if (lightAngle < 360.0 && degrees(acos(dot(-incident, lightDirection))) > lightAngle)
 			discard;
 		float dist = length(lPos - worldPos);
-		attenuation = 1.0 - clamp(dist / lightRadius, 0.0, 1.0);
-		if (attenuation == 0.0)
+		if (dist > lightRadius)
+			discard;
+		attenuation = 1.0 - (dist / (gamma == 1.0 ? lightRadius : lightRadius * lightRadius));
+		if (attenuation <= 0.0)
 			discard;
 	}
 

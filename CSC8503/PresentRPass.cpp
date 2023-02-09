@@ -43,6 +43,7 @@ PresentRPass::~PresentRPass() {
 
 void PresentRPass::Render() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glEnable(GL_FRAMEBUFFER_SRGB);
 	shader->Bind();
 
 	sceneTexIn->Bind(0);
@@ -50,4 +51,5 @@ void PresentRPass::Render() {
 	quad->Draw();
 
 	shader->Unbind();
+	//glDisable(GL_FRAMEBUFFER_SRGB);
 }

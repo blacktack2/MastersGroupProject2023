@@ -10,6 +10,8 @@
 uniform sampler2D diffuseTex;
 uniform sampler2D bumpTex;
 
+uniform float gamma = 2.2;
+
 in Vertex {
 	vec4 colour;
 	vec2 texCoord;
@@ -31,5 +33,7 @@ void main() {
 	normal = normalize(TBN * normalize(normal));
 
 	diffuseOut = texture(diffuseTex, IN.texCoord) + IN.colour;
-	normalOut  = vec4(normal * 0.5 + 0.5, 1.0);
+	diffuseOut.rgb = pow(diffuseOut.rgb, vec3(gamma));
+
+	normalOut = vec4(normal * 0.5 + 0.5, 1.0);
 }

@@ -21,6 +21,9 @@ namespace NCL::CSC8503 {
 		Default = 0,
 		Normals,
 		Depth,
+		Diffuse,
+		DiffuseLight,
+		SpecularLight,
 	};
 	class GBufferRPass : public OGLRenderPass {
 	public:
