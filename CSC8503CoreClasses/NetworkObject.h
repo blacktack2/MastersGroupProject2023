@@ -23,6 +23,19 @@ namespace NCL::CSC8503 {
 			size = sizeof(HandshakeAckPacket) - sizeof(GamePacket);
 		}
 	};
+
+	struct ItemInitPacket : public GamePacket {
+		int		objectID = -1;
+		char	itemType;
+		Vector3		position;
+		Quaternion	orientation;
+
+		ItemInitPacket() {
+			type = Item_Init_Message;
+			size = sizeof(ItemInitPacket) - sizeof(GamePacket);
+		}
+	};
+
 	struct FullPacket : public GamePacket {
 		int		objectID = -1;
 		NetworkState fullState;

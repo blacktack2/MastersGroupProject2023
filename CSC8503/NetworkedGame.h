@@ -48,6 +48,15 @@ namespace NCL {
 			void PlayerJoined(int playerID);
 			void PlayerLeft(int playerID);
 
+			//packet handle
+			void HandleDeltaPacket(GamePacket* payload, int source);
+			void HandleFullPacket(GamePacket* payload, int source);
+			void HandlePlayerConnectedPacket(GamePacket* payload, int source);
+			void HandlePlayerDisconnectedPacket(GamePacket* payload, int source);
+			void HandleHandshakePacket(GamePacket* payload, int source);
+			void HandleItemInitPacket(GamePacket* payload, int source);
+
+
 			PlayerObject* AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID);
 
 			std::map<int, int> stateIDs;

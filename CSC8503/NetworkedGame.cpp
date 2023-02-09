@@ -63,7 +63,7 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(Player_Connected, this);
 	thisClient->RegisterPacketHandler(Player_Disconnected, this);
 	thisClient->RegisterPacketHandler(Handshake_Message, this);
-
+	thisClient->RegisterPacketHandler(Item_Init_Message, this);
 	StartLevel();
 }
 
@@ -252,6 +252,7 @@ GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 
 void NetworkedGame::StartLevel() {
 	world->Clear();
+	//world->ClearAndErase();
 	physics->Clear();
 	int id = OBJECTID_START;
 	int idOffset = 0;
@@ -292,86 +293,125 @@ void NetworkedGame::ClientProcessNetworkObject(GamePacket* payload, int objID) {
 	}
 }
 
-void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
-	//server
-	if (type == Received_State) {
-		ServerProcessNetworkObject(payload, source);
+void NetworkedGame::HandleDeltaPacket(GamePacket* payload, int source) {
+	ClientProcessNetworkObject(payload, ((DeltaPacket*)payload)->objectID);
+}
+void NetworkedGame::HandleFullPacket(GamePacket* payload, int source){
+	ClientProcessNetworkObject(payload, ((FullPacket*)payload)->objectID);
+	if (((FullPacket*)payload)->fullState.stateID > stateID) {
+		stateID = ((FullPacket*)payload)->fullState.stateID;
 	}
-	if (type == Handshake_Ack) {
-		thisServer->handshakeMap[source] = true;
-	}
-	//clients
-	if (type == Delta_State) {
-		ClientProcessNetworkObject(payload, ((DeltaPacket*)payload)->objectID);
-	}
-	if (type == Full_State) {
-		ClientProcessNetworkObject(payload, ((FullPacket*)payload)->objectID);
-		if (((FullPacket*)payload)->fullState.stateID > stateID) {
-			stateID = ((FullPacket*)payload)->fullState.stateID;
-		}
-			
-	}
-	if (type == Player_Connected) {
+}
+void NetworkedGame::HandlePlayerConnectedPacket(GamePacket* payload, int source) {
 
-		int playerID = ((PlayerConnectionPacket*)payload)->playerID;
-		NetworkedGame::PlayerJoined(playerID);
-			
-		//if server: send to clients
-		if (thisServer) {
-			//send server object;
-			if (localPlayer) {
-				//send server player for new player
+	int playerID = ((PlayerConnectionPacket*)payload)->playerID;
+	NetworkedGame::PlayerJoined(playerID);
+
+	//if server: send to clients
+	if (thisServer) {
+		//send server object;
+		if (localPlayer) {
+			//send server player for new player
+			PlayerConnectionPacket existingPacket;
+			existingPacket.playerID = 0;
+			thisServer->SendPacket(&existingPacket, playerID, true);
+		}
+		std::vector<int> connectedClients = thisServer->GetClientIDs();
+		for (auto i : connectedClients) {
+			//std::cout << "Server sending to : " << i << std::endl;
+			if (i == playerID) {
+				//send the id to the new player
+				//std::cout << playerID << " : " << i << std::endl;
+				HandshakePacket payload;
+				payload.objectID = playerID;
+				thisServer->SendPacket(&payload, i, true);
+			}
+			else {
+				//send a new player joined to old player
+				PlayerConnectionPacket newPacket;
+				newPacket.playerID = playerID;
+				thisServer->SendPacket(&newPacket, i);
+
+				//send old player's id to new player
+				//std::cout << "Server sending create player " << i << " to : " << playerID<< std::endl;
 				PlayerConnectionPacket existingPacket;
-				existingPacket.playerID = 0;
+				existingPacket.playerID = i;
 				thisServer->SendPacket(&existingPacket, playerID, true);
 			}
-			std::vector<int> connectedClients = thisServer->GetClientIDs();
-			for (auto i : connectedClients) {
-				//std::cout << "Server sending to : " << i << std::endl;
-				if (i == playerID) {
-					//send the id to the new player
-					//std::cout << playerID << " : " << i << std::endl;
-					HandshakePacket payload;
-					payload.objectID = playerID;
-					thisServer->SendPacket(&payload, i, true);
-				}
-				else { 
-					//send a new player joined to old player
-					PlayerConnectionPacket newPacket;
-					newPacket.playerID = playerID;
-					thisServer->SendPacket(&newPacket, i);
-
-					//send old player's id to new player
-					//std::cout << "Server sending create player " << i << " to : " << playerID<< std::endl;
-					PlayerConnectionPacket existingPacket;
-					existingPacket.playerID = i;
-					thisServer->SendPacket(&existingPacket, playerID, true);
-				}
-			}
 		}
-
 	}
-	if (type == Player_Disconnected) {
-		//player disconnected
-		int playerID = ((PlayerConnectionPacket*)payload)->playerID;
-		NetworkedGame::PlayerLeft(playerID);
-		//server tell everyone to delete this
-		if (thisServer) {
-			PlayerConnectionPacket newPacket = PlayerConnectionPacket();
-			newPacket.type = Player_Disconnected;
-			newPacket.playerID = playerID;
-			thisServer->SendGlobalPacket(&newPacket, true);
-		}
+}
 
+void NetworkedGame::HandlePlayerDisconnectedPacket(GamePacket* payload, int source) {
+	//player disconnected
+	int playerID = ((PlayerConnectionPacket*)payload)->playerID;
+	NetworkedGame::PlayerLeft(playerID);
+	//server tell everyone to delete this
+	if (thisServer) {
+		PlayerConnectionPacket newPacket = PlayerConnectionPacket();
+		newPacket.type = Player_Disconnected;
+		newPacket.playerID = playerID;
+		thisServer->SendGlobalPacket(&newPacket, true);
 	}
-	if (type == Handshake_Message) {
-		std::cout << "Handshake_Message" << std::endl;
-		selfID = ((HandshakePacket*)payload)->objectID;
-		std::cout << name << " " << selfID << " recieved Handshake_Message" << std::endl;
-		if (thisClient && localPlayer == nullptr) {
-			std::cout << name << " " << selfID << " Creating localhost player "<< selfID << std::endl;
-			localPlayer = SpawnPlayer(selfID,true);
-		}
+}
+
+void NetworkedGame::HandleHandshakePacket(GamePacket* payload, int source) {
+	std::cout << "Handshake_Message" << std::endl;
+	selfID = ((HandshakePacket*)payload)->objectID;
+	std::cout << name << " " << selfID << " recieved Handshake_Message" << std::endl;
+	if (thisClient && localPlayer == nullptr) {
+		std::cout << name << " " << selfID << " Creating localhost player " << selfID << std::endl;
+		localPlayer = SpawnPlayer(selfID, true);
+	}
+}
+void NetworkedGame::HandleItemInitPacket(GamePacket* payload, int source) {
+	std::cout << "item init packet : " << std::endl;
+	std::cout << "Type : "<< ((ItemInitPacket*)payload)->type << std::endl;
+	std::cout << "ID : "<< ((ItemInitPacket*)payload)->objectID << std::endl;
+	std::cout << "Pos : "<< ((ItemInitPacket*)payload)->position << std::endl;
+	switch ((int)((ItemInitPacket*)payload)->type)
+	{
+		//server
+	case 2:
+		
+		break;
+	default:
+		break;
+	}
+}
+
+void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
+
+	switch (type)
+	{
+		//server
+	case Received_State:
+		ServerProcessNetworkObject(payload, source);
+		break;
+	case Handshake_Ack:
+		thisServer->handshakeMap[source] = true;
+		break;
+		//clients
+	case Delta_State:
+		HandleDeltaPacket(payload, source);
+		break;
+	case Full_State:
+		HandleFullPacket(payload, source);
+		break;
+	case Player_Connected:
+		HandlePlayerConnectedPacket(payload, source);
+		break;
+	case Player_Disconnected:
+		HandlePlayerDisconnectedPacket(payload, source);
+		break;
+	case Handshake_Message:
+		HandleHandshakePacket(payload, source);
+		break;
+	case Item_Init_Message:
+		HandleItemInitPacket(payload, source);
+		break;
+	default:
+		break;
 	}
 }
 
