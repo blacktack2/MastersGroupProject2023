@@ -13,6 +13,13 @@
 #include "TextureLoader.h"
 #include "TutorialGame.h"
 
+//Audio Testing
+
+#include "Sound.h"
+#include "SoundSystem.h"
+#include "TestAudio.h"
+
+
 using namespace NCL;
 using namespace CSC8503;
 
@@ -71,6 +78,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 		case InitMode::BRIDGE_TEST      : InitBridgeConstraintTestWorld(10, 20, 30, false)        ; break;
 		case InitMode::BRIDGE_TEST_ANG  : InitBridgeConstraintTestWorld(10, 20, 30, true)         ; break;
 		case InitMode::PERFORMANCE_TEST : InitMixedGridWorld(30, 30, 10.0f, 10.0f)                ; break;
+		case InitMode::AUDIO_TEST : InitGameExamples()                ; break;
 	}
 
 	InitGameExamples();
@@ -292,7 +300,10 @@ void TutorialGame::UpdateKeys() {
 	}
 }
 
-void TutorialGame::InitGameExamples() {
+void TutorialGame::InitGameExamples()/*for audio testing*/ {
+	AddFloorToWorld({ 0,0,0 });
+
+	
 }
 
 void TutorialGame::InitMazeWorld(int numRows, int numCols, float size) {

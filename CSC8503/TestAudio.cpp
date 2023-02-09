@@ -8,6 +8,21 @@
 #include "SoundSystem.h"
 #include "Assets.h"
 
+#include "AssetLibrary.h"
+#include "Bullet.h"
+#include "Bonus.h"
+#include "Debug.h"
+#include "GameWorld.h"
+#include "Maze.h"
+#include "OrientationConstraint.h"
+#include "PhysicsObject.h"
+#include "PlayerObject.h"
+#include "PositionConstraint.h"
+#include "RenderObject.h"
+#include "StateGameObject.h"
+#include "TextureLoader.h"
+#include "TutorialGame.h"
+
 
 #define OpenAL_ErrorCheck(message)\
 {\
@@ -21,6 +36,8 @@
 #define alec(FUNCTION_CALL)\
 FUNCTION_CALL;\
 OpenAL_ErrorCheck(FUNCTION_CALL)
+
+//vector<string> TestAudio::audioFiles;
 
 void TestAudio::TestAudio1()
 {
@@ -73,4 +90,18 @@ void TestAudio::TestAudio1()
 	delete sn;
 	Sound::DeleteSounds();
 	SoundSystem::Destroy();
+}
+
+void TestAudio::TestAudio2()
+{
+	TutorialGame* game1 = new TutorialGame();
+	/*TestAudio::audioFiles.emplace_back("coin2.wav");
+	TestAudio::audioFiles.emplace_back("random1.wav");
+	TestAudio::audioFiles.emplace_back("random2.wav");*/
+
+	
+
+
+	
+
 }
