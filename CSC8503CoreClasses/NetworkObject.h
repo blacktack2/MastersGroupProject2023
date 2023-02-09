@@ -97,7 +97,7 @@ namespace NCL::CSC8503 {
 			return renderTransform;
 		}
 
-		void ServerUpdate() {
+		void SnapRenderToSelf() {
 			renderTransform = object.GetTransform();
 		}
 

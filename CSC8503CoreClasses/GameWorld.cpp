@@ -23,6 +23,7 @@ GameWorld::~GameWorld()	{
 void GameWorld::Clear() {
 	dynamicQuadTree.Clear();
 	staticQuadTree.Clear();
+	networkObjects.clear();
 	gameObjects.clear();
 	constraints.clear();
 	worldIDCounter		= 0;
@@ -43,6 +44,9 @@ void GameWorld::AddGameObject(GameObject* o) {
 	gameObjects.emplace_back(o);
 	o->SetWorldID(worldIDCounter++);
 	worldStateCounter++;
+	if (o->GetNetworkObject() != nullptr) {
+		AddNetworkObject(o->GetNetworkObject());
+	}
 }
 
 void GameWorld::RemoveGameObject(GameObject* o, bool andDelete) {
@@ -52,6 +56,15 @@ void GameWorld::RemoveGameObject(GameObject* o, bool andDelete) {
 	}
 	worldStateCounter++;
 }
+
+void GameWorld::AddNetworkObject(NetworkObject* o) {
+	networkObjects.emplace_back(o);
+}
+
+void GameWorld::RemoveNetworkObject(NetworkObject* o) {
+	networkObjects.erase(std::remove(networkObjects.begin(), networkObjects.end(), o), networkObjects.end());
+}
+
 
 void GameWorld::GetObjectIterators(
 	GameObjectIterator& first,
@@ -68,15 +81,15 @@ void GameWorld::OperateOnContents(GameObjectFunc f) {
 }
 
 void GameWorld::PreUpdateWorld() {
-	gameObjects.erase(std::remove_if(gameObjects.begin(), gameObjects.end(),
-		[](GameObject* o) {
-			if (o->IsMarkedDelete()) {
-				delete o;
-				return true;
+	std::vector<GameObject*> delObjs;
+	std::copy_if(gameObjects.begin(), gameObjects.end(), std::back_inserter(delObjs), [&](GameObject* obj) {
+			if (obj->IsMarkedDelete()) {
+				return obj;
 			}
-			return false;
-		}
-	), gameObjects.end());
+		});
+	for (auto delObj : delObjs) {
+		RemoveGameObject(delObj, true);
+	}
 	UpdateDynamicTree();
 }
 

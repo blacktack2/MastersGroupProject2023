@@ -39,6 +39,12 @@ namespace NCL {
 			void RemoveConstraint(Constraint* c, bool andDelete = false);
 			void RemoveConstraint(std::vector<Constraint*>::const_iterator c, bool andDelete = false);
 
+			void AddNetworkObject(NetworkObject* o);
+			void RemoveNetworkObject(NetworkObject* o);
+			std::vector<NetworkObject*> GetNetworkObjects() {
+				return networkObjects;
+			}
+
 			Camera* GetMainCamera() const {
 				return mainCamera;
 			}
@@ -79,6 +85,7 @@ namespace NCL {
 		protected:
 			std::vector<GameObject*> gameObjects;
 			std::vector<Constraint*> constraints;
+			std::vector<NetworkObject*> networkObjects;
 
 			QuadTree dynamicQuadTree;
 			QuadTree staticQuadTree;

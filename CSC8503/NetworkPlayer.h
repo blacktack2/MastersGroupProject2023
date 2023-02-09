@@ -3,6 +3,11 @@
 #include "GameClient.h"
 #include "PlayerObject.h"
 
+enum NetworkInstanceType {
+	Projectile,
+	AI
+};
+
 namespace NCL {
 	namespace CSC8503 {
 		class GameWorld;

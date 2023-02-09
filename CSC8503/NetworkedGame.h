@@ -48,6 +48,7 @@ namespace NCL {
 			void PlayerJoined(int playerID);
 			void PlayerLeft(int playerID);
 
+			void ServerGetInstantiatedObject(NetworkPlayer* player);
 			void SendInitItemPacket(GameObject* obj);
 
 			//packet handle
@@ -73,9 +74,6 @@ namespace NCL {
 			int selfID;
 
 			int objectID;
-
-			std::vector<NetworkObject*> networkObjects;
-			//std::map<int, NetworkObject*> networkObjects;
 
 			std::map<int, GameObject*> serverPlayers;
 			GameObject* localPlayer;

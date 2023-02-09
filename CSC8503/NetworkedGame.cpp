@@ -16,7 +16,6 @@
 #define COLLISION_MSG 30
 #define OBJECTID_START 10; //reserve 0-4 for playerID
 
-
 struct MessagePacket : public GamePacket {
 	short playerID;
 	short messageID;
@@ -119,17 +118,15 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	}
 
 	//move main player
-	//((NetworkPlayer*)localPlayer)->Update(dt);
 	((NetworkPlayer*)localPlayer)->Test();
-	vector<GameObject*> newObjList = ((NetworkPlayer*)localPlayer)->GetLastInstancedObjects();
-	for (auto i : newObjList) {
-		if (i->GetNetworkObject() == nullptr) {
-			networkObjects.push_back(new NetworkObject(*i));
-			SendInitItemPacket(i);
-		}
+	ServerGetInstantiatedObject((NetworkPlayer*)localPlayer);
+	localPlayer->GetNetworkObject()->SnapRenderToSelf();
+	std::vector<NetworkObject*> networkObjects = world->GetNetworkObjects();
 
+	bool processed = false;
+	for (auto networkObj : networkObjects) {
+		networkObj->SnapRenderToSelf();
 	}
-	localPlayer->GetNetworkObject()->ServerUpdate();
 }
 
 void NetworkedGame::UpdateAsClient(float dt) {
@@ -137,13 +134,11 @@ void NetworkedGame::UpdateAsClient(float dt) {
 
 	//move obj
 	///*
-	std::vector<NetworkObject*>::const_iterator first;
-	std::vector<NetworkObject*>::const_iterator last;
-	first = networkObjects.begin();
-	last = networkObjects.end();
+	std::vector<NetworkObject*> networkObjects = world->GetNetworkObjects();
+	
 	bool processed = false;
-	for (auto i = first; i != last; ++i) {
-		(*i)->UpdateDelta(dt);
+	for (auto networkObj: networkObjects) {
+		networkObj->UpdateDelta(dt);
 	}
 	
 	//*/
@@ -201,7 +196,6 @@ void NetworkedGame::SendSnapshot(bool deltaFrame, int playerID) {
 		if (!o) {
 			continue;
 		}
-		o->ServerUpdate();
 		int playerState = stateIDs[playerID];
 
 		GamePacket* newPacket = nullptr;
@@ -252,11 +246,9 @@ GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 		colour = Vector4(0, 1, 1, 1);
 	}
 	GameObject* newPlayer = AddNetworkPlayerToWorld(Vector3(5, 5, 5), isSelf, playerID);
-	NetworkObject* newNetObj = new NetworkObject(*newPlayer, playerID);
 	if (isSelf) {
-		world->GetMainCamera()->SetFollow(&(newNetObj->GetRenderTransform()));
+		world->GetMainCamera()->SetFollow(&(newPlayer->GetNetworkObject()->GetRenderTransform()));
 	}
-	networkObjects.push_back(newNetObj);
 	serverPlayers[playerID] = newPlayer;
 	stateIDs[playerID] = -1;
 	return newPlayer;
@@ -284,31 +276,33 @@ void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID
 	if (((ClientPacket*)payload)->lastID > stateIDs[playerID]) {
 		stateIDs[playerID] = ((ClientPacket*)payload)->lastID;
 	}
-	//get newly instantiated gameobjects
-	vector<GameObject*> newObjList = ((NetworkPlayer*)serverPlayers[playerID])->GetLastInstancedObjects();
-	for (auto i : newObjList) {
-		if (i->GetNetworkObject() == nullptr) {
-			networkObjects.push_back(new NetworkObject(*i));
-			SendInitItemPacket(i);
-		}
-		
-	}
-
+	
+	ServerGetInstantiatedObject((NetworkPlayer*)serverPlayers[playerID]);
 }
 
 void NetworkedGame::ClientProcessNetworkObject(GamePacket* payload, int objID) {
-	std::vector<NetworkObject*>::const_iterator first;
-	std::vector<NetworkObject*>::const_iterator last;
-	first = networkObjects.begin();
-	last = networkObjects.end();
+	std::vector<NetworkObject*> networkObjects = world->GetNetworkObjects();
+
 	bool processed = false;
-	for (auto i = first; i != last; ++i) {
-		if ((*i)->ReadPacket(*payload, game_dt)) {
+	for (auto networkObj : networkObjects) {
+		if (networkObj->ReadPacket(*payload, game_dt)) {
 			processed = true;
 		}
 	}
 	if (!processed) {
 		//spawn?
+	}
+}
+
+void NetworkedGame::ServerGetInstantiatedObject(NetworkPlayer* player) {
+	vector<GameObject*> newObjList = player->GetLastInstancedObjects();
+	for (auto newObj : newObjList) {
+		if (newObj->GetNetworkObject() == nullptr) {
+			newObj->SetNetworkObject(new NetworkObject(*newObj, newObj->GetWorldID()));
+			world->AddNetworkObject(newObj->GetNetworkObject());
+			SendInitItemPacket(newObj);
+		}
+
 	}
 }
 
@@ -321,7 +315,7 @@ void NetworkedGame::SendInitItemPacket(GameObject* obj) {
 	newObj.velocity = obj->GetPhysicsObject()->GetLinearVelocity();
 	newObj.objectID = obj->GetNetworkObject()->GetNetworkID();
 
-	newObj.itemType = 2;
+	newObj.itemType = NetworkInstanceType::Projectile;
 
 	thisServer->SendGlobalPacket(&newObj);
 }
@@ -401,15 +395,11 @@ void NetworkedGame::HandleHandshakePacket(GamePacket* payload, int source) {
 }
 
 void NetworkedGame::HandleItemInitPacket(GamePacket* payload, int source) {
-	std::cout << "item init packet : " << std::endl;
-	std::cout << "Type : "<< ((ItemInitPacket*)payload)->type << std::endl;
-	std::cout << "ID : "<< ((ItemInitPacket*)payload)->objectID << std::endl;
-	std::cout << "Pos : "<< ((ItemInitPacket*)payload)->position << std::endl;
 	GameObject* obj;
 	switch ( ((int)((ItemInitPacket*)payload)->itemType) )
 	{
 		//server
-	case 2:
+	case NetworkInstanceType::Projectile:
 		obj = new Bullet(*(Bullet*)AssetLibrary::GetPrefab("bullet"));
 		((Bullet*)obj)->SetLifespan(5);
 		break;
@@ -420,6 +410,8 @@ void NetworkedGame::HandleItemInitPacket(GamePacket* payload, int source) {
 	obj->GetTransform().SetPosition(((ItemInitPacket*)payload)->position);
 	obj->GetPhysicsObject()->SetInverseMass(2.0f);
 	obj->GetPhysicsObject()->ApplyLinearImpulse(((ItemInitPacket*)payload)->velocity);
+	obj->SetNetworkObject(new NetworkObject(*obj, ((int)((ItemInitPacket*)payload)->objectID)));
+	obj->GetNetworkObject()->SnapRenderToSelf();
 	world->AddGameObject(obj);
 }
 
@@ -465,12 +457,6 @@ void NetworkedGame::PlayerJoined(int playerID) {
 void NetworkedGame::PlayerLeft(int playerID) {
 	//std::cout << name << " " << selfID << " deleting player " << playerID << std::endl;
 	if (serverPlayers[playerID] != nullptr) {
-		auto it = std::find(networkObjects.begin(), networkObjects.end(), serverPlayers[playerID]->GetNetworkObject());
-		if (it != networkObjects.end()) {
-			int index = it - networkObjects.begin();
-			networkObjects.erase(networkObjects.begin()+index);
-		}
-
 		world->RemoveGameObject(serverPlayers[playerID], false);
 	}
 		
@@ -508,7 +494,7 @@ PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, bo
 
 	character->GetPhysicsObject()->SetInverseMass(1);
 	character->GetPhysicsObject()->InitSphereInertia();
-
+	character->SetNetworkObject(new NetworkObject(*character, playerID));
 	world->AddGameObject(character);
 
 	if (cameraFollow) {
@@ -517,6 +503,5 @@ PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, bo
 	}
 
 	character->GetPhysicsObject()->SetGravWeight(0);
-
 	return character;
 }
