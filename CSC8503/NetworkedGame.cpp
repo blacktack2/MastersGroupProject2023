@@ -121,6 +121,14 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	//move main player
 	//((NetworkPlayer*)localPlayer)->Update(dt);
 	((NetworkPlayer*)localPlayer)->Test();
+	vector<GameObject*> newObjList = ((NetworkPlayer*)localPlayer)->GetLastInstancedObjects();
+	for (auto i : newObjList) {
+		if (i->GetNetworkObject() == nullptr) {
+			networkObjects.push_back(new NetworkObject(*i));
+			SendInitItemPacket(i);
+		}
+
+	}
 	localPlayer->GetNetworkObject()->ServerUpdate();
 }
 
@@ -279,8 +287,11 @@ void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID
 	//get newly instantiated gameobjects
 	vector<GameObject*> newObjList = ((NetworkPlayer*)serverPlayers[playerID])->GetLastInstancedObjects();
 	for (auto i : newObjList) {
-		networkObjects.push_back(new NetworkObject(*i));
-		SendInitItemPacket(i);
+		if (i->GetNetworkObject() == nullptr) {
+			networkObjects.push_back(new NetworkObject(*i));
+			SendInitItemPacket(i);
+		}
+		
 	}
 
 }
@@ -394,21 +405,22 @@ void NetworkedGame::HandleItemInitPacket(GamePacket* payload, int source) {
 	std::cout << "Type : "<< ((ItemInitPacket*)payload)->type << std::endl;
 	std::cout << "ID : "<< ((ItemInitPacket*)payload)->objectID << std::endl;
 	std::cout << "Pos : "<< ((ItemInitPacket*)payload)->position << std::endl;
-	Bullet* ink;
+	GameObject* obj;
 	switch ( ((int)((ItemInitPacket*)payload)->itemType) )
 	{
 		//server
 	case 2:
-		ink = new Bullet(*(Bullet*)AssetLibrary::GetPrefab("bullet"));
-		ink->SetLifespan(5);
-		ink->GetTransform().SetPosition(((ItemInitPacket*)payload)->position);
-		ink->GetPhysicsObject()->SetInverseMass(2.0f);
-		ink->GetPhysicsObject()->ApplyLinearImpulse(((ItemInitPacket*)payload)->velocity);
-		world->AddGameObject(ink);
+		obj = new Bullet(*(Bullet*)AssetLibrary::GetPrefab("bullet"));
+		((Bullet*)obj)->SetLifespan(5);
 		break;
 	default:
+		obj = new Bullet(*(Bullet*)AssetLibrary::GetPrefab("bullet"));
 		break;
 	}
+	obj->GetTransform().SetPosition(((ItemInitPacket*)payload)->position);
+	obj->GetPhysicsObject()->SetInverseMass(2.0f);
+	obj->GetPhysicsObject()->ApplyLinearImpulse(((ItemInitPacket*)payload)->velocity);
+	world->AddGameObject(obj);
 }
 
 void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
