@@ -8,6 +8,9 @@
 #include "PlayerObject.h"
 #include "TutorialGame.h"
 
+#include "Bullet.h"
+#include "AssetLibrary.h"
+
 #include <bitset>
 
 #define COLLISION_MSG 30
@@ -33,6 +36,7 @@ NetworkedGame::NetworkedGame()	{
 	packetsToSnapshot = 0;
 	stateID = 0;
 	selfID = 0;
+	objectID = OBJECTID_START;
 }
 
 NetworkedGame::~NetworkedGame()	{
@@ -254,8 +258,6 @@ void NetworkedGame::StartLevel() {
 	world->Clear();
 	//world->ClearAndErase();
 	physics->Clear();
-	int id = OBJECTID_START;
-	int idOffset = 0;
 	InitGameExamples();
 	InitDefaultFloor();
 	world->UpdateStaticTree();
@@ -274,7 +276,13 @@ void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID
 	if (((ClientPacket*)payload)->lastID > stateIDs[playerID]) {
 		stateIDs[playerID] = ((ClientPacket*)payload)->lastID;
 	}
-	
+	//get newly instantiated gameobjects
+	vector<GameObject*> newObjList = ((NetworkPlayer*)serverPlayers[playerID])->GetLastInstancedObjects();
+	for (auto i : newObjList) {
+		networkObjects.push_back(new NetworkObject(*i));
+		SendInitItemPacket(i);
+	}
+
 }
 
 void NetworkedGame::ClientProcessNetworkObject(GamePacket* payload, int objID) {
@@ -293,15 +301,31 @@ void NetworkedGame::ClientProcessNetworkObject(GamePacket* payload, int objID) {
 	}
 }
 
+void NetworkedGame::SendInitItemPacket(GameObject* obj) {
+	ItemInitPacket newObj; 
+	Transform objTransform = obj->GetTransform();
+	newObj.position = objTransform.GetGlobalPosition();
+	newObj.orientation = objTransform.GetGlobalOrientation();
+	newObj.scale = objTransform.GetScale();
+	newObj.velocity = obj->GetPhysicsObject()->GetLinearVelocity();
+	newObj.objectID = obj->GetNetworkObject()->GetNetworkID();
+
+	newObj.itemType = 2;
+
+	thisServer->SendGlobalPacket(&newObj);
+}
+
 void NetworkedGame::HandleDeltaPacket(GamePacket* payload, int source) {
 	ClientProcessNetworkObject(payload, ((DeltaPacket*)payload)->objectID);
 }
+
 void NetworkedGame::HandleFullPacket(GamePacket* payload, int source){
 	ClientProcessNetworkObject(payload, ((FullPacket*)payload)->objectID);
 	if (((FullPacket*)payload)->fullState.stateID > stateID) {
 		stateID = ((FullPacket*)payload)->fullState.stateID;
 	}
 }
+
 void NetworkedGame::HandlePlayerConnectedPacket(GamePacket* payload, int source) {
 
 	int playerID = ((PlayerConnectionPacket*)payload)->playerID;
@@ -364,16 +388,23 @@ void NetworkedGame::HandleHandshakePacket(GamePacket* payload, int source) {
 		localPlayer = SpawnPlayer(selfID, true);
 	}
 }
+
 void NetworkedGame::HandleItemInitPacket(GamePacket* payload, int source) {
 	std::cout << "item init packet : " << std::endl;
 	std::cout << "Type : "<< ((ItemInitPacket*)payload)->type << std::endl;
 	std::cout << "ID : "<< ((ItemInitPacket*)payload)->objectID << std::endl;
 	std::cout << "Pos : "<< ((ItemInitPacket*)payload)->position << std::endl;
-	switch ((int)((ItemInitPacket*)payload)->type)
+	Bullet* ink;
+	switch ( ((int)((ItemInitPacket*)payload)->itemType) )
 	{
 		//server
 	case 2:
-		
+		ink = new Bullet(*(Bullet*)AssetLibrary::GetPrefab("bullet"));
+		ink->SetLifespan(5);
+		ink->GetTransform().SetPosition(((ItemInitPacket*)payload)->position);
+		ink->GetPhysicsObject()->SetInverseMass(2.0f);
+		ink->GetPhysicsObject()->ApplyLinearImpulse(((ItemInitPacket*)payload)->velocity);
+		world->AddGameObject(ink);
 		break;
 	default:
 		break;

@@ -28,6 +28,7 @@ PlayerObject::~PlayerObject() {
 }
 
 void PlayerObject::Update(float dt) {
+	lastInstancedObjects.clear();
 	jumpTimer -= dt;
 	projectileFireRateTimer -= dt;
 	CheckGround();
@@ -73,6 +74,7 @@ void PlayerObject::MoveCamera() {
 }
 
 void PlayerObject::GetInput(Vector3& dir, unsigned int keyPress) {
+	GameObject* proj;
 	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
 	
 	Vector3 fwdAxis = this->GetTransform().GetGlobalOrientation() * Vector3(0, 0, -1);
@@ -168,7 +170,7 @@ void PlayerObject::CollisionWith(GameObject* other) {
 
 
 void PlayerObject::Shoot() {
-	if (projectileFireRateTimer>0)
+	if (projectileFireRateTimer > 0)
 		return;
 	projectileFireRateTimer = projectileFireRate;
 	Bullet* ink = new Bullet(*(Bullet*)AssetLibrary::GetPrefab("bullet"));
@@ -181,4 +183,6 @@ void PlayerObject::Shoot() {
 	ink->OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
 	};
+	lastInstancedObjects.push_back(ink);
+
 }

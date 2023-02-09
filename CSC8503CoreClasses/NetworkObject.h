@@ -28,7 +28,9 @@ namespace NCL::CSC8503 {
 		int		objectID = -1;
 		char	itemType;
 		Vector3		position;
+		Vector3		scale;
 		Quaternion	orientation;
+		Vector3		velocity;
 
 		ItemInitPacket() {
 			type = Item_Init_Message;
@@ -72,7 +74,7 @@ namespace NCL::CSC8503 {
 
 	class NetworkObject		{
 	public:
-		NetworkObject(GameObject& o, int id);
+		NetworkObject(GameObject& o, int id = -1);
 		virtual ~NetworkObject();
 
 		//Called by clients

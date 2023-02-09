@@ -8,7 +8,10 @@ using namespace CSC8503;
 NetworkObject::NetworkObject(GameObject& o, int id) : object(o), renderTransform(&o) {
 	deltaErrors = 0;
 	fullErrors  = 0;
-	networkID   = id;
+	if (id != -1)
+		networkID = id;
+	else
+		networkID = o.GetWorldID();
 	object.SetNetworkObject(this);
 	renderTransform = o.GetTransform();
 	(object.GetRenderObject())->SetTransform(&renderTransform);

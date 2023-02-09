@@ -48,6 +48,8 @@ namespace NCL {
 			void PlayerJoined(int playerID);
 			void PlayerLeft(int playerID);
 
+			void SendInitItemPacket(GameObject* obj);
+
 			//packet handle
 			void HandleDeltaPacket(GamePacket* payload, int source);
 			void HandleFullPacket(GamePacket* payload, int source);
@@ -69,6 +71,8 @@ namespace NCL {
 
 			int stateID;
 			int selfID;
+
+			int objectID;
 
 			std::vector<NetworkObject*> networkObjects;
 			//std::map<int, NetworkObject*> networkObjects;
