@@ -1,10 +1,11 @@
 #include "SoundSource.h"
+#include"SoundSystem.h"
 #include"SoundErrorReport.h"
 #include<AL/alc.h>
+
 SoundSource::SoundSource()
 {
-	Reset();
-	
+	Reset();	
 }
 
 SoundSource::SoundSource(ALuint sound)
@@ -107,13 +108,16 @@ void SoundSource::Update(float msec)
 }
 
 void SoundSource::Play(ALuint bufferToPlay) {
-	if (mSoundBuffer != bufferToPlay) {
-		mSoundBuffer = bufferToPlay;
-		alSourcei(mSource->source, AL_BUFFER, mSoundBuffer);
-	}
+	if (mSource != 0) {
+		if (mSoundBuffer != bufferToPlay) {
+			mSoundBuffer = bufferToPlay;
+			alSourcei(mSource->source, AL_BUFFER, mSoundBuffer);
+		}
 
-	if (isPlaying()) return;
-	alSourcePlay(mSource->source);
+		if (isPlaying()) return;
+		alSourcePlay(mSource->source);
+	}
+	else std::cerr << "No source attached" << std::endl;
 }
 
 void SoundSource::Pause() {

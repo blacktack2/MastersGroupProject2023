@@ -1,7 +1,9 @@
 #pragma once
 #include<AL/al.h>
-#include"SoundSystem.h"
 #include"GameObject.h"
+
+
+struct OALSource;
 
 enum SoundPriority {
 	SOUNDPRIORITY_LOW,
@@ -24,38 +26,38 @@ public:
 	void Reset();
 
 	void SetPitch(const float& pitch) { if(pitch>=0.0f) mPitch = pitch; }
-	inline float GetPitch()  { return mPitch; }
+	float GetPitch()  { return mPitch; }
 	
 	void SetGain(const float& gain) { mGain= gain; }
-	inline float GetGain()  { return mGain; }
+	float GetGain()  { return mGain; }
 	
 	void SetMaxDistance(const float& distance) { if(distance>=0.0f) mMaxDistance= distance; }
-	inline float GetMaxDistance()  { return mMaxDistance; }
+	float GetMaxDistance()  { return mMaxDistance; }
 
 	void SetPosition(const NCL::Maths::Vector3& position) { mPosition = position; }
-	inline NCL::Maths::Vector3 GetPosition() { return mPosition; }
+	NCL::Maths::Vector3 GetPosition() { return mPosition; }
 
 	void SetVelocity(const NCL::Maths::Vector3& velocity) { mVelocity = velocity; }
-	inline NCL::Maths::Vector3 GetVelocity() { return mVelocity; }
+	NCL::Maths::Vector3 GetVelocity() { return mVelocity; }
 
 	void SetDirection(const NCL::Maths::Vector3& direction) { mDirection= direction; }
-	inline NCL::Maths::Vector3 GetDirection() { return mDirection; }
+	NCL::Maths::Vector3 GetDirection() { return mDirection; }
 
 	void SetTimeLeft(const float& timeLeft) { mTimeLeft = timeLeft; }
-	inline float  GetTimeLeft()const { return mTimeLeft; }
+	float  GetTimeLeft()const { return mTimeLeft; }
 
 
 	void SetLooping(const bool& looping) { mIsLooping = looping; }
-	inline bool IsLooping() { return mIsLooping; }
+	bool IsLooping() { return mIsLooping; }
 
 	void SetSoundBuffer(const ALuint& soundBuffer);
-	inline ALuint GetSoundBuffer() { return mSoundBuffer; }
+	ALuint GetSoundBuffer() { return mSoundBuffer; }
 
 	inline OALSource* GetSource()const { return mSource; }
 	void SetSource(OALSource* source) { mSource =source; }
 
 	void SetPriority(const SoundPriority& priority) { mPriority = (SoundPriority)priority; }
-	inline SoundPriority GetPriority() { return mPriority; }
+	SoundPriority GetPriority() { return mPriority; }
 
 	void SetTarget(NCL::CSC8503::GameObject* target) { mTarget = target; }
 
@@ -64,7 +66,7 @@ public:
 
 	bool isPlaying();
 
-	void AttachSource(OALSource* s);
+	void AttachSource(OALSource *s);
 	void DetachSource();
 
 	static bool CompareNodesByPriority(SoundSource* a, SoundSource* b);

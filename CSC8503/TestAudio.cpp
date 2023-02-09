@@ -5,6 +5,7 @@
 #include "Sound.h"
 #include "SoundDevice.h"
 #include "SoundSource.h"
+#include "SoundSystem.h"
 #include "Assets.h"
 
 
@@ -25,7 +26,8 @@ void TestAudio::TestAudio1()
 {
 	//Setup Device and context
 
-	SoundDevice* sd = SoundDevice::get();
+	//SoundDevice* sd = SoundDevice::get();
+	SoundSystem* sndSystem = SoundSystem::Initialize();
 
 	//Setup Listener
 
@@ -60,4 +62,5 @@ void TestAudio::TestAudio1()
 	//alec(alDeleteSources(1, &monoSource));
 	delete sn;
 	Sound::DeleteSounds();
+	SoundSystem::Destroy();
 }

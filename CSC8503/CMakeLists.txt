@@ -52,6 +52,8 @@ source_group("Source Files" FILES ${Source_Files})
 
 set(Audio_Files 
     "dr_wav_impl.cpp"
+    "SoundErrorReport.h"
+    "SoundErrorReport.cpp"
     "SoundSystem.h"
     "SoundSystem.cpp"
     "Sound.h"
@@ -60,6 +62,8 @@ set(Audio_Files
     "SoundSource.cpp"
     "SoundDevice.h"
     "SoundDevice.cpp"
+    "TestAudio.h"
+    "TestAudio.cpp"
 )
 source_group("Audio Files" FILES ${Audio_Files})
 

@@ -3,9 +3,12 @@
 #include <AL/alc.h>
 #include "SoundErrorReport.h"
 
-SoundDevice* SoundDevice::get() {
-	static SoundDevice* s_snd_device = new SoundDevice();
-	return s_snd_device;
+SoundDevice* SoundDevice::instance = NULL;
+
+SoundDevice* SoundDevice::Get() {
+	if(!instance)
+		instance = new SoundDevice();
+	return instance;
 }
 
 SoundDevice::SoundDevice() {

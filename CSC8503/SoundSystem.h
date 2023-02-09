@@ -1,9 +1,13 @@
 #pragma once
 #include<vector>
-#include"SoundSource.h"
-#include"SoundDevice.h"
 #include<map>
 #include<algorithm>
+
+#include"SoundDevice.h"
+#include "Transform.h"
+#include"GameObject.h"
+
+class SoundSource;
 
 struct OALSource {
 	ALuint source;
@@ -18,11 +22,26 @@ struct OALSource {
 class SoundSystem
 {
 public:
-	static SoundSystem* get();
-	static void DestroySoundSystem(SoundSystem* s);
+	static SoundSystem* Initialize(unsigned int channels = 32) {
+		if (!instance) {
+			instance = new SoundSystem(channels);
+		}
+		return instance;
+	}
+	static void Destroy() { delete instance; }
+
+	inline static SoundSystem* GetSoundSystem() { return instance; }
+
+	void AddSoundSource(SoundSource* s) { mSources.push_back(s); }
+	void RemoveSoundSource(SoundSource* s);
+
 
 	void Update(float mSec);
-	void PlaySounds();
+
+	void SetMasterVolume(float value);
+
+
+	//void PlaySounds();
 
 
 protected:
@@ -32,8 +51,8 @@ protected:
 	void UpdateListener();
 	void UpdateTemporaryEmitters(float msec);
 
-	void DetachSources(vector<SoundSource*>::iterator from, vector<SoundSource*>::iterator to);
-	void AttachSources(vector<SoundSource*>::iterator from, vector<SoundSource*>::iterator to);
+	void DetachSources(std::vector<SoundSource *>::iterator from, std::vector<SoundSource *>::iterator to);
+	void AttachSources(std::vector<SoundSource *>::iterator from, std::vector<SoundSource *>::iterator to);
 
 	void CullNodes();
 
@@ -42,13 +61,14 @@ protected:
 	
 
 	SoundDevice* mSndDevice;
+	std::vector<OALSource*> mOALSources;
 	std::vector<SoundSource*> mSources;
 	std::map<std::string, ALuint> mSounds;
 
-	float mListenerGain;
-	float mListenerPosition[3];
-	float mListenerVelocity[3];
+	float mMasterVolume;
+	
+	NCL::CSC8503::GameObject* mListener=nullptr;
 
-
+	static SoundSystem* instance;
 };
 
