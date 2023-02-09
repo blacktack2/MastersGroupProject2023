@@ -33,7 +33,7 @@ public:
 	inline static SoundSystem* GetSoundSystem() { return instance; }
 
 	void AddSoundSource(SoundSource* s) { mSources.push_back(s); }
-	void RemoveSoundSource(SoundSource* s);
+	//void RemoveSoundSource(SoundSource* s);
 
 
 	void Update(float mSec);
@@ -42,27 +42,28 @@ public:
 
 
 	//void PlaySounds();
-
+	OALSource* GetSource(); // to be protected
 
 protected:
 	SoundSystem(unsigned int channels=32);
 	~SoundSystem();
 
 	void UpdateListener();
-	void UpdateTemporaryEmitters(float msec);
+	//void UpdateTemporaryEmitters(float msec);
 
 	void DetachSources(std::vector<SoundSource *>::iterator from, std::vector<SoundSource *>::iterator to);
 	void AttachSources(std::vector<SoundSource *>::iterator from, std::vector<SoundSource *>::iterator to);
 
 	void CullNodes();
 
-	OALSource* GetSource();
+	
 
 	
 
 	SoundDevice* mSndDevice;
 	std::vector<OALSource*> mOALSources;
 	std::vector<SoundSource*> mSources;
+	std::vector<SoundSource*> mFrameSources;
 	std::map<std::string, ALuint> mSounds;
 
 	float mMasterVolume;

@@ -67,6 +67,8 @@ void SoundSource::AttachSource(OALSource* s)
 
 	alSourcef(mSource->source, AL_MAX_DISTANCE, mMaxDistance);
 	alSourcef(mSource->source, AL_REFERENCE_DISTANCE, mMaxDistance * 0.2f);
+	alSourcei(mSource->source, AL_BUFFER, mSoundBuffer);
+	//alSourcef ( currentSource - > source , AL_SEC_OFFSET , ( sound - > GetLength ()/ 1000.0) - ( timeLeft / 1000.0));
 	Play(mSoundBuffer);
 }
 
@@ -88,6 +90,7 @@ bool SoundSource::CompareNodesByPriority(SoundSource* a, SoundSource* b)
 
 void SoundSource::Update(float msec)
 {
+
 	if (mSource) {
 		NCL::Maths::Vector3 pos;
 
@@ -100,6 +103,7 @@ void SoundSource::Update(float msec)
 
 		alSourcefv(mSource->source, AL_POSITION, (float*)&pos);
 		alSourcef(mSource->source, AL_GAIN, mGain);
+		alSourcef(mSource->source, AL_PITCH, mPitch);
 		alSourcei(mSource->source, AL_LOOPING, mIsLooping);
 		alSourcef(mSource->source, AL_MAX_DISTANCE, mMaxDistance);
 		alSourcef(mSource->source, AL_REFERENCE_DISTANCE, mMaxDistance*0.2f);

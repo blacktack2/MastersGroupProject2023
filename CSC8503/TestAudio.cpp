@@ -45,6 +45,7 @@ void TestAudio::TestAudio1()
 	std::string name = NCL::Assets::SOUNDSDIR+"coin21.wav";
 
 	ALuint buffer = Sound::AddSound(name);
+	
 
 
 	std::cout << "Hello World!\n";
@@ -52,8 +53,17 @@ void TestAudio::TestAudio1()
 	//Setup Source
 
 	SoundSource* sn = new SoundSource();
+	OALSource* source = sndSystem->GetSource();
+	std::cout << "Using source:" << source->source<<std::endl;
+	sn->SetPosition(NCL::Maths::Vector3(1.0f, 1.0f, 0.0f));
+	sn->SetLooping(true);
+	
+
 
 	//Play source
+	sn->SetSoundBuffer(buffer);
+	sn->AttachSource(source);
+	sn->Update(1.0f);
 	sn->Play(buffer);
 
 	int i;

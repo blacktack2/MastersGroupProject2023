@@ -46,6 +46,7 @@ public:
 	void SetTimeLeft(const float& timeLeft) { mTimeLeft = timeLeft; }
 	float  GetTimeLeft()const { return mTimeLeft; }
 
+	NCL::CSC8503::GameObject* GetTarget()const { return mTarget; }
 
 	void SetLooping(const bool& looping) { mIsLooping = looping; }
 	bool IsLooping() { return mIsLooping; }

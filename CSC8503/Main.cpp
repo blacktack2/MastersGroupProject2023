@@ -345,38 +345,39 @@ int main() {
 	Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
 	//TestPushdownAutomata(w);
 
-	TestAudio::TestAudio1();
+	
 	if (!w->HasInitialised()) {
 		return -1;
 	}	
 
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
+	TestAudio::TestAudio1();
 
-	TutorialGame* g = new TutorialGame();
-	g->InitWorld();
-	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
-	while (w->UpdateWindow() && !g->IsQuit()) {
-		float dt = w->GetTimer()->GetTimeDeltaSeconds();
-		if (dt > 0.1f) {
-			std::cout << "Skipping large time delta" << std::endl;
-			continue; //must have hit a breakpoint or something to have a 1 second frame time!
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::PRIOR)) {
-			w->ShowConsole(true);
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NEXT)) {
-			w->ShowConsole(false);
-		}
+	//TutorialGame* g = new TutorialGame();
+	//g->InitWorld();
+	//w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
+	//while (w->UpdateWindow() && !g->IsQuit()) {
+	//	float dt = w->GetTimer()->GetTimeDeltaSeconds();
+	//	if (dt > 0.1f) {
+	//		std::cout << "Skipping large time delta" << std::endl;
+	//		continue; //must have hit a breakpoint or something to have a 1 second frame time!
+	//	}
+	//	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::PRIOR)) {
+	//		w->ShowConsole(true);
+	//	}
+	//	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NEXT)) {
+	//		w->ShowConsole(false);
+	//	}
 
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::T)) {
-			w->SetWindowPosition(0, 0);
-		}
+	//	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::T)) {
+	//		w->SetWindowPosition(0, 0);
+	//	}
 
-		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
+	//	w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
 
-		g->UpdateGame(dt);
-		//DisplayPathfinding();
-	}
+	//	g->UpdateGame(dt);
+	//	//DisplayPathfinding();
+	//}
 	Window::DestroyGameWindow();
 }
