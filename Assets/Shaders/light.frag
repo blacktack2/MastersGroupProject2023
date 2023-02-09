@@ -50,7 +50,7 @@ void main() {
 		float dist = length(lPos - worldPos);
 		if (dist > lightRadius)
 			discard;
-		attenuation = 1.0 - (dist / (gamma == 1.0 ? lightRadius : lightRadius * lightRadius));
+		attenuation = 1.0 / (gamma == 1.0 ? dist : dist * dist);
 		if (attenuation <= 0.0)
 			discard;
 	}
