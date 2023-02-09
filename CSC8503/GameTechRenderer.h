@@ -61,6 +61,12 @@ namespace NCL::CSC8503 {
 		}
 
 		virtual void Update(float dt) override;
+
+		void SetGamma(float gamma);
+
+		inline float GetGamma() {
+			return gamma;
+		}
 	protected:
 
 		void RenderFrame() override;
@@ -79,6 +85,8 @@ namespace NCL::CSC8503 {
 		BloomRPass* bloomPass;
 		PresentRPass* presentPass;
 		DebugRPass* debugPass;
+
+		float gamma = 2.2f;
 	};
 }
 

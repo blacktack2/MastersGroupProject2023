@@ -100,3 +100,9 @@ ShaderBase* GameTechRenderer::LoadShader(const std::string& vertex, const std::s
 
 void GameTechRenderer::Update(float dt) {
 }
+
+void GameTechRenderer::SetGamma(float g) {
+	gamma = g;
+	modelPass->SetGamma(gamma);
+	presentPass->SetGamma(gamma);
+}

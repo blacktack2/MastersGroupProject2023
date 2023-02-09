@@ -61,6 +61,7 @@ void ModelRPass::Render() {
 		// TODO - Replace with call to the shader class
 		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "viewMatrix"), 1, GL_FALSE, (GLfloat*)&viewMatrix);
 		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "projMatrix"), 1, GL_FALSE, (GLfloat*)&projMatrix);
+		glUniform1f(glGetUniformLocation(shader->GetProgramID(), "gamma"), gamma);
 
 		shader->Unbind();
 	}

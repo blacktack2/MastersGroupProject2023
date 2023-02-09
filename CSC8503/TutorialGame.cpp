@@ -91,7 +91,7 @@ void TutorialGame::UpdateGame(float dt) {
 
 	UpdateKeys();
 	static bool moveSun = false;
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM0)) {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM0)) {
 		moveSun = !moveSun;
 	}
 	if (moveSun) {
@@ -100,24 +100,32 @@ void TutorialGame::UpdateGame(float dt) {
 		renderer->GetSkyboxPass().SetSunDir(sunLight->direction);
 	}
 
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM1)) {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM1)) {
 		renderer->GetGBufferPass().SetRenderMode(RenderMode::Default);
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM2)) {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM2)) {
 		renderer->GetGBufferPass().SetRenderMode(RenderMode::Normals);
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM3)) {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM3)) {
 		renderer->GetGBufferPass().SetRenderMode(RenderMode::Depth);
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM4)) {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM4)) {
 		renderer->GetGBufferPass().SetRenderMode(RenderMode::Diffuse);
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM5)) {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM5)) {
 		renderer->GetGBufferPass().SetRenderMode(RenderMode::DiffuseLight);
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM6)) {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM6)) {
 		renderer->GetGBufferPass().SetRenderMode(RenderMode::SpecularLight);
 	}
+
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN)) {
+		renderer->SetGamma(renderer->GetGamma() - 0.1f);
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP)) {
+		renderer->SetGamma(renderer->GetGamma() + 0.1f);
+	}
+	Debug::Print(std::string("Gamma: ").append(std::to_string(renderer->GetGamma())), Vector2(0, 30.0f));
 
 	if (gameState == GameState::OnGoing) {
 		Vector2 screenSize = Window::GetWindow()->GetScreenSize();
