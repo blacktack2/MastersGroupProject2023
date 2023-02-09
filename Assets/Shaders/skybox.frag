@@ -112,7 +112,7 @@ in Vertex {
 	vec3 viewDir;
 } IN;
 
-out vec4 fragColour[2];
+out vec4 fragColour;
 
 void main() {
 	vec3 view = IN.viewDir;
@@ -129,19 +129,18 @@ void main() {
 	vec3 night_extinction = vec3(1.0 - exp(sun.y)) * 0.2;
 	vec3 extinction = mix(day_extinction, night_extinction, -sun.y * 0.2 + 0.5);
 
-	fragColour[0].rgb = vec3(rayleigh * mie * extinction);
+	fragColour.rgb = vec3(rayleigh * mie * extinction);
 	
 	if (IN.viewDir.y > 0.0) {
 		float cirrusDensity = smoothstep(1.0 - cirrus, 1.0, fBm(view / view.y * 2.0 + time * 0.05)) * 0.3;
-		fragColour[0].rgb = mix(fragColour[0].rgb, extinction * 4.0, cirrusDensity * view.y);
+		fragColour.rgb = mix(fragColour.rgb, extinction * 4.0, cirrusDensity * view.y);
 
 		for (int i = 0; i < 10; i++) {
 			float cumulusDensity = smoothstep(1.0 - cumulus, 1.0, fBm((0.7 + float(i) * 0.01) * view / view.y + time * 0.3));
-			fragColour[0].rgb = mix(fragColour[0].rgb, extinction * cumulusDensity * 5.0, min(cumulusDensity, 1.0) * view.y);
+			fragColour.rgb = mix(fragColour.rgb, extinction * cumulusDensity * 5.0, min(cumulusDensity, 1.0) * view.y);
 		}
 	}
 
-	fragColour[0].rgb += simplex(view * 1000) * 0.01;
-	fragColour[0].w = 1.0;
-	fragColour[1] = vec4(0.0);
+	fragColour.rgb += simplex(view * 1000) * 0.01;
+	fragColour.w = 1.0;
 }
