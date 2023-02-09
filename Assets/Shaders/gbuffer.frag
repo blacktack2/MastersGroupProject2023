@@ -60,7 +60,6 @@ in Vertex {
 } IN;
 
 out vec4 fragColour;
-out vec4 bloomColour;
 
 void main() {
 	if (mode == 1) {
@@ -77,6 +76,4 @@ void main() {
 		fragColour.rgb = displayDefault(IN.texCoord);
 	}
 	fragColour.a = 1.0;
-	float brightness = dot(fragColour.rgb, vec3(0.2126, 0.7152, 0.0722));
-	bloomColour = brightness > 1.0 ? fragColour : vec4(vec3(0.0), 1.0);
 }

@@ -23,13 +23,10 @@ diffuseLightTexIn(diffuseLightTexIn), specularLightTexIn(specularLightTexIn),
 normalTexIn(normalTexIn), depthTexIn(depthTexIn) {
 	sceneOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight());
 	AddScreenTexture(sceneOutTex);
-	bloomOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight());
-	AddScreenTexture(bloomOutTex);
 
 	frameBuffer = new OGLFrameBuffer();
 	frameBuffer->Bind();
 	frameBuffer->AddTexture(sceneOutTex);
-	frameBuffer->AddTexture(bloomOutTex);
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
@@ -71,7 +68,6 @@ normalTexIn(normalTexIn), depthTexIn(depthTexIn) {
 
 GBufferRPass::~GBufferRPass() {
 	delete sceneOutTex;
-	delete bloomOutTex;
 
 	delete frameBuffer;
 

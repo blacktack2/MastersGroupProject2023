@@ -38,8 +38,7 @@ GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetW
 		modelPass->GetNormalOutTex(), modelPass->GetDepthOutTex());
 	renderPasses.push_back(gbufferPass);
 
-	bloomPass = new BloomRPass(*this,
-		gbufferPass->GetSceneOutTex(), gbufferPass->GetBloomOutTex());
+	bloomPass = new BloomRPass(*this, gbufferPass->GetOutTex());
 	bloomPass->SetBlurAmount(5);
 	renderPasses.push_back(bloomPass);
 

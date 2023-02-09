@@ -17,7 +17,7 @@ namespace NCL::Rendering {
 namespace NCL::CSC8503 {
 	class BloomRPass : public OGLRenderPass {
 	public:
-		BloomRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn, OGLTexture* bloomTexIn);
+		BloomRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn);
 		~BloomRPass();
 
 		virtual void Render() override;
@@ -30,8 +30,12 @@ namespace NCL::CSC8503 {
 			return colourOutTex;
 		}
 	private:
+		void DrawFilter();
 		void ApplyBlur();
 		void Combine();
+
+		OGLFrameBuffer* filterFrameBuffer;
+		OGLTexture* filterTex;
 
 		OGLFrameBuffer* blurFrameBufferA;
 		OGLTexture* blurTexA;
@@ -43,10 +47,10 @@ namespace NCL::CSC8503 {
 		OGLTexture* colourOutTex;
 
 		OGLTexture* sceneTexIn;
-		OGLTexture* bloomTexIn;
 
 		OGLMesh* quad;
 
+		OGLShader* filterShader;
 		OGLShader* blurShader;
 		OGLShader* combineShader;
 
