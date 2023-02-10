@@ -66,6 +66,11 @@ SoundSystem::~SoundSystem() {
 		alDeleteSources(1, &(*i)->source);
 		delete (*i);
 	}
+	//check if it should be added elsewhere
+	for (vector < SoundSource* >::iterator i = mSources.begin();
+		i != mSources.end(); ++i) {
+		delete (*i);
+	}
 	SoundDevice::Destroy();
 }
 
@@ -102,7 +107,7 @@ void SoundSystem::AttachSources(std::vector<SoundSource*>::iterator from, std::v
 
 void SoundSystem::CullNodes()
 {
-	for (std::vector<SoundSource*>::iterator i = mSources.begin(); i != mSources.end();) {
+	for (std::vector<SoundSource*>::iterator i = mFrameSources.begin(); i != mFrameSources.end();) {
 		SoundSource* s = (*i);
 
 		float length;
@@ -113,7 +118,7 @@ void SoundSystem::CullNodes()
 			length = (mListener->GetTransform().GetGlobalPosition() - s->GetPosition()).Length();
 		}
 
-		if (length > s->GetMaxDistance() || !s->GetSoundBuffer() || !s->isPlaying()) {
+		if (length > s->GetMaxDistance() || !s->GetSoundBuffer() /*|| !s->isPlaying()*/) {
 			s->DetachSource();
 			i = mFrameSources.erase(i);
 		}

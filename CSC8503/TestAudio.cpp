@@ -59,7 +59,7 @@ void TestAudio::TestAudio1()
 
 
 	//Load files
-	std::string name = NCL::Assets::SOUNDSDIR+"coin21.wav";
+	std::string name = /*NCL::Assets::SOUNDSDIR+*/"coin21.wav";
 
 	ALuint buffer = Sound::AddSound(name);
 	
@@ -81,7 +81,7 @@ void TestAudio::TestAudio1()
 	sn->SetSoundBuffer(buffer);
 	sn->AttachSource(source);
 	sn->Update(1.0f);
-	sn->Play(buffer);
+	//sn->Play(buffer);
 
 	int i;
 	std::cin >> i;
@@ -94,7 +94,32 @@ void TestAudio::TestAudio1()
 
 void TestAudio::TestAudio2()
 {
-	TutorialGame* game1 = new TutorialGame();
+	
+	//TutorialGame* game1 = new TutorialGame();
+	//game1->InitWorld(NCL::CSC8503::TutorialGame::InitMode::AUDIO_TEST);
+	//w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
+	//while (w->UpdateWindow() && !g->IsQuit()) {
+	//	float dt = w->GetTimer()->GetTimeDeltaSeconds();
+	//	if (dt > 0.1f) {
+	//		std::cout << "Skipping large time delta" << std::endl;
+	//		continue; //must have hit a breakpoint or something to have a 1 second frame time!
+	//	}
+	//	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::PRIOR)) {
+	//		w->ShowConsole(true);
+	//	}
+	//	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NEXT)) {
+	//		w->ShowConsole(false);
+	//	}
+
+	//	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::T)) {
+	//		w->SetWindowPosition(0, 0);
+	//	}
+
+	//	w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
+
+	//	g->UpdateGame(dt);
+	//	//DisplayPathfinding();
+	//}
 	/*TestAudio::audioFiles.emplace_back("coin2.wav");
 	TestAudio::audioFiles.emplace_back("random1.wav");
 	TestAudio::audioFiles.emplace_back("random2.wav");*/

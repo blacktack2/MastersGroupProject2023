@@ -35,6 +35,8 @@ public:
 	void AddSoundSource(SoundSource* s) { mSources.push_back(s); }
 	//void RemoveSoundSource(SoundSource* s);
 
+	void SetListener(NCL::CSC8503::GameObject* listener) { mListener = listener; }
+
 
 	void Update(float mSec);
 

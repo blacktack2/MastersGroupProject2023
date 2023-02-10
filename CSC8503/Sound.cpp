@@ -1,5 +1,6 @@
 #include "Sound.h"
 #include "SoundErrorReport.h"
+#include "Assets.h"
 //#include "OggSound.h"
 
 
@@ -48,7 +49,7 @@ ALuint Sound::AddSound(string name) {
 
 		if (extension == "wav") {
 			s = new Sound();
-			s->LoadFromWAV(name);
+			s->LoadFromWAV(NCL::Assets::SOUNDSDIR+name);
 			alec(alGenBuffers(1, &s->mBuffer));
 			alec(alBufferData(s->mBuffer, s->mWavData.channels > 1 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, s->mWavData.pcmData.data(), s->mWavData.pcmData.size() * 2 /*two bytes per sample*/, s->mWavData.sampleRate));
 		}
