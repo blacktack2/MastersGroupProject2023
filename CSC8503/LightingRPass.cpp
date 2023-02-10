@@ -19,8 +19,8 @@ LightingRPass::LightingRPass(OGLRenderer& renderer, GameWorld& gameWorld, OGLTex
 OGLRenderPass(renderer), gameWorld(gameWorld), depthTexIn(depthTexIn), normalTexIn(normalTexIn) {
 	shadowTex = new OGLTexture(SHADOWSIZE, SHADOWSIZE, TexType::Shadow);
 
-	lightDiffuseOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGBA16F);
-	lightSpecularOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGBA16F);
+	lightDiffuseOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
+	lightSpecularOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
 	AddScreenTexture(lightDiffuseOutTex);
 	AddScreenTexture(lightSpecularOutTex);
 

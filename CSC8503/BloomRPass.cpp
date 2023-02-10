@@ -16,13 +16,13 @@ using namespace NCL::CSC8503;
 
 BloomRPass::BloomRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn) :
 OGLRenderPass(renderer), sceneTexIn(sceneTexIn) {
-	filterTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGBA16F);
+	filterTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
 	AddScreenTexture(filterTex);
-	blurTexA = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGBA16F);
+	blurTexA = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
 	AddScreenTexture(blurTexA);
-	blurTexB = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGBA16F);
+	blurTexB = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
 	AddScreenTexture(blurTexB);
-	colourOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGBA16F);
+	colourOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
 	AddScreenTexture(colourOutTex);
 
 	filterFrameBuffer = new OGLFrameBuffer();

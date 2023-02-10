@@ -16,7 +16,7 @@ using namespace NCL::CSC8503;
 
 SkyboxRPass::SkyboxRPass(OGLRenderer& renderer, GameWorld& gameWorld) :
 OGLRenderPass(renderer), gameWorld(gameWorld) {
-	colourOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGBA16F);
+	colourOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
 	AddScreenTexture(colourOutTex);
 
 	frameBuffer = new OGLFrameBuffer();
