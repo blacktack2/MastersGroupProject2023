@@ -77,6 +77,7 @@ void OGLMesh::Draw(unsigned int subLayer) {
 	}
 
 	if (GetIndexCount() > 0) {
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 		glDrawElements(mode, count, GL_UNSIGNED_INT, (const GLvoid*)(offset * sizeof(unsigned int)));
 	} else {
 		glDrawArrays(mode, 0, count);
@@ -144,8 +145,8 @@ void OGLMesh::UploadToGPU(Rendering::RendererBase* renderer) {
 	}
 
 	if (!GetIndexData().empty()) { //buffer index data
-		glGenBuffers(1, &attributeBuffers[VertexAttribute::MAX_ATTRIBUTES]);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, attributeBuffers[VertexAttribute::MAX_ATTRIBUTES]);
+		glGenBuffers(1, &indexBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(GLuint), (int*)GetIndexData().data(), GL_STATIC_DRAW);
 	}
 
