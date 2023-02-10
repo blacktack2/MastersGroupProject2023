@@ -20,6 +20,7 @@ Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::
 GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetWindow()), gameWorld(world) {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
 
 	skyboxPass = new SkyboxRPass(*this, gameWorld);
 	renderPasses.push_back(skyboxPass);
@@ -31,18 +32,23 @@ GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetW
 		modelPass->GetDepthOutTex(), modelPass->GetNormalOutTex());
 	renderPasses.push_back(lightingPass);
 
-	gbufferPass = new GBufferRPass(*this,
+	combinePass = new CombineRPass(*this,
 		skyboxPass->GetOutTex(), modelPass->GetDiffuseOutTex(),
 		lightingPass->GetDiffuseOutTex(), lightingPass->GetSpecularOutTex(),
 		modelPass->GetNormalOutTex(), modelPass->GetDepthOutTex());
-	renderPasses.push_back(gbufferPass);
+	renderPasses.push_back(combinePass);
 
-	bloomPass = new BloomRPass(*this,
-		gbufferPass->GetSceneOutTex(), gbufferPass->GetBloomOutTex());
-	bloomPass->SetBlurAmount(5);
+	bloomPass = new BloomRPass(*this, combinePass->GetOutTex());
+	SetBloomAmount(bloomAmount);
+	SetBloomThreshold(bloomThreshold);
 	renderPasses.push_back(bloomPass);
 
-	presentPass = new PresentRPass(*this, bloomPass->GetOutTex());
+	hdrPass = new HDRRPass(*this, bloomPass->GetOutTex());
+	SetHDRExposure(hdrExposure);
+	renderPasses.push_back(hdrPass);
+
+	presentPass = new PresentRPass(*this, hdrPass->GetOutTex());
+	SetGamma(gamma);
 	renderPasses.push_back(presentPass);
 
 	debugPass = new DebugRPass(*this, gameWorld);
@@ -53,7 +59,7 @@ GameTechRenderer::~GameTechRenderer() {
 	delete skyboxPass;
 	delete modelPass;
 	delete lightingPass;
-	delete gbufferPass;
+	delete combinePass;
 	delete presentPass;
 	delete debugPass;
 }

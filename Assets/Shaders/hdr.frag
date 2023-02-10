@@ -1,7 +1,8 @@
 #version 460 core
 /**
- * @file   present.frag
- * @brief  Fragment shader for rendering the final image to screen.
+ * @file   hdr.frag
+ * @brief  Fragment shader for applying a High Dynamic Range post-processing
+ * effect.
  * 
  * @author Stuart Lewis
  * @date   February 2023
@@ -9,7 +10,7 @@
 
 uniform sampler2D sceneTex;
 
-uniform float gamma = 2.2;
+uniform float exposure;
 
 in Vertex {
 	vec2 texCoord;
@@ -19,5 +20,8 @@ out vec4 fragColour;
 
 void main() {
 	vec3 scene = texture(sceneTex, IN.texCoord).rgb;
-	fragColour = vec4(pow(scene, vec3(1.0 / gamma)), 1.0);
+
+	vec3 mapped = vec3(1.0) - exp(-scene * exposure);
+
+	fragColour = vec4(mapped, 1.0);
 }

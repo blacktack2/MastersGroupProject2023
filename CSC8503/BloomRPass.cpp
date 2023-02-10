@@ -14,14 +14,22 @@
 
 using namespace NCL::CSC8503;
 
-BloomRPass::BloomRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn, OGLTexture* bloomTexIn) :
-OGLRenderPass(renderer), sceneTexIn(sceneTexIn), bloomTexIn(bloomTexIn) {
-	blurTexA = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), TexType::Colour8);
+BloomRPass::BloomRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn) :
+OGLRenderPass(renderer), sceneTexIn(sceneTexIn) {
+	filterTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
+	AddScreenTexture(filterTex);
+	blurTexA = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
 	AddScreenTexture(blurTexA);
-	blurTexB = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), TexType::Colour8);
+	blurTexB = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
 	AddScreenTexture(blurTexB);
-	colourOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), TexType::Colour8);
+	colourOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
 	AddScreenTexture(colourOutTex);
+
+	filterFrameBuffer = new OGLFrameBuffer();
+	filterFrameBuffer->Bind();
+	filterFrameBuffer->AddTexture(filterTex);
+	filterFrameBuffer->DrawBuffers();
+	filterFrameBuffer->Unbind();
 
 	blurFrameBufferA = new OGLFrameBuffer();
 	blurFrameBufferA->Bind();
@@ -45,8 +53,8 @@ OGLRenderPass(renderer), sceneTexIn(sceneTexIn), bloomTexIn(bloomTexIn) {
 	quad->SetVertexPositions({
 		Vector3(-1,  1, -1),
 		Vector3(-1, -1, -1),
-		Vector3(1, -1, -1),
-		Vector3(1,  1, -1),
+		Vector3( 1, -1, -1),
+		Vector3( 1,  1, -1),
 		});
 	quad->SetVertexTextureCoords({
 		Vector2(0, 1),
@@ -57,8 +65,17 @@ OGLRenderPass(renderer), sceneTexIn(sceneTexIn), bloomTexIn(bloomTexIn) {
 	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
 	quad->UploadToGPU();
 
-	blurShader = new OGLShader("blur.vert", "blur.frag");
+	filterShader  = new OGLShader("bloomFilter.vert", "bloomFilter.frag");
+	blurShader    = new OGLShader("blur.vert", "blur.frag");
 	combineShader = new OGLShader("bloomCombine.vert", "bloomCombine.frag");
+
+	filterShader->Bind();
+
+	thresholdUniform = glGetUniformLocation(filterShader->GetProgramID(), "threshold");
+
+	glUniform1i(glGetUniformLocation(filterShader->GetProgramID(), "sceneTex"), 0);
+
+	filterShader->Unbind();
 
 	blurShader->Bind();
 
@@ -79,41 +96,57 @@ OGLRenderPass(renderer), sceneTexIn(sceneTexIn), bloomTexIn(bloomTexIn) {
 }
 
 BloomRPass::~BloomRPass() {
+	delete filterTex;
+	delete blurTexA;
+	delete blurTexB;
 	delete colourOutTex;
 
+	delete filterFrameBuffer;
 	delete blurFrameBufferA;
 	delete blurFrameBufferB;
+	delete combineFrameBuffer;
 
 	delete quad;
 
+	delete filterShader;
 	delete blurShader;
 	delete combineShader;
 }
 
 void BloomRPass::Render() {
+	DrawFilter();
 	ApplyBlur();
 	Combine();
+}
+
+void BloomRPass::SetThreshold(float threshold) {
+	filterShader->Bind();
+
+	glUniform1f(thresholdUniform, threshold);
+
+	filterShader->Unbind();
+}
+
+void BloomRPass::DrawFilter() {
+	filterFrameBuffer->Bind();
+	filterShader->Bind();
+
+	sceneTexIn->Bind(0);
+
+	quad->Draw();
+
+	filterShader->Unbind();
+	filterFrameBuffer->Unbind();
 }
 
 void BloomRPass::ApplyBlur() {
 	blurShader->Bind();
 
 	for (size_t i = 0; i < blurAmount; i++) {
-		blurFrameBufferA->Bind();
-		if (i == 0)
-			bloomTexIn->Bind(0);
-		else
-			blurTexB->Bind(0);
-
-		glUniform1i(horizontalUniform, GL_FALSE);
-
-		quad->Draw();
-
-		blurFrameBufferB->Bind();
-		blurTexA->Bind(0);
-
-		glUniform1i(horizontalUniform, GL_TRUE);
-
+		bool horizontal = i & 1;
+		(horizontal ? blurFrameBufferB : blurFrameBufferA)->Bind();
+		(i == 0 ? filterTex : (horizontal ? blurTexA : blurTexB))->Bind(0);
+		glUniform1i(horizontalUniform, horizontal);
 		quad->Draw();
 	}
 

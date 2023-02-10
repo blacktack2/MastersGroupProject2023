@@ -17,27 +17,21 @@ using namespace NCL::CSC8503;
 
 LightingRPass::LightingRPass(OGLRenderer& renderer, GameWorld& gameWorld, OGLTexture* depthTexIn, OGLTexture* normalTexIn) :
 OGLRenderPass(renderer), gameWorld(gameWorld), depthTexIn(depthTexIn), normalTexIn(normalTexIn) {
-	shadowTex = new OGLTexture(SHADOWSIZE, SHADOWSIZE, TexType::Shadow);
-
-	lightDiffuseOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), TexType::Colour8);
-	lightSpecularOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), TexType::Colour8);
+	lightDiffuseOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
+	lightSpecularOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
 	AddScreenTexture(lightDiffuseOutTex);
 	AddScreenTexture(lightSpecularOutTex);
 
-	shadowFrameBuffer = new OGLFrameBuffer();
-	shadowFrameBuffer->Bind();
-	shadowFrameBuffer->AddTexture(shadowTex);
-	shadowFrameBuffer->DrawBuffers();
-	shadowFrameBuffer->Unbind();
-
-	lightFrameBuffer = new OGLFrameBuffer();
-	lightFrameBuffer->Bind();
-	lightFrameBuffer->AddTexture(lightDiffuseOutTex);
-	lightFrameBuffer->AddTexture(lightSpecularOutTex);
-	lightFrameBuffer->DrawBuffers();
-	lightFrameBuffer->Unbind();
+	frameBuffer = new OGLFrameBuffer();
+	frameBuffer->Bind();
+	frameBuffer->AddTexture(lightDiffuseOutTex);
+	frameBuffer->AddTexture(lightSpecularOutTex);
+	frameBuffer->DrawBuffers();
+	frameBuffer->Unbind();
 
 	sphere = new OGLMesh("Sphere.msh");
+	sphere->SetPrimitiveType(GeometryPrimitive::Triangles);
+	sphere->UploadToGPU();
 
 	quad = new OGLMesh();
 	quad->SetVertexPositions({
@@ -55,40 +49,33 @@ OGLRenderPass(renderer), gameWorld(gameWorld), depthTexIn(depthTexIn), normalTex
 	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
 	quad->UploadToGPU();
 
-	defaultShadowShader = new OGLShader("depth.vert", "depth.frag");
-	AddShadowShader(defaultShadowShader);
-	lightShader = new OGLShader("light.vert", "light.frag");
+	shader = new OGLShader("light.vert", "light.frag");
 
-	lightShader->Bind();
+	shader->Bind();
 
-	cameraPosUniform       = glGetUniformLocation(lightShader->GetProgramID(), "cameraPos");
-	pixelSizeUniform       = glGetUniformLocation(lightShader->GetProgramID(), "pixelSize");
-	inverseProjViewUniform = glGetUniformLocation(lightShader->GetProgramID(), "inverseProjView");
+	cameraPosUniform       = glGetUniformLocation(shader->GetProgramID(), "cameraPos");
+	pixelSizeUniform       = glGetUniformLocation(shader->GetProgramID(), "pixelSize");
+	inverseProjViewUniform = glGetUniformLocation(shader->GetProgramID(), "inverseProjView");
 
-	lightPositionUniform   = glGetUniformLocation(lightShader->GetProgramID(), "lightPos");
-	lightColourUniform     = glGetUniformLocation(lightShader->GetProgramID(), "lightColour");
-	lightRadiusUniform     = glGetUniformLocation(lightShader->GetProgramID(), "lightRadius");
-	lightDirectionUniform  = glGetUniformLocation(lightShader->GetProgramID(), "lightDirection");
-	lightAngleUniform      = glGetUniformLocation(lightShader->GetProgramID(), "lightAngle");
+	lightPositionUniform   = glGetUniformLocation(shader->GetProgramID(), "lightPosition");
+	lightColourUniform     = glGetUniformLocation(shader->GetProgramID(), "lightColour");
+	lightRadiusUniform     = glGetUniformLocation(shader->GetProgramID(), "lightRadius");
+	lightDirectionUniform  = glGetUniformLocation(shader->GetProgramID(), "lightDirection");
+	lightAngleUniform      = glGetUniformLocation(shader->GetProgramID(), "lightAngle");
 
-	shadowMatrixUniform    = glGetUniformLocation(lightShader->GetProgramID(), "shadowMatrix");
-	modelMatrixUniform     = glGetUniformLocation(lightShader->GetProgramID(), "modelMatrix");
-	viewMatrixUniform      = glGetUniformLocation(lightShader->GetProgramID(), "viewMatrix");
-	projMatrixUniform      = glGetUniformLocation(lightShader->GetProgramID(), "projMatrix");
+	modelMatrixUniform     = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
+	viewMatrixUniform      = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
+	projMatrixUniform      = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
 
 	glUniform2f(pixelSizeUniform, 1.0f / (float)renderer.GetWidth(), 1.0f / (float)renderer.GetHeight());
-	glUniform1i(glGetUniformLocation(lightShader->GetProgramID(), "depthTex"), 0);
-	glUniform1i(glGetUniformLocation(lightShader->GetProgramID(), "normalTex"), 1);
-	glUniform1i(glGetUniformLocation(lightShader->GetProgramID(), "shadowTex"), 2);
+	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "depthTex"), 0);
+	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "normalTex"), 1);
 
-	lightShader->Unbind();
+	shader->Unbind();
 }
 
 LightingRPass::~LightingRPass() {
-	delete shadowFrameBuffer;
-	delete lightFrameBuffer;
-
-	delete shadowTex;
+	delete frameBuffer;
 
 	delete lightDiffuseOutTex;
 	delete lightSpecularOutTex;
@@ -96,8 +83,7 @@ LightingRPass::~LightingRPass() {
 	delete sphere;
 	delete quad;
 
-	delete defaultShadowShader;
-	delete lightShader;
+	delete shader;
 }
 
 void LightingRPass::OnWindowResize(int width, int height) {
@@ -106,82 +92,27 @@ void LightingRPass::OnWindowResize(int width, int height) {
 }
 
 void LightingRPass::Render() {
-	gameWorld.OperateOnLights([&](const Light& light) {
-		Matrix4 projView;
-		if (light.position.w == 0.0f) {
-			projView = Matrix4::Orthographic(-50.0f, 50.0f, -50.0f, 50.0f, -1.0f, 50.0f) *
-				       Matrix4::BuildViewMatrix(light.direction * 20.0f, Vector3(0.0f), Vector3(0.0f, 1.0f, 0.0f));
-		} else {
-			projView = Matrix4::Perspective(1.0f, 100.0f, 1.0f, 170.0f) *
-				       Matrix4::BuildViewMatrix(Vector3(light.position), Vector3(0.0f), Vector3(0.0f, 1.0f, 0.0f));
-		}
-		DrawShadows(light, projView);
-		DrawLight(light, projView);
-	});
-}
+	frameBuffer->Bind();
 
-void LightingRPass::AddShadowShader(OGLShader* shader) {
-	shadowShaders.push_back(shader);
-}
-
-void LightingRPass::DrawShadows(const Light& light, const Matrix4& projView) {
-	shadowFrameBuffer->Bind();
-	glClear(GL_DEPTH_BUFFER_BIT);
-	glViewport(0, 0, SHADOWSIZE, SHADOWSIZE);
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-
-	for (OGLShader* shader : shadowShaders) {
-		shader->Bind();
-
-		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "projViewMatrix"), 1, GL_FALSE, (GLfloat*)&projView);
-		shader->Unbind();
-	}
-
-	gameWorld.OperateOnContents([&](GameObject* gameObject) {
-		const RenderObject* renderObject = gameObject->GetRenderObject();
-		if (!renderObject) {
-			return;
-		}
-		OGLMesh* mesh;
-		if (!(mesh = dynamic_cast<OGLMesh*>(renderObject->GetMesh()))) {
-			return;
-		}
-		
-		OGLShader* shader;
-		// TODO - Implement per-gameObject shadowShaders
-		if (true) {
-			shader = defaultShadowShader;
-		}
-
-		shader->Bind();
-
-		Matrix4 modelMatrix = renderObject->GetTransform()->GetGlobalMatrix();
-		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "modelMatrix"), 1, GL_FALSE, (GLfloat*)&modelMatrix);
-
-		mesh->Draw();
-
-		shader->Unbind();
-	});
-
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-	glViewport(0, 0, renderer.GetWidth(), renderer.GetHeight());
-	shadowFrameBuffer->Unbind();
-}
-
-void LightingRPass::DrawLight(const Light& light, const Matrix4& projView) {
-	lightFrameBuffer->Bind();
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	frameBuffer->Unbind();
+
+	gameWorld.OperateOnLights([&](const Light& light) {
+		DrawLight(light);
+	});
+}
+
+void LightingRPass::DrawLight(const Light& light) {
+	frameBuffer->Bind();
+	shader->Bind();
+
 	glBlendFunc(GL_ONE, GL_ONE);
-	glCullFace(GL_FRONT);
 	glDepthFunc(GL_ALWAYS);
 	glDepthMask(GL_FALSE);
 
-	lightShader->Bind();
-
 	depthTexIn->Bind(0);
 	normalTexIn->Bind(1);
-	shadowTex->Bind(2);
 
 	glUniform3fv(cameraPosUniform, 1, (GLfloat*)&gameWorld.GetMainCamera()->GetPosition()[0]);
 	Matrix4 modelMatrix = Matrix4();
@@ -189,7 +120,6 @@ void LightingRPass::DrawLight(const Light& light, const Matrix4& projView) {
 	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix();
 	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
 	Matrix4 inverseViewProj = (projMatrix * viewMatrix).Inverse();
-	glUniformMatrix4fv(inverseProjViewUniform, 1, GL_FALSE, (GLfloat*)&inverseViewProj);
 
 	glUniform4fv(lightPositionUniform, 1, (GLfloat*)&light.position);
 	glUniform4fv(lightColourUniform, 1, (GLfloat*)&light.colour);
@@ -197,7 +127,7 @@ void LightingRPass::DrawLight(const Light& light, const Matrix4& projView) {
 	glUniform3fv(lightDirectionUniform, 1, (GLfloat*)&light.direction);
 	glUniform1f(lightAngleUniform, light.angle);
 
-	glUniformMatrix4fv(shadowMatrixUniform, 1, GL_FALSE, (GLfloat*)projView.array);
+	glUniformMatrix4fv(inverseProjViewUniform, 1, GL_FALSE, (GLfloat*)&inverseViewProj);
 	glUniformMatrix4fv(modelMatrixUniform, 1, GL_FALSE, (GLfloat*)modelMatrix.array);
 	glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, (GLfloat*)viewMatrix.array);
 	glUniformMatrix4fv(projMatrixUniform, 1, GL_FALSE, (GLfloat*)projMatrix.array);
@@ -205,15 +135,15 @@ void LightingRPass::DrawLight(const Light& light, const Matrix4& projView) {
 	if (light.position.w == 0.0f) {
 		quad->Draw();
 	} else {
+		glCullFace(GL_FRONT);
 		sphere->Draw();
+		glCullFace(GL_BACK);
 	}
-	
-	lightShader->Unbind();
 
 	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LEQUAL);
-	glCullFace(GL_BACK);
-	glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	lightFrameBuffer->Unbind();
+	shader->Unbind();
+	frameBuffer->Unbind();
 }

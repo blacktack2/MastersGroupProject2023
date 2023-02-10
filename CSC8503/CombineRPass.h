@@ -1,5 +1,5 @@
 /**
- * @file   GBufferRPass.h
+ * @file   CombineRPass.h
  * @brief  
  * 
  * @author Stuart Lewis
@@ -21,24 +21,24 @@ namespace NCL::CSC8503 {
 		Default = 0,
 		Normals,
 		Depth,
+		Diffuse,
+		DiffuseLight,
+		SpecularLight,
 	};
-	class GBufferRPass : public OGLRenderPass {
+	class CombineRPass : public OGLRenderPass {
 	public:
-		GBufferRPass(OGLRenderer& renderer,
+		CombineRPass(OGLRenderer& renderer,
 			OGLTexture* skyboxTexIn, OGLTexture* diffuseTexIn,
 			OGLTexture* diffuseLightTexIn, OGLTexture* specularLightTexIn,
 			OGLTexture* normalTexIn, OGLTexture* depthTexIn);
-		~GBufferRPass();
+		~CombineRPass();
 
 		virtual void Render() override;
 
 		void SetRenderMode(RenderMode mode);
 
-		inline OGLTexture* GetSceneOutTex() const {
+		inline OGLTexture* GetOutTex() const {
 			return sceneOutTex;
-		}
-		inline OGLTexture* GetBloomOutTex() const {
-			return bloomOutTex;
 		}
 	private:
 		OGLFrameBuffer* frameBuffer;
@@ -51,7 +51,6 @@ namespace NCL::CSC8503 {
 		OGLTexture* depthTexIn;
 
 		OGLTexture* sceneOutTex;
-		OGLTexture* bloomOutTex;
 
 		OGLMesh* quad;
 

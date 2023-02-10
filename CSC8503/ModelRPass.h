@@ -30,6 +30,10 @@ namespace NCL::CSC8503 {
 
 		void AddModelShader(OGLShader* shader);
 
+		inline void SetGamma(float g) {
+			gamma = g;
+		}
+
 		inline OGLTexture* GetDiffuseOutTex() const {
 			return diffuseOutTex;
 		}
@@ -51,6 +55,8 @@ namespace NCL::CSC8503 {
 		OGLTexture* defaultBump;
 
 		OGLShader* defaultShader;
+
+		float gamma = 2.2f;
 
 		std::vector<OGLShader*> modelShaders{};
 	};

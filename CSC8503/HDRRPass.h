@@ -1,14 +1,12 @@
 /**
- * @file   PresentRPass.h
- * @brief  
- * 
+ * @file   HDRRPass.h
+ * @brief
+ *
  * @author Stuart Lewis
  * @date   February 2023
  */
 #pragma once
 #include "OGLRenderPass.h"
-
-#include "GameWorld.h"
 
 namespace NCL::Rendering {
 	class OGLFrameBuffer;
@@ -19,21 +17,28 @@ namespace NCL::Rendering {
 using namespace NCL::Rendering;
 
 namespace NCL::CSC8503 {
-	class PresentRPass : public OGLRenderPass {
+	class HDRRPass : public OGLRenderPass {
 	public:
-		PresentRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn);
-		~PresentRPass();
+		HDRRPass(OGLRenderer& renderer, OGLTexture* sceneIn);
+		~HDRRPass();
 
 		virtual void Render() override;
 
-		void SetGamma(float gamma);
+		void SetExposure(float exposure);
+
+		inline OGLTexture* GetOutTex() const {
+			return sceneOutTex;
+		}
 	private:
+		OGLFrameBuffer* frameBuffer;
+		OGLTexture* sceneOutTex;
+
 		OGLTexture* sceneTexIn;
 
 		OGLMesh* quad;
 
 		OGLShader* shader;
 
-		GLint gammaUniform;
+		GLint exposureUniform;
 	};
 }

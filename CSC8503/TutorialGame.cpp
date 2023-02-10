@@ -20,7 +20,8 @@ using namespace CSC8503;
 
 TutorialGame::TutorialGame() {
 	world = &GameWorld::instance();
-	sunLight = &world->AddLight(Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
+	sunLight = world->AddLight(new Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
+	world->AddLight(new Light({ 0.0f, 5.0f, -10.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, 10.0f));
 #ifdef USEVULKAN
 	renderer = new GameTechVulkanRenderer(*world);
 #else 
@@ -90,7 +91,7 @@ void TutorialGame::UpdateGame(float dt) {
 
 	UpdateKeys();
 	static bool moveSun = false;
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM0)) {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM0)) {
 		moveSun = !moveSun;
 	}
 	if (moveSun) {
@@ -99,15 +100,57 @@ void TutorialGame::UpdateGame(float dt) {
 		renderer->GetSkyboxPass().SetSunDir(sunLight->direction);
 	}
 
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM1)) {
-		renderer->GetGBufferPass().SetRenderMode(RenderMode::Default);
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM1)) {
+		renderer->GetCombinePass().SetRenderMode(RenderMode::Default);
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM2)) {
-		renderer->GetGBufferPass().SetRenderMode(RenderMode::Normals);
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM2)) {
+		renderer->GetCombinePass().SetRenderMode(RenderMode::Normals);
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM3)) {
-		renderer->GetGBufferPass().SetRenderMode(RenderMode::Depth);
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM3)) {
+		renderer->GetCombinePass().SetRenderMode(RenderMode::Depth);
 	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM4)) {
+		renderer->GetCombinePass().SetRenderMode(RenderMode::Diffuse);
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM5)) {
+		renderer->GetCombinePass().SetRenderMode(RenderMode::DiffuseLight);
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM6)) {
+		renderer->GetCombinePass().SetRenderMode(RenderMode::SpecularLight);
+	}
+
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN)) {
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::G)) {
+			renderer->SetGamma(renderer->GetGamma() - 0.1f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::H)) {
+			renderer->SetHDRExposure(renderer->GetHDRExposure() - 0.02f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::B)) {
+			renderer->SetBloomAmount(renderer->GetBloomAmount() - 1);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::T)) {
+			renderer->SetBloomThreshold(renderer->GetBloomThreshold() - 0.02f);
+		}
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP)) {
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::G)) {
+			renderer->SetGamma(renderer->GetGamma() + 0.1f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::H)) {
+			renderer->SetHDRExposure(renderer->GetHDRExposure() + 0.02f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::B)) {
+			renderer->SetBloomAmount(renderer->GetBloomAmount() + 1);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::T)) {
+			renderer->SetBloomThreshold(renderer->GetBloomThreshold() + 0.02f);
+		}
+	}
+	Debug::Print(std::string("Gamma: ").append(std::to_string(renderer->GetGamma())), Vector2(0, 30.0f));
+	Debug::Print(std::string("HDR:   ").append(std::to_string(renderer->GetHDRExposure())), Vector2(0, 35.0f));
+	Debug::Print(std::string("Bloom -> Amount:    ").append(std::to_string(renderer->GetBloomAmount())), Vector2(0, 40.0f));
+	Debug::Print(std::string("      -> Threshold: ").append(std::to_string(renderer->GetBloomThreshold())), Vector2(0, 45.0f));
 
 	if (gameState == GameState::OnGoing) {
 		Vector2 screenSize = Window::GetWindow()->GetScreenSize();

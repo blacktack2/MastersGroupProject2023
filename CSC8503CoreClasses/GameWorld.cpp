@@ -97,8 +97,8 @@ void GameWorld::OperateOnConstraints(ConstraintFunc f) {
 }
 
 void GameWorld::OperateOnLights(LightFunc f) {
-	for (const Light& l : lights) {
-		f(l);
+	for (const Light* l : lights) {
+		f(*l);
 	}
 }
 
@@ -276,10 +276,11 @@ void GameWorld::RemoveConstraint(std::vector<Constraint*>::const_iterator c, boo
 	}
 }
 
-Light& GameWorld::AddLight(const Light& l) {
-	return lights.emplace_back(l);
+Light* GameWorld::AddLight(Light* l) {
+	lights.push_back(l);
+	return l;
 }
 
-void GameWorld::RemoveLight(std::vector<Light>::const_iterator l) {
+void GameWorld::RemoveLight(LightIterator l) {
 	lights.erase(l);
 }

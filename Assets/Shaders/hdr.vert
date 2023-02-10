@@ -1,7 +1,8 @@
 #version 460 core
 /**
- * @file   gbuffer.vert
- * @brief  Vertex shader for combining elements of the GBuffer into a single
+ * @file   hdr.vert
+ * @brief  Vertex shader for applying a High Dynamic Range post-processing
+ * effect.
  * image.
  * 
  * @author Stuart Lewis

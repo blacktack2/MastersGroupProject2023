@@ -25,7 +25,7 @@ namespace NCL {
 
 		typedef std::vector<GameObject*>::const_iterator GameObjectIterator;
 		typedef std::vector<Constraint*>::const_iterator ConstraintIterator;
-		typedef std::vector<Light>::const_iterator LightIterator;
+		typedef std::vector<Light*>::const_iterator LightIterator;
 
 		class GameWorld {
 		private:
@@ -53,8 +53,8 @@ namespace NCL {
 				return networkObjects;
 			}
 
-			Light& AddLight(const Light& l);
-			void RemoveLight(std::vector<Light>::const_iterator l);
+			Light* AddLight(Light* l);
+			void RemoveLight(LightIterator l);
 
 			Camera* GetMainCamera() const {
 				return mainCamera;
@@ -99,7 +99,7 @@ namespace NCL {
 			std::vector<GameObject*> gameObjects;
 			std::vector<Constraint*> constraints;
 			std::vector<NetworkObject*> networkObjects;
-			std::vector<Light> lights;
+			std::vector<Light*> lights;
 
 			QuadTree dynamicQuadTree;
 			QuadTree staticQuadTree;
