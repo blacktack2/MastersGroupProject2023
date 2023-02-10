@@ -96,7 +96,12 @@ void ModelRPass::Render() {
 		Matrix4 modelMatrix = renderObject->GetTransform()->GetGlobalMatrix();
 		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "modelMatrix"), 1, GL_FALSE, (GLfloat*)&modelMatrix);
 
-		mesh->Draw();
+		//mesh->Draw();
+		int layerCount = mesh->GetSubMeshCount();
+		for (int i = 0; i < layerCount; i++)
+		{
+			mesh->Draw(i);
+		}
 
 		shader->Unbind();
 	});

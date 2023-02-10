@@ -11,6 +11,7 @@
 #include "RenderObject.h"
 #include "StateGameObject.h"
 #include "TextureLoader.h"
+#include "PaintRenderObject.h"
 #include "TutorialGame.h"
 
 #include <string>
@@ -417,13 +418,13 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 	GameObject* floor = new GameObject("Floor");
 
 	Vector3 floorSize = Vector3(500, 2, 500);
-	AABBVolume* volume = new AABBVolume(floorSize);
+	AABBVolume* volume = new AABBVolume(floorSize, CollisionLayer::PaintAble);
 	floor->SetBoundingVolume((CollisionVolume*)volume);
 	floor->GetTransform()
 		.SetScale(floorSize * 2)
 		.SetPosition(position);
-
-	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, nullptr));
+	PaintRenderObject* render = new PaintRenderObject(&floor->GetTransform(), cubeMesh, basicTex, nullptr);
+	floor->SetRenderObject(render);
 	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));
 
 	floor->GetPhysicsObject()->SetStatic();

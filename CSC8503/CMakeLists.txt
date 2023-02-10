@@ -9,7 +9,7 @@ set(Header_Files
     
 	"EnemyObject.h"
 	"Maze.h"
-    "ModelRPass.h"
+    
     "NetworkedGame.h"
     "NetworkPlayer.h"
 	"NPCObject.h"
@@ -26,7 +26,7 @@ set(Source_Files
 	"EnemyObject.cpp"
     "Main.cpp"
 	"Maze.cpp"
-    "ModelRPass.cpp"
+    
     "NetworkedGame.cpp"
     "NetworkPlayer.cpp"
 	"NPCObject.cpp"
@@ -48,7 +48,13 @@ set(Render_Files
     "DebugRPass.h"
     "DebugRPass.cpp"
     "PresentRPass.h"
-    "PresentRPass.cpp"   
+    "PresentRPass.cpp"
+    "PaintRenderObject.h"
+    "PaintRenderObject.cpp"
+    "PaintingRPass.cpp"
+    "PaintingRPass.h"
+    "ModelRPass.h"
+    "ModelRPass.cpp"
 )
 
 if(USE_VULKAN)

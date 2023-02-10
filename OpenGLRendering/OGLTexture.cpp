@@ -19,6 +19,7 @@ OGLTexture::OGLTexture(GLsizei width, GLsizei height, TexType texType) : texType
 	SetEdgeClamp();
 	switch (texType) {
 		default:
+		case TexType::Colour4  : InitColour4() ; break;
 		case TexType::Colour8  : InitColour8() ; break;
 		case TexType::Colour32 : InitColour32(); break;
 		case TexType::Depth    : InitDepth()   ; break;
@@ -102,6 +103,15 @@ TextureBase* OGLTexture::RGBATextureFromFilename(const std::string& filename) {
 	delete[] texData;
 
 	return glTex;
+}
+
+void OGLTexture::InitColour4() {
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	internalFormat = GL_RGBA4;
+	format = GL_UNSIGNED_BYTE;
+	type = GL_RGBA;
 }
 
 void OGLTexture::InitColour8() {

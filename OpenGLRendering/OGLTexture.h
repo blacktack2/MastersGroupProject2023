@@ -16,6 +16,7 @@ constexpr GLsizei SHADOWSIZE = 4096;
 
 namespace NCL::Rendering {
 	enum class TexType {
+		Colour4,
 		Colour8,
 		Colour32,
 		Depth,
@@ -51,6 +52,7 @@ namespace NCL::Rendering {
 		GLuint texID;
 		TexType texType;
 	private:
+		void InitColour4();
 		void InitColour8();
 		void InitColour32();
 		void InitDepth();
