@@ -5,7 +5,7 @@
  * @author Stuart Lewis
  * @date   February 2023
  */
-#include "GBufferRPass.h"
+#include "CombineRPass.h"
 
 #include "OGLFrameBuffer.h"
 #include "OGLMesh.h"
@@ -14,7 +14,7 @@
 
 using namespace NCL::CSC8503;
 
-GBufferRPass::GBufferRPass(OGLRenderer& renderer,
+CombineRPass::CombineRPass(OGLRenderer& renderer,
 	OGLTexture* skyboxTexIn, OGLTexture* diffuseTexIn,
 	OGLTexture* diffuseLightTexIn, OGLTexture* specularLightTexIn,
 	OGLTexture* normalTexIn, OGLTexture* depthTexIn) :
@@ -46,7 +46,7 @@ normalTexIn(normalTexIn), depthTexIn(depthTexIn) {
 	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
 	quad->UploadToGPU();
 
-	shader = new OGLShader("gbuffer.vert", "gbuffer.frag");
+	shader = new OGLShader("combine.vert", "combine.frag");
 
 	shader->Bind();
 
@@ -66,7 +66,7 @@ normalTexIn(normalTexIn), depthTexIn(depthTexIn) {
 	shader->Unbind();
 }
 
-GBufferRPass::~GBufferRPass() {
+CombineRPass::~CombineRPass() {
 	delete sceneOutTex;
 
 	delete frameBuffer;
@@ -76,7 +76,7 @@ GBufferRPass::~GBufferRPass() {
 	delete shader;
 }
 
-void GBufferRPass::Render() {
+void CombineRPass::Render() {
 	frameBuffer->Bind();
 	glClear(GL_COLOR_BUFFER_BIT);
 	shader->Bind();
@@ -94,7 +94,7 @@ void GBufferRPass::Render() {
 	frameBuffer->Unbind();
 }
 
-void GBufferRPass::SetRenderMode(RenderMode mode) {
+void CombineRPass::SetRenderMode(RenderMode mode) {
 	shader->Bind();
 
 	glUniform1i(modeUniform, (GLint)mode);

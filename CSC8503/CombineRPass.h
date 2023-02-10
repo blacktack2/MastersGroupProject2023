@@ -1,5 +1,5 @@
 /**
- * @file   GBufferRPass.h
+ * @file   CombineRPass.h
  * @brief  
  * 
  * @author Stuart Lewis
@@ -25,13 +25,13 @@ namespace NCL::CSC8503 {
 		DiffuseLight,
 		SpecularLight,
 	};
-	class GBufferRPass : public OGLRenderPass {
+	class CombineRPass : public OGLRenderPass {
 	public:
-		GBufferRPass(OGLRenderer& renderer,
+		CombineRPass(OGLRenderer& renderer,
 			OGLTexture* skyboxTexIn, OGLTexture* diffuseTexIn,
 			OGLTexture* diffuseLightTexIn, OGLTexture* specularLightTexIn,
 			OGLTexture* normalTexIn, OGLTexture* depthTexIn);
-		~GBufferRPass();
+		~CombineRPass();
 
 		virtual void Render() override;
 

@@ -16,7 +16,7 @@
 #include "SkyboxRPass.h"
 #include "ModelRPass.h"
 #include "LightingRPass.h"
-#include "GBufferRPass.h"
+#include "CombineRPass.h"
 #include "BloomRPass.h"
 #include "HDRRPass.h"
 #include "PresentRPass.h"
@@ -51,8 +51,8 @@ namespace NCL::CSC8503 {
 		inline LightingRPass& GetLightingPass() {
 			return *lightingPass;
 		}
-		inline GBufferRPass& GetGBufferPass() {
-			return *gbufferPass;
+		inline CombineRPass& GetCombinePass() {
+			return *combinePass;
 		}
 		inline BloomRPass& GetBloomPass() {
 			return *bloomPass;
@@ -115,7 +115,7 @@ namespace NCL::CSC8503 {
 		SkyboxRPass* skyboxPass;
 		ModelRPass* modelPass;
 		LightingRPass* lightingPass;
-		GBufferRPass* gbufferPass;
+		CombineRPass* combinePass;
 		BloomRPass* bloomPass;
 		HDRRPass* hdrPass;
 		PresentRPass* presentPass;

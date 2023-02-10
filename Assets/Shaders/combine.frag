@@ -1,8 +1,8 @@
 #version 460 core
 /**
- * @file   gbuffer.frag
+ * @file   combine.frag
  * @brief  Fragment shader for combining elements of the GBuffer into a single
- * image.
+ * scene.
  * 
  * @author Stuart Lewis
  * @date   February 2023

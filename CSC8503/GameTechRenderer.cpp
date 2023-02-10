@@ -32,13 +32,13 @@ GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetW
 		modelPass->GetDepthOutTex(), modelPass->GetNormalOutTex());
 	renderPasses.push_back(lightingPass);
 
-	gbufferPass = new GBufferRPass(*this,
+	combinePass = new CombineRPass(*this,
 		skyboxPass->GetOutTex(), modelPass->GetDiffuseOutTex(),
 		lightingPass->GetDiffuseOutTex(), lightingPass->GetSpecularOutTex(),
 		modelPass->GetNormalOutTex(), modelPass->GetDepthOutTex());
-	renderPasses.push_back(gbufferPass);
+	renderPasses.push_back(combinePass);
 
-	bloomPass = new BloomRPass(*this, gbufferPass->GetOutTex());
+	bloomPass = new BloomRPass(*this, combinePass->GetOutTex());
 	SetBloomAmount(bloomAmount);
 	SetBloomThreshold(bloomThreshold);
 	renderPasses.push_back(bloomPass);
@@ -59,7 +59,7 @@ GameTechRenderer::~GameTechRenderer() {
 	delete skyboxPass;
 	delete modelPass;
 	delete lightingPass;
-	delete gbufferPass;
+	delete combinePass;
 	delete presentPass;
 	delete debugPass;
 }
