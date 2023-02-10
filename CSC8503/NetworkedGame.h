@@ -77,7 +77,7 @@ namespace NCL {
 
 			std::map<int, GameObject*> serverPlayers;
 			GameObject* localPlayer;
-			string name;
+			std::string name;
 
 			float packetGap = 1.0f / 120.0f; //120hz server/client update
 			int fullPacketToDeltaRate = 30;

@@ -22,7 +22,7 @@ namespace NCL {
 				//camera = cam;
 			};
 
-			const vector<GameObject*> GetLastInstancedObjects() {
+			const std::vector<GameObject*> GetLastInstancedObjects() {
 				return lastInstancedObjects;
 			}
 		protected:
@@ -74,7 +74,7 @@ namespace NCL {
 			float projectileFireRateTimer = 0;
 
 			//instantiated objs
-			vector<GameObject*> lastInstancedObjects;
+			std::vector<GameObject*> lastInstancedObjects;
 
 			// legacy variables
 			std::set<int> collidedWith;
