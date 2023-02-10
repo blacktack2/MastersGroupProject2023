@@ -27,7 +27,7 @@ OGLRenderPass(renderer), gameWorld(gameWorld) {
 	textShader->Bind();
 
 	Matrix4 viewProjMatrix = Matrix4::Orthographic(0.0, 100.0f, 100, 0, -1.0f, 1.0f);
-	glUniformMatrix4fv(glGetUniformLocation(lineShader->GetProgramID(), "viewProjMatrix"), 1, GL_FALSE, (GLfloat*)viewProjMatrix.array);
+	glUniformMatrix4fv(glGetUniformLocation(textShader->GetProgramID(), "viewProjMatrix"), 1, GL_FALSE, (GLfloat*)viewProjMatrix.array);
 	glUniform1i(glGetUniformLocation(textShader->GetProgramID(), "fontTex"), 0);
 
 	textShader->Unbind();
