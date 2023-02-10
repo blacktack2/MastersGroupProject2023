@@ -26,6 +26,9 @@ OGLRenderPass(renderer), gameWorld(gameWorld) {
 
 	defaultDiffuse = (OGLTexture*)OGLTexture::RGBATextureFromFilename("GoatBody.png");
 	defaultBump = (OGLTexture*)OGLTexture::RGBATextureFromFilename("DefaultBump.png");
+	defaultBump->Bind();
+	defaultBump->SetFilters(GL_LINEAR, GL_LINEAR);
+	defaultBump->Unbind();
 
 	frameBuffer = new OGLFrameBuffer();
 	frameBuffer->Bind();
@@ -57,7 +60,8 @@ void ModelRPass::Render() {
 		shader->Bind();
 
 		Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-		Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix();
+		float screenAspect = (float)renderer.GetWidth() / (float)renderer.GetHeight();
+		Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
 		// TODO - Replace with call to the shader class
 		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "viewMatrix"), 1, GL_FALSE, (GLfloat*)&viewMatrix);
 		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "projMatrix"), 1, GL_FALSE, (GLfloat*)&projMatrix);
