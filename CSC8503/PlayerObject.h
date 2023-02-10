@@ -1,6 +1,6 @@
 #pragma once
 #include "GameObject.h"
-
+#include "SoundSource.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -37,6 +37,8 @@ namespace NCL {
 			void CheckGround();
 			void Shoot();
 
+			void SetupAudio();
+
 			//jump related 
 			bool onGround = false;
 			float jumpTimer = 0.0f;
@@ -69,6 +71,10 @@ namespace NCL {
 
 			float lastGoosed = 0.0f;
 			const float gooseDelay = 2.0f;
+
+			//sound
+			SoundSource* playerSource;
+			SoundSource* attackSource;
 		};
 	}
 }

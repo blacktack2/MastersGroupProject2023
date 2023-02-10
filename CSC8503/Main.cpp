@@ -27,6 +27,8 @@
 #include "BehaviourParallelSelector.h"
 #include "BehaviourAction.h"
 
+#include "TestAudio.h"
+
 using namespace NCL;
 using namespace CSC8503;
 
@@ -343,15 +345,17 @@ int main() {
 	Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
 	//TestPushdownAutomata(w);
 
+	
 	if (!w->HasInitialised()) {
 		return -1;
 	}	
 
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
+	//TestAudio::TestAudio2();
 
 	TutorialGame* g = new TutorialGame();
-	g->InitWorld();
+	g->InitWorld(NCL::CSC8503::TutorialGame::InitMode::AUDIO_TEST);
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
 	while (w->UpdateWindow() && !g->IsQuit()) {
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
@@ -375,5 +379,6 @@ int main() {
 		g->UpdateGame(dt);
 		//DisplayPathfinding();
 	}
+
 	Window::DestroyGameWindow();
 }

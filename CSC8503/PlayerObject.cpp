@@ -13,7 +13,9 @@
 #include "RenderObject.h"
 
 #include "InputKeyMap.h"
-
+#include "SoundSource.h"
+#include "Sound.h"
+#include "SoundSystem.h"
 #include <iostream>
 
 using namespace NCL;
@@ -24,16 +26,21 @@ id(id), scoreCounter(scoreCounter){
 	OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
 	};
-
+	SetupAudio();
+	
 }
 
 PlayerObject::~PlayerObject() {
-
+	delete playerSource;
+	delete attackSource;
+		
+		
 }
 
 void PlayerObject::Update(float dt) {
 	jumpTimer -= dt;
 	projectileFireRateTimer -= dt;
+	if (GetTransform().GetGlobalPosition().y < 0) GetTransform().SetPosition(Vector3(GetTransform().GetGlobalPosition().x, 0.0f, GetTransform().GetGlobalPosition().z));
 	RotateToCamera();
 	CheckGround();
 	Move();
@@ -54,6 +61,7 @@ void PlayerObject::Move() {
 	Vector3 dir = Vector3(0,0,0);
 	GetInput(dir);
 	this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
+	
 	if (lastDir != Vector3(0, 0, 0)) {
 		//Vector3 stopDir = dir - lastDir;
 		if (paintHell::InputKeyMap::instance().GetButtonState() != lastKey) {
@@ -86,27 +94,33 @@ void PlayerObject::GetInput(Vector3& dir) {
 	if (keyMap.GetButton(InputType::Foward)) 
 	{
 		dir += fwdAxis;
+		playerSource->Play(Sound::AddSound("footstep06.wav"));
 	}
 	if (keyMap.GetButton (InputType::Backward) )
 	{
 		dir -= fwdAxis;
+		playerSource->Play(Sound::AddSound("footstep06.wav"));
 	}
 	if (keyMap.GetButton(InputType::Left)) 
 	{
 		dir += leftAxis;
+		playerSource->Play(Sound::AddSound("footstep06.wav"));
 	}
 	if (keyMap.GetButton(InputType::Right)) 
 	{
 		dir -= leftAxis;
+		playerSource->Play(Sound::AddSound("footstep06.wav"));
 	}
 	if (keyMap.GetButton(InputType::Jump) && onGround && jumpTimer <= 0.0f ) 
 	{
 		jumpTimer = jumpCooldown;
 		this->GetPhysicsObject()->ApplyLinearImpulse(upAxis * jumpSpeed);
+		playerSource->Play(Sound::AddSound("swing3.wav"));
 	}
 	if (keyMap.GetButton(InputType::Action1)) 
 	{
 		Shoot();
+		attackSource->Play(Sound::AddSound("magic1.wav"));
 	}
 	if (keyMap.GetButton(InputType::FreeLook))
 	{
@@ -179,4 +193,26 @@ void PlayerObject::Shoot() {
 	ink->OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
 	};
+}
+
+void NCL::CSC8503::PlayerObject::SetupAudio()
+{
+	playerSource = new SoundSource();
+	playerSource->SetPriority(SoundPriority::SOUNDPRIORITY_HIGH);
+	playerSource->SetGain(0.0f);
+	playerSource->SetSoundBuffer(Sound::AddSound("footstep06.wav"));
+	playerSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+	playerSource->SetGain(1.0f);
+	playerSource->SetPitch(1.0f);
+
+	attackSource = new SoundSource();
+	attackSource->SetPriority(SoundPriority::SOUNDPRIORITY_HIGH);
+	attackSource->SetGain(0.0f);
+	attackSource->SetSoundBuffer(Sound::AddSound("magic1.wav"));
+	attackSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+	attackSource->SetGain(1.0f);
+	attackSource->SetPitch(1.0f);
+
+
+
 }
