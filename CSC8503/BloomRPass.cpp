@@ -16,13 +16,13 @@ using namespace NCL::CSC8503;
 
 BloomRPass::BloomRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn) :
 OGLRenderPass(renderer), sceneTexIn(sceneTexIn) {
-	filterTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight());
+	filterTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGBA16F);
 	AddScreenTexture(filterTex);
-	blurTexA = new OGLTexture(renderer.GetWidth(), renderer.GetHeight());
+	blurTexA = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGBA16F);
 	AddScreenTexture(blurTexA);
-	blurTexB = new OGLTexture(renderer.GetWidth(), renderer.GetHeight());
+	blurTexB = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGBA16F);
 	AddScreenTexture(blurTexB);
-	colourOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight());
+	colourOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGBA16F);
 	AddScreenTexture(colourOutTex);
 
 	filterFrameBuffer = new OGLFrameBuffer();
@@ -71,6 +71,8 @@ OGLRenderPass(renderer), sceneTexIn(sceneTexIn) {
 
 	filterShader->Bind();
 
+	thresholdUniform = glGetUniformLocation(filterShader->GetProgramID(), "threshold");
+
 	glUniform1i(glGetUniformLocation(filterShader->GetProgramID(), "sceneTex"), 0);
 
 	filterShader->Unbind();
@@ -115,6 +117,14 @@ void BloomRPass::Render() {
 	DrawFilter();
 	ApplyBlur();
 	Combine();
+}
+
+void BloomRPass::SetThreshold(float threshold) {
+	filterShader->Bind();
+
+	glUniform1f(thresholdUniform, threshold);
+
+	filterShader->Unbind();
 }
 
 void BloomRPass::DrawFilter() {

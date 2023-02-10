@@ -18,6 +18,7 @@
 #include "LightingRPass.h"
 #include "GBufferRPass.h"
 #include "BloomRPass.h"
+#include "HDRRPass.h"
 #include "PresentRPass.h"
 #include "DebugRPass.h"
 
@@ -53,6 +54,12 @@ namespace NCL::CSC8503 {
 		inline GBufferRPass& GetGBufferPass() {
 			return *gbufferPass;
 		}
+		inline BloomRPass& GetBloomPass() {
+			return *bloomPass;
+		}
+		inline HDRRPass& GetHDRPass() {
+			return *hdrPass;
+		}
 		inline PresentRPass& GetPresentPass() {
 			return *presentPass;
 		}
@@ -62,10 +69,37 @@ namespace NCL::CSC8503 {
 
 		virtual void Update(float dt) override;
 
-		void SetGamma(float gamma);
-
+		void SetGamma(float g) {
+			gamma = g;
+			modelPass->SetGamma(gamma);
+			presentPass->SetGamma(gamma);
+		}
 		inline float GetGamma() {
 			return gamma;
+		}
+
+		void SetBloomAmount(size_t amount) {
+			bloomAmount = amount;
+			bloomPass->SetBlurAmount(bloomAmount);
+		}
+		inline size_t GetBloomAmount() {
+			return bloomAmount;
+		}
+
+		void SetBloomThreshold(float threshold) {
+			bloomThreshold = threshold;
+			bloomPass->SetThreshold(bloomThreshold);
+		}
+		inline float GetBloomThreshold() {
+			return bloomThreshold;
+		}
+
+		void SetHDRExposure(float exposure) {
+			hdrExposure = exposure;
+			hdrPass->SetExposure(hdrExposure);
+		}
+		inline float GetHDRExposure() {
+			return hdrExposure;
 		}
 	protected:
 
@@ -83,10 +117,14 @@ namespace NCL::CSC8503 {
 		LightingRPass* lightingPass;
 		GBufferRPass* gbufferPass;
 		BloomRPass* bloomPass;
+		HDRRPass* hdrPass;
 		PresentRPass* presentPass;
 		DebugRPass* debugPass;
 
 		float gamma = 2.2f;
+		size_t bloomAmount = 5;
+		float bloomThreshold = 1.0f;
+		float hdrExposure = 1.0f;
 	};
 }
 

@@ -120,12 +120,37 @@ void TutorialGame::UpdateGame(float dt) {
 	}
 
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN)) {
-		renderer->SetGamma(renderer->GetGamma() - 0.1f);
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::G)) {
+			renderer->SetGamma(renderer->GetGamma() - 0.1f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::H)) {
+			renderer->SetHDRExposure(renderer->GetHDRExposure() - 0.02f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::B)) {
+			renderer->SetBloomAmount(renderer->GetBloomAmount() - 1);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::T)) {
+			renderer->SetBloomThreshold(renderer->GetBloomThreshold() - 0.02f);
+		}
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP)) {
-		renderer->SetGamma(renderer->GetGamma() + 0.1f);
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::G)) {
+			renderer->SetGamma(renderer->GetGamma() + 0.1f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::H)) {
+			renderer->SetHDRExposure(renderer->GetHDRExposure() + 0.02f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::B)) {
+			renderer->SetBloomAmount(renderer->GetBloomAmount() + 1);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::T)) {
+			renderer->SetBloomThreshold(renderer->GetBloomThreshold() + 0.02f);
+		}
 	}
 	Debug::Print(std::string("Gamma: ").append(std::to_string(renderer->GetGamma())), Vector2(0, 30.0f));
+	Debug::Print(std::string("HDR:   ").append(std::to_string(renderer->GetHDRExposure())), Vector2(0, 35.0f));
+	Debug::Print(std::string("Bloom -> Amount:    ").append(std::to_string(renderer->GetBloomAmount())), Vector2(0, 40.0f));
+	Debug::Print(std::string("      -> Threshold: ").append(std::to_string(renderer->GetBloomThreshold())), Vector2(0, 45.0f));
 
 	if (gameState == GameState::OnGoing) {
 		Vector2 screenSize = Window::GetWindow()->GetScreenSize();

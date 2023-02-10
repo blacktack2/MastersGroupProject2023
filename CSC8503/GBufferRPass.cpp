@@ -21,7 +21,7 @@ GBufferRPass::GBufferRPass(OGLRenderer& renderer,
 OGLRenderPass(renderer), skyboxTexIn(skyboxTexIn), diffuseTexIn(diffuseTexIn),
 diffuseLightTexIn(diffuseLightTexIn), specularLightTexIn(specularLightTexIn),
 normalTexIn(normalTexIn), depthTexIn(depthTexIn) {
-	sceneOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight());
+	sceneOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGBA16F);
 	AddScreenTexture(sceneOutTex);
 
 	frameBuffer = new OGLFrameBuffer();

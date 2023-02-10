@@ -22,6 +22,8 @@ namespace NCL::CSC8503 {
 
 		virtual void Render() override;
 
+		void SetThreshold(float threshold);
+
 		inline void SetBlurAmount(size_t amount) {
 			blurAmount = amount;
 		}
@@ -55,6 +57,7 @@ namespace NCL::CSC8503 {
 		OGLShader* combineShader;
 
 		GLint horizontalUniform;
+		GLint thresholdUniform;
 
 		size_t blurAmount = 5;
 	};

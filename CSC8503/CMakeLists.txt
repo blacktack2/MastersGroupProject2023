@@ -47,6 +47,8 @@ set(Render_Files
     "GBufferRPass.cpp"
     "BloomRPass.h"
     "BloomRPass.cpp"
+    "HDRRPass.h"
+    "HDRRPass.cpp"
     "PresentRPass.h"
     "PresentRPass.cpp"
     "DebugRPass.h"

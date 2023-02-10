@@ -39,10 +39,16 @@ GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetW
 	renderPasses.push_back(gbufferPass);
 
 	bloomPass = new BloomRPass(*this, gbufferPass->GetOutTex());
-	bloomPass->SetBlurAmount(5);
+	SetBloomAmount(bloomAmount);
+	SetBloomThreshold(bloomThreshold);
 	renderPasses.push_back(bloomPass);
 
-	presentPass = new PresentRPass(*this, bloomPass->GetOutTex());
+	hdrPass = new HDRRPass(*this, bloomPass->GetOutTex());
+	SetHDRExposure(hdrExposure);
+	renderPasses.push_back(hdrPass);
+
+	presentPass = new PresentRPass(*this, hdrPass->GetOutTex());
+	SetGamma(gamma);
 	renderPasses.push_back(presentPass);
 
 	debugPass = new DebugRPass(*this, gameWorld);
@@ -98,10 +104,4 @@ ShaderBase* GameTechRenderer::LoadShader(const std::string& vertex, const std::s
 }
 
 void GameTechRenderer::Update(float dt) {
-}
-
-void GameTechRenderer::SetGamma(float g) {
-	gamma = g;
-	modelPass->SetGamma(gamma);
-	presentPass->SetGamma(gamma);
 }
