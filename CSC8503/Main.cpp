@@ -27,6 +27,8 @@
 #include "BehaviourParallelSelector.h"
 #include "BehaviourAction.h"
 
+#include "Test.h"
+
 using namespace NCL;
 using namespace CSC8503;
 

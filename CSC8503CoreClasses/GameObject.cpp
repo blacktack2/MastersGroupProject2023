@@ -32,6 +32,8 @@ GameObject::GameObject(GameObject& other) : gameWorld(GameWorld::instance()), tr
 }
 
 GameObject::~GameObject()	{
+	if(networkObject != nullptr)
+		gameWorld.RemoveNetworkObject(networkObject);
 	delete boundingVolume;
 	delete physicsObject;
 	delete renderObject;

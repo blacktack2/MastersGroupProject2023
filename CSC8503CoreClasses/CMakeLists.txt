@@ -75,6 +75,8 @@ set(Networking
     "NetworkObject.cpp"
     "NetworkState.h"
     "NetworkState.cpp"
+	"Test.h"
+    "Test.cpp"
 )
 source_group("Networking" FILES ${Networking})
 

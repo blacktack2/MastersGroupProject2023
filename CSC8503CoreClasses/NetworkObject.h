@@ -23,6 +23,21 @@ namespace NCL::CSC8503 {
 			size = sizeof(HandshakeAckPacket) - sizeof(GamePacket);
 		}
 	};
+
+	struct ItemInitPacket : public GamePacket {
+		int		objectID = -1;
+		char	itemType;
+		Vector3		position;
+		Vector3		scale;
+		Quaternion	orientation;
+		Vector3		velocity;
+
+		ItemInitPacket() {
+			type = Item_Init_Message;
+			size = sizeof(ItemInitPacket) - sizeof(GamePacket);
+		}
+	};
+
 	struct FullPacket : public GamePacket {
 		int		objectID = -1;
 		NetworkState fullState;
@@ -59,7 +74,7 @@ namespace NCL::CSC8503 {
 
 	class NetworkObject		{
 	public:
-		NetworkObject(GameObject& o, int id);
+		NetworkObject(GameObject& o, int id = -1);
 		virtual ~NetworkObject();
 
 		//Called by clients
@@ -82,7 +97,7 @@ namespace NCL::CSC8503 {
 			return renderTransform;
 		}
 
-		void ServerUpdate() {
+		void SnapRenderToSelf() {
 			renderTransform = object.GetTransform();
 		}
 

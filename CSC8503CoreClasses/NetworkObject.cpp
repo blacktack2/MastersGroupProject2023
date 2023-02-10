@@ -8,10 +8,15 @@ using namespace CSC8503;
 NetworkObject::NetworkObject(GameObject& o, int id) : object(o), renderTransform(&o) {
 	deltaErrors = 0;
 	fullErrors  = 0;
-	networkID   = id;
+	if (id != -1)
+		networkID = id;
+	else
+		networkID = o.GetWorldID();
 	object.SetNetworkObject(this);
 	renderTransform = o.GetTransform();
 	(object.GetRenderObject())->SetTransform(&renderTransform);
+	lastDeltaState.position = object.GetTransform().GetGlobalPosition();
+	lastDeltaState.orientation = object.GetTransform().GetGlobalOrientation();
 }
 
 NetworkObject::~NetworkObject()	{
@@ -45,7 +50,6 @@ bool NetworkObject::WritePacket(GamePacket** p, bool deltaFrame, int stateID) {
 
 void moveObject(float dt, Vector3 newPos, Vector3 oldPos, GameObject* object) {
 	object->GetTransform().SetPosition(oldPos + (newPos - oldPos)*1.02);
-	
 }
 bool NetworkObject::ReadDeltaPacket(DeltaPacket &p, float dt) {
 	if (p.fullID != lastFullState.stateID) {
@@ -68,7 +72,7 @@ bool NetworkObject::ReadDeltaPacket(DeltaPacket &p, float dt) {
 	lastDeltaState = NetworkState();
 	lastDeltaState.position = fullPos;
 	lastDeltaState.orientation = fullOrientation;
-	Debug::DrawLine(lastDeltaState.position, lastDeltaState.position + Vector3(0, 0.1, 0), Debug::YELLOW, 2.0f);
+	//Debug::DrawLine(lastDeltaState.position, lastDeltaState.position + Vector3(0, 0.1, 0), Debug::YELLOW, 2.0f);
 	object.GetTransform().SetPosition(fullPos);
 	object.GetTransform().SetOrientation(fullOrientation);
 
@@ -83,7 +87,7 @@ bool NetworkObject::ReadFullPacket(FullPacket &p, float dt) {
 
 	lastDeltaState = p.fullState;
 
-	Debug::DrawLine(p.fullState.position, p.fullState.position + Vector3(0,0.1,0), Debug::BLUE, 2.0f);
+	//Debug::DrawLine(p.fullState.position, p.fullState.position + Vector3(0,0.1,0), Debug::BLUE, 2.0f);
 
 	stateHistory.emplace_back(lastFullState);
 
@@ -166,9 +170,9 @@ void NetworkObject::UpdateStateHistory(int minID) {
 }
 
 void NetworkObject::UpdateDelta(float dt) {
-	Debug::DrawLine(object.GetTransform().GetGlobalPosition(), object.GetTransform().GetGlobalPosition() + Vector3(0, 0.5, 0), Debug::RED, 0.01f);
-
 	float posT = std::clamp(dt * 10, 0.1f, 1.0f);
+	
+	//Debug::DrawLine(object.GetTransform().GetGlobalPosition(), object.GetTransform().GetGlobalPosition() + Vector3(0, 0.5, 0), Debug::RED, 0.01f);
 
 	renderTransform.SetPosition(Vector3::Lerp(renderTransform.GetGlobalPosition(), lastDeltaState.position, posT));
 	renderTransform.SetOrientation(Quaternion::Lerp(renderTransform.GetGlobalOrientation(), lastDeltaState.orientation, 0.2));
