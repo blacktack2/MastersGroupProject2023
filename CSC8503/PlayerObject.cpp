@@ -31,6 +31,8 @@ id(id), scoreCounter(scoreCounter){
 }
 
 PlayerObject::~PlayerObject() {
+	alDeleteSources(1, &(*playerSource->GetSource()).source);
+	alDeleteSources(1, &(*attackSource->GetSource()).source);
 	delete playerSource;
 	delete attackSource;
 		
@@ -115,7 +117,7 @@ void PlayerObject::GetInput(Vector3& dir) {
 	{
 		jumpTimer = jumpCooldown;
 		this->GetPhysicsObject()->ApplyLinearImpulse(upAxis * jumpSpeed);
-		playerSource->Play(Sound::AddSound("swing3.wav"));
+		//playerSource->Play(Sound::AddSound("swing3.wav"));
 	}
 	if (keyMap.GetButton(InputType::Action1)) 
 	{

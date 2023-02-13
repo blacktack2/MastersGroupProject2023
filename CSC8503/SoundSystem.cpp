@@ -1,6 +1,6 @@
 #include "SoundSystem.h"
 #include "SoundSource.h"
-
+#include"Sound.h"
 SoundSystem* SoundSystem::instance = NULL;
 
 void SoundSystem::Update(float mSec)
@@ -61,16 +61,18 @@ SoundSystem::SoundSystem(unsigned int channels) {
 SoundSystem::~SoundSystem() {
 	
 	delete mListener;
-	for (vector < OALSource* >::iterator i = mOALSources.begin();
-		i != mOALSources.end(); ++i) {
-		alDeleteSources(1, &(*i)->source);
-		delete (*i);
-	}
 	//check if it should be added elsewhere
 	for (vector < SoundSource* >::iterator i = mSources.begin();
 		i != mSources.end(); ++i) {
 		delete (*i);
 	}
+	for (vector < OALSource* >::iterator i = mOALSources.begin();
+		i != mOALSources.end(); ++i) {
+		alDeleteSources(1, &(*i)->source);
+		delete (*i);
+	}
+	Sound::DeleteSounds();
+	
 	SoundDevice::Destroy();
 }
 

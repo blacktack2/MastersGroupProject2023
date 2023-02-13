@@ -379,6 +379,6 @@ int main() {
 		g->UpdateGame(dt);
 		//DisplayPathfinding();
 	}
-
+	delete g;
 	Window::DestroyGameWindow();
 }
