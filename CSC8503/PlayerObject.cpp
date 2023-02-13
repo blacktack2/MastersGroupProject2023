@@ -222,6 +222,6 @@ void NCL::CSC8503::PlayerObject::SetupAudio()
 	attackSource->SetGain(1.0f);
 	attackSource->SetPitch(1.0f);
 
-
+	SoundSystem::GetSoundSystem()->SetListener(this);
 
 }

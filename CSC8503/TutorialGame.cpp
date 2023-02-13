@@ -374,44 +374,44 @@ void TutorialGame::UpdateKeys() {
 void TutorialGame::InitGameExamples()/*for audio testing*/ {
 	
 	InitDefaultFloor();
-	GameObject* obj1=AddCubeToWorld({ 55,0,0 }, { 2,2,2 });
-	obj1->GetRenderObject()->SetColour(Vector4(1.0f, 1.0f, 0.5f, 1.0f));
+	//GameObject* obj1=AddCubeToWorld({ 55,0,0 }, { 2,2,2 });
+	//obj1->GetRenderObject()->SetColour(Vector4(1.0f, 1.0f, 0.5f, 1.0f));
 
-	SoundSource* source1 = new SoundSource();
-	source1->SetLooping(true);
-	source1->SetTarget(obj1);
-	
-	ALuint snd1 = Sound::AddSound("coin2.wav");
-	ALuint snd2 = Sound::AddSound("random2.wav");
-	ALuint snd3 = Sound::AddSound("random1.wav");
-	source1->SetSoundBuffer(snd1);
-	if(SoundSystem::GetSoundSystem()->GetSource())
-		source1->SetSource(SoundSystem::GetSoundSystem()->GetSource());
+	//SoundSource* source1 = new SoundSource();
+	//source1->SetLooping(true);
+	//source1->SetTarget(obj1);
+	//
+	//ALuint snd1 = Sound::AddSound("coin2.wav");
+	//ALuint snd2 = Sound::AddSound("random2.wav");
+	//ALuint snd3 = Sound::AddSound("random1.wav");
+	//source1->SetSoundBuffer(snd1);
+	//if(SoundSystem::GetSoundSystem()->GetSource())
+	//	source1->SetSource(SoundSystem::GetSoundSystem()->GetSource());
 
-	GameObject* obj2 = AddCubeToWorld({ 0,0,55 }, { 2,2,2 });
-	obj2->GetRenderObject()->SetColour(Vector4(1.0f, 1.0f, 0.5f, 1.0f));
+	//GameObject* obj2 = AddCubeToWorld({ 0,0,55 }, { 2,2,2 });
+	//obj2->GetRenderObject()->SetColour(Vector4(1.0f, 1.0f, 0.5f, 1.0f));
 
-	SoundSource* source2 = new SoundSource();
-	//source2->SetLooping(true);
-	source2->SetTarget(obj2);
-	source2->SetSoundBuffer(snd2);
-	if (SoundSystem::GetSoundSystem()->GetSource())
-		source2->SetSource(SoundSystem::GetSoundSystem()->GetSource());
+	//SoundSource* source2 = new SoundSource();
+	////source2->SetLooping(true);
+	//source2->SetTarget(obj2);
+	//source2->SetSoundBuffer(snd2);
+	//if (SoundSystem::GetSoundSystem()->GetSource())
+	//	source2->SetSource(SoundSystem::GetSoundSystem()->GetSource());
 
-	GameObject* obj3 = AddCubeToWorld({ 55,0,55 }, { 2,2,2 });
-	obj3->GetRenderObject()->SetColour(Vector4(1.0f, 1.0f, 0.5f, 1.0f));
+	//GameObject* obj3 = AddCubeToWorld({ 55,0,55 }, { 2,2,2 });
+	//obj3->GetRenderObject()->SetColour(Vector4(1.0f, 1.0f, 0.5f, 1.0f));
 
-	SoundSource* source3 = new SoundSource();
-	source3->SetLooping(true);
-	source3->SetTarget(obj3);
-	source3->SetSoundBuffer(snd3);
-	if (SoundSystem::GetSoundSystem()->GetSource())
-		source3->SetSource(SoundSystem::GetSoundSystem()->GetSource());
+	//SoundSource* source3 = new SoundSource();
+	//source3->SetLooping(true);
+	//source3->SetTarget(obj3);
+	//source3->SetSoundBuffer(snd3);
+	//if (SoundSystem::GetSoundSystem()->GetSource())
+	//	source3->SetSource(SoundSystem::GetSoundSystem()->GetSource());
 
-	SoundSystem::GetSoundSystem()->SetListener(player);
-	SoundSystem::GetSoundSystem()->AddSoundSource(source1);
-	SoundSystem::GetSoundSystem()->AddSoundSource(source2);
-	SoundSystem::GetSoundSystem()->AddSoundSource(source3);
+	//
+	//SoundSystem::GetSoundSystem()->AddSoundSource(source1);
+	//SoundSystem::GetSoundSystem()->AddSoundSource(source2);
+	//SoundSystem::GetSoundSystem()->AddSoundSource(source3);
 	SoundSystem::GetSoundSystem()->SetMasterVolume(1.0f);
 }
 
