@@ -72,7 +72,7 @@ SkyboxRPass::~SkyboxRPass() {
 void SkyboxRPass::Render() {
 	frameBuffer->Bind();
 	glClear(GL_COLOR_BUFFER_BIT);
-	glDepthMask(GL_FALSE);
+	renderer.GetConfig().enableDepthMask.Push(GL_FALSE);
 
 	shader->Bind();
 
@@ -84,7 +84,7 @@ void SkyboxRPass::Render() {
 
 	shader->Unbind();
 
-	glDepthMask(GL_TRUE);
+	renderer.GetConfig().enableDepthMask.Pop();
 	frameBuffer->Unbind();
 }
 

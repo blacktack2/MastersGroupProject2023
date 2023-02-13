@@ -39,7 +39,7 @@ using namespace NCL::Rendering;
 static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
 #endif;
 
-OGLRenderer::OGLRenderer(Window& w) : RendererBase(w) {
+OGLRenderer::OGLRenderer(Window& w) : RendererBase(w), config(new Config(*this)) {
 	initState = false;
 #ifdef _WIN32
 	InitWithWin32(w);
@@ -249,3 +249,41 @@ static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum
 	std::cout << "OpenGL Debug Output: " + sourceName + ", " + typeName + ", " + severityName + ", " + std::string(message) << std::endl;
 }
 #endif
+
+void OGLRenderer::UpdateViewport(std::pair<size_t, size_t> viewport) {
+	glViewport(0, 0,
+		viewport.first  == 0 ? GetWidth()  : viewport.first,
+		viewport.second == 0 ? GetHeight() : viewport.second);
+}
+
+void OGLRenderer::UpdateEnableDepthMask(bool enable) {
+	glDepthMask(enable);
+}
+
+void OGLRenderer::UpdateEnableDepthTest(bool enable) {
+	(enable ? glEnable : glDisable)(GL_DEPTH_TEST);
+}
+
+void OGLRenderer::UpdateDepthFunc(unsigned int depthFunc) {
+	glDepthFunc(depthFunc);
+}
+
+void OGLRenderer::UpdateEnableCullFace(bool enable) {
+	(enable ? glEnable : glDisable)(GL_CULL_FACE);
+}
+
+void OGLRenderer::UpdateCullFace(unsigned int cullFace) {
+	glCullFace(cullFace);
+}
+
+void OGLRenderer::UpdateEnableBlend(bool enable) {
+	(enable ? glEnable : glDisable)(GL_BLEND);
+}
+
+void OGLRenderer::UpdateBlendFunc(std::pair<unsigned int, unsigned int> blendFunc) {
+	glBlendFunc(blendFunc.first, blendFunc.second);
+}
+
+void OGLRenderer::UpdatePatchVertices(int patchVertices) {
+	glPatchParameteri(GL_PATCH_VERTICES, patchVertices);
+}

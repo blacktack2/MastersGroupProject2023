@@ -18,9 +18,15 @@ using namespace CSC8503;
 Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(Vector3(0.5f, 0.5f, 0.5f));
 
 GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetWindow()), gameWorld(world) {
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
+	GetConfig().viewport.Push({ 0, 0 });
+	GetConfig().enableDepthMask.Push(GL_TRUE);
+	GetConfig().enableDepthTest.Push(GL_TRUE);
+	GetConfig().depthFunc.Push(GL_LEQUAL);
+	GetConfig().enableCullFace.Push(GL_TRUE);
+	GetConfig().cullFace.Push(GL_BACK);
+	GetConfig().enableBlend.Push(GL_TRUE);
+	GetConfig().blendFunc.Push({ GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA });
+	GetConfig().patchVertices.Push(4);
 
 	skyboxPass = new SkyboxRPass(*this, gameWorld);
 	renderPasses.push_back(skyboxPass);
