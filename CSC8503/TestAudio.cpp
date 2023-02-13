@@ -2,7 +2,7 @@
 #include<AL/al.h>
 #include<AL/alc.h>
 #include <string>
-#include "Sound.h"
+#include "SoundManager.h"
 #include "SoundDevice.h"
 #include "SoundSource.h"
 #include "SoundSystem.h"
@@ -61,7 +61,7 @@ void TestAudio::TestAudio1()
 	//Load files
 	std::string name = /*NCL::Assets::SOUNDSDIR+*/"coin21.wav";
 
-	ALuint buffer = Sound::AddSound(name);
+	ALuint buffer = SoundManager::AddSound(name);
 	
 
 
@@ -88,7 +88,7 @@ void TestAudio::TestAudio1()
 	std::cout << "Played!\n";
 	//alec(alDeleteSources(1, &monoSource));
 	delete sn;
-	Sound::DeleteSounds();
+	SoundManager::DeleteSounds();
 	SoundSystem::Destroy();
 }
 

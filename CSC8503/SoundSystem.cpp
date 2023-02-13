@@ -1,6 +1,6 @@
 #include "SoundSystem.h"
 #include "SoundSource.h"
-#include"Sound.h"
+#include"SoundManager.h"
 SoundSystem* SoundSystem::instance = NULL;
 
 void SoundSystem::Update(float mSec)
@@ -71,7 +71,7 @@ SoundSystem::~SoundSystem() {
 		alDeleteSources(1, &(*i)->source);
 		delete (*i);
 	}
-	Sound::DeleteSounds();
+	SoundManager::DeleteSounds();
 	
 	SoundDevice::Destroy();
 }

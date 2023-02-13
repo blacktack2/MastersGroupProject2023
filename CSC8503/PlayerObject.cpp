@@ -14,7 +14,7 @@
 
 #include "InputKeyMap.h"
 #include "SoundSource.h"
-#include "Sound.h"
+#include "SoundManager.h"
 #include "SoundSystem.h"
 #include <iostream>
 
@@ -105,33 +105,33 @@ void PlayerObject::GetInput(Vector3& dir, unsigned int keyPress) {
 	if (keyMap.CheckButtonPressed(keyPress, InputType::Foward))
 	{
 		dir += fwdAxis;
-		playerSource->Play(Sound::AddSound("footstep06.wav"));
+		playerSource->Play(SoundManager::AddSound("footstep06.wav"));
 	}
 	if (keyMap.CheckButtonPressed(keyPress, InputType::Backward) )
 	{
 		dir -= fwdAxis;
-		playerSource->Play(Sound::AddSound("footstep06.wav"));
+		playerSource->Play(SoundManager::AddSound("footstep06.wav"));
 	}
 	if (keyMap.CheckButtonPressed(keyPress, InputType::Left))
 	{
 		dir += leftAxis;
-		playerSource->Play(Sound::AddSound("footstep06.wav"));
+		playerSource->Play(SoundManager::AddSound("footstep06.wav"));
 	}
 	if (keyMap.CheckButtonPressed(keyPress, InputType::Right))
 	{
 		dir -= leftAxis;
-		playerSource->Play(Sound::AddSound("footstep06.wav"));
+		playerSource->Play(SoundManager::AddSound("footstep06.wav"));
 	}
 	if (keyMap.CheckButtonPressed(keyPress,InputType::Jump) && onGround && jumpTimer <= 0.0f ) 
 	{
 		jumpTimer = jumpCooldown;
 		this->GetPhysicsObject()->ApplyLinearImpulse(upAxis * jumpSpeed);
-		//playerSource->Play(Sound::AddSound("swing3.wav"));
+		//playerSource->Play(SoundManager::AddSound("swing3.wav"));
 	}
 	if (keyMap.CheckButtonPressed(keyPress,InputType::Action1)) 
 	{
 		Shoot();
-		attackSource->Play(Sound::AddSound("magic1.wav"));
+		attackSource->Play(SoundManager::AddSound("magic1.wav"));
 	}
 	if (keyMap.CheckButtonPressed(keyPress,InputType::FreeLook))
 	{
@@ -214,7 +214,8 @@ void NCL::CSC8503::PlayerObject::SetupAudio()
 	playerSource = new SoundSource();
 	playerSource->SetPriority(SoundPriority::SOUNDPRIORITY_HIGH);
 	playerSource->SetGain(0.0f);
-	playerSource->SetSoundBuffer(Sound::AddSound("footstep06.wav"));
+	playerSource->SetSoundBuffer(SoundManager::AddSound("footstep06.wav"));
+	
 	playerSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
 	playerSource->SetGain(1.0f);
 	playerSource->SetPitch(1.0f);
@@ -222,7 +223,7 @@ void NCL::CSC8503::PlayerObject::SetupAudio()
 	attackSource = new SoundSource();
 	attackSource->SetPriority(SoundPriority::SOUNDPRIORITY_HIGH);
 	attackSource->SetGain(0.0f);
-	attackSource->SetSoundBuffer(Sound::AddSound("magic1.wav"));
+	attackSource->SetSoundBuffer(SoundManager::AddSound("magic1.wav"));
 	attackSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
 	attackSource->SetGain(1.0f);
 	attackSource->SetPitch(1.0f);

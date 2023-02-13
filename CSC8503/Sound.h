@@ -32,11 +32,6 @@ public:
 
 	ReadWavData getWavData()const { return mWavData; }
 
-	static ALuint	AddSound(string n);
-	static Sound* GetSound(string name);
-
-	static void		DeleteSounds();
-
 	void			LoadFromWAV(string filename);
 
 
@@ -54,7 +49,6 @@ protected:
 	bool  mStreaming;			//Part 2
 	float length;
 
-	static map<string, Sound*> sSounds;
 
 
 };
