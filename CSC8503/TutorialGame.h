@@ -25,7 +25,8 @@ namespace NCL {
 				SPHERE_GRID,
 				BRIDGE_TEST,
 				BRIDGE_TEST_ANG,
-				PERFORMANCE_TEST
+				PERFORMANCE_TEST,
+				AUDIO_TEST//added for audio testing
 			};
 
 			TutorialGame();

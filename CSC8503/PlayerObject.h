@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "SoundSource.h"
 #include "InputKeyMap.h"
 
 namespace NCL {
@@ -49,6 +50,8 @@ namespace NCL {
 
 		private:
 
+			void SetupAudio();
+
 			//jump related 
 			bool onGround = false;
 			float jumpTimer = 0.0f;
@@ -81,6 +84,10 @@ namespace NCL {
 
 			float lastGoosed = 0.0f;
 			const float gooseDelay = 2.0f;
+
+			//sound
+			SoundSource* playerSource;
+			SoundSource* attackSource;
 		};
 	}
 }

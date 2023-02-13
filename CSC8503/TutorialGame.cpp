@@ -13,6 +13,14 @@
 #include "TextureLoader.h"
 #include "TutorialGame.h"
 
+//Audio Testing
+
+#include "Sound.h"
+#include "SoundSource.h"
+#include "SoundSystem.h"
+#include "TestAudio.h"
+
+
 #include <string>
 
 using namespace NCL;
@@ -33,7 +41,8 @@ TutorialGame::TutorialGame() {
 	forceMagnitude	= 10.0f;
 	inSelectionMode = false;
 	debugViewPoint = &paintHell::debug::DebugViewPoint::Instance();
-
+	
+	SoundSystem::Initialize();
 	InitialiseAssets();
 }
 
@@ -54,6 +63,8 @@ TutorialGame::~TutorialGame() {
 	delete[] mazes;
 
 	delete bulletPrefab;
+
+	SoundSystem::Destroy();
 }
 
 void TutorialGame::InitWorld(InitMode mode) {
@@ -73,9 +84,10 @@ void TutorialGame::InitWorld(InitMode mode) {
 		case InitMode::BRIDGE_TEST      : InitBridgeConstraintTestWorld(10, 20, 30, false)        ; break;
 		case InitMode::BRIDGE_TEST_ANG  : InitBridgeConstraintTestWorld(10, 20, 30, true)         ; break;
 		case InitMode::PERFORMANCE_TEST : InitMixedGridWorld(30, 30, 10.0f, 10.0f)                ; break;
+		case InitMode::AUDIO_TEST : InitGameExamples()                ; break;
 	}
 
-	InitGameExamples();
+	//InitGameExamples();
 	InitDefaultFloor();
 
 	world->UpdateStaticTree();
@@ -151,6 +163,7 @@ void TutorialGame::UpdateGame(float dt) {
 	Debug::Print(std::string("HDR:   ").append(std::to_string(renderer->GetHDRExposure())), Vector2(0, 35.0f));
 	Debug::Print(std::string("Bloom -> Amount:    ").append(std::to_string(renderer->GetBloomAmount())), Vector2(0, 40.0f));
 	Debug::Print(std::string("      -> Threshold: ").append(std::to_string(renderer->GetBloomThreshold())), Vector2(0, 45.0f));
+	SoundSystem::GetSoundSystem()->Update(dt);
 
 	if (gameState == GameState::OnGoing) {
 		Vector2 screenSize = Window::GetWindow()->GetScreenSize();
@@ -358,7 +371,48 @@ void TutorialGame::UpdateKeys() {
 	}
 }
 
-void TutorialGame::InitGameExamples() {
+void TutorialGame::InitGameExamples()/*for audio testing*/ {
+	
+	InitDefaultFloor();
+	GameObject* obj1=AddCubeToWorld({ 55,0,0 }, { 2,2,2 });
+	obj1->GetRenderObject()->SetColour(Vector4(1.0f, 1.0f, 0.5f, 1.0f));
+
+	SoundSource* source1 = new SoundSource();
+	source1->SetLooping(true);
+	source1->SetTarget(obj1);
+	
+	ALuint snd1 = Sound::AddSound("coin2.wav");
+	ALuint snd2 = Sound::AddSound("random2.wav");
+	ALuint snd3 = Sound::AddSound("random1.wav");
+	source1->SetSoundBuffer(snd1);
+	if(SoundSystem::GetSoundSystem()->GetSource())
+		source1->SetSource(SoundSystem::GetSoundSystem()->GetSource());
+
+	GameObject* obj2 = AddCubeToWorld({ 0,0,55 }, { 2,2,2 });
+	obj2->GetRenderObject()->SetColour(Vector4(1.0f, 1.0f, 0.5f, 1.0f));
+
+	SoundSource* source2 = new SoundSource();
+	//source2->SetLooping(true);
+	source2->SetTarget(obj2);
+	source2->SetSoundBuffer(snd2);
+	if (SoundSystem::GetSoundSystem()->GetSource())
+		source2->SetSource(SoundSystem::GetSoundSystem()->GetSource());
+
+	GameObject* obj3 = AddCubeToWorld({ 55,0,55 }, { 2,2,2 });
+	obj3->GetRenderObject()->SetColour(Vector4(1.0f, 1.0f, 0.5f, 1.0f));
+
+	SoundSource* source3 = new SoundSource();
+	source3->SetLooping(true);
+	source3->SetTarget(obj3);
+	source3->SetSoundBuffer(snd3);
+	if (SoundSystem::GetSoundSystem()->GetSource())
+		source3->SetSource(SoundSystem::GetSoundSystem()->GetSource());
+
+	SoundSystem::GetSoundSystem()->SetListener(player);
+	SoundSystem::GetSoundSystem()->AddSoundSource(source1);
+	SoundSystem::GetSoundSystem()->AddSoundSource(source2);
+	SoundSystem::GetSoundSystem()->AddSoundSource(source3);
+	SoundSystem::GetSoundSystem()->SetMasterVolume(1.0f);
 }
 
 void TutorialGame::InitMazeWorld(int numRows, int numCols, float size) {
