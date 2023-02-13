@@ -16,6 +16,8 @@ set(Header_Files
     "StateGameObject.h"
     "TutorialGame.h"
     "DebugViewPoint.h"
+    "Boss.h"
+    "GameGrid.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 

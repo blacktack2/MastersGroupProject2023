@@ -74,7 +74,12 @@ void TutorialGame::InitWorld(InitMode mode) {
 	mazes = nullptr;
 	world->ClearAndErase();
 	physics->Clear();
+
+	gameGrid = new GameGrid{ {-200,0,-200},200,200,200 * 2,200 * 2 };	// MUST initialize gameGrid BEFORE boss/player, otherwise boss/player will be referring to nullptr
 	player = AddPlayerToWorld(Vector3(0, 0, 0));
+	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 5,5,5 }, 1);
+	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
+
 	switch (mode) {
 		case InitMode::MAZE             : InitMazeWorld(20, 20, 20.0f)                            ; break;
 		case InitMode::MIXED_GRID       : InitMixedGridWorld(1, 1, 3.5f, 3.5f)                  ; break;
@@ -85,6 +90,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 		case InitMode::BRIDGE_TEST_ANG  : InitBridgeConstraintTestWorld(10, 20, 30, true)         ; break;
 		case InitMode::PERFORMANCE_TEST : InitMixedGridWorld(30, 30, 10.0f, 10.0f)                ; break;
 		case InitMode::AUDIO_TEST : InitGameExamples()                ; break;
+		default: break;
 	}
 
 	//InitGameExamples();
@@ -239,6 +245,27 @@ void TutorialGame::UpdateGame(float dt) {
 	
 	Debug::UpdateRenderables(dt);
 	debugViewPoint->FinishTime("Render");
+
+	/////////
+	gameGrid->UpdateGrid(dt);
+	UpdateHealingKit();
+	gameGrid->UpdateTrace(player);
+	//std::vector<GameNode> v = gameGrid->GetTraceNodes();
+	//std::vector<Vector3> u;
+	//for (const auto& i : v) {
+	//	u.push_back(i.worldPosition);
+	//}
+	//floor->GetRenderObject()->SetTrace(u);
+	testingBossBehaviorTree->update();
+	RenderBombsReleasedByBoss();
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::PLUS))
+	{
+		testingBoss->SetHealth(100);
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::MINUS))
+	{
+		testingBoss->SetHealth(10);
+	}
 }
 
 void TutorialGame::InitialiseAssets() {
@@ -257,7 +284,17 @@ void TutorialGame::InitialiseAssets() {
 	AssetLibrary::AddMesh("capsule", capsuleMesh);
 
 	basicTex = renderer->LoadTexture("checkerboard.png");
+	//inkableTex = renderer->LoadTexture("brick.tga");						/////////
+	healingKitTex = renderer->LoadTexture("HealingKit.png");				/////////
+	//noiseTex = renderer->LoadTexture("Perlin.png");							/////////
+	//AssetLibrary::AddTexture("inkable", inkableTex);						/////////
+	AssetLibrary::AddTexture("noise", noiseTex);							/////////
 	AssetLibrary::AddTexture("basic", basicTex);
+
+	//basicShader = renderer->LoadShader("scene.vert", "scene.frag");			/////////
+	//inkableShader = renderer->LoadShader("inkable.vert", "inkable.frag");	/////////
+	//AssetLibrary::AddShader("inkable", inkableShader);						/////////
+	//AssetLibrary::AddShader("basic", basicShader);							/////////
 
 	InitialisePrefabs();
 }
@@ -512,19 +549,20 @@ void TutorialGame::InitBridgeConstraintTestWorld(int numLinks, float cubeDistanc
 }
 
 void TutorialGame::InitDefaultFloor() {
-	AddFloorToWorld(Vector3(0, -2, 0));
+	floor = AddFloorToWorld(Vector3(0, -2, 0));
 }
 
 GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 	GameObject* floor = new GameObject("Floor");
 
-	Vector3 floorSize = Vector3(500, 2, 500);
+	Vector3 floorSize = Vector3(200, 2, 200);		/////////
 	AABBVolume* volume = new AABBVolume(floorSize);
 	floor->SetBoundingVolume((CollisionVolume*)volume);
 	floor->GetTransform()
 		.SetScale(floorSize * 2)
 		.SetPosition(position);
 
+	//floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, inkableShader, noiseTex, floorSize));	/////////
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, nullptr));
 	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));
 
@@ -683,6 +721,75 @@ EnemyObject* TutorialGame::AddEnemyToWorld(const Vector3& position, NavigationMa
 	world->AddGameObject(enemy);
 
 	return enemy;
+}
+
+Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
+	Boss* boss = new Boss(*gameGrid);
+
+	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+
+	boss->GetTransform()
+		.SetPosition(position)
+		.SetScale(dimensions * 2);
+
+	//boss->SetRenderObject(new RenderObject(&boss->GetTransform(), cubeMesh, nullptr, inkableShader, noiseTex, dimensions));
+	boss->SetRenderObject(new RenderObject(&boss->GetTransform(), cubeMesh, nullptr, nullptr));
+
+	boss->GetRenderObject()->SetColour({ 1,1,0,1 });
+	boss->SetPhysicsObject(new PhysicsObject(&boss->GetTransform(), boss->GetBoundingVolume()));
+
+	boss->GetPhysicsObject()->SetInverseMass(inverseMass);
+	boss->GetPhysicsObject()->InitCubeInertia();
+
+	world->AddGameObject(boss);
+
+	return boss;
+}
+
+void TutorialGame::RenderBombsReleasedByBoss()
+{
+	std::vector<Bomb*> bossBombs = testingBoss->GetBombsReleasedByBoss();
+	for (auto& bomb : bossBombs)
+	{
+		bomb->SetRenderObject(new RenderObject(&bomb->GetTransform(), sphereMesh, nullptr, nullptr));
+		bomb->GetRenderObject()->SetColour({ 0,0,1,1 });
+		world->AddGameObject(bomb);
+	}
+	testingBoss->clearBombList();
+	if (testingBoss->isUsingInkSea())
+	{
+		//floor->GetRenderObject()->enableInkSea(testingBoss->GetTransform().GetGlobalPosition());
+	}
+	else
+	{
+		//floor->GetRenderObject()->disableInkSea();
+	}
+}
+
+HealingKit* TutorialGame::UpdateHealingKit()
+{
+	Vector3 dimension{ 1,1,1 };
+
+	gameGrid->UpdateHealingKits(player, dimension);
+	gameGrid->UpdateHealingKits(testingBoss, dimension);
+
+	float period = 1.0f;
+
+	if (gameGrid->GetHealingKitTimer() > period)
+	{
+		HealingKit* healingKit = new HealingKit();
+		Vector3 position = gameGrid->GetRandomLocationToAddHealingKit(healingKit);	// this function resets the timer, and add the new healingKit to the list used to store all healing kits in gameGrid
+		healingKit->GetTransform()
+			.SetPosition(position)
+			.SetScale(dimension * 2);
+
+		healingKit->SetRenderObject(new RenderObject(&healingKit->GetTransform(), cubeMesh, basicTex, nullptr));
+
+		world->AddGameObject(healingKit);
+
+		return healingKit;
+	}
+	return nullptr;
 }
 
 NPCObject* TutorialGame::AddNPCToWorld(const Vector3& position) {
