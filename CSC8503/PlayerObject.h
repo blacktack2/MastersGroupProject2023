@@ -26,6 +26,16 @@ namespace NCL {
 			const std::vector<GameObject*> GetLastInstancedObjects() {
 				return lastInstancedObjects;
 			}
+
+			const float GetHealth() {
+				return health;
+			}
+			void Damage(float damage) {
+				health -= damage;
+			}
+			void Heal(float heal) {
+				health += heal;
+			}
 		protected:
 			void MoveTo(Vector3 position);
 			void Move(Vector3 dir);
@@ -47,6 +57,9 @@ namespace NCL {
 			//keymap
 			paintHell::InputKeyMap& keyMap;
 			unsigned int lastKey;
+			
+			//gameplay
+			float health = 100.0f;
 
 		private:
 
@@ -54,6 +67,7 @@ namespace NCL {
 
 			//jump related 
 			bool onGround = false;
+			float jumpTriggerDist = 1.1f;
 			float jumpTimer = 0.0f;
 			const float jumpCooldown = 0.005f;
 			float jumpSpeed = 10.0f;

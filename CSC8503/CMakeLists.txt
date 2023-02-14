@@ -18,6 +18,7 @@ set(Header_Files
     "DebugViewPoint.h"
     "Boss.h"
     "GameGrid.h"
+    "GameGridManager.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -34,6 +35,8 @@ set(Source_Files
     "StateGameObject.cpp"
     "TutorialGame.cpp"
     "DebugViewPoint.cpp"
+    "GameGrid.cpp"
+    "GameGridManager.cpp"
 )
 
 set(Render_Files

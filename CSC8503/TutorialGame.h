@@ -10,6 +10,8 @@
 #include "StateGameObject.h"
 #include "DebugViewPoint.h"
 
+#include "GameGridManager.h"
+
 #include "GameGrid.h"	/////////
 #include "Boss.h"		/////////
 
@@ -145,6 +147,9 @@ namespace NCL {
 			GameObject* floor = nullptr;	/////////
 			Boss* testingBoss = nullptr;   /////////
 			BossBehaviorTree* testingBossBehaviorTree = nullptr;   /////////
+
+			//GameGrid stuff
+			GameGridManager* gridManager;
 		};
 	}
 }

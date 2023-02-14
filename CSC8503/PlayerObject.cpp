@@ -12,6 +12,8 @@
 
 #include "RenderObject.h"
 
+#include "GameGridManager.h"
+
 #include "InputKeyMap.h"
 #include "SoundSource.h"
 #include "Sound.h"
@@ -57,7 +59,16 @@ void PlayerObject::Update(float dt) {
 		Move(dir);
 		MoveCamera();
 	}
-	
+	//temp ink
+	///*
+	if (onGround) {
+		GameNode* node = GameGridManager::instance().NearestNode(this->GetTransform().GetGlobalPosition());
+		if (node->inkType == BossDamage) {
+			this->Damage(1.0f);
+		}
+		//GameGridManager::instance().PaintPosition(this->GetTransform().GetGlobalPosition(), PlayerDamage);
+	}
+	//*/
 	
 }
 
@@ -150,7 +161,7 @@ void PlayerObject::CheckGround() {
 		objClosest = (GameObject*)closestCollision.node;
 		float groundDist = (closestCollision.collidedAt - this->GetTransform().GetGlobalPosition()).Length();
 		//std::cout << "ground dist " << groundDist << std::endl;
-		if (groundDist < 1.02f)
+		if (groundDist < jumpTriggerDist)
 		{
 			
 			onGround = true;
@@ -204,7 +215,7 @@ void PlayerObject::Shoot() {
 	gameWorld.AddGameObject(ink);
 
 	ink->OnCollisionBeginCallback = [&](GameObject* other) {
-		CollisionWith(other);
+		//GameGridManager::instance().PaintPosition(ink->GetTransform().GetGlobalPosition(), PlayerDamage);
 	};
 	lastInstancedObjects.push_back(ink);
 }

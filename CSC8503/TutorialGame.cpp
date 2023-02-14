@@ -3,6 +3,7 @@
 #include "Bonus.h"
 #include "Debug.h"
 #include "GameWorld.h"
+#include "GameGridManager.h"
 #include "Maze.h"
 #include "OrientationConstraint.h"
 #include "PhysicsObject.h"
@@ -43,6 +44,7 @@ TutorialGame::TutorialGame() {
 	debugViewPoint = &paintHell::debug::DebugViewPoint::Instance();
 	
 	SoundSystem::Initialize();
+	gridManager = &GameGridManager::instance();
 	InitialiseAssets();
 }
 
@@ -75,7 +77,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 	world->ClearAndErase();
 	physics->Clear();
 
-	gameGrid = new GameGrid{ {-200,0,-200},200,200,200 * 2,200 * 2 };	// MUST initialize gameGrid BEFORE boss/player, otherwise boss/player will be referring to nullptr
+	gridManager->AddGameGrid( new GameGrid({ 0,0,0 },100,100,2) );
 	player = AddPlayerToWorld(Vector3(0, 0, 0));
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 5,5,5 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
@@ -174,7 +176,7 @@ void TutorialGame::UpdateGame(float dt) {
 	if (gameState == GameState::OnGoing) {
 		Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 
-		Debug::Print(std::string("Score: ").append(std::to_string(score)), Vector2(5, 5), Vector4(1, 1, 0, 1));
+		Debug::Print(std::string("health: ").append(std::to_string((int)player->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
 
 		if (!inSelectionMode) {
 			world->GetMainCamera()->UpdateCamera(dt);
@@ -247,15 +249,8 @@ void TutorialGame::UpdateGame(float dt) {
 	debugViewPoint->FinishTime("Render");
 
 	/////////
-	gameGrid->UpdateGrid(dt);
-	UpdateHealingKit();
-	gameGrid->UpdateTrace(player);
-	//std::vector<GameNode> v = gameGrid->GetTraceNodes();
-	//std::vector<Vector3> u;
-	//for (const auto& i : v) {
-	//	u.push_back(i.worldPosition);
-	//}
-	//floor->GetRenderObject()->SetTrace(u);
+	gridManager->Update(dt);
+	//UpdateHealingKit();
 	testingBossBehaviorTree->update();
 	RenderBombsReleasedByBoss();
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::PLUS))
