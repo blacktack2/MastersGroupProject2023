@@ -2,12 +2,14 @@
 #include<vector>
 #include<map>
 #include<algorithm>
-
 #include"SoundDevice.h"
-#include "Transform.h"
-#include"GameObject.h"
 
 class SoundSource;
+
+namespace NCL::CSC8503 {
+	class GameObject;
+};
+
 
 struct OALSource {
 	ALuint source;
@@ -36,6 +38,12 @@ public:
 	//void RemoveSoundSource(SoundSource* s);
 
 	void SetListener(NCL::CSC8503::GameObject* listener) { mListener = listener; }
+
+	static bool IsPlaying(SoundSource* source);
+
+	static void SetSound(SoundSource* source, std::string sound="");
+
+	static SoundSource* AssignSource(NCL::CSC8503::GameObject* obj, std::string sound="", bool looping=false);
 
 
 	void Update(float mSec);

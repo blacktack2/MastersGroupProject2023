@@ -1,7 +1,37 @@
 #include "SoundSystem.h"
+#include "SoundDevice.h"
 #include "SoundSource.h"
 #include"SoundManager.h"
+#include"GameObject.h"
 SoundSystem* SoundSystem::instance = NULL;
+
+bool SoundSystem::IsPlaying(SoundSource* source)
+{
+	return source->GetSource() && source->GetSource()->source && source->isPlaying();
+}
+
+void SoundSystem::SetSound(SoundSource* source, std::string sound)
+{
+	if (sound.empty())
+		source->SetSoundBuffer(0);
+	else
+		source->SetSoundBuffer(SoundManager::AddSound(sound));
+
+}
+
+SoundSource* SoundSystem::AssignSource(NCL::CSC8503::GameObject* obj,std::string sound, bool looping)
+{
+
+	SoundSource* source1 = new SoundSource();
+	source1->SetLooping(looping);
+	source1->SetTarget(obj);
+	if (!sound.empty())
+		source1->SetSoundBuffer(SoundManager::AddSound(sound));
+	source1->SetTarget(obj);
+	SoundSystem::GetSoundSystem()->AddSoundSource(source1);
+	return source1;
+	
+}
 
 void SoundSystem::Update(float mSec)
 {
