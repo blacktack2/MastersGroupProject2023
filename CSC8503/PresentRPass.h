@@ -25,11 +25,15 @@ namespace NCL::CSC8503 {
 		~PresentRPass();
 
 		virtual void Render() override;
+
+		void SetGamma(float gamma);
 	private:
 		OGLTexture* sceneTexIn;
 
 		OGLMesh* quad;
 
 		OGLShader* shader;
+
+		GLint gammaUniform;
 	};
 }

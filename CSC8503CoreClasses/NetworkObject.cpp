@@ -1,13 +1,22 @@
 #include "NetworkObject.h"
+#include "RenderObject.h"
+#include "Debug.h"
 #include "./enet/enet.h"
 using namespace NCL;
 using namespace CSC8503;
 
-NetworkObject::NetworkObject(GameObject& o, int id) : object(o)	{
+NetworkObject::NetworkObject(GameObject& o, int id) : object(o), renderTransform(&o) {
 	deltaErrors = 0;
 	fullErrors  = 0;
-	networkID   = id;
+	if (id != -1)
+		networkID = id;
+	else
+		networkID = o.GetWorldID();
 	object.SetNetworkObject(this);
+	renderTransform = o.GetTransform();
+	(object.GetRenderObject())->SetTransform(&renderTransform);
+	lastDeltaState.position = object.GetTransform().GetGlobalPosition();
+	lastDeltaState.orientation = object.GetTransform().GetGlobalOrientation();
 }
 
 NetworkObject::~NetworkObject()	{
@@ -40,18 +49,7 @@ bool NetworkObject::WritePacket(GamePacket** p, bool deltaFrame, int stateID) {
 //Client objects recieve these packets
 
 void moveObject(float dt, Vector3 newPos, Vector3 oldPos, GameObject* object) {
-	object->GetTransform().SetPosition(newPos);
-	/*
-	if ((newPos - oldPos).Length() < 1.0f) {
-		//object->MoveTowards(dt, newPos, 10.0f);
-	}
-	else if ((newPos - oldPos).Length() < 10.0f) {
-		//object->MoveTowards(dt, newPos, 10.0f);
-	}
-	else {
-		object->GetTransform().SetPosition(newPos);
-	}
-	*/
+	object->GetTransform().SetPosition(oldPos + (newPos - oldPos)*1.02);
 }
 bool NetworkObject::ReadDeltaPacket(DeltaPacket &p, float dt) {
 	if (p.fullID != lastFullState.stateID) {
@@ -62,22 +60,20 @@ bool NetworkObject::ReadDeltaPacket(DeltaPacket &p, float dt) {
 	Vector3 fullPos = lastFullState.position;
 	Quaternion fullOrientation = lastFullState.orientation;
 
-	fullPos.x += p.pos[0] * 0.01;
-	fullPos.y += p.pos[1] * 0.01;
-	fullPos.z += p.pos[2] * 0.01;
+	fullPos.x += p.pos[0] * deltaPosDivisorInverse;
+	fullPos.y += p.pos[1] * deltaPosDivisorInverse;
+	fullPos.z += p.pos[2] * deltaPosDivisorInverse;
 
-	fullOrientation.x += ((float)p.orientation[0]) * 0.1;
-	fullOrientation.y += ((float)p.orientation[1]) * 0.1;
-	fullOrientation.z += ((float)p.orientation[2]) * 0.1;
-	fullOrientation.w += ((float)p.orientation[3]) * 0.1;
-	//fullOrientation.y += p.orientation[1];
-	//fullOrientation.z += p.orientation[2];
-	//fullOrientation.x += p.orientation[0];
-	//fullOrientation.w += p.orientation[3];
+	fullOrientation.x += ((float)p.orientation[0]) * deltaOrientationDivisorInverse;
+	fullOrientation.y += ((float)p.orientation[1]) * deltaOrientationDivisorInverse;
+	fullOrientation.z += ((float)p.orientation[2]) * deltaOrientationDivisorInverse;
+	fullOrientation.w += ((float)p.orientation[3]) * deltaOrientationDivisorInverse;
 
-	moveObject(dt, fullPos, object.GetTransform().GetGlobalPosition(), &object);
-
-	//object.GetTransform().SetPosition(fullPos);
+	lastDeltaState = NetworkState();
+	lastDeltaState.position = fullPos;
+	lastDeltaState.orientation = fullOrientation;
+	//Debug::DrawLine(lastDeltaState.position, lastDeltaState.position + Vector3(0, 0.1, 0), Debug::YELLOW, 2.0f);
+	object.GetTransform().SetPosition(fullPos);
 	object.GetTransform().SetOrientation(fullOrientation);
 
 	return true;
@@ -89,24 +85,14 @@ bool NetworkObject::ReadFullPacket(FullPacket &p, float dt) {
 	}
 	lastFullState = p.fullState;
 
-	//interpolate the position ?
-	/*
-	Vector3 position = object.GetTransform().GetGlobalPosition();
-	object.GetPhysicsObject()->SetLinearVelocity(lastFullState.linearVelocity);
-	Vector3 linearVel = object.GetPhysicsObject()->GetLinearVelocity();
-	position += linearVel * dt;
-	transform.SetPosition(position);
-	*/
+	lastDeltaState = p.fullState;
 
-	//object.GetTransform().SetPosition(lastFullState.position);
-	moveObject(dt, lastFullState.position, object.GetTransform().GetGlobalPosition(), &object);
-
-	object.GetTransform().SetOrientation(lastFullState.orientation);
-	//object.GetPhysicsObject()->SetLinearVelocity(lastFullState.linearVelocity);
-	object.GetPhysicsObject()->SetAngularVelocity(lastFullState.angularVelocity);
+	//Debug::DrawLine(p.fullState.position, p.fullState.position + Vector3(0,0.1,0), Debug::BLUE, 2.0f);
 
 	stateHistory.emplace_back(lastFullState);
 
+	object.GetTransform().SetPosition(p.fullState.position);
+	object.GetTransform().SetOrientation(p.fullState.orientation);
 	return true; 
 }
 
@@ -124,14 +110,14 @@ bool NetworkObject::WriteDeltaPacket(GamePacket**p, int stateID) {
 	currentPos -= state.position;
 	currentOrientation -= state.orientation;
 
-	dp->pos[0] = (int) currentPos.x * 100;
-	dp->pos[1] = (int) currentPos.y * 100;
-	dp->pos[2] = (int) currentPos.z * 100;
+	dp->pos[0] = (int) (currentPos.x * deltaPosDivisor);
+	dp->pos[1] = (int) (currentPos.y * deltaPosDivisor);
+	dp->pos[2] = (int) (currentPos.z * deltaPosDivisor);
 
-	dp->orientation[0] = (short int)(currentOrientation.x * 10);
-	dp->orientation[1] = (short int)(currentOrientation.y * 10);
-	dp->orientation[2] = (short int)(currentOrientation.z * 10);
-	dp->orientation[3] = (short int)(currentOrientation.w * 10);
+	dp->orientation[0] = (int)(currentOrientation.x * deltaOrientationDivisor);
+	dp->orientation[1] = (int)(currentOrientation.y * deltaOrientationDivisor);
+	dp->orientation[2] = (int)(currentOrientation.z * deltaOrientationDivisor);
+	dp->orientation[3] = (int)(currentOrientation.w * deltaOrientationDivisor);
 
 	*p = dp;
 
@@ -181,4 +167,13 @@ void NetworkObject::UpdateStateHistory(int minID) {
 			++i;
 		}
 	}
+}
+
+void NetworkObject::UpdateDelta(float dt) {
+	float posT = std::clamp(dt * 10, 0.1f, 1.0f);
+	
+	//Debug::DrawLine(object.GetTransform().GetGlobalPosition(), object.GetTransform().GetGlobalPosition() + Vector3(0, 0.5, 0), Debug::RED, 0.01f);
+
+	renderTransform.SetPosition(Vector3::Lerp(renderTransform.GetGlobalPosition(), lastDeltaState.position, posT));
+	renderTransform.SetOrientation(Quaternion::Lerp(renderTransform.GetGlobalOrientation(), lastDeltaState.orientation, 0.2));
 }

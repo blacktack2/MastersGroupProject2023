@@ -16,17 +16,38 @@ using namespace NCL::Rendering;
 OGLTexture::OGLTexture(GLsizei width, GLsizei height, TexType texType) : texType(texType) {
 	glGenTextures(1, &texID);
 	Bind();
+
 	SetEdgeClamp();
 	switch (texType) {
 		default:
+<<<<<<< HEAD
 		case TexType::Colour4  : InitColour4() ; break;
 		case TexType::Colour8  : InitColour8() ; break;
 		case TexType::Colour32 : InitColour32(); break;
 		case TexType::Depth    : InitDepth()   ; break;
 		case TexType::Stencil  : InitStencil() ; break;
 		case TexType::Shadow   : InitShadow()  ; break;
+=======
+		case TexType::Colour   : InitColour(GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE); break;
+		case TexType::Depth    : InitDepth()  ; break;
+		case TexType::Stencil  : InitStencil(); break;
+		case TexType::Shadow   : InitShadow() ; break;
+>>>>>>> dev
 	}
 	Resize(width, height);
+
+	Unbind();
+}
+
+OGLTexture::OGLTexture(GLsizei width, GLsizei height, GLint i, GLenum t, GLenum f, void* data) :
+texType(TexType::Colour) {
+	glGenTextures(1, &texID);
+	Bind();
+
+	SetEdgeClamp();
+	InitColour(i, t, f);
+	Resize(width, height);
+
 	Unbind();
 }
 
@@ -34,8 +55,8 @@ OGLTexture::~OGLTexture() {
 	glDeleteTextures(1, &texID);
 }
 
-void OGLTexture::Resize(GLsizei width, GLsizei height) {
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, type, format, nullptr);
+void OGLTexture::Resize(GLsizei width, GLsizei height, void* data) {
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, type, format, data);
 }
 
 void OGLTexture::Bind() {
@@ -66,13 +87,13 @@ void OGLTexture::SetEdgeRepeat() {
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 }
 
+void OGLTexture::SetFilters(GLfloat minParam, GLfloat magParam) {
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magParam);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minParam);
+}
+
 TextureBase* OGLTexture::RGBATextureFromData(char* data, int width, int height, int channels) {
-	OGLTexture* tex = new OGLTexture(width, height);
-
-	int dataSize = width * height * channels; //This always assumes data is 1 byte per channel
-
-	int sourceType = GL_RGB;
-
+	GLenum sourceType;
 	switch (channels) {
 		case 1: sourceType = GL_RED ; break;
 		case 2: sourceType = GL_RG  ; break;
@@ -80,6 +101,8 @@ TextureBase* OGLTexture::RGBATextureFromData(char* data, int width, int height, 
 		default:
 		case 4: sourceType = GL_RGBA; break;
 	}
+
+	OGLTexture* tex = new OGLTexture(width, height, GL_RGBA32F, sourceType, GL_UNSIGNED_BYTE, data);
 
 	tex->Bind();
 
@@ -105,38 +128,16 @@ TextureBase* OGLTexture::RGBATextureFromFilename(const std::string& filename) {
 	return glTex;
 }
 
-void OGLTexture::InitColour4() {
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+void OGLTexture::InitColour(GLint i, GLenum t, GLenum f) {
+	SetFilters(GL_NEAREST, GL_NEAREST);
 
-	internalFormat = GL_RGBA4;
-	format = GL_UNSIGNED_BYTE;
-	type = GL_RGBA;
-}
-
-void OGLTexture::InitColour8() {
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-	internalFormat = GL_RGBA8;
-	format = GL_UNSIGNED_BYTE;
-	type = GL_RGBA;
-}
-
-void OGLTexture::InitColour32() {
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-	internalFormat = GL_RGBA32F;
-	format = GL_UNSIGNED_BYTE;
-	type = GL_RGBA;
-
-	glGenerateMipmap(GL_TEXTURE_2D);
+	internalFormat = i;
+	type = t;
+	format = f;
 }
 
 void OGLTexture::InitDepth() {
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	SetFilters(GL_NEAREST, GL_NEAREST);
 
 	internalFormat = GL_DEPTH_COMPONENT24;
 	format = GL_UNSIGNED_BYTE;
@@ -144,8 +145,7 @@ void OGLTexture::InitDepth() {
 }
 
 void OGLTexture::InitStencil() {
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	SetFilters(GL_NEAREST, GL_NEAREST);
 
 	internalFormat = GL_DEPTH_STENCIL;
 	format = GL_DEPTH_STENCIL;

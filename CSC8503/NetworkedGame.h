@@ -48,7 +48,19 @@ namespace NCL {
 			void PlayerJoined(int playerID);
 			void PlayerLeft(int playerID);
 
-			NetworkPlayer* AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID);
+			void ServerGetInstantiatedObject(NetworkPlayer* player);
+			void SendInitItemPacket(GameObject* obj);
+
+			//packet handle
+			void HandleDeltaPacket(GamePacket* payload, int source);
+			void HandleFullPacket(GamePacket* payload, int source);
+			void HandlePlayerConnectedPacket(GamePacket* payload, int source);
+			void HandlePlayerDisconnectedPacket(GamePacket* payload, int source);
+			void HandleHandshakePacket(GamePacket* payload, int source);
+			void HandleItemInitPacket(GamePacket* payload, int source);
+
+
+			PlayerObject* AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID);
 
 			std::map<int, int> stateIDs;
 
@@ -61,12 +73,14 @@ namespace NCL {
 			int stateID;
 			int selfID;
 
-			std::vector<NetworkObject*> networkObjects;
-			//std::map<int, NetworkObject*> networkObjects;
+			int objectID;
 
 			std::map<int, GameObject*> serverPlayers;
 			GameObject* localPlayer;
 			std::string name;
+
+			float packetGap = 1.0f / 120.0f; //120hz server/client update
+			int fullPacketToDeltaRate = 30;
 		};
 	}
 }

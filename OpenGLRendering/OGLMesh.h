@@ -22,7 +22,8 @@ namespace NCL {
 			OGLMesh(const std::string& filename);
 			~OGLMesh();
 
-			virtual void Draw(unsigned int subLayer = 0) override;
+			virtual void Draw() override;
+			virtual void Draw(unsigned int subLayer) override;
 
 			void RecalculateNormals();
 

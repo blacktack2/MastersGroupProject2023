@@ -16,12 +16,15 @@
 #include "SkyboxRPass.h"
 #include "ModelRPass.h"
 #include "LightingRPass.h"
-#include "GBufferRPass.h"
-#include "DebugRPass.h"
+#include "CombineRPass.h"
+#include "BloomRPass.h"
+#include "HDRRPass.h"
 #include "PresentRPass.h"
+#include "DebugRPass.h"
 
 #include "GameWorld.h"
 
+#include <algorithm>
 #include <string>
 
 namespace NCL::Maths {
@@ -49,17 +52,57 @@ namespace NCL::CSC8503 {
 		inline LightingRPass& GetLightingPass() {
 			return *lightingPass;
 		}
-		inline GBufferRPass& GetGBufferPass() {
-			return *gbufferPass;
+		inline CombineRPass& GetCombinePass() {
+			return *combinePass;
+		}
+		inline BloomRPass& GetBloomPass() {
+			return *bloomPass;
+		}
+		inline HDRRPass& GetHDRPass() {
+			return *hdrPass;
 		}
 		inline PresentRPass& GetPresentPass() {
 			return *presentPass;
 		}
+		inline DebugRPass& GetDebugRPass() {
+			return *debugPass;
+		}
 
 		virtual void Update(float dt) override;
+
+		void SetGamma(float g) {
+			gamma = g;
+			modelPass->SetGamma(gamma);
+			presentPass->SetGamma(gamma);
+		}
+		inline float GetGamma() {
+			return gamma;
+		}
+
+		void SetBloomAmount(size_t depth) {
+			bloomAmount = std::min(std::max(depth, 1ull), 100ull);
+			bloomPass->SetBloomDepth(bloomAmount);
+		}
+		inline size_t GetBloomAmount() {
+			return bloomAmount;
+		}
+
+		void SetBloomBias(float bias) {
+			bloomBias = bias;
+			bloomPass->SetBias(bloomBias);
+		}
+		inline float GetBloomBias() {
+			return bloomBias;
+		}
+
+		void SetHDRExposure(float exposure) {
+			hdrExposure = exposure;
+			hdrPass->SetExposure(hdrExposure);
+		}
+		inline float GetHDRExposure() {
+			return hdrExposure;
+		}
 	protected:
-		void NewRenderLines();
-		void NewRenderText();
 
 		void RenderFrame() override;
 
@@ -68,33 +111,21 @@ namespace NCL::CSC8503 {
 		void BuildObjectList();
 		void SortObjectList();
 
-		void SetDebugStringBufferSizes(size_t newVertCount);
-		void SetDebugLineBufferSizes(size_t newVertCount);
-
 		vector<const RenderObject*> activeObjects;
 
 		SkyboxRPass* skyboxPass;
 		ModelRPass* modelPass;
 		LightingRPass* lightingPass;
-		GBufferRPass* gbufferPass;
-		// DebugRPass* debugPass;
+		CombineRPass* combinePass;
+		BloomRPass* bloomPass;
+		HDRRPass* hdrPass;
 		PresentRPass* presentPass;
+		DebugRPass* debugPass;
 
-		vector<Vector3> debugLineData;
-
-		vector<Vector3> debugTextPos;
-		vector<Vector4> debugTextColours;
-		vector<Vector2> debugTextUVs;
-
-		GLuint lineVAO;
-		GLuint lineVertVBO;
-		size_t lineCount;
-
-		GLuint textVAO;
-		GLuint textVertVBO;
-		GLuint textColourVBO;
-		GLuint textTexVBO;
-		size_t textCount;
+		float gamma = 2.2f;
+		size_t bloomAmount = 5;
+		float bloomBias = 0.04f;
+		float hdrExposure = 1.0f;
 	};
 }
 

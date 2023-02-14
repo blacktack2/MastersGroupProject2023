@@ -45,8 +45,8 @@ void OGLFrameBuffer::AddTexture(OGLTexture* texture) {
 	textures.emplace_back(texture);
 	GLenum attachment;
 	switch (texture->GetType()) {
-		default: case TexType::Colour32:
-		case TexType::Colour8 : attachment = GL_COLOR_ATTACHMENT0 + numColourTexs++; break;
+		default:
+		case TexType::Colour  : attachment = GL_COLOR_ATTACHMENT0 + numColourTexs++; break;
 		case TexType::Depth   :
 		case TexType::Shadow  : attachment = GL_DEPTH_ATTACHMENT  ; break;
 		case TexType::Stencil : attachment = GL_STENCIL_ATTACHMENT; break;
@@ -54,10 +54,23 @@ void OGLFrameBuffer::AddTexture(OGLTexture* texture) {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture->GetObjectID(), 0);
 }
 
+void OGLFrameBuffer::AddTexture(OGLTexture* texture, GLsizei attachment) {
+	if (textures.size() > attachment) {
+		textures[attachment] = texture;
+	} else {
+		textures.emplace_back(texture);
+	}
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachment, GL_TEXTURE_2D, texture->GetObjectID(), 0);
+}
+
 void OGLFrameBuffer::DrawBuffers() {
-	if (numColourTexs == 0) {
+	DrawBuffers(numColourTexs);
+}
+
+void OGLFrameBuffer::DrawBuffers(GLsizei numBuffers) {
+	if (numBuffers == 0) {
 		glDrawBuffer(GL_NONE);
 	} else {
-		glDrawBuffers(numColourTexs, colourBuffers);
+		glDrawBuffers(numBuffers, colourBuffers);
 	}
 }

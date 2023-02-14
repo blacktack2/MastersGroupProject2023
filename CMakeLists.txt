@@ -64,6 +64,7 @@ set(USE_VULKAN CACHE BOOL false)
 if(USE_VULKAN)
     add_compile_definitions("USEVULKAN") 
 endif() 
+add_compile_definitions(NOMINMAX)
 ################################################################################
 # Sub-projects
 ################################################################################
@@ -71,6 +72,11 @@ add_subdirectory(NCLCoreClasses)
 add_subdirectory(CSC8503CoreClasses)
 add_subdirectory(OpenGLRendering)
 add_subdirectory(CSC8503)
+
+set(OPENAL_LIBRARY "${CMAKE_SOURCE_DIR}/lib/Debug/OpenAL/" CACHE STRING "" FORCE)
+set(OPENAL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include" CACHE STRING "" FORCE)
+find_package(OpenAL REQUIRED)
+
 if(USE_VULKAN)
     add_subdirectory(VulkanRendering)
 endif()

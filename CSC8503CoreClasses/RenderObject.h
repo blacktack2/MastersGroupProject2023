@@ -29,6 +29,11 @@ namespace NCL {
 				return mesh;
 			}
 
+
+			void SetTransform(Transform* transform){
+				this->transform = transform;
+			}
+
 			Transform*		GetTransform() const {
 				return transform;
 			}

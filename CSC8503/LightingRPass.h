@@ -29,8 +29,6 @@ namespace NCL::CSC8503 {
 
 		virtual void Render() override;
 
-		void AddShadowShader(OGLShader* shader);
-
 		inline OGLTexture* GetDiffuseOutTex() const {
 			return lightDiffuseOutTex;
 		}
@@ -38,15 +36,11 @@ namespace NCL::CSC8503 {
 			return lightSpecularOutTex;
 		}
 	private:
-		void DrawShadows(const Light& light, const Matrix4& projView);
-		void DrawLight(const Light& light, const Matrix4& projView);
+		void DrawLight(const Light& light);
 
 		GameWorld& gameWorld;
 
-		OGLFrameBuffer* shadowFrameBuffer;
-		OGLTexture* shadowTex;
-
-		OGLFrameBuffer* lightFrameBuffer;
+		OGLFrameBuffer* frameBuffer;
 		OGLTexture* lightDiffuseOutTex;
 		OGLTexture* lightSpecularOutTex;
 
@@ -56,8 +50,7 @@ namespace NCL::CSC8503 {
 		OGLMesh* sphere;
 		OGLMesh* quad;
 
-		OGLShader* defaultShadowShader;
-		OGLShader* lightShader;
+		OGLShader* shader;
 
 		GLint cameraPosUniform;
 		GLint pixelSizeUniform;
@@ -69,11 +62,8 @@ namespace NCL::CSC8503 {
 		GLint lightDirectionUniform;
 		GLint lightAngleUniform;
 
-		GLint shadowMatrixUniform;
 		GLint modelMatrixUniform;
 		GLint viewMatrixUniform;
 		GLint projMatrixUniform;
-
-		std::vector<OGLShader*> shadowShaders{};
 	};
 }

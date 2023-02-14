@@ -13,31 +13,52 @@
 #include "RenderObject.h"
 
 #include "InputKeyMap.h"
-
+#include "SoundSource.h"
+#include "Sound.h"
+#include "SoundSystem.h"
 #include <iostream>
 
 using namespace NCL;
 using namespace CSC8503;
 
-PlayerObject::PlayerObject(int id, int& scoreCounter) : GameObject(),
-id(id), scoreCounter(scoreCounter){
+PlayerObject::PlayerObject(int id) : GameObject(), id(id), keyMap(paintHell::InputKeyMap::instance()) {
 	OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
 	};
-
+	SetupAudio();
+	
 }
 
 PlayerObject::~PlayerObject() {
-
+	alDeleteSources(1, &(*playerSource->GetSource()).source);
+	alDeleteSources(1, &(*attackSource->GetSource()).source);
+	delete playerSource;
+	delete attackSource;
+		
+		
 }
 
 void PlayerObject::Update(float dt) {
+	if (this->GetTransform().GetGlobalPosition().y < 1.0f)		// please fix the physics system
+	{
+		GetTransform().SetPosition({ GetTransform().GetGlobalPosition().x, 1.0f, GetTransform().GetGlobalPosition().z });
+	}
+
+	lastInstancedObjects.clear();
 	jumpTimer -= dt;
 	projectileFireRateTimer -= dt;
-	RotateToCamera();
 	CheckGround();
-	Move();
-	MoveCamera();
+	if (!isNetwork) {
+		RotateToCamera();
+		Vector3 dir = Vector3(0, 0, 0);
+		lastKey = keyMap.GetButtonState();
+		keyMap.Update();
+		GetInput(dir, keyMap.GetButtonState());
+		Move(dir);
+		MoveCamera();
+	}
+	
+	
 }
 
 void PlayerObject::MoveTo(Vector3 position) {
@@ -50,10 +71,9 @@ void PlayerObject::MoveTo(Vector3 position) {
 		
 }
 
-void PlayerObject::Move() {
-	Vector3 dir = Vector3(0,0,0);
-	GetInput(dir);
+void PlayerObject::Move(Vector3 dir) {
 	this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
+	
 	if (lastDir != Vector3(0, 0, 0)) {
 		//Vector3 stopDir = dir - lastDir;
 		if (paintHell::InputKeyMap::instance().GetButtonState() != lastKey) {
@@ -61,7 +81,6 @@ void PlayerObject::Move() {
 		}
 		
 	}
-
 	lastDir = dir;
 }
 
@@ -71,10 +90,10 @@ void PlayerObject::MoveCamera() {
 	}
 }
 
-void PlayerObject::GetInput(Vector3& dir) {
+void PlayerObject::GetInput(Vector3& dir, unsigned int keyPress) {
+	GameObject* proj;
 	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
-	lastKey = keyMap.GetButtonState();
-	keyMap.Update();
+	
 	Vector3 fwdAxis = this->GetTransform().GetGlobalOrientation() * Vector3(0, 0, -1);
 
 	Vector3 leftAxis = this->GetTransform().GetGlobalOrientation() * Vector3(-1, 0, 0);
@@ -83,32 +102,38 @@ void PlayerObject::GetInput(Vector3& dir) {
 
 	isFreeLook = false;
 
-	if (keyMap.GetButton(InputType::Foward)) 
+	if (keyMap.CheckButtonPressed(keyPress, InputType::Foward))
 	{
 		dir += fwdAxis;
+		playerSource->Play(Sound::AddSound("footstep06.wav"));
 	}
-	if (keyMap.GetButton (InputType::Backward) )
+	if (keyMap.CheckButtonPressed(keyPress, InputType::Backward) )
 	{
 		dir -= fwdAxis;
+		playerSource->Play(Sound::AddSound("footstep06.wav"));
 	}
-	if (keyMap.GetButton(InputType::Left)) 
+	if (keyMap.CheckButtonPressed(keyPress, InputType::Left))
 	{
 		dir += leftAxis;
+		playerSource->Play(Sound::AddSound("footstep06.wav"));
 	}
-	if (keyMap.GetButton(InputType::Right)) 
+	if (keyMap.CheckButtonPressed(keyPress, InputType::Right))
 	{
 		dir -= leftAxis;
+		playerSource->Play(Sound::AddSound("footstep06.wav"));
 	}
-	if (keyMap.GetButton(InputType::Jump) && onGround && jumpTimer <= 0.0f ) 
+	if (keyMap.CheckButtonPressed(keyPress,InputType::Jump) && onGround && jumpTimer <= 0.0f ) 
 	{
 		jumpTimer = jumpCooldown;
 		this->GetPhysicsObject()->ApplyLinearImpulse(upAxis * jumpSpeed);
+		//playerSource->Play(Sound::AddSound("swing3.wav"));
 	}
-	if (keyMap.GetButton(InputType::Action1)) 
+	if (keyMap.CheckButtonPressed(keyPress,InputType::Action1)) 
 	{
 		Shoot();
+		attackSource->Play(Sound::AddSound("magic1.wav"));
 	}
-	if (keyMap.GetButton(InputType::FreeLook))
+	if (keyMap.CheckButtonPressed(keyPress,InputType::FreeLook))
 	{
 		isFreeLook = true;
 	}
@@ -148,7 +173,7 @@ void PlayerObject::RotateToCamera() {
 void PlayerObject::AddPoints(int points) {
 	if (lastGoosed > gooseDelay) {
 		lastGoosed = 0.0f;
-		scoreCounter += points;
+		//scoreCounter += points;
 	}
 }
 
@@ -168,15 +193,40 @@ void PlayerObject::CollisionWith(GameObject* other) {
 
 
 void PlayerObject::Shoot() {
-	if (projectileFireRateTimer>0)
+	if (projectileFireRateTimer > 0)
 		return;
 	projectileFireRateTimer = projectileFireRate;
 	Bullet* ink = new Bullet(*(Bullet*)AssetLibrary::GetPrefab("bullet"));
 	ink->SetLifespan(projectileLifespan);
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
+	ink->GetPhysicsObject()->SetInverseMass(2.0f);
 	ink->GetPhysicsObject()->ApplyLinearImpulse(transform.GetGlobalOrientation() * Vector3(0, 0, -1) * projectileForce);
 	gameWorld.AddGameObject(ink);
+
 	ink->OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
 	};
+	lastInstancedObjects.push_back(ink);
+}
+
+void NCL::CSC8503::PlayerObject::SetupAudio()
+{
+	playerSource = new SoundSource();
+	playerSource->SetPriority(SoundPriority::SOUNDPRIORITY_HIGH);
+	playerSource->SetGain(0.0f);
+	playerSource->SetSoundBuffer(Sound::AddSound("footstep06.wav"));
+	playerSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+	playerSource->SetGain(1.0f);
+	playerSource->SetPitch(1.0f);
+
+	attackSource = new SoundSource();
+	attackSource->SetPriority(SoundPriority::SOUNDPRIORITY_HIGH);
+	attackSource->SetGain(0.0f);
+	attackSource->SetSoundBuffer(Sound::AddSound("magic1.wav"));
+	attackSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+	attackSource->SetGain(1.0f);
+	attackSource->SetPitch(1.0f);
+
+	SoundSystem::GetSoundSystem()->SetListener(this);
+
 }

@@ -16,19 +16,18 @@ constexpr GLsizei SHADOWSIZE = 4096;
 
 namespace NCL::Rendering {
 	enum class TexType {
-		Colour4,
-		Colour8,
-		Colour32,
+		Colour,
 		Depth,
 		Stencil,
 		Shadow,
 	};
 	class OGLTexture : public TextureBase {
 	public:
-		OGLTexture(GLsizei width, GLsizei height, TexType texType = TexType::Colour32);
+		OGLTexture(GLsizei width, GLsizei height, TexType texType);
+		OGLTexture(GLsizei width, GLsizei height, GLint internalFormat = GL_RGBA8, GLenum type = GL_RGBA, GLenum format = GL_UNSIGNED_BYTE, void* data = nullptr);
 		~OGLTexture();
 
-		virtual void Resize(GLsizei width, GLsizei height) override;
+		virtual void Resize(GLsizei width, GLsizei height, void* data = nullptr) override;
 		virtual void Bind() override;
 		virtual void Bind(GLint slot) override;
 		virtual void Bind(GLint slot, GLint uniform) override;
@@ -36,6 +35,8 @@ namespace NCL::Rendering {
 
 		void SetEdgeClamp();
 		void SetEdgeRepeat();
+
+		void SetFilters(GLfloat minParam, GLfloat magParam);
 
 		inline GLuint GetObjectID() const {
 			return texID;
@@ -52,9 +53,7 @@ namespace NCL::Rendering {
 		GLuint texID;
 		TexType texType;
 	private:
-		void InitColour4();
-		void InitColour8();
-		void InitColour32();
+		void InitColour(GLint internalFormat, GLenum type, GLenum format);
 		void InitDepth();
 		void InitStencil();
 		void InitShadow();

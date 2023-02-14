@@ -14,6 +14,14 @@
 #include "PaintRenderObject.h"
 #include "TutorialGame.h"
 
+//Audio Testing
+
+#include "Sound.h"
+#include "SoundSource.h"
+#include "SoundSystem.h"
+#include "TestAudio.h"
+
+
 #include <string>
 
 using namespace NCL;
@@ -21,7 +29,8 @@ using namespace CSC8503;
 
 TutorialGame::TutorialGame() {
 	world = &GameWorld::instance();
-	sunLight = &world->AddLight(Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
+	sunLight = world->AddLight(new Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
+	world->AddLight(new Light({ 0.0f, 5.0f, -10.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, 10.0f));
 #ifdef USEVULKAN
 	renderer = new GameTechVulkanRenderer(*world);
 #else 
@@ -33,7 +42,8 @@ TutorialGame::TutorialGame() {
 	forceMagnitude	= 10.0f;
 	inSelectionMode = false;
 	debugViewPoint = &paintHell::debug::DebugViewPoint::Instance();
-
+	
+	SoundSystem::Initialize();
 	InitialiseAssets();
 }
 
@@ -54,6 +64,8 @@ TutorialGame::~TutorialGame() {
 	delete[] mazes;
 
 	delete bulletPrefab;
+
+	SoundSystem::Destroy();
 }
 
 void TutorialGame::InitWorld(InitMode mode) {
@@ -64,7 +76,11 @@ void TutorialGame::InitWorld(InitMode mode) {
 	world->ClearAndErase();
 	physics->Clear();
 
+	gameGrid = new GameGrid{ {-200,0,-200},200,200,200 * 2,200 * 2 };	// MUST initialize gameGrid BEFORE boss/player, otherwise boss/player will be referring to nullptr
 	player = AddPlayerToWorld(Vector3(0, 0, 0));
+	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 5,5,5 }, 1);
+	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
+
 	switch (mode) {
 		case InitMode::MAZE             : InitMazeWorld(20, 20, 20.0f)                            ; break;
 		case InitMode::MIXED_GRID       : InitMixedGridWorld(1, 1, 3.5f, 3.5f)                  ; break;
@@ -74,9 +90,11 @@ void TutorialGame::InitWorld(InitMode mode) {
 		case InitMode::BRIDGE_TEST      : InitBridgeConstraintTestWorld(10, 20, 30, false)        ; break;
 		case InitMode::BRIDGE_TEST_ANG  : InitBridgeConstraintTestWorld(10, 20, 30, true)         ; break;
 		case InitMode::PERFORMANCE_TEST : InitMixedGridWorld(30, 30, 10.0f, 10.0f)                ; break;
+		case InitMode::AUDIO_TEST : InitGameExamples()                ; break;
+		default: break;
 	}
 
-	InitGameExamples();
+	//InitGameExamples();
 	InitDefaultFloor();
 
 	world->UpdateStaticTree();
@@ -92,7 +110,7 @@ void TutorialGame::UpdateGame(float dt) {
 
 	UpdateKeys();
 	static bool moveSun = false;
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM0)) {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM0)) {
 		moveSun = !moveSun;
 	}
 	if (moveSun) {
@@ -101,15 +119,58 @@ void TutorialGame::UpdateGame(float dt) {
 		renderer->GetSkyboxPass().SetSunDir(sunLight->direction);
 	}
 
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM1)) {
-		renderer->GetGBufferPass().SetRenderMode(RenderMode::Default);
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM1)) {
+		renderer->GetCombinePass().SetRenderMode(RenderMode::Default);
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM2)) {
-		renderer->GetGBufferPass().SetRenderMode(RenderMode::Normals);
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM2)) {
+		renderer->GetCombinePass().SetRenderMode(RenderMode::Normals);
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM3)) {
-		renderer->GetGBufferPass().SetRenderMode(RenderMode::Depth);
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM3)) {
+		renderer->GetCombinePass().SetRenderMode(RenderMode::Depth);
 	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM4)) {
+		renderer->GetCombinePass().SetRenderMode(RenderMode::Diffuse);
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM5)) {
+		renderer->GetCombinePass().SetRenderMode(RenderMode::DiffuseLight);
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM6)) {
+		renderer->GetCombinePass().SetRenderMode(RenderMode::SpecularLight);
+	}
+
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN)) {
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::G)) {
+			renderer->SetGamma(renderer->GetGamma() - 0.1f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::H)) {
+			renderer->SetHDRExposure(renderer->GetHDRExposure() - 0.02f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::C)) {
+			renderer->SetBloomAmount(renderer->GetBloomAmount() - 1);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::B)) {
+			renderer->SetBloomBias(renderer->GetBloomBias() - 0.02f);
+		}
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP)) {
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::G)) {
+			renderer->SetGamma(renderer->GetGamma() + 0.1f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::H)) {
+			renderer->SetHDRExposure(renderer->GetHDRExposure() + 0.02f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::C)) {
+			renderer->SetBloomAmount(renderer->GetBloomAmount() + 1);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::B)) {
+			renderer->SetBloomBias(renderer->GetBloomBias() + 0.02f);
+		}
+	}
+	Debug::Print(std::string("Gamma: ").append(std::to_string(renderer->GetGamma())), Vector2(0, 30.0f));
+	Debug::Print(std::string("HDR:   ").append(std::to_string(renderer->GetHDRExposure())), Vector2(0, 35.0f));
+	Debug::Print(std::string("Bloom -> Amount: ").append(std::to_string(renderer->GetBloomAmount())), Vector2(0, 40.0f));
+	Debug::Print(std::string("      -> Bias:   ").append(std::to_string(renderer->GetBloomBias())), Vector2(0, 45.0f));
+	SoundSystem::GetSoundSystem()->Update(dt);
 
 	if (gameState == GameState::OnGoing) {
 		Vector2 screenSize = Window::GetWindow()->GetScreenSize();
@@ -185,6 +246,27 @@ void TutorialGame::UpdateGame(float dt) {
 	
 	Debug::UpdateRenderables(dt);
 	debugViewPoint->FinishTime("Render");
+
+	/////////
+	gameGrid->UpdateGrid(dt);
+	UpdateHealingKit();
+	gameGrid->UpdateTrace(player);
+	//std::vector<GameNode> v = gameGrid->GetTraceNodes();
+	//std::vector<Vector3> u;
+	//for (const auto& i : v) {
+	//	u.push_back(i.worldPosition);
+	//}
+	//floor->GetRenderObject()->SetTrace(u);
+	testingBossBehaviorTree->update();
+	RenderBombsReleasedByBoss();
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::PLUS))
+	{
+		testingBoss->SetHealth(100);
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::MINUS))
+	{
+		testingBoss->SetHealth(10);
+	}
 }
 
 void TutorialGame::InitialiseAssets() {
@@ -203,7 +285,17 @@ void TutorialGame::InitialiseAssets() {
 	AssetLibrary::AddMesh("capsule", capsuleMesh);
 
 	basicTex = renderer->LoadTexture("checkerboard.png");
+	//inkableTex = renderer->LoadTexture("brick.tga");						/////////
+	healingKitTex = renderer->LoadTexture("HealingKit.png");				/////////
+	//noiseTex = renderer->LoadTexture("Perlin.png");							/////////
+	//AssetLibrary::AddTexture("inkable", inkableTex);						/////////
+	AssetLibrary::AddTexture("noise", noiseTex);							/////////
 	AssetLibrary::AddTexture("basic", basicTex);
+
+	//basicShader = renderer->LoadShader("scene.vert", "scene.frag");			/////////
+	//inkableShader = renderer->LoadShader("inkable.vert", "inkable.frag");	/////////
+	//AssetLibrary::AddShader("inkable", inkableShader);						/////////
+	//AssetLibrary::AddShader("basic", basicShader);							/////////
 
 	InitialisePrefabs();
 }
@@ -222,7 +314,7 @@ void TutorialGame::InitialisePrefabs() {
 	bulletPrefab->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.8f, 1.0f));
 
 	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
-	bulletPrefab->GetPhysicsObject()->SetGravWeight(0.1f);
+	bulletPrefab->GetPhysicsObject()->SetGravWeight(1.0f);
 	bulletPrefab->GetPhysicsObject()->InitCapsuleInertia();
 
 	AssetLibrary::AddPrefab("bullet", bulletPrefab);
@@ -269,7 +361,7 @@ void TutorialGame::UpdateKeys() {
 			InitWorld(InitMode::PERFORMANCE_TEST);
 		}
 
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F10)) {
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F11)) {
 			world->ShuffleConstraints(false);
 		}
 
@@ -279,7 +371,11 @@ void TutorialGame::UpdateKeys() {
 			DebugObjectMovement();
 		}
 		break;
+
 		case GameState::Paused:
+			Window::GetWindow()->ShowOSPointer(true);
+			Window::GetWindow()->LockMouseToWindow(false);
+
 			Debug::Print("Press [Escape] to resume", Vector2(5, 80), Vector4(1, 1, 1, 1));
 			Debug::Print("Press [q] to quit", Vector2(5, 90), Vector4(1, 1, 1, 1));
 
@@ -288,6 +384,8 @@ void TutorialGame::UpdateKeys() {
 			}
 			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
 				gameState = GameState::OnGoing;
+				Window::GetWindow()->ShowOSPointer(false);
+				Window::GetWindow()->LockMouseToWindow(true);
 			}
 			break;
 		case GameState::Win:
@@ -311,7 +409,48 @@ void TutorialGame::UpdateKeys() {
 	}
 }
 
-void TutorialGame::InitGameExamples() {
+void TutorialGame::InitGameExamples()/*for audio testing*/ {
+	
+	InitDefaultFloor();
+	//GameObject* obj1=AddCubeToWorld({ 55,0,0 }, { 2,2,2 });
+	//obj1->GetRenderObject()->SetColour(Vector4(1.0f, 1.0f, 0.5f, 1.0f));
+
+	//SoundSource* source1 = new SoundSource();
+	//source1->SetLooping(true);
+	//source1->SetTarget(obj1);
+	//
+	//ALuint snd1 = Sound::AddSound("coin2.wav");
+	//ALuint snd2 = Sound::AddSound("random2.wav");
+	//ALuint snd3 = Sound::AddSound("random1.wav");
+	//source1->SetSoundBuffer(snd1);
+	//if(SoundSystem::GetSoundSystem()->GetSource())
+	//	source1->SetSource(SoundSystem::GetSoundSystem()->GetSource());
+
+	//GameObject* obj2 = AddCubeToWorld({ 0,0,55 }, { 2,2,2 });
+	//obj2->GetRenderObject()->SetColour(Vector4(1.0f, 1.0f, 0.5f, 1.0f));
+
+	//SoundSource* source2 = new SoundSource();
+	////source2->SetLooping(true);
+	//source2->SetTarget(obj2);
+	//source2->SetSoundBuffer(snd2);
+	//if (SoundSystem::GetSoundSystem()->GetSource())
+	//	source2->SetSource(SoundSystem::GetSoundSystem()->GetSource());
+
+	//GameObject* obj3 = AddCubeToWorld({ 55,0,55 }, { 2,2,2 });
+	//obj3->GetRenderObject()->SetColour(Vector4(1.0f, 1.0f, 0.5f, 1.0f));
+
+	//SoundSource* source3 = new SoundSource();
+	//source3->SetLooping(true);
+	//source3->SetTarget(obj3);
+	//source3->SetSoundBuffer(snd3);
+	//if (SoundSystem::GetSoundSystem()->GetSource())
+	//	source3->SetSource(SoundSystem::GetSoundSystem()->GetSource());
+
+	//
+	//SoundSystem::GetSoundSystem()->AddSoundSource(source1);
+	//SoundSystem::GetSoundSystem()->AddSoundSource(source2);
+	//SoundSystem::GetSoundSystem()->AddSoundSource(source3);
+	SoundSystem::GetSoundSystem()->SetMasterVolume(1.0f);
 }
 
 void TutorialGame::InitMazeWorld(int numRows, int numCols, float size) {
@@ -411,20 +550,22 @@ void TutorialGame::InitBridgeConstraintTestWorld(int numLinks, float cubeDistanc
 }
 
 void TutorialGame::InitDefaultFloor() {
-	AddFloorToWorld(Vector3(0, -2, 0));
+	floor = AddFloorToWorld(Vector3(0, -2, 0));
 }
 
 GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 	GameObject* floor = new GameObject("Floor");
 
-	Vector3 floorSize = Vector3(500, 2, 500);
+	Vector3 floorSize = Vector3(200, 2, 200);
 	AABBVolume* volume = new AABBVolume(floorSize, CollisionLayer::PaintAble);
 	floor->SetBoundingVolume((CollisionVolume*)volume);
 	floor->GetTransform()
 		.SetScale(floorSize * 2)
 		.SetPosition(position);
+
 	PaintRenderObject* render = new PaintRenderObject(&floor->GetTransform(), cubeMesh, basicTex, nullptr);
 	floor->SetRenderObject(render);
+
 	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));
 
 	floor->GetPhysicsObject()->SetStatic();
@@ -534,7 +675,7 @@ StateGameObject* TutorialGame::AddStateObjectToWorld(const Vector3& position) {
 PlayerObject* TutorialGame::AddPlayerToWorld(const Vector3& position, bool cameraFollow) {
 	static int id = 0;
 
-	PlayerObject* character = new PlayerObject(id++, score);
+	PlayerObject* character = new PlayerObject(id++);
 	SphereVolume* volume = new SphereVolume(1.0f, CollisionLayer::Player);
 
 	character->SetBoundingVolume((CollisionVolume*)volume);
@@ -582,6 +723,75 @@ EnemyObject* TutorialGame::AddEnemyToWorld(const Vector3& position, NavigationMa
 	world->AddGameObject(enemy);
 
 	return enemy;
+}
+
+Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
+	Boss* boss = new Boss(*gameGrid);
+
+	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+
+	boss->GetTransform()
+		.SetPosition(position)
+		.SetScale(dimensions * 2);
+
+	//boss->SetRenderObject(new RenderObject(&boss->GetTransform(), cubeMesh, nullptr, inkableShader, noiseTex, dimensions));
+	boss->SetRenderObject(new RenderObject(&boss->GetTransform(), cubeMesh, nullptr, nullptr));
+
+	boss->GetRenderObject()->SetColour({ 1,1,0,1 });
+	boss->SetPhysicsObject(new PhysicsObject(&boss->GetTransform(), boss->GetBoundingVolume()));
+
+	boss->GetPhysicsObject()->SetInverseMass(inverseMass);
+	boss->GetPhysicsObject()->InitCubeInertia();
+
+	world->AddGameObject(boss);
+
+	return boss;
+}
+
+void TutorialGame::RenderBombsReleasedByBoss()
+{
+	std::vector<Bomb*> bossBombs = testingBoss->GetBombsReleasedByBoss();
+	for (auto& bomb : bossBombs)
+	{
+		bomb->SetRenderObject(new RenderObject(&bomb->GetTransform(), sphereMesh, nullptr, nullptr));
+		bomb->GetRenderObject()->SetColour({ 0,0,1,1 });
+		world->AddGameObject(bomb);
+	}
+	testingBoss->clearBombList();
+	if (testingBoss->isUsingInkSea())
+	{
+		//floor->GetRenderObject()->enableInkSea(testingBoss->GetTransform().GetGlobalPosition());
+	}
+	else
+	{
+		//floor->GetRenderObject()->disableInkSea();
+	}
+}
+
+HealingKit* TutorialGame::UpdateHealingKit()
+{
+	Vector3 dimension{ 1,1,1 };
+
+	gameGrid->UpdateHealingKits(player, dimension);
+	gameGrid->UpdateHealingKits(testingBoss, dimension);
+
+	float period = 1.0f;
+
+	if (gameGrid->GetHealingKitTimer() > period)
+	{
+		HealingKit* healingKit = new HealingKit();
+		Vector3 position = gameGrid->GetRandomLocationToAddHealingKit(healingKit);	// this function resets the timer, and add the new healingKit to the list used to store all healing kits in gameGrid
+		healingKit->GetTransform()
+			.SetPosition(position)
+			.SetScale(dimension * 2);
+
+		healingKit->SetRenderObject(new RenderObject(&healingKit->GetTransform(), cubeMesh, basicTex, nullptr));
+
+		world->AddGameObject(healingKit);
+
+		return healingKit;
+	}
+	return nullptr;
 }
 
 NPCObject* TutorialGame::AddNPCToWorld(const Vector3& position) {

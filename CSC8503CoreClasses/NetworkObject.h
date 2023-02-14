@@ -23,6 +23,21 @@ namespace NCL::CSC8503 {
 			size = sizeof(HandshakeAckPacket) - sizeof(GamePacket);
 		}
 	};
+
+	struct ItemInitPacket : public GamePacket {
+		int		objectID = -1;
+		char	itemType;
+		Vector3		position;
+		Vector3		scale;
+		Quaternion	orientation;
+		Vector3		velocity;
+
+		ItemInitPacket() {
+			type = Item_Init_Message;
+			size = sizeof(ItemInitPacket) - sizeof(GamePacket);
+		}
+	};
+
 	struct FullPacket : public GamePacket {
 		int		objectID = -1;
 		NetworkState fullState;
@@ -38,7 +53,7 @@ namespace NCL::CSC8503 {
 		int			fullID		= -1;
 		int			objectID	= -1;
 		int			pos[3];
-		short int	orientation[4];
+		int			orientation[4];
 
 		DeltaPacket() {
 			type = Delta_State;
@@ -49,7 +64,7 @@ namespace NCL::CSC8503 {
 	struct ClientPacket : public GamePacket {
 		int		lastID;
 		unsigned int buttonstates;
-		unsigned short int yaw;
+		int yaw;
 
 		ClientPacket() {
 			type = Received_State;
@@ -59,7 +74,7 @@ namespace NCL::CSC8503 {
 
 	class NetworkObject		{
 	public:
-		NetworkObject(GameObject& o, int id);
+		NetworkObject(GameObject& o, int id = -1);
 		virtual ~NetworkObject();
 
 		//Called by clients
@@ -73,7 +88,21 @@ namespace NCL::CSC8503 {
 			return networkID;
 		}
 
+		void UpdateDelta(float dt);
+
+		int smoothFrameCount = 0;
+		int smoothFrameTotal = 10;
+
+		Transform& GetRenderTransform() {
+			return renderTransform;
+		}
+
+		void SnapRenderToSelf() {
+			renderTransform = object.GetTransform();
+		}
+
 	protected:
+		Transform renderTransform;
 
 		NetworkState& GetLatestNetworkState();
 
@@ -89,11 +118,21 @@ namespace NCL::CSC8503 {
 
 		NetworkState lastFullState;
 
+		NetworkState lastDeltaState;
+
 		std::vector<NetworkState> stateHistory;
 
 		int deltaErrors;
 		int fullErrors;
 
 		int networkID;
+		
+		float deltaOrientationDivisor = 10000000;
+		float deltaOrientationDivisorInverse = 1 / deltaOrientationDivisor;
+
+		float deltaPosDivisor = 1000;
+		float deltaPosDivisorInverse = 1 / deltaPosDivisor;
+
+		float smoothFrameInverse = 1.0f / smoothFrameTotal;
 	};
 }

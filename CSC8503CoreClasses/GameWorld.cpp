@@ -23,6 +23,7 @@ GameWorld::~GameWorld()	{
 void GameWorld::Clear() {
 	dynamicQuadTree.Clear();
 	staticQuadTree.Clear();
+	networkObjects.clear();
 	gameObjects.clear();
 	constraints.clear();
 	worldIDCounter		= 0;
@@ -43,6 +44,9 @@ void GameWorld::AddGameObject(GameObject* o) {
 	gameObjects.emplace_back(o);
 	o->SetWorldID(worldIDCounter++);
 	worldStateCounter++;
+	if (o->GetNetworkObject() != nullptr) {
+		AddNetworkObject(o->GetNetworkObject());
+	}
 }
 
 void GameWorld::RemoveGameObject(GameObject* o, bool andDelete) {
@@ -53,7 +57,19 @@ void GameWorld::RemoveGameObject(GameObject* o, bool andDelete) {
 	worldStateCounter++;
 }
 
-void GameWorld::GetObjectIterators(GameObjectIterator& first, GameObjectIterator& last) const {
+void GameWorld::AddNetworkObject(NetworkObject* o) {
+	networkObjects.emplace_back(o);
+}
+
+void GameWorld::RemoveNetworkObject(NetworkObject* o) {
+	networkObjects.erase(std::remove(networkObjects.begin(), networkObjects.end(), o), networkObjects.end());
+}
+
+
+void GameWorld::GetObjectIterators(
+	GameObjectIterator& first,
+	GameObjectIterator& last) const {
+
 	first	= gameObjects.begin();
 	last	= gameObjects.end();
 }
@@ -81,21 +97,21 @@ void GameWorld::OperateOnConstraints(ConstraintFunc f) {
 }
 
 void GameWorld::OperateOnLights(LightFunc f) {
-	for (const Light& l : lights) {
-		f(l);
+	for (const Light* l : lights) {
+		f(*l);
 	}
 }
 
 void GameWorld::PreUpdateWorld() {
-	gameObjects.erase(std::remove_if(gameObjects.begin(), gameObjects.end(),
-		[](GameObject* o) {
-			if (o->IsMarkedDelete()) {
-				delete o;
-				return true;
+	std::vector<GameObject*> delObjs;
+	std::copy_if(gameObjects.begin(), gameObjects.end(), std::back_inserter(delObjs), [&](GameObject* obj) {
+			if (obj->IsMarkedDelete()) {
+				return obj;
 			}
-			return false;
-		}
-	), gameObjects.end());
+		});
+	for (auto delObj : delObjs) {
+		RemoveGameObject(delObj, true);
+	}
 	UpdateDynamicTree();
 }
 
@@ -260,10 +276,11 @@ void GameWorld::RemoveConstraint(std::vector<Constraint*>::const_iterator c, boo
 	}
 }
 
-Light& GameWorld::AddLight(const Light& l) {
-	return lights.emplace_back(l);
+Light* GameWorld::AddLight(Light* l) {
+	lights.push_back(l);
+	return l;
 }
 
-void GameWorld::RemoveLight(std::vector<Light>::const_iterator l) {
+void GameWorld::RemoveLight(LightIterator l) {
 	lights.erase(l);
 }

@@ -198,5 +198,9 @@ namespace NCL::Maths {
 			o << "Vector3(" << v.x << "," << v.y << "," << v.z << ")\n";
 			return o;
 		}
+
+		static inline constexpr Vector3 Lerp(const Vector3& a, const Vector3& b, const float t) {
+			return Vector3(std::lerp(a.x, b.x, t), std::lerp(a.y, b.y, t), std::lerp(a.z, b.z, t));
+		}
 	};
 }

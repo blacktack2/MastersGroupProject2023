@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
-
+#include "SoundSource.h"
+#include "InputKeyMap.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -8,10 +9,10 @@ namespace NCL {
 
 		class PlayerObject : public GameObject {
 		public:
-			PlayerObject(int id, int& scoreCounter);
+			PlayerObject(int id);
 			~PlayerObject();
 
-			virtual void Update(float dt) override;
+			void Update(float dt);
 
 			void AddPoints(int points);
 
@@ -19,15 +20,16 @@ namespace NCL {
 
 			void AttachedCamera() {
 				hasCamera = true;
+				//camera = cam;
 			};
 
+			const std::vector<GameObject*> GetLastInstancedObjects() {
+				return lastInstancedObjects;
+			}
 		protected:
-			int id;
-
-		private:
 			void MoveTo(Vector3 position);
-			void Move();
-			void GetInput(Vector3& dir);
+			void Move(Vector3 dir);
+			void GetInput(Vector3& dir, unsigned int keyPress = InputType::Empty);
 
 			void RotateYaw(float yaw);
 			void RotateToCamera();
@@ -37,23 +39,35 @@ namespace NCL {
 			void CheckGround();
 			void Shoot();
 
+			int id;
+
+			//network
+			bool isNetwork = false;
+
+			//keymap
+			paintHell::InputKeyMap& keyMap;
+			unsigned int lastKey;
+
+		private:
+
+			void SetupAudio();
+
 			//jump related 
 			bool onGround = false;
 			float jumpTimer = 0.0f;
-			const float jumpCooldown = 0.1f;
+			const float jumpCooldown = 0.005f;
 			float jumpSpeed = 10.0f;
 
 			//movement related
 			float moveSpeed = 0.4f;
 			Vector3 lastDir = Vector3(0,0,0);
-			unsigned int lastKey;
-
+			
 			//camera related
+			//Camera& camera;
 			bool hasCamera = false;
 			bool isFreeLook = false;
 			float camTurnSpeed = 0.5f;
 			Vector3 cameraOffset = Vector3(0.5f, 5.0f, 2.0f);
-
 
 			//shooting related
 			float projectileForce = 10;
@@ -62,13 +76,18 @@ namespace NCL {
 			float projectileFireRate = 0.1f;
 			float projectileFireRateTimer = 0;
 
-			// legacy variables
-			int& scoreCounter;
+			//instantiated objs
+			std::vector<GameObject*> lastInstancedObjects;
 
+			// legacy variables
 			std::set<int> collidedWith;
 
 			float lastGoosed = 0.0f;
 			const float gooseDelay = 2.0f;
+
+			//sound
+			SoundSource* playerSource;
+			SoundSource* attackSource;
 		};
 	}
 }

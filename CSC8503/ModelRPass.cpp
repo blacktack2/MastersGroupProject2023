@@ -17,8 +17,8 @@ using namespace NCL::CSC8503;
 
 ModelRPass::ModelRPass(OGLRenderer& renderer, GameWorld& gameWorld) :
 OGLRenderPass(renderer), gameWorld(gameWorld) {
-	diffuseOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), TexType::Colour8);
-	normalOutTex  = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), TexType::Colour8);
+	diffuseOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight());
+	normalOutTex  = new OGLTexture(renderer.GetWidth(), renderer.GetHeight());
 	depthOutTex   = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), TexType::Depth);
 	AddScreenTexture(diffuseOutTex);
 	AddScreenTexture(normalOutTex);
@@ -26,6 +26,9 @@ OGLRenderPass(renderer), gameWorld(gameWorld) {
 
 	defaultDiffuse = (OGLTexture*)OGLTexture::RGBATextureFromFilename("GoatBody.png");
 	defaultBump = (OGLTexture*)OGLTexture::RGBATextureFromFilename("DefaultBump.png");
+	defaultBump->Bind();
+	defaultBump->SetFilters(GL_LINEAR, GL_LINEAR);
+	defaultBump->Unbind();
 
 	frameBuffer = new OGLFrameBuffer();
 	frameBuffer->Bind();
@@ -57,10 +60,12 @@ void ModelRPass::Render() {
 		shader->Bind();
 
 		Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-		Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix();
+		float screenAspect = (float)renderer.GetWidth() / (float)renderer.GetHeight();
+		Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
 		// TODO - Replace with call to the shader class
 		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "viewMatrix"), 1, GL_FALSE, (GLfloat*)&viewMatrix);
 		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "projMatrix"), 1, GL_FALSE, (GLfloat*)&projMatrix);
+		glUniform1f(glGetUniformLocation(shader->GetProgramID(), "gamma"), gamma);
 
 		shader->Unbind();
 	}
@@ -88,6 +93,8 @@ void ModelRPass::Render() {
 			bumpTex = defaultBump;
 		}
 
+		Vector4 colour = renderObject->GetColour();
+
 		shader->Bind();
 
 		diffuseTex->Bind(0);
@@ -95,6 +102,7 @@ void ModelRPass::Render() {
 
 		Matrix4 modelMatrix = renderObject->GetTransform()->GetGlobalMatrix();
 		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "modelMatrix"), 1, GL_FALSE, (GLfloat*)&modelMatrix);
+		glUniform4fv(glGetUniformLocation(shader->GetProgramID(), "modelColour"), 1, (GLfloat*)colour.array);
 
 		//mesh->Draw();
 		int layerCount = mesh->GetSubMeshCount();

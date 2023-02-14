@@ -6,10 +6,8 @@ set(PROJECT_NAME CSC8503)
 set(Header_Files
 	"Bullet.h"
 	"Bonus.h"
-    
 	"EnemyObject.h"
 	"Maze.h"
-    
     "NetworkedGame.h"
     "NetworkPlayer.h"
 	"NPCObject.h"
@@ -17,6 +15,8 @@ set(Header_Files
     "StateGameObject.h"
     "TutorialGame.h"
     "DebugViewPoint.h"
+    "Boss.h"
+    "GameGrid.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -26,7 +26,6 @@ set(Source_Files
 	"EnemyObject.cpp"
     "Main.cpp"
 	"Maze.cpp"
-    
     "NetworkedGame.cpp"
     "NetworkPlayer.cpp"
 	"NPCObject.cpp"
@@ -37,14 +36,22 @@ set(Source_Files
 )
 
 set(Render_Files
-    "SkyboxRPass.h"
-    "SkyboxRPass.cpp"
     "GameTechRenderer.h"
     "GameTechRenderer.cpp"
-    "GBufferRPass.h"
-    "GBufferRPass.cpp"
+    "SkyboxRPass.h"
+    "SkyboxRPass.cpp"
+    "ModelRPass.h"
+    "ModelRPass.cpp"
     "LightingRPass.h"
     "LightingRPass.cpp"
+    "CombineRPass.h"
+    "CombineRPass.cpp"
+    "BloomRPass.h"
+    "BloomRPass.cpp"
+    "HDRRPass.h"
+    "HDRRPass.cpp"
+    "PresentRPass.h"
+    "PresentRPass.cpp"
     "DebugRPass.h"
     "DebugRPass.cpp"
     "PresentRPass.h"
@@ -67,9 +74,31 @@ endif()
 source_group("Source Files" FILES ${Source_Files})
 source_group("Rendering" FILES ${Render_Files})
 
+set(Audio_Files 
+    "dr_wav_impl.cpp"
+    "SoundErrorReport.h"
+    "SoundErrorReport.cpp"
+    "SoundSystem.h"
+    "SoundSystem.cpp"
+    "Sound.h"
+    "Sound.cpp"
+    "SoundObject.h"
+    "SoundObject.cpp"
+    "SoundManager.h"
+    "SoundManager.cpp"
+    "SoundSource.h"
+    "SoundSource.cpp"
+    "SoundDevice.h"
+    "SoundDevice.cpp"
+    "TestAudio.h"
+    "TestAudio.cpp"
+)
+source_group("Audio Files" FILES ${Audio_Files})
+
 set(ALL_FILES
     ${Header_Files}
     ${Source_Files}
+    ${Audio_Files}
     ${Render_Files}
 )
 
@@ -78,6 +107,7 @@ if(USE_VULKAN)
         ${Header_Files}
         ${Source_Files}
         ${SHADER_FILES}
+        ${Audio_Files}
     )
 
 foreach (file ${SHADER_FILES})
@@ -247,3 +277,11 @@ add_custom_target(
 add_dependencies(${PROJECT_NAME} SHADER_FILES)
 
 endif()
+
+################################################################################
+# OpenAL config
+################################################################################
+include_directories("../include/")
+link_directories("../lib/Debug/OpenAL/")
+
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC  ${CMAKE_SOURCE_DIR}/lib/Debug/OpenAL/OpenAL32.lib)

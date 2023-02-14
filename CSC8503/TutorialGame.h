@@ -10,6 +10,9 @@
 #include "StateGameObject.h"
 #include "DebugViewPoint.h"
 
+#include "GameGrid.h"	/////////
+#include "Boss.h"		/////////
+
 namespace NCL {
 	namespace CSC8503 {
 		class Bullet;
@@ -25,7 +28,8 @@ namespace NCL {
 				SPHERE_GRID,
 				BRIDGE_TEST,
 				BRIDGE_TEST_ANG,
-				PERFORMANCE_TEST
+				PERFORMANCE_TEST,
+				AUDIO_TEST//added for audio testing
 			};
 
 			TutorialGame();
@@ -71,6 +75,9 @@ namespace NCL {
 
 			PlayerObject* AddPlayerToWorld(const Vector3& position, bool cameraFollow = true);
 			EnemyObject* AddEnemyToWorld(const Vector3& position, NavigationMap& navMap);
+			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);		/////////
+			void RenderBombsReleasedByBoss();															/////////
+			HealingKit* UpdateHealingKit();																/////////
 			NPCObject* AddNPCToWorld(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
 			GameObject* AddTriggerToWorld(const Vector3& position, float size);
@@ -88,8 +95,9 @@ namespace NCL {
 			PhysicsSystem*		physics;
 			GameWorld*			world;
 
-			Light* sunLight;
+			paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
 
+			Light* sunLight;
 			GameState gameState;
 			bool inSelectionMode;
 
@@ -104,6 +112,11 @@ namespace NCL {
 			MeshGeometry*	sphereMesh  = nullptr;
 
 			TextureBase*	basicTex    = nullptr;
+			TextureBase* healingKitTex = nullptr;		/////////
+			TextureBase* inkableTex = nullptr;		/////////
+			TextureBase* noiseTex = nullptr;		/////////
+			//ShaderBase* inkableShader = nullptr;		/////////
+			//ShaderBase* basicShader = nullptr;
 
 			//Coursework Meshes
 			MeshGeometry*	charMesh = nullptr;
@@ -127,6 +140,11 @@ namespace NCL {
 			int score;
 
 			paintHell::debug::DebugViewPoint* debugViewPoint;
+
+			GameGrid* gameGrid = nullptr;	/////////
+			GameObject* floor = nullptr;	/////////
+			Boss* testingBoss = nullptr;   /////////
+			BossBehaviorTree* testingBossBehaviorTree = nullptr;   /////////
 		};
 	}
 }

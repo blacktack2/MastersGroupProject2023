@@ -7,14 +7,17 @@
  * @date   February 2023
  */
 
- uniform sampler2D sceneTex;
+uniform sampler2D sceneTex;
 
- in Vertex {
+uniform float gamma = 2.2;
+
+in Vertex {
 	vec2 texCoord;
- } IN;
+} IN;
 
- out vec4 fragColour;
+out vec4 fragColour;
 
- void main() {
-	fragColour = texture(sceneTex, IN.texCoord);
- }
+void main() {
+	vec3 scene = texture(sceneTex, IN.texCoord).rgb;
+	fragColour = vec4(pow(scene, vec3(1.0 / gamma)), 1.0);
+}
