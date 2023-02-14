@@ -30,7 +30,7 @@ namespace NCL
                 OnTriggerBeginCallback = [&](GameObject* other)
                 {
                     if (PlayerObject* player = dynamic_cast<PlayerObject*>(other)) {
-                        lifeSpan = -1;
+                        lifeSpan = -1.0f;
                     }
                 };
             }
@@ -132,11 +132,15 @@ namespace NCL
             Bomb* releaseBomb(Vector3 v, Vector3 s)
             {
                 Bomb* bomb = new Bomb(v);
+                SphereVolume* volume = new SphereVolume(s.x);
+                bomb->SetBoundingVolume((CollisionVolume*)volume);
                 Vector3 position = this->GetTransform().GetGlobalPosition();
                 bomb->GetTransform()
                     .SetPosition(position)
                     .SetScale(s);
-
+                bomb->SetPhysicsObject(new PhysicsObject(&bomb->GetTransform(), bomb->GetBoundingVolume(), true));
+                bomb->GetPhysicsObject()->SetInverseMass(0.0f);
+                bomb->GetPhysicsObject()->InitSphereInertia();
                 bombsReleased.push_back(bomb);
 
                 return bomb;

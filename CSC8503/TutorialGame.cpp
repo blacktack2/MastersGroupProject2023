@@ -751,8 +751,12 @@ void TutorialGame::RenderBombsReleasedByBoss()
 	std::vector<Bomb*> bossBombs = testingBoss->GetBombsReleasedByBoss();
 	for (auto& bomb : bossBombs)
 	{
-		bomb->SetRenderObject(new RenderObject(&bomb->GetTransform(), sphereMesh, nullptr, nullptr));
+		if (bomb->GetRenderObject() == nullptr)
+		{
+			bomb->SetRenderObject(new RenderObject(&bomb->GetTransform(), sphereMesh, nullptr, nullptr));
+		}
 		bomb->GetRenderObject()->SetColour({ 0,0,1,1 });
+
 		world->AddGameObject(bomb);
 	}
 	testingBoss->clearBombList();
