@@ -80,18 +80,18 @@ namespace NCL::CSC8503 {
 
 		void SetBloomAmount(size_t amount) {
 			bloomAmount = amount;
-			bloomPass->SetBlurAmount(bloomAmount);
+			bloomPass->SetBloomDepth(bloomAmount);
 		}
 		inline size_t GetBloomAmount() {
 			return bloomAmount;
 		}
 
-		void SetBloomThreshold(float threshold) {
-			bloomThreshold = threshold;
-			bloomPass->SetThreshold(bloomThreshold);
+		void SetBloomBias(float bias) {
+			bloomBias = bias;
+			bloomPass->SetBias(bloomBias);
 		}
-		inline float GetBloomThreshold() {
-			return bloomThreshold;
+		inline float GetBloomBias() {
+			return bloomBias;
 		}
 
 		void SetHDRExposure(float exposure) {
@@ -123,7 +123,7 @@ namespace NCL::CSC8503 {
 
 		float gamma = 2.2f;
 		size_t bloomAmount = 5;
-		float bloomThreshold = 1.0f;
+		float bloomBias = 0.04f;
 		float hdrExposure = 1.0f;
 	};
 }

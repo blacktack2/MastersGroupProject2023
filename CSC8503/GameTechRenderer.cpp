@@ -40,7 +40,7 @@ GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetW
 
 	bloomPass = new BloomRPass(*this, combinePass->GetOutTex());
 	SetBloomAmount(bloomAmount);
-	SetBloomThreshold(bloomThreshold);
+	SetBloomBias(bloomBias);
 	renderPasses.push_back(bloomPass);
 
 	hdrPass = new HDRRPass(*this, bloomPass->GetOutTex());

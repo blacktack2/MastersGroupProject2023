@@ -12,36 +12,20 @@
 #include "OGLShader.h"
 #include "OGLTexture.h"
 
+#include <algorithm>
+
 using namespace NCL::CSC8503;
 
 BloomRPass::BloomRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn) :
 OGLRenderPass(renderer), sceneTexIn(sceneTexIn) {
-	filterTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
-	AddScreenTexture(filterTex);
-	blurTexA = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
-	AddScreenTexture(blurTexA);
-	blurTexB = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
-	AddScreenTexture(blurTexB);
-	colourOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
+	SetBloomDepth(bloomDepth);
+	colourOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGBA16F);
 	AddScreenTexture(colourOutTex);
 
-	filterFrameBuffer = new OGLFrameBuffer();
-	filterFrameBuffer->Bind();
-	filterFrameBuffer->AddTexture(filterTex);
-	filterFrameBuffer->DrawBuffers();
-	filterFrameBuffer->Unbind();
-
-	blurFrameBufferA = new OGLFrameBuffer();
-	blurFrameBufferA->Bind();
-	blurFrameBufferA->AddTexture(blurTexA);
-	blurFrameBufferA->DrawBuffers();
-	blurFrameBufferA->Unbind();
-
-	blurFrameBufferB = new OGLFrameBuffer();
-	blurFrameBufferB->Bind();
-	blurFrameBufferB->AddTexture(blurTexB);
-	blurFrameBufferB->DrawBuffers();
-	blurFrameBufferB->Unbind();
+	bloomFrameBuffer = new OGLFrameBuffer();
+	bloomFrameBuffer->Bind();
+	bloomFrameBuffer->DrawBuffers(1);
+	bloomFrameBuffer->Unbind();
 
 	combineFrameBuffer = new OGLFrameBuffer();
 	combineFrameBuffer->Bind();
@@ -65,29 +49,29 @@ OGLRenderPass(renderer), sceneTexIn(sceneTexIn) {
 	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
 	quad->UploadToGPU();
 
-	filterShader  = new OGLShader("bloomFilter.vert", "bloomFilter.frag");
-	blurShader    = new OGLShader("blur.vert", "blur.frag");
-	combineShader = new OGLShader("bloomCombine.vert", "bloomCombine.frag");
+	downsampleShader = new OGLShader("downsample.vert", "downsample.frag");
+	upsampleShader   = new OGLShader("upsample.vert", "upsample.frag");
+	combineShader    = new OGLShader("bloomCombine.vert", "bloomCombine.frag");
 
-	filterShader->Bind();
+	downsampleShader->Bind();
 
-	thresholdUniform = glGetUniformLocation(filterShader->GetProgramID(), "threshold");
+	sourcePixelSizeUniform = glGetUniformLocation(downsampleShader->GetProgramID(), "sourcePixelSize");
 
-	glUniform1i(glGetUniformLocation(filterShader->GetProgramID(), "sceneTex"), 0);
+	glUniform1i(glGetUniformLocation(downsampleShader->GetProgramID(), "sourceTex"), 0);
 
-	filterShader->Unbind();
+	downsampleShader->Unbind();
 
-	blurShader->Bind();
+	upsampleShader->Bind();
 
-	horizontalUniform = glGetUniformLocation(blurShader->GetProgramID(), "horizontal");
+	filterRadiusUniform = glGetUniformLocation(upsampleShader->GetProgramID(), "filterRadius");
 
-	glUniform1i(horizontalUniform, 0);
+	glUniform1i(glGetUniformLocation(upsampleShader->GetProgramID(), "sourceTex"), 0);
 
-	glUniform1i(glGetUniformLocation(blurShader->GetProgramID(), "sceneTex"), 0);
-
-	blurShader->Unbind();
+	upsampleShader->Unbind();
 
 	combineShader->Bind();
+
+	biasUniform = glGetUniformLocation(combineShader->GetProgramID(), "bias");
 
 	glUniform1i(glGetUniformLocation(combineShader->GetProgramID(), "sceneTex"), 0);
 	glUniform1i(glGetUniformLocation(combineShader->GetProgramID(), "bloomTex"), 1);
@@ -96,62 +80,108 @@ OGLRenderPass(renderer), sceneTexIn(sceneTexIn) {
 }
 
 BloomRPass::~BloomRPass() {
-	delete filterTex;
-	delete blurTexA;
-	delete blurTexB;
+	for (auto& mip : mipChain) {
+		delete mip.texture;
+	}
+	mipChain.clear();
 	delete colourOutTex;
 
-	delete filterFrameBuffer;
-	delete blurFrameBufferA;
-	delete blurFrameBufferB;
+	delete bloomFrameBuffer;
 	delete combineFrameBuffer;
 
 	delete quad;
 
-	delete filterShader;
-	delete blurShader;
+	delete downsampleShader;
+	delete upsampleShader;
 	delete combineShader;
 }
 
+void BloomRPass::OnWindowResize(int width, int height) {
+	RenderPassBase::OnWindowResize(width, height);
+	SetBloomDepth(bloomDepth);
+}
+
 void BloomRPass::Render() {
-	DrawFilter();
-	ApplyBlur();
+	bloomFrameBuffer->Bind();
+	Downsample();
+	Upsample();
+	bloomFrameBuffer->Unbind();
+
+	glViewport(0, 0, (GLsizei)renderer.GetWidth(), (GLsizei)renderer.GetHeight());
 	Combine();
 }
 
-void BloomRPass::SetThreshold(float threshold) {
-	filterShader->Bind();
+void BloomRPass::SetBloomDepth(size_t depth) {
+	bloomDepth = std::max(depth, 1ull);
+	if (!mipChain.empty()) {
+		for (auto& mip : mipChain) {
+			delete mip.texture;
+		}
+		mipChain.clear();
+	}
+	float mipWidth  = (float)renderer.GetWidth();
+	float mipHeight = (float)renderer.GetHeight();
+	for (size_t i = 0; i < bloomDepth; i++) {
+		mipWidth *= 0.5f;
+		mipHeight *= 0.5f;
 
-	glUniform1f(thresholdUniform, threshold);
+		BloomMip mip{
+			mipWidth, mipHeight,
+			new OGLTexture(mip.width, mip.height, GL_R11F_G11F_B10F, GL_RGB, GL_FLOAT)
+		};
+		mip.texture->Bind();
+		mip.texture->SetEdgeClamp();
+		mip.texture->SetFilters(GL_LINEAR, GL_LINEAR);
 
-	filterShader->Unbind();
+		mipChain.emplace_back(mip);
+	}
 }
 
-void BloomRPass::DrawFilter() {
-	filterFrameBuffer->Bind();
-	filterShader->Bind();
+void BloomRPass::SetBias(float bias) {
+	combineShader->Bind();
+
+	glUniform1f(biasUniform, bias);
+
+	combineShader->Unbind();
+}
+
+void BloomRPass::Downsample() {
+	downsampleShader->Bind();
 
 	sceneTexIn->Bind(0);
 
-	quad->Draw();
+	for (auto mip = mipChain.begin(); mip != mipChain.end(); mip++) {
+		glViewport(0, 0, mip->width, mip->height);
+		bloomFrameBuffer->AddTexture(mip->texture, 0);
 
-	filterShader->Unbind();
-	filterFrameBuffer->Unbind();
+		quad->Draw();
+
+		glUniform2f(sourcePixelSizeUniform, 1.0f / mip->width, 1.0f / mip->height);
+		mip->texture->Bind(0);
+	}
+
+	downsampleShader->Unbind();
 }
 
-void BloomRPass::ApplyBlur() {
-	blurShader->Bind();
+void BloomRPass::Upsample() {
+	upsampleShader->Bind();
 
-	for (size_t i = 0; i < blurAmount; i++) {
-		bool horizontal = i & 1;
-		(horizontal ? blurFrameBufferB : blurFrameBufferA)->Bind();
-		(i == 0 ? filterTex : (horizontal ? blurTexA : blurTexB))->Bind(0);
-		glUniform1i(horizontalUniform, horizontal);
+	glBlendFunc(GL_ONE, GL_ONE);
+
+	for (auto mip = mipChain.rbegin(); mip != std::prev(mipChain.rend()); mip++) {
+		auto nextMip = std::next(mip);
+
+		mip->texture->Bind(0);
+
+		glViewport(0, 0, nextMip->width, nextMip->height);
+		bloomFrameBuffer->AddTexture(nextMip->texture, 0);
+
 		quad->Draw();
 	}
 
-	blurFrameBufferB->Unbind();
-	blurShader->Unbind();
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	upsampleShader->Unbind();
 }
 
 void BloomRPass::Combine() {
@@ -159,7 +189,7 @@ void BloomRPass::Combine() {
 	combineShader->Bind();
 
 	sceneTexIn->Bind(0);
-	blurTexB->Bind(1);
+	std::prev(mipChain.end())->texture->Bind(1);
 
 	quad->Draw();
 

@@ -23,8 +23,10 @@ namespace NCL::Rendering {
 		virtual void Unbind() override;
 
 		void AddTexture(OGLTexture* texture);
+		void AddTexture(OGLTexture* texture, GLsizei attachment);
 
 		void DrawBuffers();
+		void DrawBuffers(GLsizei numBuffers);
 
 		bool InitSuccess() {
 			return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
@@ -32,7 +34,7 @@ namespace NCL::Rendering {
 	private:
 		GLuint fboID;
 
-		GLsizei numColourTexs = 0ull;
+		GLsizei numColourTexs = 0;
 
 		std::vector<OGLTexture*> textures{};
 	};
