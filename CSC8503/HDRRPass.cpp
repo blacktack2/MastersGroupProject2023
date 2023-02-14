@@ -16,7 +16,7 @@ using namespace NCL::CSC8503;
 
 HDRRPass::HDRRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn) :
 	OGLRenderPass(renderer), sceneTexIn(sceneTexIn) {
-	sceneOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight());
+	sceneOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGBA16F);
 	AddScreenTexture(sceneOutTex);
 
 	frameBuffer = new OGLFrameBuffer();
