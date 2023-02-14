@@ -1,7 +1,7 @@
 #version 460 core
 /**
- * @file   bloomCombine.vert
- * @brief  Vertex shader for applying bloom to a texture.
+ * @file   upsample.vert
+ * @brief  Vertex shader for upsampling a texture
  * 
  * @author Stuart Lewis
  * @date   February 2023

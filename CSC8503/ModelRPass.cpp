@@ -93,6 +93,8 @@ void ModelRPass::Render() {
 			bumpTex = defaultBump;
 		}
 
+		Vector4 colour = renderObject->GetColour();
+
 		shader->Bind();
 
 		diffuseTex->Bind(0);
@@ -100,6 +102,7 @@ void ModelRPass::Render() {
 
 		Matrix4 modelMatrix = renderObject->GetTransform()->GetGlobalMatrix();
 		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "modelMatrix"), 1, GL_FALSE, (GLfloat*)&modelMatrix);
+		glUniform4fv(glGetUniformLocation(shader->GetProgramID(), "modelColour"), 1, (GLfloat*)colour.array);
 
 		mesh->Draw();
 

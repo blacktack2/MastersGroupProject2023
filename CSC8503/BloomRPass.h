@@ -8,6 +8,8 @@
 #pragma once
 #include "OGLRenderPass.h"
 
+#include <vector>
+
 namespace NCL::Rendering {
 	class OGLFrameBuffer;
 	class OGLShader;
@@ -20,30 +22,28 @@ namespace NCL::CSC8503 {
 		BloomRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn);
 		~BloomRPass();
 
+		virtual void OnWindowResize(int width, int height) override;
+
 		virtual void Render() override;
 
-		void SetThreshold(float threshold);
+		void SetBloomDepth(size_t depth);
 
-		inline void SetBlurAmount(size_t amount) {
-			blurAmount = amount;
-		}
+		void SetBias(float bias);
 
 		inline OGLTexture* GetOutTex() const {
 			return colourOutTex;
 		}
 	private:
-		void DrawFilter();
-		void ApplyBlur();
+		struct BloomMip {
+			float width, height;
+			OGLTexture* texture;
+		};
+		void Downsample();
+		void Upsample();
 		void Combine();
 
-		OGLFrameBuffer* filterFrameBuffer;
-		OGLTexture* filterTex;
-
-		OGLFrameBuffer* blurFrameBufferA;
-		OGLTexture* blurTexA;
-
-		OGLFrameBuffer* blurFrameBufferB;
-		OGLTexture* blurTexB;
+		OGLFrameBuffer* bloomFrameBuffer;
+		std::vector<BloomMip> mipChain;
 
 		OGLFrameBuffer* combineFrameBuffer;
 		OGLTexture* colourOutTex;
@@ -52,13 +52,14 @@ namespace NCL::CSC8503 {
 
 		OGLMesh* quad;
 
-		OGLShader* filterShader;
-		OGLShader* blurShader;
+		OGLShader* downsampleShader;
+		OGLShader* upsampleShader;
 		OGLShader* combineShader;
 
-		GLint horizontalUniform;
-		GLint thresholdUniform;
+		GLint sourcePixelSizeUniform;
+		GLint filterRadiusUniform;
+		GLint biasUniform;
 
-		size_t blurAmount = 5;
+		size_t bloomDepth = 5;
 	};
 }

@@ -144,11 +144,11 @@ void TutorialGame::UpdateGame(float dt) {
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::H)) {
 			renderer->SetHDRExposure(renderer->GetHDRExposure() - 0.02f);
 		}
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::B)) {
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::C)) {
 			renderer->SetBloomAmount(renderer->GetBloomAmount() - 1);
 		}
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::T)) {
-			renderer->SetBloomThreshold(renderer->GetBloomThreshold() - 0.02f);
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::B)) {
+			renderer->SetBloomBias(renderer->GetBloomBias() - 0.02f);
 		}
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP)) {
@@ -158,17 +158,17 @@ void TutorialGame::UpdateGame(float dt) {
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::H)) {
 			renderer->SetHDRExposure(renderer->GetHDRExposure() + 0.02f);
 		}
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::B)) {
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::C)) {
 			renderer->SetBloomAmount(renderer->GetBloomAmount() + 1);
 		}
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::T)) {
-			renderer->SetBloomThreshold(renderer->GetBloomThreshold() + 0.02f);
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::B)) {
+			renderer->SetBloomBias(renderer->GetBloomBias() + 0.02f);
 		}
 	}
 	Debug::Print(std::string("Gamma: ").append(std::to_string(renderer->GetGamma())), Vector2(0, 30.0f));
 	Debug::Print(std::string("HDR:   ").append(std::to_string(renderer->GetHDRExposure())), Vector2(0, 35.0f));
-	Debug::Print(std::string("Bloom -> Amount:    ").append(std::to_string(renderer->GetBloomAmount())), Vector2(0, 40.0f));
-	Debug::Print(std::string("      -> Threshold: ").append(std::to_string(renderer->GetBloomThreshold())), Vector2(0, 45.0f));
+	Debug::Print(std::string("Bloom -> Amount: ").append(std::to_string(renderer->GetBloomAmount())), Vector2(0, 40.0f));
+	Debug::Print(std::string("      -> Bias:   ").append(std::to_string(renderer->GetBloomBias())), Vector2(0, 45.0f));
 	SoundSystem::GetSoundSystem()->Update(dt);
 
 	if (gameState == GameState::OnGoing) {

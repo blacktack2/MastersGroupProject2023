@@ -24,6 +24,7 @@
 
 #include "GameWorld.h"
 
+#include <algorithm>
 #include <string>
 
 namespace NCL::Maths {
@@ -78,20 +79,20 @@ namespace NCL::CSC8503 {
 			return gamma;
 		}
 
-		void SetBloomAmount(size_t amount) {
-			bloomAmount = amount;
-			bloomPass->SetBlurAmount(bloomAmount);
+		void SetBloomAmount(size_t depth) {
+			bloomAmount = std::min(std::max(depth, 1ull), 100ull);
+			bloomPass->SetBloomDepth(bloomAmount);
 		}
 		inline size_t GetBloomAmount() {
 			return bloomAmount;
 		}
 
-		void SetBloomThreshold(float threshold) {
-			bloomThreshold = threshold;
-			bloomPass->SetThreshold(bloomThreshold);
+		void SetBloomBias(float bias) {
+			bloomBias = bias;
+			bloomPass->SetBias(bloomBias);
 		}
-		inline float GetBloomThreshold() {
-			return bloomThreshold;
+		inline float GetBloomBias() {
+			return bloomBias;
 		}
 
 		void SetHDRExposure(float exposure) {
@@ -123,7 +124,7 @@ namespace NCL::CSC8503 {
 
 		float gamma = 2.2f;
 		size_t bloomAmount = 5;
-		float bloomThreshold = 1.0f;
+		float bloomBias = 0.04f;
 		float hdrExposure = 1.0f;
 	};
 }
