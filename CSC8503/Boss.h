@@ -26,6 +26,13 @@ namespace NCL
                 : GameObject()
             {
                 velocity = v;
+
+                OnTriggerBeginCallback = [&](GameObject* other)
+                {
+                    if (PlayerObject* player = dynamic_cast<PlayerObject*>(other)) {
+                        lifeSpan = -1;
+                    }
+                };
             }
 
             //~Bomb(){}
@@ -33,8 +40,8 @@ namespace NCL
             virtual void Update(float dt) override
             {
                 this->GetTransform().SetPosition(this->GetTransform().GetGlobalPosition() + velocity * dt);
-                lifeTime -= dt;
-                if (lifeTime < 0.0f)
+                lifeSpan -= dt;
+                if (lifeSpan < 0.0f)
                 {
                     Delete();
                 }
@@ -46,7 +53,7 @@ namespace NCL
 
         protected:
             Vector3 velocity{ 0,0,0 };
-            float lifeTime = 5.0f;
+            float lifeSpan = 5.0f;
         };
 
         class Boss : public GameObject
