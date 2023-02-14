@@ -24,6 +24,7 @@
 
 #include "GameWorld.h"
 
+#include <algorithm>
 #include <string>
 
 namespace NCL::Maths {
@@ -78,8 +79,8 @@ namespace NCL::CSC8503 {
 			return gamma;
 		}
 
-		void SetBloomAmount(size_t amount) {
-			bloomAmount = amount;
+		void SetBloomAmount(size_t depth) {
+			bloomAmount = std::min(std::max(depth, 1ull), 100ull);
 			bloomPass->SetBloomDepth(bloomAmount);
 		}
 		inline size_t GetBloomAmount() {

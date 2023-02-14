@@ -112,7 +112,7 @@ void BloomRPass::Render() {
 }
 
 void BloomRPass::SetBloomDepth(size_t depth) {
-	bloomDepth = std::max(depth, 1ull);
+	bloomDepth = depth;
 	if (!mipChain.empty()) {
 		for (auto& mip : mipChain) {
 			delete mip.texture;
