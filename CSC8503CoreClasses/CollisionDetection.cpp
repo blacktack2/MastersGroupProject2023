@@ -550,8 +550,10 @@ bool CollisionDetection::AABBSphereIntersection(const AABBVolume& volumeA, const
 	if (distance < volumeB.GetRadius()) {
 		Vector3 normal = distance == 0 ? delta.Normalised() : localPoint.Normalised();
 		float penetration = volumeB.GetRadius() - distance;
-
-		collisionInfo.AddContactPoint(worldTransformA.GetGlobalPosition() + closestPointOnBox, normal, penetration);
+		
+		Vector3 localB = -normal * volumeB.GetRadius();
+		//collisionInfo.AddContactPoint(worldTransformA.GetGlobalPosition() + closestPointOnBox, normal, penetration);
+		collisionInfo.AddContactPoint(worldTransformA.GetGlobalPosition() + closestPointOnBox, normal, penetration, localB);
 		return true;
 	}
 	return false;
