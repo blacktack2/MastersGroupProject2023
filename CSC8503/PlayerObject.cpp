@@ -69,6 +69,10 @@ void PlayerObject::Update(float dt) {
 		//GameGridManager::instance().PaintPosition(this->GetTransform().GetGlobalPosition(), PlayerDamage);
 	}
 	//*/
+
+	if (health <= 0) {
+		gameStateManager->SetGameState(GameState::Lose);
+	}
 	
 }
 
@@ -180,14 +184,6 @@ void PlayerObject::RotateToCamera() {
 	
 }
 
-//legacy 
-void PlayerObject::AddPoints(int points) {
-	if (lastGoosed > gooseDelay) {
-		lastGoosed = 0.0f;
-		//scoreCounter += points;
-	}
-}
-
 void PlayerObject::CollisionWith(GameObject* other) {
 	/*
 	if (other->GetPhysicsObject() != nullptr && !collidedWith.contains(other->GetWorldID()) && !other->GetPhysicsObject()->IsStatic()) {
@@ -211,11 +207,12 @@ void PlayerObject::Shoot() {
 	ink->SetLifespan(projectileLifespan);
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
 	ink->GetPhysicsObject()->SetInverseMass(2.0f);
-	ink->GetPhysicsObject()->SetLinearVelocity(this->physicsObject->GetLinearVelocity() * Vector3(1,0,1));
+	ink->GetPhysicsObject()->SetLinearVelocity(this->physicsObject->GetLinearVelocity() * Vector3(1, 0, 1));
 	ink->GetPhysicsObject()->ApplyLinearImpulse(transform.GetGlobalOrientation() * Vector3(0, 0, -1) * projectileForce);
 	gameWorld.AddGameObject(ink);
 	ink->OnCollisionBeginCallback = [ink](GameObject* other) {
 		GameGridManager::instance().PaintPosition(ink->GetTransform().GetGlobalPosition(), PlayerDamage);
+		ink->Delete();
 	};
 	lastInstancedObjects.push_back(ink);
 }

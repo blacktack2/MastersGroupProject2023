@@ -19,6 +19,7 @@ set(Header_Files
     "Boss.h"
     "GameGrid.h"
     "GameGridManager.h"
+    "GameStateManager.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -37,6 +38,7 @@ set(Source_Files
     "DebugViewPoint.cpp"
     "GameGrid.cpp"
     "GameGridManager.cpp"
+    "GameStateManager.cpp"
 )
 
 set(Render_Files
@@ -91,11 +93,18 @@ set(Audio_Files
 )
 source_group("Audio Files" FILES ${Audio_Files})
 
+set(Ink_Files 
+    	"InkEffect.h"
+	"InkEffect.cpp"
+)
+source_group("Ink Files" FILES ${Ink_Files})
+
 set(ALL_FILES
     ${Header_Files}
     ${Source_Files}
     ${Audio_Files}
     ${Render_Files}
+    ${Ink_Files}
 )
 
 if(USE_VULKAN)

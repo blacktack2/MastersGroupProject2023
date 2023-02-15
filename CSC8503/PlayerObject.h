@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "SoundSource.h"
 #include "InputKeyMap.h"
+#include "GameStateManager.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -13,8 +14,6 @@ namespace NCL {
 			~PlayerObject();
 
 			void Update(float dt);
-
-			void AddPoints(int points);
 
 			void CollisionWith(GameObject* other);
 
@@ -60,6 +59,7 @@ namespace NCL {
 			
 			//gameplay
 			float health = 100.0f;
+			float damageOverTimeTimer = 0.0f;
 
 		private:
 
@@ -96,12 +96,12 @@ namespace NCL {
 			// legacy variables
 			std::set<int> collidedWith;
 
-			float lastGoosed = 0.0f;
-			const float gooseDelay = 2.0f;
-
 			//sound
 			SoundSource* playerSource;
 			SoundSource* attackSource;
+
+			//game state
+			GameStateManager* gameStateManager = &GameStateManager::instance();
 		};
 	}
 }

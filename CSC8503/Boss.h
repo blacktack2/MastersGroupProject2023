@@ -37,11 +37,10 @@ namespace NCL
                 {
                     Delete();
                 }
-                /*
                 if (this->GetTransform().GetGlobalPosition().y < 1.0f)
                 {
                     GetTransform().SetPosition({ GetTransform().GetGlobalPosition().x, 1.0f, GetTransform().GetGlobalPosition().z });
-                }*/
+                }
             }
 
         protected:

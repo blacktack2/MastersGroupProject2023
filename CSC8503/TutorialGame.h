@@ -12,8 +12,9 @@
 
 #include "GameGridManager.h"
 
-#include "GameGrid.h"	/////////
 #include "Boss.h"		/////////
+
+#include "GameStateManager.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -42,23 +43,17 @@ namespace NCL {
 			virtual void UpdateGame(float dt);
 
 			bool IsQuit() {
-				return gameState == GameState::Quit;
+				return gameStateManager->GetGameState() == GameState::Quit;
 			}
 		protected:
-			enum class GameState {
-				OnGoing,
-				Paused,
-				Win,
-				Lose,
-				Quit,
-			};
+
+			void UpdateStateOngoing(float dt);
 
 			void InitialiseAssets();
 			void InitialisePrefabs();
 
 			void InitCamera();
 			void UpdateKeys();
-
 			void InitGameExamples();
 
 			void InitMazeWorld(int numRows, int numCols, float size);
@@ -100,7 +95,9 @@ namespace NCL {
 			paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
 
 			Light* sunLight;
-			GameState gameState;
+
+			GameStateManager* gameStateManager;
+
 			bool inSelectionMode;
 
 			float		forceMagnitude;
