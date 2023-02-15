@@ -20,19 +20,10 @@ OGLTexture::OGLTexture(GLsizei width, GLsizei height, TexType texType) : texType
 	SetEdgeClamp();
 	switch (texType) {
 		default:
-<<<<<<< HEAD
-		case TexType::Colour4  : InitColour4() ; break;
-		case TexType::Colour8  : InitColour8() ; break;
-		case TexType::Colour32 : InitColour32(); break;
-		case TexType::Depth    : InitDepth()   ; break;
-		case TexType::Stencil  : InitStencil() ; break;
-		case TexType::Shadow   : InitShadow()  ; break;
-=======
 		case TexType::Colour   : InitColour(GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE); break;
 		case TexType::Depth    : InitDepth()  ; break;
 		case TexType::Stencil  : InitStencil(); break;
 		case TexType::Shadow   : InitShadow() ; break;
->>>>>>> dev
 	}
 	Resize(width, height);
 

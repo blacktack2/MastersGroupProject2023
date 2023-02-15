@@ -291,6 +291,9 @@ void TutorialGame::InitialiseAssets() {
 	//AssetLibrary::AddTexture("inkable", inkableTex);						/////////
 	AssetLibrary::AddTexture("noise", noiseTex);							/////////
 	AssetLibrary::AddTexture("basic", basicTex);
+	OGLShader* shader = (OGLShader*)renderer->LoadShader("modelDefault.vert", "modelPaintTexture.frag");
+	AssetLibrary::AddShader("paint", shader);
+	renderer->GetModelPass().AddModelShader(shader);
 
 	//basicShader = renderer->LoadShader("scene.vert", "scene.frag");			/////////
 	//inkableShader = renderer->LoadShader("inkable.vert", "inkable.frag");	/////////
@@ -563,7 +566,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 		.SetScale(floorSize * 2)
 		.SetPosition(position);
 
-	PaintRenderObject* render = new PaintRenderObject(&floor->GetTransform(), cubeMesh, basicTex, nullptr);
+	PaintRenderObject* render = new PaintRenderObject(&floor->GetTransform(), cubeMesh, basicTex);
 	floor->SetRenderObject(render);
 
 	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));

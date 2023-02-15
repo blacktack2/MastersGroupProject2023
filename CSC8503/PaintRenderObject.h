@@ -16,17 +16,21 @@ namespace NCL::CSC8503 {
 
 	class PaintRenderObject : public RenderObject {
 	public:
-		PaintRenderObject(Transform* parentTransform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader);
+		PaintRenderObject(Transform* parentTransform, MeshGeometry* mesh, TextureBase* tex);
 		PaintRenderObject(RenderObject& other, Transform* parentTransform);
 		~PaintRenderObject();
 
 		OGLTexture* GetPaintTexture() { return paintTexture; }
+		OGLTexture* GetWorldTexture() { return worldTexture; }
 		std::vector<PaintCollision> GetPaintCollisions() { return paintCollisions; }
 		void ClearPaintCollisions() { paintCollisions.clear(); }
 		void AddPaintCollision(PaintCollision collision) { paintCollisions.push_back(collision); }
 
+		void ConfigerShaderExtras(OGLShader* shaderOGL) const override;
+
 	private:
 		OGLTexture* paintTexture;
+		OGLTexture* worldTexture;
 		std::vector<PaintCollision> paintCollisions;
 	};
 }

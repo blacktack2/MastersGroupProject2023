@@ -3,6 +3,10 @@
 #include "ShaderBase.h"
 
 namespace NCL {
+	namespace Rendering {
+		class OGLShader;
+	}
+
 	using namespace NCL::Rendering;
 
 	class MeshGeometry;
@@ -49,6 +53,8 @@ namespace NCL {
 			Vector4 GetColour() const {
 				return colour;
 			}
+
+			virtual void ConfigerShaderExtras(OGLShader* shaderOGL) const {}
 
 		protected:
 			Transform*		transform;

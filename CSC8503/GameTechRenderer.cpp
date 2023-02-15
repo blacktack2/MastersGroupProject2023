@@ -22,6 +22,9 @@ GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetW
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 
+	paintingRPass = new PaintingRPass(*this);
+	renderPasses.push_back(paintingRPass);
+
 	skyboxPass = new SkyboxRPass(*this, gameWorld);
 	renderPasses.push_back(skyboxPass);
 
