@@ -211,11 +211,11 @@ void PlayerObject::Shoot() {
 	ink->SetLifespan(projectileLifespan);
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
 	ink->GetPhysicsObject()->SetInverseMass(2.0f);
+	ink->GetPhysicsObject()->SetLinearVelocity(this->physicsObject->GetLinearVelocity() * Vector3(1,0,1));
 	ink->GetPhysicsObject()->ApplyLinearImpulse(transform.GetGlobalOrientation() * Vector3(0, 0, -1) * projectileForce);
 	gameWorld.AddGameObject(ink);
-
-	ink->OnCollisionBeginCallback = [&](GameObject* other) {
-		//GameGridManager::instance().PaintPosition(ink->GetTransform().GetGlobalPosition(), PlayerDamage);
+	ink->OnCollisionBeginCallback = [ink](GameObject* other) {
+		GameGridManager::instance().PaintPosition(ink->GetTransform().GetGlobalPosition(), PlayerDamage);
 	};
 	lastInstancedObjects.push_back(ink);
 }

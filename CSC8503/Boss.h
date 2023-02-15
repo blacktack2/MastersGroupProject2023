@@ -25,10 +25,6 @@ namespace NCL
             Bomb(Vector3 v): GameObject()
             {
                 velocity = v;
-                OnTriggerBeginCallback = [&](GameObject* other) {
-                    std::cout << "triggered" << std::endl;
-                    GameGridManager::instance().PaintPosition(this->GetTransform().GetGlobalPosition(), BossDamage);
-                };
             }
 
             //~Bomb(){}
@@ -129,6 +125,12 @@ namespace NCL
             Bomb* releaseBomb(Vector3 v, Vector3 s)
             {
                 Bomb* bomb = new Bomb(v);
+                bomb->OnTriggerBeginCallback = [bomb](GameObject* other) {
+                    GameGridManager::instance().PaintPosition(bomb->GetTransform().GetGlobalPosition(), BossDamage);
+                };
+                bomb->OnCollisionBeginCallback = [bomb](GameObject* other) {
+                    GameGridManager::instance().PaintPosition(bomb->GetTransform().GetGlobalPosition(), BossDamage);
+                };
                 Vector3 position = this->GetTransform().GetGlobalPosition();
                 bomb->GetTransform()
                     .SetPosition(position)
