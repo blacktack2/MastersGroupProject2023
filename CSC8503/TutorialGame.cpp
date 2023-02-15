@@ -75,7 +75,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 	world->ClearAndErase();
 	physics->Clear();
 
-	gameGrid = new GameGrid{ {-200,0,-200},100,100,100 * 2,100 * 2 };	// MUST initialize gameGrid BEFORE boss/player, otherwise boss/player will be referring to nullptr
+	gameGrid = new GameGrid{ {-200,0,-200},200,200,200 * 2,200 * 2 };	// MUST initialize gameGrid BEFORE boss/player, otherwise boss/player will be referring to nullptr
 	BuildLevel();
 	player = AddPlayerToWorld(Vector3(0, 0, 0));
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 5,5,5 }, 1);
@@ -758,7 +758,7 @@ void TutorialGame::BuildLevel()
 	float interval = 5.0f;
 	Vector3 dimensions{ interval / 2.0f, 1.0f, interval / 2.0f };	// TODO: figure out the right scale
 	gameLevel = new GameLevel{};
-	gameLevel->AddRectanglarLevel("BasicLevel.txt", { 0,0,0 }, interval);
+	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -50,0,-50 }, interval);
 
 	for (auto& object : gameLevel->GetGameStuffs())
 	{
@@ -779,7 +779,7 @@ void TutorialGame::BuildLevel()
 		if (object.objectType == ObjectType::Fence)
 		{
 			Obstacle* fence = new Obstacle{ &object, true };
-			dimensions.y = 1.0f;
+			dimensions.y = 3.0f;
 			fence->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
 			fence->GetTransform()
 				.SetPosition(object.worldPos)	// TODO: change height if necessary
@@ -793,7 +793,7 @@ void TutorialGame::BuildLevel()
 		if (object.objectType == ObjectType::Shelter)
 		{
 			Obstacle* shelter = new Obstacle{ &object, false };
-			dimensions.y = 1.0f;
+			dimensions.y = 3.0f;
 			shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
 			shelter->GetTransform()
 				.SetPosition(object.worldPos)	// TODO: change height if necessary

@@ -31,7 +31,6 @@ namespace NCL
                 {
                     if (PlayerObject* player = dynamic_cast<PlayerObject*>(other)) {
                         lifeSpan = -1.0f;
-                        //std::cout << "hittttttttttttttttttttttttttttttttttttttttttttttttttttttttttting\n";
                     }
                 };
             }
@@ -50,6 +49,11 @@ namespace NCL
                 {
                     GetTransform().SetPosition({ GetTransform().GetGlobalPosition().x, 1.0f, GetTransform().GetGlobalPosition().z });
                 }
+            }
+
+            void SetLifeSpan(float life)
+            {
+                lifeSpan = life;
             }
 
         protected:

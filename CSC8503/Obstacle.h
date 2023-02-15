@@ -4,7 +4,6 @@
  *********************************************************************/
 
 #pragma once
-#include "GameObject.h"
 #include "GameLevel.h"
 #include "Boss.h"
 
@@ -28,6 +27,7 @@ namespace NCL
                         if (Bomb* bomb = dynamic_cast<Bomb*>(other))
                         {
                             health -= 1.0f;
+                            bomb->SetLifeSpan(-1.0f);
                         }
                     }
                     

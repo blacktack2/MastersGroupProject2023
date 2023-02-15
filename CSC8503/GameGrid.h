@@ -382,11 +382,11 @@ namespace NCL
 					{
 						if (currentNode.isInked)
 						{
-							Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0,2,0 }, Vector4(1, 0, 0, 1));
+							//Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0,2,0 }, Vector4(1, 0, 0, 1));
 						}
 						else
 						{
-							Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0,2,0 }, Vector4(0, 0, 1, 1));
+							//Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0,2,0 }, Vector4(0, 0, 1, 1));
 						}
 					}
 				}
