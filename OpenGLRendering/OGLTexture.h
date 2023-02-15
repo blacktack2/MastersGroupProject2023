@@ -1,6 +1,6 @@
 /**
  * @file   OGLTexture.h
- * @brief  
+ * @brief  Dummy brief
  * 
  * @author Rich Davidson
  * @author Stuart Lewis
