@@ -15,11 +15,19 @@ namespace NCL {
 				return INSTANCE;
 			}
 			void Update(float dt);
+
+			void Clear() {
+				for (auto gameGrid : gameGrids) {
+					delete gameGrid;
+				}
+				gameGrids.clear();
+			}
+
 			void AddGameGrid(GameGrid* grid);
 
 			GameNode* NearestNode(Vector3 position);
 
-			void PaintPosition(Vector3 position, InkType type);
+			void PaintPosition(Vector3 position, paintHell::InkType type);
 		};
 	}
 }

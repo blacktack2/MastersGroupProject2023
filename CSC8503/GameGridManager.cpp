@@ -7,9 +7,7 @@ GameGridManager::GameGridManager(){
 }
 
 GameGridManager::~GameGridManager() {
-	for (auto gameGrid : gameGrids) {
-		delete gameGrid;
-	}
+	Clear();
 }
 
 void GameGridManager::Update(float dt) {
@@ -30,7 +28,7 @@ GameNode* GameGridManager::NearestNode(Vector3 position) {
 	}
 }
 
-void GameGridManager::PaintPosition(Vector3 position, InkType type) {
+void GameGridManager::PaintPosition(Vector3 position, paintHell::InkType type) {
 	GameNode* node = NearestNode(position);
 
 	if (node)

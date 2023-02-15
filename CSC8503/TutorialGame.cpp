@@ -13,6 +13,7 @@
 #include "StateGameObject.h"
 #include "TextureLoader.h"
 #include "TutorialGame.h"
+#include "InkEffectManager.h"
 
 //Audio Testing
 
@@ -47,6 +48,7 @@ TutorialGame::TutorialGame() {
 	SoundSystem::Initialize();
 	gridManager = &GameGridManager::instance();
 	InitialiseAssets();
+	InitWorld();
 }
 
 TutorialGame::~TutorialGame() {
@@ -77,6 +79,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 	mazes = nullptr;
 	world->ClearAndErase();
 	physics->Clear();
+	gridManager->Clear();
 
 	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 100, 100, 2 ) );
 	gridManager->AddGameGrid(new GameGrid({ 100,0,0 }, 100, 100, 2));
@@ -85,6 +88,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
 
 	switch (mode) {
+		default: InitGameExamples(); break;
 		case InitMode::MAZE             : InitMazeWorld(20, 20, 20.0f)                            ; break;
 		case InitMode::MIXED_GRID       : InitMixedGridWorld(1, 1, 3.5f, 3.5f)                  ; break;
 		case InitMode::CUBE_GRID        : InitCubeGridWorld(15, 15, 3.5f, 3.5f, Vector3(1), true) ; break;
@@ -94,7 +98,6 @@ void TutorialGame::InitWorld(InitMode mode) {
 		case InitMode::BRIDGE_TEST_ANG  : InitBridgeConstraintTestWorld(10, 20, 30, true)         ; break;
 		case InitMode::PERFORMANCE_TEST : InitMixedGridWorld(30, 30, 10.0f, 10.0f)                ; break;
 		case InitMode::AUDIO_TEST : InitGameExamples()                ; break;
-		default: break;
 	}
 
 	//InitGameExamples();
@@ -202,7 +205,7 @@ void TutorialGame::UpdateGame(float dt) {
 void TutorialGame::UpdateStateOngoing(float dt) {
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 
-	Debug::Print(std::string("health: ").append(std::to_string((int)player->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
+	Debug::Print(std::string("health: ").append(std::to_string((int)player->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
 
 	if (!inSelectionMode) {
 		world->GetMainCamera()->UpdateCamera(dt);
@@ -246,7 +249,7 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 		}
 	}
 
-	Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
+	//Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
 
 	if (player == nullptr) {
 		SelectObject();
@@ -260,14 +263,6 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 	physics->Update(dt);
 
 	world->PostUpdateWorld();
-
-	/*
-	if (score < 0) {
-		gameState = GameState::Lose;
-	}
-	else if (score > 5000) {
-		gameState = GameState::Win;
-	}*/
 
 	gridManager->Update(dt);
 	//UpdateHealingKit();

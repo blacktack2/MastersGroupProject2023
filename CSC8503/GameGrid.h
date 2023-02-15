@@ -12,6 +12,7 @@
 #include "Debug.h"
 #include "GameObject.h"
 #include "NavigationPath.h"
+#include "InkEffectManager.h"
 
 using namespace NCL::Maths;
 
@@ -19,12 +20,6 @@ namespace NCL
 {
 	namespace CSC8503	// TODO: change the name of the namespace
 	{
-		enum InkType
-		{
-			NoInk,			// No effect
-			BossDamage,			// from boss causing damage
-			PlayerDamage,			// from player
-		};
 
 		enum NodeType
 		{
@@ -85,7 +80,7 @@ namespace NCL
 			Vector3 worldPosition;
 
 			bool isInked;
-			InkType inkType = NoInk;
+			paintHell::InkType inkType = paintHell::InkType::NoInk;
 			NodeType type;				// the type of object represented by the node
 
 			GameNode* parent;
@@ -133,7 +128,7 @@ namespace NCL
 
 			void DrawDebugGameGrid();
 
-			void PaintNode(Vector3 position, InkType type);
+			void PaintNode(Vector3 position, paintHell::InkType type);
 
 			std::vector<GameNode> GetTraceNodes();
 

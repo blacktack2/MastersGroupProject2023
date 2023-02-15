@@ -69,7 +69,7 @@ int main() {
 	//TestAudio::TestAudio2();
 
 	NetworkedGame* g = new NetworkedGame();
-	g->InitWorld(NCL::CSC8503::TutorialGame::InitMode::AUDIO_TEST);
+	//g->InitWorld(NCL::CSC8503::TutorialGame::InitMode::AUDIO_TEST);
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
 	while (w->UpdateWindow() && !g->IsQuit()) {
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();

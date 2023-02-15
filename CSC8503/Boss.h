@@ -12,6 +12,7 @@
 #include "PhysicsObject.h"
 #include "PlayerObject.h"
 #include "GameGrid.h"
+#include "InkEffectManager.h"
 
 namespace NCL
 {
@@ -63,7 +64,7 @@ namespace NCL
             virtual void Update(float dt) override
             {
                 deltaTime = dt;
-                GameGridManager::instance().PaintPosition(this->GetTransform().GetGlobalPosition(), BossDamage);
+                GameGridManager::instance().PaintPosition(this->GetTransform().GetGlobalPosition(), paintHell::InkType::BossDamage);
                 if (this->GetTransform().GetGlobalPosition().y < 1.0f)		// please fix the physics system
                 {
                     GetTransform().SetPosition({ GetTransform().GetGlobalPosition().x, 1.0f, GetTransform().GetGlobalPosition().z });
@@ -125,10 +126,10 @@ namespace NCL
             {
                 Bomb* bomb = new Bomb(v);
                 bomb->OnTriggerBeginCallback = [bomb](GameObject* other) {
-                    GameGridManager::instance().PaintPosition(bomb->GetTransform().GetGlobalPosition(), BossDamage);
+                    GameGridManager::instance().PaintPosition(bomb->GetTransform().GetGlobalPosition(), paintHell::InkType::BossDamage);
                 };
                 bomb->OnCollisionBeginCallback = [bomb](GameObject* other) {
-                    GameGridManager::instance().PaintPosition(bomb->GetTransform().GetGlobalPosition(), BossDamage);
+                    GameGridManager::instance().PaintPosition(bomb->GetTransform().GetGlobalPosition(), paintHell::InkType::BossDamage);
                 };
                 Vector3 position = this->GetTransform().GetGlobalPosition();
                 bomb->GetTransform()

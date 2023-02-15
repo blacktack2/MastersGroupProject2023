@@ -92,6 +92,8 @@ set(Audio_Files
 source_group("Audio Files" FILES ${Audio_Files})
 
 set(Ink_Files 
+    "InkEffectManager.h"
+    "InkEffectManager.cpp"
     "InkEffect.h"
 	"InkEffect.cpp"
     "InkEffectOverTime.h"

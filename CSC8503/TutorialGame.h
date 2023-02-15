@@ -24,6 +24,7 @@ namespace NCL {
 		class TutorialGame {
 		public:
 			enum class InitMode {
+				EMPTY,
 				MAZE,
 				MIXED_GRID,
 				CUBE_GRID,
@@ -38,7 +39,7 @@ namespace NCL {
 			TutorialGame();
 			~TutorialGame();
 
-			void InitWorld(InitMode mode = InitMode::MAZE);
+			void InitWorld(InitMode mode = InitMode::EMPTY);
 
 			virtual void UpdateGame(float dt);
 

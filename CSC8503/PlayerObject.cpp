@@ -13,6 +13,7 @@
 #include "RenderObject.h"
 
 #include "GameGridManager.h"
+#include "InkEffectManager.h"
 
 #include "InputKeyMap.h"
 #include "SoundSource.h"
@@ -41,6 +42,7 @@ PlayerObject::~PlayerObject() {
 }
 
 void PlayerObject::Update(float dt) {
+	health.Update(dt);
 	if (this->GetTransform().GetGlobalPosition().y < 1.0f)		// please fix the physics system
 	{
 		GetTransform().SetPosition({ GetTransform().GetGlobalPosition().x, 1.0f, GetTransform().GetGlobalPosition().z });
@@ -63,9 +65,9 @@ void PlayerObject::Update(float dt) {
 	///*
 	if (onGround) {
 		GameNode* node = GameGridManager::instance().NearestNode(this->GetTransform().GetGlobalPosition());
-		if (node->inkType == BossDamage) {
-			health.DamageOverTime(1.0f,1.0f);
-		}
+		InkEffectManager::instance().ApplyInkEffect(node->inkType, &health, 0);
+
+		
 		//GameGridManager::instance().PaintPosition(this->GetTransform().GetGlobalPosition(), PlayerDamage);
 	}
 	//*/
@@ -211,7 +213,7 @@ void PlayerObject::Shoot() {
 	ink->GetPhysicsObject()->ApplyLinearImpulse(transform.GetGlobalOrientation() * Vector3(0, 0, -1) * projectileForce);
 	gameWorld.AddGameObject(ink);
 	ink->OnCollisionBeginCallback = [ink](GameObject* other) {
-		GameGridManager::instance().PaintPosition(ink->GetTransform().GetGlobalPosition(), PlayerDamage);
+		GameGridManager::instance().PaintPosition(ink->GetTransform().GetGlobalPosition(), paintHell::InkType::PlayerDamage);
 		ink->Delete();
 	};
 	lastInstancedObjects.push_back(ink);
