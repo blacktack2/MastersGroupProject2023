@@ -41,18 +41,18 @@ GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetW
 	bloomPass = new BloomRPass(*this);
 	SetBloomAmount(bloomAmount);
 	SetBloomBias(bloomBias);
-	AddPostPass(bloomPass);
+	AddPostPass(bloomPass, "Bloom");
 
 	hdrPass = new HDRRPass(*this);
 	SetHDRExposure(hdrExposure);
-	AddPostPass(hdrPass);
+	AddPostPass(hdrPass, "HDR");
 
 	presentPass = new PresentRPass(*this);
 	SetGamma(gamma);
 	SetPresentPass(presentPass);
 
 	debugPass = new DebugRPass(*this, gameWorld);
-	AddOverlayPass(debugPass);
+	AddOverlayPass(debugPass, "Debug");
 
 	UpdatePipeline();
 }
@@ -63,6 +63,8 @@ GameTechRenderer::~GameTechRenderer() {
 	delete lightingPass;
 	delete combinePass;
 	delete presentPass;
+	delete bloomPass;
+	delete hdrPass;
 	delete debugPass;
 }
 

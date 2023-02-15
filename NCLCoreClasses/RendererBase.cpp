@@ -8,7 +8,6 @@ RendererBase::RendererBase(Window& window) : hostWindow(window)	{
 	windowHeight = window.GetScreenSize().y;
 }
 
-
 RendererBase::~RendererBase() {
 }
 
@@ -22,6 +21,22 @@ void RendererBase::EnablePostProcessing(bool enable) {
 
 void RendererBase::EnableRenderOverlay(bool enable) {
 	doRenderOver = enable;
+}
+
+void RendererBase::EnablePostPass(const std::string& name, bool enable) {
+	auto pass = postMap.find(name);
+	if (pass == postMap.end()) {
+		return;
+	}
+	postRenderPasses[pass->second].enabled = enable;
+}
+
+void RendererBase::EnableOverlayPass(const std::string& name, bool enable) {
+	auto pass = overlayMap.find(name);
+	if (pass == overlayMap.end()) {
+		return;
+	}
+	overlayRenderPasses[pass->second].enabled = enable;
 }
 
 void RendererBase::UpdatePipeline() {

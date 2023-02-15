@@ -17,6 +17,7 @@ https://research.ncl.ac.uk/game/
 #include "IOverlayRenderPass.h"
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace NCL::Rendering {
@@ -51,6 +52,9 @@ namespace NCL::Rendering {
 		void EnablePostProcessing(bool enable);
 		void EnableRenderOverlay(bool enable);
 
+		void EnablePostPass(const std::string& name, bool enable);
+		void EnableOverlayPass(const std::string& name, bool enable);
+
 		void UpdatePipeline();
 
 		inline float GetAspect() const {
@@ -69,14 +73,16 @@ namespace NCL::Rendering {
 		inline void SetCombinePass(ICombineRenderPass* pass) {
 			combinePass = pass;
 		}
-		inline void AddPostPass(IPostRenderPass* pass) {
+		inline void AddPostPass(IPostRenderPass* pass, const std::string& name) {
 			postRenderPasses.emplace_back(pass, true);
+			postMap.insert({ name, postRenderPasses.size() - 1 });
 		}
 		inline void SetPresentPass(IPresentRenderPass* pass) {
 			presentPass = pass;
 		}
-		inline void AddOverlayPass(IOverlayRenderPass* pass) {
+		inline void AddOverlayPass(IOverlayRenderPass* pass, const std::string& name) {
 			overlayRenderPasses.emplace_back(pass, true);
+			overlayMap.insert({ name, overlayRenderPasses.size() - 1 });
 		}
 
 		virtual void OnWindowResize(int width, int height);
@@ -110,10 +116,13 @@ namespace NCL::Rendering {
 		bool doRenderOver  = true;
 
 		std::vector<MainPass> mainRenderPasses;
-		ICombineRenderPass* combinePass;
+		ICombineRenderPass*   combinePass = nullptr;
 		std::vector<PostPass> postRenderPasses;
-		IPresentRenderPass* presentPass;
+		IPresentRenderPass*   presentPass = nullptr;
 		std::vector<OverPass> overlayRenderPasses;
+
+		std::unordered_map<std::string, size_t> postMap;
+		std::unordered_map<std::string, size_t> overlayMap;
 
 		std::vector<IRenderPass*> renderPipeline;
 	};
