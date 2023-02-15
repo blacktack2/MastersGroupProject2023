@@ -7,13 +7,9 @@
  * @date   February 2023
  */
 #pragma once
+#include "IRenderPass.h"
 
 namespace NCL::Rendering {
-	class TextureBase;
-
-	class IOverlayRenderPass {
-	public:
-		virtual void OnWindowResize(int width, int height) = 0;
-		virtual void Render() = 0;
+	class IOverlayRenderPass : public IRenderPass {
 	};
 }

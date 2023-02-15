@@ -165,10 +165,28 @@ void TutorialGame::UpdateGame(float dt) {
 			renderer->SetBloomBias(renderer->GetBloomBias() + 0.02f);
 		}
 	}
+	static bool doMain = true;
+	static bool doPost = true;
+	static bool doOver = true;
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::J)) {
+		renderer->EnableRenderScene(doMain = !doMain);
+		renderer->UpdatePipeline();
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::K)) {
+		renderer->EnablePostProcessing(doPost = !doPost);
+		renderer->UpdatePipeline();
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::L)) {
+		renderer->EnableRenderOverlay(doOver = !doOver);
+		renderer->UpdatePipeline();
+	}
 	Debug::Print(std::string("Gamma: ").append(std::to_string(renderer->GetGamma())), Vector2(0, 30.0f));
 	Debug::Print(std::string("HDR:   ").append(std::to_string(renderer->GetHDRExposure())), Vector2(0, 35.0f));
 	Debug::Print(std::string("Bloom -> Amount: ").append(std::to_string(renderer->GetBloomAmount())), Vector2(0, 40.0f));
 	Debug::Print(std::string("      -> Bias:   ").append(std::to_string(renderer->GetBloomBias())), Vector2(0, 45.0f));
+	Debug::Print(std::string("Render -> Scene:   ").append(doMain ? "Enabled" : "Disabled"), Vector2(0, 50.0f));
+	Debug::Print(std::string("       -> Post:    ").append(doPost ? "Enabled" : "Disabled"), Vector2(0, 55.0f));
+	Debug::Print(std::string("       -> Overlay: ").append(doOver ? "Enabled" : "Disabled"), Vector2(0, 60.0f));
 	SoundSystem::GetSoundSystem()->Update(dt);
 
 	if (gameState == GameState::OnGoing) {

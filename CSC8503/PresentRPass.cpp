@@ -14,8 +14,8 @@
 
 using namespace NCL::CSC8503;
 
-PresentRPass::PresentRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn) :
-OGLOverlayRenderPass(renderer), sceneTexIn(sceneTexIn) {
+PresentRPass::PresentRPass(OGLRenderer& renderer) :
+OGLPresentRenderPass(renderer) {
 	quad = new OGLMesh();
 	quad->SetVertexPositions({
 		Vector3(-1,  1, -1),
@@ -48,7 +48,6 @@ PresentRPass::~PresentRPass() {
 }
 
 void PresentRPass::Render() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	shader->Bind();
 
 	sceneTexIn->Bind(0);

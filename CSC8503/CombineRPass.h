@@ -6,12 +6,13 @@
  * @date   February 2023
  */
 #pragma once
-#include "OGLMainRenderPass.h"
+#include "OGLCombineRenderPass.h"
+
+#include "OGLTexture.h"
 
 namespace NCL::Rendering {
 	class OGLFrameBuffer;
 	class OGLShader;
-	class OGLTexture;
 }
 
 using namespace NCL::Rendering;
@@ -25,7 +26,7 @@ namespace NCL::CSC8503 {
 		DiffuseLight,
 		SpecularLight,
 	};
-	class CombineRPass : public OGLMainRenderPass {
+	class CombineRPass : public OGLCombineRenderPass {
 	public:
 		CombineRPass(OGLRenderer& renderer,
 			OGLTexture* skyboxTexIn, OGLTexture* diffuseTexIn,

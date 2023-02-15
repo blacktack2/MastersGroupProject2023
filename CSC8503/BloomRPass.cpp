@@ -16,8 +16,8 @@
 
 using namespace NCL::CSC8503;
 
-BloomRPass::BloomRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn) :
-	OGLPostRenderPass(renderer), sceneTexIn(sceneTexIn) {
+BloomRPass::BloomRPass(OGLRenderer& renderer) :
+	OGLPostRenderPass(renderer) {
 	SetBloomDepth(bloomDepth);
 	colourOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGBA16F);
 	AddScreenTexture(colourOutTex);

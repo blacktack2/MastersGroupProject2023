@@ -12,26 +12,71 @@ RendererBase::RendererBase(Window& window) : hostWindow(window)	{
 RendererBase::~RendererBase() {
 }
 
+void RendererBase::EnableRenderScene(bool enable) {
+	doRenderScene = enable;
+}
+
+void RendererBase::EnablePostProcessing(bool enable) {
+	doRenderPost = enable;
+}
+
+void RendererBase::EnableRenderOverlay(bool enable) {
+	doRenderOver = enable;
+}
+
+void RendererBase::UpdatePipeline() {
+	renderPipeline.clear();
+	if (doRenderScene) {
+		for (auto& pass : mainRenderPasses) {
+			renderPipeline.push_back(pass.pass);
+		}
+		renderPipeline.push_back(combinePass);
+		if (doRenderPost) {
+			bool first = true;
+			IPostRenderPass* last = nullptr;
+			for (auto pass = postRenderPasses.begin(); pass != postRenderPasses.end(); pass++) {
+				if (!pass->enabled) {
+					continue;
+				}
+				if (first) {
+					first = false;
+					pass->pass->SetSceneTexIn(combinePass->GetOutTex());
+				} else {
+					pass->pass->SetSceneTexIn(last->GetOutTex());
+				}
+				renderPipeline.push_back(pass->pass);
+				last = pass->pass;
+			}
+			presentPass->SetSceneTexIn(last == nullptr ? combinePass->GetOutTex() : last->GetOutTex());
+		} else {
+			presentPass->SetSceneTexIn(combinePass->GetOutTex());
+		}
+		renderPipeline.push_back(presentPass);
+	}
+	if (doRenderOver) {
+		for (auto& pass : overlayRenderPasses) {
+			if (pass.enabled) {
+				renderPipeline.push_back(pass.pass);
+			}
+		}
+	}
+}
+
 void RendererBase::OnWindowResize(int width, int height) {
-	for (IMainRenderPass* pass : mainRenderPasses) {
-		pass->OnWindowResize(width, height);
+	for (auto& pass : mainRenderPasses) {
+		pass.pass->OnWindowResize(width, height);
 	}
-	for (IPostRenderPass* pass : postRenderPasses) {
-		pass->OnWindowResize(width, height);
+	for (auto& pass : postRenderPasses) {
+		pass.pass->OnWindowResize(width, height);
 	}
-	for (IOverlayRenderPass* pass : overlayRenderPasses) {
-		pass->OnWindowResize(width, height);
+	for (auto& pass : overlayRenderPasses) {
+		pass.pass->OnWindowResize(width, height);
 	}
 }
 
 void RendererBase::RenderFrame() {
-	for (auto pass : mainRenderPasses) {
-		pass->Render();
-	}
-	for (auto pass : postRenderPasses) {
-		pass->Render();
-	}
-	for (auto pass : overlayRenderPasses) {
+	ClearBackbuffer();
+	for (auto& pass : renderPipeline) {
 		pass->Render();
 	}
 }

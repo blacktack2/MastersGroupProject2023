@@ -6,25 +6,30 @@
  * @date   February 2023
  */
 #pragma once
-#include "OGLOverlayRenderPass.h"
+#include "OGLPresentRenderPass.h"
 
 #include "GameWorld.h"
+
+#include "OGLTexture.h"
 
 namespace NCL::Rendering {
 	class OGLFrameBuffer;
 	class OGLShader;
-	class OGLTexture;
 }
 
 using namespace NCL::Rendering;
 
 namespace NCL::CSC8503 {
-	class PresentRPass : public OGLOverlayRenderPass {
+	class PresentRPass : public OGLPresentRenderPass {
 	public:
-		PresentRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn);
+		PresentRPass(OGLRenderer& renderer);
 		~PresentRPass();
 
 		virtual void Render() override;
+
+		virtual void SetSceneTexIn(TextureBase* sceneTex) override {
+			sceneTexIn = static_cast<OGLTexture*>(sceneTex);
+		}
 
 		void SetGamma(float gamma);
 	private:

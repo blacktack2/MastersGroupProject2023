@@ -36,23 +36,25 @@ GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetW
 		skyboxPass->GetOutTex(), modelPass->GetDiffuseOutTex(),
 		lightingPass->GetDiffuseOutTex(), lightingPass->GetSpecularOutTex(),
 		modelPass->GetNormalOutTex(), modelPass->GetDepthOutTex());
-	AddMainPass(combinePass);
+	SetCombinePass(combinePass);
 
-	bloomPass = new BloomRPass(*this, combinePass->GetOutTex());
+	bloomPass = new BloomRPass(*this);
 	SetBloomAmount(bloomAmount);
 	SetBloomBias(bloomBias);
 	AddPostPass(bloomPass);
 
-	hdrPass = new HDRRPass(*this, bloomPass->GetOutTex());
+	hdrPass = new HDRRPass(*this);
 	SetHDRExposure(hdrExposure);
 	AddPostPass(hdrPass);
 
-	presentPass = new PresentRPass(*this, hdrPass->GetOutTex());
+	presentPass = new PresentRPass(*this);
 	SetGamma(gamma);
-	AddOverlayPass(presentPass);
+	SetPresentPass(presentPass);
 
 	debugPass = new DebugRPass(*this, gameWorld);
 	AddOverlayPass(debugPass);
+
+	UpdatePipeline();
 }
 
 GameTechRenderer::~GameTechRenderer() {

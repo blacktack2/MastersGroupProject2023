@@ -43,8 +43,11 @@ set(Maths
 source_group("Maths" FILES ${Maths})
 
 set(Interfaces
+    "IRenderPass.h"
     "IMainRenderPass.h"
+    "ICombineRenderPass.h"
     "IPostRenderPass.h"
+    "IPresentRenderPass.h"
     "IOverlayRenderPass.h"
 )
 source_group("Interfaces" FILES ${Interfaces})

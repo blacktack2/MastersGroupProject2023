@@ -21,7 +21,7 @@ namespace NCL::Rendering {
 namespace NCL::CSC8503 {
 	class BloomRPass : public OGLPostRenderPass {
 	public:
-		BloomRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn);
+		BloomRPass(OGLRenderer& renderer);
 		~BloomRPass();
 
 		virtual void OnWindowResize(int width, int height) override;

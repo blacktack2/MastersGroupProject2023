@@ -9,10 +9,14 @@ https://research.ncl.ac.uk/game/
 #pragma once
 #include "Window.h"
 
+#include "RenderPassBase.h"
 #include "IMainRenderPass.h"
+#include "ICombineRenderPass.h"
 #include "IPostRenderPass.h"
+#include "IPresentRenderPass.h"
 #include "IOverlayRenderPass.h"
 
+#include <string>
 #include <vector>
 
 namespace NCL::Rendering {
@@ -43,6 +47,12 @@ namespace NCL::Rendering {
 			return false;
 		}
 
+		void EnableRenderScene(bool enable);
+		void EnablePostProcessing(bool enable);
+		void EnableRenderOverlay(bool enable);
+
+		void UpdatePipeline();
+
 		inline float GetAspect() const {
 			return (float)windowWidth / (float)windowHeight;
 		}
@@ -54,13 +64,19 @@ namespace NCL::Rendering {
 		}
 	protected:
 		inline void AddMainPass(IMainRenderPass* pass) {
-			mainRenderPasses.push_back(pass);
+			mainRenderPasses.emplace_back(pass);
+		}
+		inline void SetCombinePass(ICombineRenderPass* pass) {
+			combinePass = pass;
 		}
 		inline void AddPostPass(IPostRenderPass* pass) {
-			postRenderPasses.push_back(pass);
+			postRenderPasses.emplace_back(pass, true);
+		}
+		inline void SetPresentPass(IPresentRenderPass* pass) {
+			presentPass = pass;
 		}
 		inline void AddOverlayPass(IOverlayRenderPass* pass) {
-			overlayRenderPasses.push_back(pass);
+			overlayRenderPasses.emplace_back(pass, true);
 		}
 
 		virtual void OnWindowResize(int width, int height);
@@ -69,15 +85,36 @@ namespace NCL::Rendering {
 		virtual void BeginFrame()  = 0;
 		virtual void EndFrame()    = 0;
 		virtual void SwapBuffers() = 0;
+		virtual void ClearBackbuffer() = 0;
 		Window& hostWindow;
 
 		int windowWidth;
 		int windowHeight;
 	private:
+		struct MainPass {
+			IMainRenderPass* pass;
+		};
+		struct PostPass {
+			IPostRenderPass* pass;
+			bool enabled;
+		};
+		struct OverPass {
+			IOverlayRenderPass* pass;
+			bool enabled;
+		};
+
 		void RenderFrame();
 
-		std::vector<IMainRenderPass*>  mainRenderPasses;
-		std::vector<IPostRenderPass*> postRenderPasses;
-		std::vector<IOverlayRenderPass*>  overlayRenderPasses;
+		bool doRenderScene = true;
+		bool doRenderPost  = true;
+		bool doRenderOver  = true;
+
+		std::vector<MainPass> mainRenderPasses;
+		ICombineRenderPass* combinePass;
+		std::vector<PostPass> postRenderPasses;
+		IPresentRenderPass* presentPass;
+		std::vector<OverPass> overlayRenderPasses;
+
+		std::vector<IRenderPass*> renderPipeline;
 	};
 }

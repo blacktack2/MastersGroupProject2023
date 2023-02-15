@@ -21,7 +21,7 @@ using namespace NCL::Rendering;
 namespace NCL::CSC8503 {
 	class HDRRPass : public OGLPostRenderPass {
 	public:
-		HDRRPass(OGLRenderer& renderer, OGLTexture* sceneIn);
+		HDRRPass(OGLRenderer& renderer);
 		~HDRRPass();
 
 		virtual void Render() override;

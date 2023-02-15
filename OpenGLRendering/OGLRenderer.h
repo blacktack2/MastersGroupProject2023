@@ -59,6 +59,7 @@ namespace NCL::Rendering {
 		void BeginFrame() override;
 		void EndFrame() override;
 		void SwapBuffers() override;
+		void ClearBackbuffer() override;
 
 #ifdef _WIN32
 		void InitWithWin32(Window& w);

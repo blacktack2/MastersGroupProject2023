@@ -78,6 +78,10 @@ void OGLRenderer::SwapBuffers() {
 	::SwapBuffers(deviceContext);
 }
 
+void OGLRenderer::ClearBackbuffer() {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
 #ifdef _WIN32
 void OGLRenderer::InitWithWin32(Window& w) {
 	Win32Code::Win32Window* realWindow = (Win32Code::Win32Window*)&w;
