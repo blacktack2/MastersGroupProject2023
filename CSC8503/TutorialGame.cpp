@@ -272,7 +272,7 @@ void TutorialGame::UpdateGame(float dt) {
 void TutorialGame::InitialiseAssets() {
 	cubeMesh    = renderer->LoadMesh("cube.msh");
 	sphereMesh  = renderer->LoadMesh("sphere.msh");
-	charMesh    = renderer->LoadMesh("pillar.msh");
+	charMesh    = renderer->LoadMesh("goat.msh");
 	enemyMesh   = renderer->LoadMesh("goose.msh");
 	npcMesh     = renderer->LoadMesh("Keeper.msh");
 	bonusMesh   = renderer->LoadMesh("Sphere.msh");

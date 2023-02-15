@@ -1,5 +1,9 @@
-#pragma once
+/*********************************************************************
+ * Author: Xiaoyang Liu
+ * Date:   February 2023
+ *********************************************************************/
 
+#pragma once
 #include "GameObject.h"
 #include "Boss.h"
 
