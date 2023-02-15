@@ -3,6 +3,7 @@
 #include "SoundSource.h"
 #include "InputKeyMap.h"
 #include "GameStateManager.h"
+#include "Health.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -26,15 +27,10 @@ namespace NCL {
 				return lastInstancedObjects;
 			}
 
-			const float GetHealth() {
-				return health;
+			Health* GetHealth() {
+				return &health;
 			}
-			void Damage(float damage) {
-				health -= damage;
-			}
-			void Heal(float heal) {
-				health += heal;
-			}
+
 		protected:
 			void MoveTo(Vector3 position);
 			void Move(Vector3 dir);
@@ -58,8 +54,7 @@ namespace NCL {
 			unsigned int lastKey;
 			
 			//gameplay
-			float health = 100.0f;
-			float damageOverTimeTimer = 0.0f;
+			Health health = Health(100);
 
 		private:
 

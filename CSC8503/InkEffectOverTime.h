@@ -2,15 +2,15 @@
 
 namespace NCL {
 	namespace CSC8503 {
-		class InkEffect{
+		class InkEffectOverTime{
 		public:
-			InkEffect();
-			~InkEffect();
+			InkEffectOverTime();
+			~InkEffectOverTime();
 
 			void Update(float dt);
 
 		protected:
-			float damage = 1.0f;
+			
 		};
 	}
 }

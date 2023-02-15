@@ -78,7 +78,8 @@ void TutorialGame::InitWorld(InitMode mode) {
 	world->ClearAndErase();
 	physics->Clear();
 
-	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 400, 400, 2 ) );
+	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 100, 100, 2 ) );
+	gridManager->AddGameGrid(new GameGrid({ 100,0,0 }, 100, 100, 2));
 	player = AddPlayerToWorld(Vector3(0, 0, 0));
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 5,5,5 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
@@ -105,6 +106,8 @@ void TutorialGame::InitWorld(InitMode mode) {
 
 	InitCamera();
 }
+
+
 
 void TutorialGame::UpdateGame(float dt) {
 	GameState gameState = gameStateManager->GetGameState();
@@ -397,7 +400,7 @@ void TutorialGame::UpdateKeys() {
 			Debug::Print("Press [Space] to play again", Vector2(5, 90), Vector4(1, 1, 1, 1));
 
 			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) {
-				InitWorld(InitMode::MAZE);
+				InitWorld();
 				gameStateManager->SetGameState(GameState::OnGoing);
 			}
 			break;
@@ -406,7 +409,7 @@ void TutorialGame::UpdateKeys() {
 			Debug::Print("Press [Space] to play again", Vector2(5, 90), Vector4(1, 1, 1, 1));
 
 			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) {
-				InitWorld(InitMode::MAZE);
+				InitWorld();
 				gameStateManager->SetGameState(GameState::OnGoing);
 			}
 			break;

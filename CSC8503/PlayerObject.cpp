@@ -64,13 +64,13 @@ void PlayerObject::Update(float dt) {
 	if (onGround) {
 		GameNode* node = GameGridManager::instance().NearestNode(this->GetTransform().GetGlobalPosition());
 		if (node->inkType == BossDamage) {
-			this->Damage(1.0f);
+			health.DamageOverTime(1.0f,1.0f);
 		}
 		//GameGridManager::instance().PaintPosition(this->GetTransform().GetGlobalPosition(), PlayerDamage);
 	}
 	//*/
 
-	if (health <= 0) {
+	if (health.GetHealth() <= 0) {
 		gameStateManager->SetGameState(GameState::Lose);
 	}
 	

@@ -42,6 +42,7 @@ GameGrid::GameGrid(Vector3 gridOrigin, float totalLength, float totalWidth, floa
 	Debug::DrawLine(gameNodes[numOfColumns - 1][0].worldPosition, gridOrigin + Vector3{ 0, 10, 0 }, Debug::YELLOW, 100);
 
 	Debug::DrawLine(gameNodes[numOfColumns - 1][numOfRows - 1].worldPosition, gridOrigin + Vector3{ 0, 10, 0 }, Debug::YELLOW, 100);
+	
 	UpdateGrid();
 }
 GameGrid::~GameGrid() {
