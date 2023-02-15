@@ -212,7 +212,7 @@ void PlayerObject::Shoot() {
 void NCL::CSC8503::PlayerObject::SetupAudio()
 {
 	playerSource = new SoundSource();
-	playerSource->SetPriority(SoundPriority::SOUNDPRIORITY_HIGH);
+	playerSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
 	playerSource->SetGain(0.0f);
 	playerSource->SetSoundBuffer(Sound::AddSound("footstep06.wav"));
 	playerSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
@@ -220,7 +220,7 @@ void NCL::CSC8503::PlayerObject::SetupAudio()
 	playerSource->SetPitch(1.0f);
 
 	attackSource = new SoundSource();
-	attackSource->SetPriority(SoundPriority::SOUNDPRIORITY_HIGH);
+	attackSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
 	attackSource->SetGain(0.0f);
 	attackSource->SetSoundBuffer(Sound::AddSound("magic1.wav"));
 	attackSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
