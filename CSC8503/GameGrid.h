@@ -36,7 +36,7 @@ namespace NCL
 		{
 			Air,
 			Ink,
-			Impassable,		// All the elements >Impassable are not passable
+			Impassable		// All the elements >Impassable are not passable
 			//Fence,
 			//Pillar,
 			//Shelter
