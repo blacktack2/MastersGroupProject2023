@@ -10,9 +10,11 @@ namespace NCL
         class Obstacle : public GameObject
         {
         public:
-            Obstacle()
+            Obstacle(bool isInvincible)
                 : GameObject()
             {
+                invincible = isInvincible;
+
                 OnTriggerBeginCallback = [&](GameObject* other)
                 {
                     if (!invincible)

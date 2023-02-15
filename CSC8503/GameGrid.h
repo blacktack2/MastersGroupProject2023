@@ -114,8 +114,8 @@ namespace NCL
 				numOfColumns = columns;
 
 				gameGridOrigin = gridOrigin;
-				float rowUnitLength = totalLength / (rows - 1);
-				float columnUnitLength = totalWidth / (columns - 1);
+				rowUnitLength = totalLength / (rows - 1);
+				columnUnitLength = totalWidth / (columns - 1);
 				float width = gridOrigin.z;
 				for (int row = 0; row < rows; row++)
 				{
@@ -484,10 +484,27 @@ namespace NCL
 				return healingKits;
 			}
 
+			std::vector<std::vector<GameNode>> GetAllNodes()
+			{
+				return gameNodes;
+			}
+
+			float GetRowUnitLength()
+			{
+				return rowUnitLength;
+			}
+
+			float GetColumnUnitLength()
+			{
+				return columnUnitLength;
+			}
+
 		protected:
 
 			int numOfRows = 0;
 			int numOfColumns = 0;
+			float rowUnitLength = 0;
+			float columnUnitLength = 0;
 
 			std::vector<std::vector<GameNode>> gameNodes;
 			Vector3 gameGridOrigin;

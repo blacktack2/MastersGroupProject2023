@@ -12,6 +12,7 @@
 
 #include "GameGrid.h"	/////////
 #include "Boss.h"		/////////
+#include "Obstacle.h"	/////////
 
 namespace NCL {
 	namespace CSC8503 {
@@ -78,6 +79,7 @@ namespace NCL {
 			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);		/////////
 			void RenderBombsReleasedByBoss();															/////////
 			HealingKit* UpdateHealingKit();																/////////
+			void BuildLevel();																			/////////
 			NPCObject* AddNPCToWorld(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
 			GameObject* AddTriggerToWorld(const Vector3& position, float size);
@@ -109,7 +111,11 @@ namespace NCL {
 
 			MeshGeometry*	capsuleMesh = nullptr;
 			MeshGeometry*	cubeMesh    = nullptr;
-			MeshGeometry*	sphereMesh  = nullptr;
+			MeshGeometry* sphereMesh = nullptr;
+
+			MeshGeometry* pillarMesh = nullptr;
+			MeshGeometry* fenceMesh = nullptr;
+			MeshGeometry* shelterMesh = nullptr;
 
 			TextureBase*	basicTex    = nullptr;
 			TextureBase* healingKitTex = nullptr;		/////////
