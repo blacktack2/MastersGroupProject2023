@@ -37,9 +37,9 @@ namespace NCL
 			Air,
 			Ink,
 			Impassable,		// All the elements >Impassable are not passable
-			Fence,
-			Pillar,
-			Shelter
+			//Fence,
+			//Pillar,
+			//Shelter
 		};
 
 		class HealingKit : public GameObject
@@ -132,42 +132,7 @@ namespace NCL
 					width += rowUnitLength;
 				}
 
-				BuildLevel("BasicLevel.txt");
-
 				UpdateGrid();
-			}
-
-			void BuildLevel(const std::string& filename)
-			{
-				std::ifstream infile(Assets::DATADIR + filename);
-
-				int levelLength = 200;
-				int levelWidth = 200;
-
-				for (int y = 0; y < levelWidth; ++y) {
-					for (int x = 0; x < levelLength; ++x) {
-						GameNode* node = &(gameNodes[y][x]);
-						char type = 0;
-						infile >> type;
-						switch (type)
-						{
-						case 'x':
-							node->type = Pillar;
-							break;
-						case '-':
-							node->type = Fence;
-							break;
-						case '*':
-							node->type = Shelter;
-							break;
-						case '.':
-							node->type = Air;
-							break;
-						default:
-							break;
-						}
-					}
-				}
 			}
 
 			void UpdateHealingKits(GameObject* obj, Vector3 dimension)

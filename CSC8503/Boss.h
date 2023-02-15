@@ -31,6 +31,7 @@ namespace NCL
                 {
                     if (PlayerObject* player = dynamic_cast<PlayerObject*>(other)) {
                         lifeSpan = -1.0f;
+                        //std::cout << "hittttttttttttttttttttttttttttttttttttttttttttttttttttttttttting\n";
                     }
                 };
             }

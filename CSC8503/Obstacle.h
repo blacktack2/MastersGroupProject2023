@@ -5,6 +5,7 @@
 
 #pragma once
 #include "GameObject.h"
+#include "GameLevel.h"
 #include "Boss.h"
 
 namespace NCL
@@ -14,9 +15,10 @@ namespace NCL
         class Obstacle : public GameObject
         {
         public:
-            Obstacle(bool isInvincible)
+            Obstacle(GameStuff* gs, bool isInvincible)
                 : GameObject()
             {
+                obj = gs;
                 invincible = isInvincible;
 
                 OnTriggerBeginCallback = [&](GameObject* other)
@@ -39,12 +41,14 @@ namespace NCL
                 if (health < 0.0f)
                 {
                     Delete();
+                    obj->Destroy(true);
                 }
             }
 
         protected:
             bool invincible = true;
             float health = 100.0f;
+            GameStuff* obj = nullptr;
         };
     }
 }

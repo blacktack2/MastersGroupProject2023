@@ -13,6 +13,7 @@
 #include "GameGrid.h"	/////////
 #include "Boss.h"		/////////
 #include "Obstacle.h"	/////////
+#include "GameLevel.h"	/////////
 
 namespace NCL {
 	namespace CSC8503 {
@@ -147,6 +148,7 @@ namespace NCL {
 
 			paintHell::debug::DebugViewPoint* debugViewPoint;
 
+			GameLevel* gameLevel = nullptr;	/////////
 			GameGrid* gameGrid = nullptr;	/////////
 			GameObject* floor = nullptr;	/////////
 			Boss* testingBoss = nullptr;   /////////

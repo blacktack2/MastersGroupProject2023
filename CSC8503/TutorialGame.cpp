@@ -75,8 +75,8 @@ void TutorialGame::InitWorld(InitMode mode) {
 	world->ClearAndErase();
 	physics->Clear();
 
-	gameGrid = new GameGrid{ {-200,0,-200},200,200,200 * 2,200 * 2 };	// MUST initialize gameGrid BEFORE boss/player, otherwise boss/player will be referring to nullptr
-	//BuildLevel();
+	gameGrid = new GameGrid{ {-200,0,-200},100,100,100 * 2,100 * 2 };	// MUST initialize gameGrid BEFORE boss/player, otherwise boss/player will be referring to nullptr
+	BuildLevel();
 	player = AddPlayerToWorld(Vector3(0, 0, 0));
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 5,5,5 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
@@ -278,9 +278,10 @@ void TutorialGame::InitialiseAssets() {
 	bonusMesh   = renderer->LoadMesh("Sphere.msh");
 	capsuleMesh = renderer->LoadMesh("capsule.msh");
 
-	pillarMesh = renderer->LoadMesh("pillar.msh");
-	fenceMesh = renderer->LoadMesh("capsule.msh");		// TODO
-	shelterMesh = renderer->LoadMesh("shelter.msh");
+	// TODO
+	pillarMesh = renderer->LoadMesh("cube.msh");
+	fenceMesh = renderer->LoadMesh("cube.msh");
+	shelterMesh = renderer->LoadMesh("cube.msh");
 
 	AssetLibrary::AddMesh("cube", cubeMesh);
 	AssetLibrary::AddMesh("sphere", sphereMesh);
@@ -754,54 +755,54 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 
 void TutorialGame::BuildLevel()
 {
-	Vector3 dimensions{ gameGrid->GetColumnUnitLength() / 2.0f, 1.0f, gameGrid->GetRowUnitLength() / 2.0f };	// TODO: figure out the right scale
-	std::vector<std::vector<GameNode>> nodes = gameGrid->GetAllNodes();
-	for (const auto& row : nodes)
+	float interval = 5.0f;
+	Vector3 dimensions{ interval / 2.0f, 1.0f, interval / 2.0f };	// TODO: figure out the right scale
+	gameLevel = new GameLevel{};
+	gameLevel->AddRectanglarLevel("BasicLevel.txt", { 0,0,0 }, interval);
+
+	for (auto& object : gameLevel->GetGameStuffs())
 	{
-		for (const auto& node : row)
+		if (object.objectType == ObjectType::Pillar)
 		{
-			if (node.type == Pillar)
-			{
-				Obstacle* pillar = new Obstacle{ true };
-				dimensions.y = 5.0f;
-				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
-				pillar->GetTransform()
-					.SetPosition(node.worldPosition)	// TODO: change height if necessary
-					.SetScale(dimensions * 2);
-				pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), pillarMesh, nullptr, nullptr));
-				pillar->SetPhysicsObject(new PhysicsObject(&pillar->GetTransform(), pillar->GetBoundingVolume()));
-				pillar->GetPhysicsObject()->SetInverseMass(0);
-				pillar->GetPhysicsObject()->InitCubeInertia();
-				world->AddGameObject(pillar);
-			}
-			if (node.type == Fence)
-			{
-				Obstacle* fence = new Obstacle{ true };
-				dimensions.y = 1.0f;
-				fence->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
-				fence->GetTransform()
-					.SetPosition(node.worldPosition)	// TODO: change height if necessary
-					.SetScale(dimensions * 2);
-				fence->SetRenderObject(new RenderObject(&fence->GetTransform(), pillarMesh, nullptr, nullptr));		// TODO: change to the right Mesh
-				fence->SetPhysicsObject(new PhysicsObject(&fence->GetTransform(), fence->GetBoundingVolume()));
-				fence->GetPhysicsObject()->SetInverseMass(0);
-				fence->GetPhysicsObject()->InitCubeInertia();
-				world->AddGameObject(fence);
-			}
-			if (node.type == Shelter)
-			{
-				Obstacle* shelter = new Obstacle{ false };
-				dimensions.y = 1.0f;
-				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
-				shelter->GetTransform()
-					.SetPosition(node.worldPosition)	// TODO: change height if necessary
-					.SetScale(dimensions * 2);
-				shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), shelterMesh, nullptr, nullptr));
-				shelter->SetPhysicsObject(new PhysicsObject(&shelter->GetTransform(), shelter->GetBoundingVolume()));
-				shelter->GetPhysicsObject()->SetInverseMass(0);
-				shelter->GetPhysicsObject()->InitCubeInertia();
-				world->AddGameObject(shelter);
-			}
+			Obstacle* pillar = new Obstacle{ &object, true };
+			dimensions.y = 5.0f;
+			pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+			pillar->GetTransform()
+				.SetPosition(object.worldPos + Vector3{0,5,0})	// TODO: change height if necessary
+				.SetScale(dimensions * 2);
+			pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), pillarMesh, nullptr, nullptr));
+			pillar->SetPhysicsObject(new PhysicsObject(&pillar->GetTransform(), pillar->GetBoundingVolume()));
+			pillar->GetPhysicsObject()->SetInverseMass(0);
+			pillar->GetPhysicsObject()->InitCubeInertia();
+			world->AddGameObject(pillar);
+		}
+		if (object.objectType == ObjectType::Fence)
+		{
+			Obstacle* fence = new Obstacle{ &object, true };
+			dimensions.y = 1.0f;
+			fence->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+			fence->GetTransform()
+				.SetPosition(object.worldPos)	// TODO: change height if necessary
+				.SetScale(dimensions * 2);
+			fence->SetRenderObject(new RenderObject(&fence->GetTransform(), fenceMesh, nullptr, nullptr));		// TODO: change to the right Mesh
+			fence->SetPhysicsObject(new PhysicsObject(&fence->GetTransform(), fence->GetBoundingVolume()));
+			fence->GetPhysicsObject()->SetInverseMass(0);
+			fence->GetPhysicsObject()->InitCubeInertia();
+			world->AddGameObject(fence);
+		}
+		if (object.objectType == ObjectType::Shelter)
+		{
+			Obstacle* shelter = new Obstacle{ &object, false };
+			dimensions.y = 1.0f;
+			shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+			shelter->GetTransform()
+				.SetPosition(object.worldPos)	// TODO: change height if necessary
+				.SetScale(dimensions * 2);
+			shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), shelterMesh, nullptr, nullptr));
+			shelter->SetPhysicsObject(new PhysicsObject(&shelter->GetTransform(), shelter->GetBoundingVolume()));
+			shelter->GetPhysicsObject()->SetInverseMass(0);
+			shelter->GetPhysicsObject()->InitCubeInertia();
+			world->AddGameObject(shelter);
 		}
 	}
 }
