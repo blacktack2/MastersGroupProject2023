@@ -1,6 +1,6 @@
 /**
  * @file   OGLCombineRenderPass.h
- * @brief
+ * @brief  Base OpenGL implementation of the combine render pass.
  *
  * @author Stuart Lewis
  * @date   February 2023
@@ -12,6 +12,9 @@
 #include "OGLRenderer.h"
 
 namespace NCL::Rendering {
+	/**
+	 * @brief Base OpenGL implementation of the combine render pass.
+	 */
 	class OGLCombineRenderPass : public OGLRenderPass, public ICombineRenderPass {
 	public:
 		OGLCombineRenderPass(OGLRenderer& renderer) : OGLRenderPass(renderer) {}

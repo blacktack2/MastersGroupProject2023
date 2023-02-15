@@ -1,6 +1,6 @@
 /**
  * @file   OGLRenderer.h
- * @brief  
+ * @brief  Base OpenGL implementation of the main renderer.
  * 
  * @author Rich Davidson
  * @author Stuart Lewis
@@ -39,7 +39,10 @@ namespace NCL::Rendering {
 	class OGLTexture;
 
 	class SimpleFont;
-		
+	
+	/**
+	 * @brief Base OpenGL implementation of the main renderer.
+	 */
 	class OGLRenderer : public RendererBase {
 	public:
 		OGLRenderer(Window& w);
@@ -58,6 +61,7 @@ namespace NCL::Rendering {
 	protected:
 		void BeginFrame() override;
 		void EndFrame() override;
+
 		void SwapBuffers() override;
 		void ClearBackbuffer() override;
 
@@ -68,7 +72,6 @@ namespace NCL::Rendering {
 		HDC deviceContext;
 		HGLRC renderContext;
 #endif
-
 	private:
 		bool initState;
 		bool forceValidDebugState;

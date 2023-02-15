@@ -1,3 +1,10 @@
+/**
+ * @file   RendererBase.cpp
+ * @brief  See RendererBase.h.
+ * 
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
 #include "RendererBase.h"
 
 using namespace NCL;

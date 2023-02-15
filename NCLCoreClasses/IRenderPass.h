@@ -9,6 +9,10 @@
 #pragma once
 
 namespace NCL::Rendering {
+	/**
+	 * @brief Top-most Interface class representing a single pass in the
+	 * rendering pipeline.
+	 */
 	class IRenderPass {
 	public:
 		virtual void OnWindowResize(int width, int height) = 0;

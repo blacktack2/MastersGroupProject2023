@@ -1,6 +1,6 @@
 /**
  * @file   OGLPostRenderPass.h
- * @brief  
+ * @brief  Base OpenGL implementation of a post-process stage render pass.
  * 
  * @author Stuart Lewis
  * @date   February 2023
@@ -12,6 +12,9 @@
 #include "OGLRenderer.h"
 
 namespace NCL::Rendering {
+	/**
+	 * @brief Base OpenGL implementation of a post-process stage render pass.
+	 */
 	class OGLPostRenderPass : public OGLRenderPass, public IPostRenderPass {
 	public:
 		OGLPostRenderPass(OGLRenderer& renderer) : OGLRenderPass(renderer) {}

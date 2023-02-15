@@ -1,6 +1,6 @@
 /**
  * @file   OGLMainRenderPass.h
- * @brief
+ * @brief  Base OpenGL implementation of a main stage render pass.
  *
  * @author Stuart Lewis
  * @date   February 2023
@@ -12,6 +12,9 @@
 #include "OGLRenderer.h"
 
 namespace NCL::Rendering {
+	/**
+	 * @brief Base OpenGL implementation of a main stage render pass.
+	 */
 	class OGLMainRenderPass : public OGLRenderPass, public IMainRenderPass {
 	public:
 		OGLMainRenderPass(OGLRenderer& renderer) : OGLRenderPass(renderer) {}

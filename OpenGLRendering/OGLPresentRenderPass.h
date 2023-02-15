@@ -1,6 +1,6 @@
 /**
  * @file   OGLPresentRenderPass.h
- * @brief
+ * @brief  Base OpenGL implementation of the presentation render pass.
  *
  * @author Stuart Lewis
  * @date   February 2023
@@ -12,6 +12,9 @@
 #include "OGLRenderer.h"
 
 namespace NCL::Rendering {
+	/**
+	 * @brief Base OpenGL implementation of the presentation render pass.
+	 */
 	class OGLPresentRenderPass : public OGLRenderPass, public IPresentRenderPass {
 	public:
 		OGLPresentRenderPass(OGLRenderer& renderer) : OGLRenderPass(renderer) {}

@@ -1,6 +1,6 @@
 /**
  * @file   OGLOverlayRenderPass.h
- * @brief
+ * @brief  Base OpenGL implementation of an overlay stage render pass.
  *
  * @author Stuart Lewis
  * @date   February 2023
@@ -12,6 +12,9 @@
 #include "OGLRenderer.h"
 
 namespace NCL::Rendering {
+	/**
+	 * @brief Base OpenGL implementation of an overlay stage render pass.
+	 */
 	class OGLOverlayRenderPass : public OGLRenderPass, public IOverlayRenderPass {
 	public:
 		OGLOverlayRenderPass(OGLRenderer& renderer) : OGLRenderPass(renderer) {}
