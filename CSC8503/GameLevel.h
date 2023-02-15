@@ -39,10 +39,10 @@ namespace NCL
 
             Vector3 worldPos;
             ObjectType objectType;
-            bool destroyed = false;
+            bool destroyed = true;      // treat first build as rebuild, to eliminate repeated code
         };
 
-        class GameLevel
+        class GameLevel : public GameObject
         {
         public:
             GameLevel(Vector3 o = Vector3{0,0,0})
@@ -51,6 +51,11 @@ namespace NCL
             }
 
             //~GameLevel(){}
+
+            virtual void Update(float dt) override
+            {
+                shelterTimer += dt;
+            }
 
             void AddStuff(Vector3 localPos, ObjectType t)
             {
@@ -98,9 +103,20 @@ namespace NCL
                 return stuffs;
             }
 
+            float GetShelterTimer()
+            {
+                return shelterTimer;
+            }
+
+            void SetShelterTimer(float t)
+            {
+                shelterTimer = t;
+            }
+
         protected:
             Vector3 origin{ 0,0,0 };
             std::vector<GameStuff> stuffs;
+            float shelterTimer = 0.0f;
         };
     }
 }

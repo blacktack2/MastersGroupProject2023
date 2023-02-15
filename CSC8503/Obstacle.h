@@ -22,15 +22,14 @@ namespace NCL
 
                 OnTriggerBeginCallback = [&](GameObject* other)
                 {
-                    if (!invincible)
+                    if (Bomb* bomb = dynamic_cast<Bomb*>(other))
                     {
-                        if (Bomb* bomb = dynamic_cast<Bomb*>(other))
+                        if (!invincible)
                         {
-                            health -= 1.0f;
-                            bomb->SetLifeSpan(-1.0f);
+                            health -= 10.0f;
                         }
+                        bomb->SetLifeSpan(-1.0f);
                     }
-                    
                 };
             }
 
@@ -40,8 +39,8 @@ namespace NCL
             {
                 if (health < 0.0f)
                 {
-                    Delete();
                     obj->Destroy(true);
+                    Delete();
                 }
             }
 

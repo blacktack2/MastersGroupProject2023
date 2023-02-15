@@ -153,6 +153,7 @@ namespace NCL {
 			GameObject* floor = nullptr;	/////////
 			Boss* testingBoss = nullptr;   /////////
 			BossBehaviorTree* testingBossBehaviorTree = nullptr;   /////////
+			float wallTimer = 0.0f;
 		};
 	}
 }
