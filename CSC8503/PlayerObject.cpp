@@ -39,10 +39,10 @@ PlayerObject::~PlayerObject() {
 }
 
 void PlayerObject::Update(float dt) {
-	if (this->GetTransform().GetGlobalPosition().y < 1.0f)		// please fix the physics system
+	/*if (this->GetTransform().GetGlobalPosition().y < 1.0f)		// please fix the physics system
 	{
 		GetTransform().SetPosition({ GetTransform().GetGlobalPosition().x, 1.0f, GetTransform().GetGlobalPosition().z });
-	}
+	}*/
 
 	lastInstancedObjects.clear();
 	jumpTimer -= dt;

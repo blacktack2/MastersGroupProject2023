@@ -248,8 +248,8 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 	transformA.SetPosition(transformA.GetGlobalPosition() - (p.normal * p.penetration * (physA->GetInverseMass() / totalMass)));
 	transformB.SetPosition(transformB.GetGlobalPosition() + (p.normal * p.penetration * (physB->GetInverseMass() / totalMass)));
 
-	Vector3 relativeA = p.contactPoint - transformA.GetGlobalPosition();
-	Vector3 relativeB = p.contactPoint - transformB.GetGlobalPosition();
+	Vector3 relativeA = p.localA;
+	Vector3 relativeB = p.localB;
 
 	Vector3 angVelocityA = Vector3::Cross(physA->GetAngularVelocity(), relativeA);
 	Vector3 angVelocityB = Vector3::Cross(physB->GetAngularVelocity(), relativeB);
