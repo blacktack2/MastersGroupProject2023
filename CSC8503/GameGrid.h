@@ -6,13 +6,15 @@
 
 #pragma once
 
+#include <fstream>
 #include <vector>
 #include "Vector3.h"
 #include "Debug.h"
 #include "GameObject.h"
 #include "NavigationPath.h"
- //#include "Boss.h"
- //#include "PlayerObject.h"
+#include "Assets.h"
+
+
 
 using namespace NCL::Maths;
 
@@ -33,8 +35,11 @@ namespace NCL
 		enum NodeType
 		{
 			Air,
-			Impassable,
-			Ink
+			Ink,
+			Impassable,		// All the elements >Impassable are not passable
+			Fence,
+			Pillar,
+			Shelter
 		};
 
 		class HealingKit : public GameObject
@@ -126,7 +131,43 @@ namespace NCL
 					gameNodes.push_back(r);
 					width += rowUnitLength;
 				}
+
+				BuildLevel("BasicLevel.txt");
+
 				UpdateGrid();
+			}
+
+			void BuildLevel(const std::string& filename)
+			{
+				std::ifstream infile(Assets::DATADIR + filename);
+
+				int levelLength = 200;
+				int levelWidth = 200;
+
+				for (int y = 0; y < levelWidth; ++y) {
+					for (int x = 0; x < levelLength; ++x) {
+						GameNode* node = &(gameNodes[y][x]);
+						char type = 0;
+						infile >> type;
+						switch (type)
+						{
+						case 'x':
+							node->type = Pillar;
+							break;
+						case '-':
+							node->type = Fence;
+							break;
+						case '*':
+							node->type = Shelter;
+							break;
+						case '.':
+							node->type = Air;
+							break;
+						default:
+							break;
+						}
+					}
+				}
 			}
 
 			void UpdateHealingKits(GameObject* obj, Vector3 dimension)
@@ -216,7 +257,7 @@ namespace NCL
 									}
 									// ...
 								}
-								if (n.connected[i]->type == Impassable)
+								if (n.connected[i]->type >= Impassable)		// recall that all the NodeTpye > Impassable are not passable
 								{
 									n.connected[i] = nullptr; // You may not pass! disconnect!
 								}
