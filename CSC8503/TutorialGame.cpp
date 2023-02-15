@@ -80,9 +80,6 @@ void TutorialGame::InitWorld(InitMode mode) {
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 5,5,5 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
 
-	AddCapsuleToWorld(Vector3(2, 2, 2), 2.0f, 1.0f, 10.0f);
-	AddCapsuleToWorld(Vector3(5, 5, 5), 2.0f, 1.0f, 10.0f);
-
 	switch (mode) {
 		case InitMode::MAZE             : InitMazeWorld(20, 20, 20.0f)                            ; break;
 		case InitMode::MIXED_GRID       : InitMixedGridWorld(1, 1, 3.5f, 3.5f)                  ; break;
