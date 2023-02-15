@@ -42,6 +42,13 @@ set(Maths
 )
 source_group("Maths" FILES ${Maths})
 
+set(Interfaces
+    "IMainRenderPass.h"
+    "IPostRenderPass.h"
+    "IOverlayRenderPass.h"
+)
+source_group("Interfaces" FILES ${Interfaces})
+
 set(Rendering
     "FrameBuffer.cpp"
     "FrameBuffer.h"
@@ -93,6 +100,7 @@ set(ALL_FILES
     ${Asset_Handling}
     ${Header_Files}
     ${Maths}
+    ${Interfaces}
     ${Rendering}
     ${Source_Files}
     ${Windowing_and_Input}

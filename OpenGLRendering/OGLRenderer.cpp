@@ -61,23 +61,14 @@ OGLRenderer::~OGLRenderer() {
 }
 
 void OGLRenderer::OnWindowResize(int width, int height) {
+	RendererBase::OnWindowResize(width, height);
 	windowWidth  = width;
 	windowHeight = height;
 
 	glViewport(0, 0, windowWidth, windowHeight);
-
-	for (OGLRenderPass* pass : renderPasses) {
-		pass->OnWindowResize(width, height);
-	}
 }
 
 void OGLRenderer::BeginFrame() {
-}
-
-void OGLRenderer::RenderFrame() {
-	for (auto pass : renderPasses) {
-		pass->Render();
-	}
 }
 
 void OGLRenderer::EndFrame() {

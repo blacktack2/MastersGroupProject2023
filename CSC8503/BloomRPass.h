@@ -6,18 +6,20 @@
  * @date   February 2023
  */
 #pragma once
-#include "OGLRenderPass.h"
+#include "OGLPostRenderPass.h"
+
+#include "OGLTexture.h"
 
 #include <vector>
 
 namespace NCL::Rendering {
 	class OGLFrameBuffer;
 	class OGLShader;
-	class OGLTexture;
+	class TextureBase;
 }
 
 namespace NCL::CSC8503 {
-	class BloomRPass : public OGLRenderPass {
+	class BloomRPass : public OGLPostRenderPass {
 	public:
 		BloomRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn);
 		~BloomRPass();
@@ -26,13 +28,16 @@ namespace NCL::CSC8503 {
 
 		virtual void Render() override;
 
+		OGLTexture* GetOutTex() const override {
+			return colourOutTex;
+		}
+		void SetSceneTexIn(TextureBase* sceneTex) override {
+			sceneTexIn = static_cast<OGLTexture*>(sceneTex);
+		}
+
 		void SetBloomDepth(size_t depth);
 
 		void SetBias(float bias);
-
-		inline OGLTexture* GetOutTex() const {
-			return colourOutTex;
-		}
 	private:
 		struct BloomMip {
 			float width, height;

@@ -6,7 +6,7 @@
  * @date   February 2023
  */
 #pragma once
-#include "OGLRenderPass.h"
+#include "OGLOverlayRenderPass.h"
 
 #include "GameWorld.h"
 
@@ -19,7 +19,7 @@ namespace NCL::Rendering {
 using namespace NCL::Rendering;
 
 namespace NCL::CSC8503 {
-	class PresentRPass : public OGLRenderPass {
+	class PresentRPass : public OGLOverlayRenderPass {
 	public:
 		PresentRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn);
 		~PresentRPass();

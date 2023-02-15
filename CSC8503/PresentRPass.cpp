@@ -15,7 +15,7 @@
 using namespace NCL::CSC8503;
 
 PresentRPass::PresentRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn) :
-OGLRenderPass(renderer), sceneTexIn(sceneTexIn) {
+OGLOverlayRenderPass(renderer), sceneTexIn(sceneTexIn) {
 	quad = new OGLMesh();
 	quad->SetVertexPositions({
 		Vector3(-1,  1, -1),

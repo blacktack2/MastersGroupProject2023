@@ -18,7 +18,7 @@ CombineRPass::CombineRPass(OGLRenderer& renderer,
 	OGLTexture* skyboxTexIn, OGLTexture* diffuseTexIn,
 	OGLTexture* diffuseLightTexIn, OGLTexture* specularLightTexIn,
 	OGLTexture* normalTexIn, OGLTexture* depthTexIn) :
-OGLRenderPass(renderer), skyboxTexIn(skyboxTexIn), diffuseTexIn(diffuseTexIn),
+OGLMainRenderPass(renderer), skyboxTexIn(skyboxTexIn), diffuseTexIn(diffuseTexIn),
 diffuseLightTexIn(diffuseLightTexIn), specularLightTexIn(specularLightTexIn),
 normalTexIn(normalTexIn), depthTexIn(depthTexIn) {
 	sceneOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);

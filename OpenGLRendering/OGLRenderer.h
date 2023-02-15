@@ -34,6 +34,7 @@ namespace NCL::Maths {
 namespace NCL::Rendering {
 	class OGLMesh;
 	class OGLRenderPass;
+	class IPostRenderPass;
 	class OGLShader;
 	class OGLTexture;
 
@@ -56,7 +57,6 @@ namespace NCL::Rendering {
 		virtual bool SetVerticalSync(VerticalSyncState s);
 	protected:
 		void BeginFrame() override;
-		void RenderFrame() override;
 		void EndFrame() override;
 		void SwapBuffers() override;
 
@@ -68,7 +68,6 @@ namespace NCL::Rendering {
 		HGLRC renderContext;
 #endif
 
-		std::vector<OGLRenderPass*> renderPasses;
 	private:
 		bool initState;
 		bool forceValidDebugState;

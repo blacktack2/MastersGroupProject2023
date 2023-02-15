@@ -9,6 +9,12 @@ https://research.ncl.ac.uk/game/
 #pragma once
 #include "Window.h"
 
+#include "IMainRenderPass.h"
+#include "IPostRenderPass.h"
+#include "IOverlayRenderPass.h"
+
+#include <vector>
+
 namespace NCL::Rendering {
 	enum class VerticalSyncState {
 		VSync_ON,
@@ -47,16 +53,31 @@ namespace NCL::Rendering {
 			return windowHeight;
 		}
 	protected:
-		virtual void OnWindowResize(int w, int h) = 0;
+		inline void AddMainPass(IMainRenderPass* pass) {
+			mainRenderPasses.push_back(pass);
+		}
+		inline void AddPostPass(IPostRenderPass* pass) {
+			postRenderPasses.push_back(pass);
+		}
+		inline void AddOverlayPass(IOverlayRenderPass* pass) {
+			overlayRenderPasses.push_back(pass);
+		}
+
+		virtual void OnWindowResize(int width, int height);
 		virtual void OnWindowDetach() {};
 
 		virtual void BeginFrame()  = 0;
-		virtual void RenderFrame() = 0;
 		virtual void EndFrame()    = 0;
 		virtual void SwapBuffers() = 0;
 		Window& hostWindow;
 
 		int windowWidth;
 		int windowHeight;
+	private:
+		void RenderFrame();
+
+		std::vector<IMainRenderPass*>  mainRenderPasses;
+		std::vector<IPostRenderPass*> postRenderPasses;
+		std::vector<IOverlayRenderPass*>  overlayRenderPasses;
 	};
 }

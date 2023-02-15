@@ -6,7 +6,7 @@
  * @date   February 2023
  */
 #pragma once
-#include "OGLRenderPass.h"
+#include "OGLMainRenderPass.h"
 
 #include "GameWorld.h"
 #include "Light.h"
@@ -20,7 +20,7 @@ namespace NCL::Rendering {
 using namespace NCL::Rendering;
 
 namespace NCL::CSC8503 {
-	class LightingRPass : public OGLRenderPass {
+	class LightingRPass : public OGLMainRenderPass {
 	public:
 		LightingRPass(OGLRenderer& renderer, GameWorld& gameWorld, OGLTexture* depthTexIn, OGLTexture* normalTexIn);
 		~LightingRPass();

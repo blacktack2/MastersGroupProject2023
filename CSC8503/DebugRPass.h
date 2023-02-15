@@ -6,7 +6,7 @@
  * @date   February 2023
  */
 #pragma once
-#include "OGLRenderPass.h"
+#include "OGLOverlayRenderPass.h"
 
 #include "GameWorld.h"
 
@@ -18,7 +18,7 @@ namespace NCL::Rendering {
 using namespace NCL::Rendering;
 
 namespace NCL::CSC8503 {
-	class DebugRPass : public OGLRenderPass {
+	class DebugRPass : public OGLOverlayRenderPass {
 	public:
 		DebugRPass(OGLRenderer& renderer, GameWorld& gameWorld);
 		~DebugRPass();
