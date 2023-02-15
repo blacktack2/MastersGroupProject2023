@@ -763,7 +763,7 @@ void TutorialGame::BuildLevel()
 	float interval = 5.0f;
 	Vector3 dimensions{ interval / 2.0f, 1.0f, interval / 2.0f };	// TODO: figure out the right scale
 	gameLevel = new GameLevel{};
-	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -50,0,-50 }, interval);
+	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -100,0,-70 }, interval);
 	world->AddGameObject(gameLevel);
 
 	for (auto& object : gameLevel->GetGameStuffs())
