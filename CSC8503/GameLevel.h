@@ -14,9 +14,11 @@ namespace NCL
     {
         enum ObjectType
         {
-            Fence,
+            FenceX,
+            FenceY,
             Pillar,
-            Shelter
+            Shelter,
+            Wall
         };
 
         struct GameStuff
@@ -84,10 +86,16 @@ namespace NCL
                             AddStuff(Vector3{ x * interval, 0, y * interval }, ObjectType::Pillar);
                             break;
                         case '-':
-                            AddStuff(Vector3{ x * interval, 0, y * interval }, ObjectType::Fence);
+                            AddStuff(Vector3{ x * interval, 0, y * interval }, ObjectType::FenceX);
+                            break;
+                        case '|':
+                            AddStuff(Vector3{ x * interval, 0, y * interval }, ObjectType::FenceY);
                             break;
                         case '*':
                             AddStuff(Vector3{ x * interval, 0, y * interval }, ObjectType::Shelter);
+                            break;
+                        case '#':
+                            AddStuff(Vector3{ x * interval, 0, y * interval }, ObjectType::Wall);
                             break;
                         case '.':
                             break;

@@ -285,7 +285,9 @@ void TutorialGame::InitialiseAssets() {
 
 	// TODO
 	pillarMesh = renderer->LoadMesh("pillarCube.msh");
-	fenceMesh = renderer->LoadMesh("cube.msh");
+	fenceXMesh = renderer->LoadMesh("fenceXCube.msh");
+	fenceYMesh = renderer->LoadMesh("fenceYCube.msh");
+	wallMesh = renderer->LoadMesh("cube.msh");
 	shelterMesh = renderer->LoadMesh("shelterCube.msh");
 
 	AssetLibrary::AddMesh("cube", cubeMesh);
@@ -784,19 +786,33 @@ void TutorialGame::BuildLevel()
 				pillar->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(pillar);
 			}
-			if (object.objectType == ObjectType::Fence)
+			if (object.objectType == ObjectType::FenceX)
 			{
-				Vector3 dimensions{ interval / 2.0f, 1.0f, interval / 2.0f };	// TODO: figure out the right scale
-				Obstacle* fence = new Obstacle{ &object, true };
-				fence->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
-				fence->GetTransform()
-					.SetPosition(object.worldPos)	// TODO: change height if necessary
+				Vector3 dimensions{ interval / 4.0f, 0.5f, interval / 5.0f };
+				Obstacle* fenceX = new Obstacle{ &object, true };
+				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+				fenceX->GetTransform()
+					.SetPosition(object.worldPos + Vector3{ 0,2,0 })
 					.SetScale(dimensions * 2);
-				fence->SetRenderObject(new RenderObject(&fence->GetTransform(), fenceMesh, nullptr, nullptr));		// TODO: change to the right Mesh
-				fence->SetPhysicsObject(new PhysicsObject(&fence->GetTransform(), fence->GetBoundingVolume()));
-				fence->GetPhysicsObject()->SetInverseMass(0);
-				fence->GetPhysicsObject()->InitCubeInertia();
-				world->AddGameObject(fence);
+				fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), fenceXMesh, nullptr, nullptr));		// TODO: change to the right Mesh
+				fenceX->SetPhysicsObject(new PhysicsObject(&fenceX->GetTransform(), fenceX->GetBoundingVolume()));
+				fenceX->GetPhysicsObject()->SetInverseMass(0);
+				fenceX->GetPhysicsObject()->InitCubeInertia();
+				world->AddGameObject(fenceX);
+			}
+			if (object.objectType == ObjectType::FenceY)
+			{
+				Vector3 dimensions{ interval / 5.0f, 0.5f, interval / 4.0f };
+				Obstacle* fenceY = new Obstacle{ &object, true };
+				fenceY->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+				fenceY->GetTransform()
+					.SetPosition(object.worldPos + Vector3{ 0,2,0 })
+					.SetScale(dimensions * 2);
+				fenceY->SetRenderObject(new RenderObject(&fenceY->GetTransform(), fenceYMesh, nullptr, nullptr));		// TODO: change to the right Mesh
+				fenceY->SetPhysicsObject(new PhysicsObject(&fenceY->GetTransform(), fenceY->GetBoundingVolume()));
+				fenceY->GetPhysicsObject()->SetInverseMass(0);
+				fenceY->GetPhysicsObject()->InitCubeInertia();
+				world->AddGameObject(fenceY);
 			}
 			if (object.objectType == ObjectType::Shelter)
 			{
@@ -811,6 +827,20 @@ void TutorialGame::BuildLevel()
 				shelter->GetPhysicsObject()->SetInverseMass(0);
 				shelter->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(shelter);
+			}
+			if (object.objectType == ObjectType::Wall)
+			{
+				Vector3 dimensions{ interval / 2.0f, 10.0f, interval / 2.0f };
+				Obstacle* wall = new Obstacle{ &object, true };
+				wall->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+				wall->GetTransform()
+					.SetPosition(object.worldPos)
+					.SetScale(dimensions * 2);
+				wall->SetRenderObject(new RenderObject(&wall->GetTransform(), wallMesh, nullptr, nullptr));
+				wall->SetPhysicsObject(new PhysicsObject(&wall->GetTransform(), wall->GetBoundingVolume()));
+				wall->GetPhysicsObject()->SetInverseMass(0);
+				wall->GetPhysicsObject()->InitCubeInertia();
+				world->AddGameObject(wall);
 			}
 		}
 	}
