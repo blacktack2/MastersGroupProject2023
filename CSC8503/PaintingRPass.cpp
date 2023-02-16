@@ -4,9 +4,11 @@
 #include "GameWorld.h"
 #include "CollisionVolume.h"
 #include "PaintRenderObject.h"
+#include "DebugViewPoint.h"
 
 using namespace NCL::CSC8503;
 using namespace NCL::Rendering;
+using namespace paintHell::debug;
 
 PaintingRPass::PaintingRPass(OGLRenderer& renderer) : OGLRenderPass(renderer) {
 	shader = new OGLShader("paintStencil.vert", "paintStencil.frag");
@@ -18,6 +20,8 @@ PaintingRPass::~PaintingRPass() {
 }
 
 void PaintingRPass::Render() {
+	DebugViewPoint& debugView = DebugViewPoint::Instance();
+	debugView.MarkTime("Paint Objects");
 	frameBuffer->Bind();
 	shader->Bind();
 	glDisable(GL_CULL_FACE);
@@ -57,4 +61,5 @@ void PaintingRPass::Render() {
 	glEnable(GL_CULL_FACE);
 	shader->Unbind();
 	frameBuffer->Unbind();
+	debugView.FinishTime("Paint Objects");
 }

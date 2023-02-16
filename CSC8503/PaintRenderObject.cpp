@@ -6,6 +6,9 @@ using namespace NCL::CSC8503;
 
 PaintRenderObject::PaintRenderObject(Transform* parentTransform, MeshGeometry* mesh, TextureBase* tex) : RenderObject(parentTransform, mesh, tex, AssetLibrary::GetShader("paint")) {
 	paintTexture = new OGLTexture(1000, 1000, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
+	paintTexture->Bind();
+	paintTexture->SetFilters(GL_LINEAR, GL_LINEAR);
+	paintTexture->Unbind();
 	paintCollisions.push_back(PaintCollision(Vector3(0, 0, 0), 1));
 	width = 1000;
 	height = 1000;

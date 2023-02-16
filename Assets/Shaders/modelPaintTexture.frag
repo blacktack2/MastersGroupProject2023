@@ -1,9 +1,9 @@
 #version 460 core
 /**
- * @file   modelDefault.frag
- * @brief  Default fragment shader for rendering model data to the GBuffer.
+ * @file   modelPaintTexture.frag
+ * @brief  fragment shader for rendering model data with a paint map to the GBuffer.
  * 
- * @author Stuart Lewis
+ * @author Harry Brettell
  * @date   February 2023
  */
 
@@ -33,6 +33,12 @@ void main() {
 					normalize(IN.normal));
 
 	vec4 paint = texture(paintTex, IN.texCoord);
+	if(paint.a > 0.5) {
+		paint.a = 1;
+	}
+	else {
+		paint.a = 0;
+	}
 	
 	vec3 normal = texture(bumpTex, IN.texCoord).rgb * 2.0 - 1.0;
 	normal = normalize(TBN * normalize(normal));
@@ -42,5 +48,5 @@ void main() {
 
 	normalOut = vec4(normal * 0.5 + 0.5, 1.0);
 	
-	diffuseOut += paint;
+	diffuseOut.rgb += paint.rgb * paint.a;
 }
