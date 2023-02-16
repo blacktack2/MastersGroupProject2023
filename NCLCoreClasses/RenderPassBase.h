@@ -1,6 +1,7 @@
 /**
  * @file   RenderPassBase.h
- * @brief  
+ * @brief  Base class for render passes containing functionality common to all
+ * interfaces.
  * 
  * @author Stuart Lewis
  * @date   February 2023
@@ -11,6 +12,10 @@
 #include <vector>
 
 namespace NCL::Rendering {
+	/**
+	 * @brief Base class for render passes containing functionality common to
+	 * all interfaces.
+	 */
 	class RenderPassBase {
 	public:
 		virtual ~RenderPassBase();

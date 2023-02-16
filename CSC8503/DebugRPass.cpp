@@ -14,7 +14,7 @@
 using namespace NCL::CSC8503;
 
 DebugRPass::DebugRPass(OGLRenderer& renderer, GameWorld& gameWorld) :
-OGLRenderPass(renderer), gameWorld(gameWorld) {
+OGLOverlayRenderPass(renderer), gameWorld(gameWorld) {
 	lineShader = new OGLShader("debugLines.vert", "debugLines.frag");
 	textShader = new OGLShader("debugText.vert" , "debugText.frag" );
 

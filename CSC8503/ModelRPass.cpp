@@ -16,7 +16,7 @@
 using namespace NCL::CSC8503;
 
 ModelRPass::ModelRPass(OGLRenderer& renderer, GameWorld& gameWorld) :
-OGLRenderPass(renderer), gameWorld(gameWorld) {
+OGLMainRenderPass(renderer), gameWorld(gameWorld) {
 	diffuseOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight());
 	normalOutTex  = new OGLTexture(renderer.GetWidth(), renderer.GetHeight());
 	depthOutTex   = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), TexType::Depth);

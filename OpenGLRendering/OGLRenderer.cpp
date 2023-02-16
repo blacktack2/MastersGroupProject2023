@@ -61,23 +61,14 @@ OGLRenderer::~OGLRenderer() {
 }
 
 void OGLRenderer::OnWindowResize(int width, int height) {
+	RendererBase::OnWindowResize(width, height);
 	windowWidth  = width;
 	windowHeight = height;
 
 	glViewport(0, 0, windowWidth, windowHeight);
-
-	for (OGLRenderPass* pass : renderPasses) {
-		pass->OnWindowResize(width, height);
-	}
 }
 
 void OGLRenderer::BeginFrame() {
-}
-
-void OGLRenderer::RenderFrame() {
-	for (auto pass : renderPasses) {
-		pass->Render();
-	}
 }
 
 void OGLRenderer::EndFrame() {
@@ -85,6 +76,10 @@ void OGLRenderer::EndFrame() {
 
 void OGLRenderer::SwapBuffers() {
 	::SwapBuffers(deviceContext);
+}
+
+void OGLRenderer::ClearBackbuffer() {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 #ifdef _WIN32

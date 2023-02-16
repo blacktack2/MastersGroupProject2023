@@ -103,9 +103,6 @@ namespace NCL::CSC8503 {
 			return hdrExposure;
 		}
 	protected:
-
-		void RenderFrame() override;
-
 		GameWorld& gameWorld;
 
 		void BuildObjectList();

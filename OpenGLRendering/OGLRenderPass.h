@@ -1,6 +1,6 @@
 /**
  * @file   OGLRenderPass.h
- * @brief  
+ * @brief  Base OpenGL implementation of a render pass.
  * 
  * @author Stuart Lewis
  * @date   February 2023
@@ -15,6 +15,9 @@
 
 
 namespace NCL::Rendering {
+	/**
+	 * @brief Base OpenGL implementation of a render pass.
+	 */
 	class OGLRenderPass : public RenderPassBase {
 	public:
 		virtual ~OGLRenderPass();
