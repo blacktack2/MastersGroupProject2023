@@ -284,11 +284,11 @@ void TutorialGame::InitialiseAssets() {
 	capsuleMesh = renderer->LoadMesh("capsule.msh");
 
 	// TODO
-	pillarMesh = renderer->LoadMesh("pillarCube.msh");
-	fenceXMesh = renderer->LoadMesh("fenceXCube.msh");
-	fenceYMesh = renderer->LoadMesh("fenceYCube.msh");
-	wallMesh = renderer->LoadMesh("cube.msh");
-	shelterMesh = renderer->LoadMesh("shelterCube.msh");
+	AssetLibrary::AddMesh("pillar", renderer->LoadMesh("pillarCube.msh"));
+	AssetLibrary::AddMesh("fenceX", renderer->LoadMesh("fenceXCube.msh"));
+	AssetLibrary::AddMesh("fenceY", renderer->LoadMesh("fenceYCube.msh"));
+	AssetLibrary::AddMesh("wall", renderer->LoadMesh("cube.msh"));
+	AssetLibrary::AddMesh("shelter", renderer->LoadMesh("shelterCube.msh"));
 
 	AssetLibrary::AddMesh("cube", cubeMesh);
 	AssetLibrary::AddMesh("sphere", sphereMesh);
@@ -780,7 +780,7 @@ void TutorialGame::BuildLevel()
 				pillar->GetTransform()
 					.SetPosition(object.worldPos + Vector3{ 0,18,0 })
 					.SetScale(dimensions * 2);
-				pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), pillarMesh, nullptr, nullptr));
+				pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), AssetLibrary::GetMesh("pillar"), nullptr, nullptr));
 				pillar->SetPhysicsObject(new PhysicsObject(&pillar->GetTransform(), pillar->GetBoundingVolume()));
 				pillar->GetPhysicsObject()->SetInverseMass(0);
 				pillar->GetPhysicsObject()->InitCubeInertia();
@@ -794,7 +794,7 @@ void TutorialGame::BuildLevel()
 				fenceX->GetTransform()
 					.SetPosition(object.worldPos + Vector3{ 0,2,0 })
 					.SetScale(dimensions * 2);
-				fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), fenceXMesh, nullptr, nullptr));		// TODO: change to the right Mesh
+				fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), AssetLibrary::GetMesh("fenceX"), nullptr, nullptr));		// TODO: change to the right Mesh
 				fenceX->SetPhysicsObject(new PhysicsObject(&fenceX->GetTransform(), fenceX->GetBoundingVolume()));
 				fenceX->GetPhysicsObject()->SetInverseMass(0);
 				fenceX->GetPhysicsObject()->InitCubeInertia();
@@ -808,7 +808,7 @@ void TutorialGame::BuildLevel()
 				fenceY->GetTransform()
 					.SetPosition(object.worldPos + Vector3{ 0,2,0 })
 					.SetScale(dimensions * 2);
-				fenceY->SetRenderObject(new RenderObject(&fenceY->GetTransform(), fenceYMesh, nullptr, nullptr));		// TODO: change to the right Mesh
+				fenceY->SetRenderObject(new RenderObject(&fenceY->GetTransform(), AssetLibrary::GetMesh("fenceY"), nullptr, nullptr));		// TODO: change to the right Mesh
 				fenceY->SetPhysicsObject(new PhysicsObject(&fenceY->GetTransform(), fenceY->GetBoundingVolume()));
 				fenceY->GetPhysicsObject()->SetInverseMass(0);
 				fenceY->GetPhysicsObject()->InitCubeInertia();
@@ -822,7 +822,7 @@ void TutorialGame::BuildLevel()
 				shelter->GetTransform()
 					.SetPosition(object.worldPos + Vector3{ 0,2.2,0 })
 					.SetScale(dimensions);
-				shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), shelterMesh, nullptr, nullptr));
+				shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary::GetMesh("shelter"), nullptr, nullptr));
 				shelter->SetPhysicsObject(new PhysicsObject(&shelter->GetTransform(), shelter->GetBoundingVolume()));
 				shelter->GetPhysicsObject()->SetInverseMass(0);
 				shelter->GetPhysicsObject()->InitCubeInertia();
@@ -836,7 +836,7 @@ void TutorialGame::BuildLevel()
 				wall->GetTransform()
 					.SetPosition(object.worldPos)
 					.SetScale(dimensions * 2);
-				wall->SetRenderObject(new RenderObject(&wall->GetTransform(), wallMesh, nullptr, nullptr));
+				wall->SetRenderObject(new RenderObject(&wall->GetTransform(), AssetLibrary::GetMesh("wall"), nullptr, nullptr));
 				wall->SetPhysicsObject(new PhysicsObject(&wall->GetTransform(), wall->GetBoundingVolume()));
 				wall->GetPhysicsObject()->SetInverseMass(0);
 				wall->GetPhysicsObject()->InitCubeInertia();
