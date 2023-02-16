@@ -284,9 +284,9 @@ void TutorialGame::InitialiseAssets() {
 	capsuleMesh = renderer->LoadMesh("capsule.msh");
 
 	// TODO
-	pillarMesh = renderer->LoadMesh("cube.msh");
+	pillarMesh = renderer->LoadMesh("pillarCube.msh");
 	fenceMesh = renderer->LoadMesh("cube.msh");
-	shelterMesh = renderer->LoadMesh("cube.msh");
+	shelterMesh = renderer->LoadMesh("shelterCube.msh");
 
 	AssetLibrary::AddMesh("cube", cubeMesh);
 	AssetLibrary::AddMesh("sphere", sphereMesh);
@@ -761,7 +761,6 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 void TutorialGame::BuildLevel()
 {
 	float interval = 5.0f;
-	Vector3 dimensions{ interval / 2.0f, 1.0f, interval / 2.0f };	// TODO: figure out the right scale
 	gameLevel = new GameLevel{};
 	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -100,0,-70 }, interval);
 	world->AddGameObject(gameLevel);
@@ -773,11 +772,11 @@ void TutorialGame::BuildLevel()
 			object.Destroy(false);
 			if (object.objectType == ObjectType::Pillar)
 			{
+				Vector3 dimensions{ interval / 2.0f, 10.0f, interval / 2.0f };
 				Obstacle* pillar = new Obstacle{ &object, true };
-				dimensions.y = 5.0f;
-				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{1.3,2,1.3}));
 				pillar->GetTransform()
-					.SetPosition(object.worldPos + Vector3{ 0,5,0 })	// TODO: change height if necessary
+					.SetPosition(object.worldPos + Vector3{ 0,18,0 })
 					.SetScale(dimensions * 2);
 				pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), pillarMesh, nullptr, nullptr));
 				pillar->SetPhysicsObject(new PhysicsObject(&pillar->GetTransform(), pillar->GetBoundingVolume()));
@@ -787,8 +786,8 @@ void TutorialGame::BuildLevel()
 			}
 			if (object.objectType == ObjectType::Fence)
 			{
+				Vector3 dimensions{ interval / 2.0f, 1.0f, interval / 2.0f };	// TODO: figure out the right scale
 				Obstacle* fence = new Obstacle{ &object, true };
-				dimensions.y = 3.0f;
 				fence->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
 				fence->GetTransform()
 					.SetPosition(object.worldPos)	// TODO: change height if necessary
@@ -801,12 +800,12 @@ void TutorialGame::BuildLevel()
 			}
 			if (object.objectType == ObjectType::Shelter)
 			{
+				Vector3 dimensions{ interval / 5.0f, 2.0f, interval / 2.0f };
 				Obstacle* shelter = new Obstacle{ &object, false };
-				dimensions.y = 3.0f;
 				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
 				shelter->GetTransform()
-					.SetPosition(object.worldPos)	// TODO: change height if necessary
-					.SetScale(dimensions * 2);
+					.SetPosition(object.worldPos + Vector3{ 0,2.2,0 })
+					.SetScale(dimensions);
 				shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), shelterMesh, nullptr, nullptr));
 				shelter->SetPhysicsObject(new PhysicsObject(&shelter->GetTransform(), shelter->GetBoundingVolume()));
 				shelter->GetPhysicsObject()->SetInverseMass(0);
