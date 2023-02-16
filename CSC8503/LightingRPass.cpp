@@ -16,7 +16,7 @@
 using namespace NCL::CSC8503;
 
 LightingRPass::LightingRPass(OGLRenderer& renderer, GameWorld& gameWorld, OGLTexture* depthTexIn, OGLTexture* normalTexIn) :
-OGLRenderPass(renderer), gameWorld(gameWorld), depthTexIn(depthTexIn), normalTexIn(normalTexIn) {
+OGLMainRenderPass(renderer), gameWorld(gameWorld), depthTexIn(depthTexIn), normalTexIn(normalTexIn) {
 	lightDiffuseOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
 	lightSpecularOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
 	AddScreenTexture(lightDiffuseOutTex);

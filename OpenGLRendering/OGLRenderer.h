@@ -1,6 +1,6 @@
 /**
  * @file   OGLRenderer.h
- * @brief  
+ * @brief  Base OpenGL implementation of the main renderer.
  * 
  * @author Rich Davidson
  * @author Stuart Lewis
@@ -34,11 +34,15 @@ namespace NCL::Maths {
 namespace NCL::Rendering {
 	class OGLMesh;
 	class OGLRenderPass;
+	class IPostRenderPass;
 	class OGLShader;
 	class OGLTexture;
 
 	class SimpleFont;
-		
+	
+	/**
+	 * @brief Base OpenGL implementation of the main renderer.
+	 */
 	class OGLRenderer : public RendererBase {
 	public:
 		OGLRenderer(Window& w);
@@ -56,9 +60,10 @@ namespace NCL::Rendering {
 		virtual bool SetVerticalSync(VerticalSyncState s);
 	protected:
 		void BeginFrame() override;
-		void RenderFrame() override;
 		void EndFrame() override;
+
 		void SwapBuffers() override;
+		void ClearBackbuffer() override;
 
 #ifdef _WIN32
 		void InitWithWin32(Window& w);
@@ -67,8 +72,6 @@ namespace NCL::Rendering {
 		HDC deviceContext;
 		HGLRC renderContext;
 #endif
-
-		std::vector<OGLRenderPass*> renderPasses;
 	private:
 		bool initState;
 		bool forceValidDebugState;

@@ -1,11 +1,10 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   OGLComputeShader.cpp
+ * @brief  See OGLComputeShader.h.
+ * 
+ * @author Rich Davidson
+ * @date   February 2023
+ */
 #include "OGLComputeShader.h"
 #include "OGLShader.h"
 #include "Assets.h"
@@ -13,17 +12,16 @@ https://research.ncl.ac.uk/game/
 
 using namespace NCL;
 using namespace Rendering;
-using std::string;
 
-OGLComputeShader::OGLComputeShader(const std::string& s)	{
-	string fileContents = "";
+OGLComputeShader::OGLComputeShader(const std::string& s) {
+	std::string fileContents = "";
 	Assets::ReadTextFile(Assets::SHADERDIR + s, fileContents);
 
-	programID	= glCreateProgram();
-	shaderID	= glCreateShader(GL_COMPUTE_SHADER);
+	programID = glCreateProgram();
+	shaderID  = glCreateShader(GL_COMPUTE_SHADER);
 
-	const char* stringData		= fileContents.c_str();
-	int			stringLength	= (int)fileContents.length();
+	const char* stringData = fileContents.c_str();
+	int stringLength = (int)fileContents.length();
 	glShaderSource(shaderID, 1, &stringData, &stringLength);
 	glCompileShader(shaderID);
 	glAttachShader(programID, shaderID);
@@ -46,7 +44,7 @@ OGLComputeShader::OGLComputeShader(const std::string& s)	{
 	OGLShader::PrintCompileLog(shaderID);
 };
 
-OGLComputeShader::~OGLComputeShader()	{
+OGLComputeShader::~OGLComputeShader() {
 	glDetachShader(programID, shaderID);
 	glDeleteShader(shaderID);
 	glDeleteProgram(programID);

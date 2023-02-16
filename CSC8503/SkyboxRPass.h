@@ -6,7 +6,7 @@
  * @date   February 2023
  */
 #pragma once
-#include "OGLRenderPass.h"
+#include "OGLMainRenderPass.h"
 
 #include "GameWorld.h"
 
@@ -19,7 +19,7 @@ namespace NCL::Rendering {
 using namespace NCL::Rendering;
 
 namespace NCL::CSC8503 {
-	class SkyboxRPass : public OGLRenderPass {
+	class SkyboxRPass : public OGLMainRenderPass {
 	public:
 		SkyboxRPass(OGLRenderer& renderer, GameWorld& gameWorld);
 		~SkyboxRPass();

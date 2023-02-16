@@ -1,18 +1,20 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   OGLComputeShader.h
+ * @brief  OpenGL implementation of a compute shader.
+ * 
+ * @author Rich Davidson
+ * @date   February 2023
+ */
 #pragma once
 #include "glad\gl.h"
 
 #include <string>
 
 namespace NCL {
-	class OGLComputeShader	{
+	/**
+	 * @brief OpenGL implementation of a compute shader.
+	 */
+	class OGLComputeShader {
 	public:
 		OGLComputeShader(const std::string& s);
 		~OGLComputeShader();
@@ -23,8 +25,6 @@ namespace NCL {
 
 		void Bind() const;
 
-		//how many thread groups should be launched?
-		//number of threads within a group is determined shader side
 		void Execute(int x, int y = 1, int z = 1) const;
 
 		void GetThreadsInGroup(int&x, int& y, int&z) const;
@@ -34,12 +34,10 @@ namespace NCL {
 		int GetThreadZCount() const;
 
 		void Unbind();
-
 	protected:
-		GLuint	shaderID;
-		GLuint	programID;
-		int		programValid;
-		GLint	threadsInGroup[3];
+		GLuint shaderID;
+		GLuint programID;
+		int    programValid;
+		GLint  threadsInGroup[3];
 	};
 }
-

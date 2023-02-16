@@ -1,6 +1,6 @@
 /**
  * @file   OGLFrameBuffer.h
- * @brief  OpenGL based implementation of a framebuffer.
+ * @brief  Base OpenGL implementation of a framebuffer.
  * 
  * @author Stuart Lewis
  * @date   February 2023
@@ -14,6 +14,9 @@
 namespace NCL::Rendering {
 	class OGLTexture;
 
+	/**
+	 * @brief Base OpenGL implementation of a framebuffer.
+	 */
 	class OGLFrameBuffer : public FrameBuffer {
 	public:
 		OGLFrameBuffer();

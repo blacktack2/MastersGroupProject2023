@@ -26,36 +26,38 @@ GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetW
 	renderPasses.push_back(paintingRPass);
 
 	skyboxPass = new SkyboxRPass(*this, gameWorld);
-	renderPasses.push_back(skyboxPass);
+	AddMainPass(skyboxPass);
 
 	modelPass = new ModelRPass(*this, gameWorld);
-	renderPasses.push_back(modelPass);
+	AddMainPass(modelPass);
 
 	lightingPass = new LightingRPass(*this, gameWorld,
 		modelPass->GetDepthOutTex(), modelPass->GetNormalOutTex());
-	renderPasses.push_back(lightingPass);
+	AddMainPass(lightingPass);
 
 	combinePass = new CombineRPass(*this,
 		skyboxPass->GetOutTex(), modelPass->GetDiffuseOutTex(),
 		lightingPass->GetDiffuseOutTex(), lightingPass->GetSpecularOutTex(),
 		modelPass->GetNormalOutTex(), modelPass->GetDepthOutTex());
-	renderPasses.push_back(combinePass);
+	SetCombinePass(combinePass);
 
-	bloomPass = new BloomRPass(*this, combinePass->GetOutTex());
+	bloomPass = new BloomRPass(*this);
 	SetBloomAmount(bloomAmount);
 	SetBloomBias(bloomBias);
-	renderPasses.push_back(bloomPass);
+	AddPostPass(bloomPass, "Bloom");
 
-	hdrPass = new HDRRPass(*this, bloomPass->GetOutTex());
+	hdrPass = new HDRRPass(*this);
 	SetHDRExposure(hdrExposure);
-	renderPasses.push_back(hdrPass);
+	AddPostPass(hdrPass, "HDR");
 
-	presentPass = new PresentRPass(*this, hdrPass->GetOutTex());
+	presentPass = new PresentRPass(*this);
 	SetGamma(gamma);
-	renderPasses.push_back(presentPass);
+	SetPresentPass(presentPass);
 
 	debugPass = new DebugRPass(*this, gameWorld);
-	renderPasses.push_back(debugPass);
+	AddOverlayPass(debugPass, "Debug");
+
+	UpdatePipeline();
 }
 
 GameTechRenderer::~GameTechRenderer() {
@@ -64,12 +66,9 @@ GameTechRenderer::~GameTechRenderer() {
 	delete lightingPass;
 	delete combinePass;
 	delete presentPass;
+	delete bloomPass;
+	delete hdrPass;
 	delete debugPass;
-}
-
-void GameTechRenderer::RenderFrame() {
-	glClearColor(0, 0, 0, 0);
-	OGLRenderer::RenderFrame();
 }
 
 void GameTechRenderer::BuildObjectList() {

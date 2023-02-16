@@ -383,7 +383,7 @@ bool CollisionDetection::AABBIntersection(const AABBVolume& volumeA, const Trans
 			}
 		}
 
-		collisionInfo.AddContactPoint(Vector3(), bestAxis, penetration);
+		collisionInfo.AddContactPoint(bestAxis, penetration);
 		return true;
 	}
 	return false;
@@ -430,7 +430,7 @@ bool CollisionDetection::OBBIntersection(const OBBVolume& volumeA, const Transfo
 		}
 	}
 
-	collisionInfo.AddContactPoint(posB, Vector3(0, 1, 0), 0.1f);
+	collisionInfo.AddContactPoint(Vector3(0, 1, 0), 0.1f);
 	return true;
 }
 
@@ -444,9 +444,11 @@ bool CollisionDetection::SphereIntersection(const SphereVolume& volumeA, const T
 	if (deltaLength < radii) {
 		float penetration = radii - deltaLength;
 		Vector3 normal = delta.Normalised();
-		Vector3 collisionPoint = worldTransformA.GetGlobalPosition() + (normal * (volumeA.GetRadius() - (penetration * 0.5f)));
 
-		collisionInfo.AddContactPoint(collisionPoint, normal, penetration);
+		Vector3 localA = normal * volumeA.GetRadius();
+		Vector3 localB = -normal * volumeB.GetRadius();
+
+		collisionInfo.AddContactPoint(normal, penetration, localA, localB);
 		return true;
 	}
 	return false;
@@ -480,9 +482,11 @@ bool NCL::CollisionDetection::CapsuleIntersection(const CapsuleVolume& volumeA, 
 
 	float penetration = radii - std::sqrt(distanceSquared);
 	Vector3 normal = (pointB - pointA).Normalised();
-	Vector3 collisionPoint = centerA + (normal * (radiusA - (penetration * 0.5f)));
 
-	collisionInfo.AddContactPoint(collisionPoint, normal, penetration);
+	Vector3 localA = (normal * volumeA.GetRadius()) + (worldTransformA.GetGlobalPosition() - pointA);
+	Vector3 localB = (normal * volumeB.GetRadius()) + (worldTransformB.GetGlobalPosition() - pointB);
+
+	collisionInfo.AddContactPoint(normal, penetration, localA, localB);
 	return true;
 }
 
@@ -532,7 +536,7 @@ bool NCL::CollisionDetection::AABBOBBIntersection(const AABBVolume& volumeA, con
 		}
 	}
 
-	collisionInfo.AddContactPoint(posB, Vector3(0, 1, 0), 0.1f);
+	collisionInfo.AddContactPoint(Vector3(0, 1, 0), 0.1f);
 	return true;
 }
 
@@ -550,8 +554,11 @@ bool CollisionDetection::AABBSphereIntersection(const AABBVolume& volumeA, const
 	if (distance < volumeB.GetRadius()) {
 		Vector3 normal = distance == 0 ? delta.Normalised() : localPoint.Normalised();
 		float penetration = volumeB.GetRadius() - distance;
+		
+		Vector3 localA = Vector3();
+		Vector3 localB = -normal * volumeB.GetRadius();
 
-		collisionInfo.AddContactPoint(worldTransformA.GetGlobalPosition() + closestPointOnBox, normal, penetration);
+		collisionInfo.AddContactPoint(normal, penetration, localA, localB);
 		return true;
 	}
 	return false;
@@ -593,8 +600,11 @@ bool NCL::CollisionDetection::AABBCapsuleIntersection(const AABBVolume& volumeA,
 
 	float penetration = capsuleRadius - std::sqrt(distanceSquared);
 	Vector3 normal = (capsulePoint - boxPoint).Normalised();
+	
+	Vector3 localA = Vector3();// boxPoint - boxPos;
+	Vector3 localB = Vector3();// capsulePoint + normal * capsuleRadius - capsulePos;
 
-	collisionInfo.AddContactPoint(boxPoint, normal, penetration);
+	collisionInfo.AddContactPoint(normal, penetration, localA, localB);
 	return true;
 }
 
@@ -615,7 +625,7 @@ bool  CollisionDetection::OBBSphereIntersection(const OBBVolume& volumeA, const 
 		Vector3 normal = distanceSquared == 0 ? spherePos.Normalised() : localPoint.Normalised();
 		float penetration = volumeB.GetRadius() - std::sqrt(distanceSquared);
 
-		collisionInfo.AddContactPoint(obbPos + orientation * closestPointOnBox, orientation * normal, penetration);
+		collisionInfo.AddContactPoint(orientation * normal, penetration);
 		return true;
 	}
 
@@ -659,7 +669,7 @@ bool NCL::CollisionDetection::OBBCapsuleIntersection(const OBBVolume& volumeA, c
 	float penetration = capsuleRadius - std::sqrt(distanceSquared);
 	Vector3 normal = (capsulePoint - boxPoint).Normalised();
 
-	collisionInfo.AddContactPoint(boxPos + boxOrientation * boxPoint, boxOrientation * normal, penetration);
+	collisionInfo.AddContactPoint(boxOrientation * normal, penetration);
 	return true;
 }
 
@@ -685,9 +695,11 @@ bool NCL::CollisionDetection::SphereCapsuleIntersection(const SphereVolume& volu
 
 	float penetration = radii - std::sqrt(distanceSquared);
 	Vector3 normal = (capsulePos - sphereCenter).Normalised();
-	Vector3 collisionPoint = sphereCenter + (normal * (sphereRadius - (penetration * 0.5f)));
 
-	collisionInfo.AddContactPoint(collisionPoint, normal, penetration);
+	Vector3 localA = normal * volumeA.GetRadius();
+	Vector3 localB = capsulePos + normal * capsuleRadius - capsuleCenter;
+
+	collisionInfo.AddContactPoint(normal, penetration, localA, localB);
 	return true;
 }
 

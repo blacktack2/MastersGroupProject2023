@@ -6,28 +6,34 @@
  * @date   February 2023
  */
 #pragma once
-#include "OGLRenderPass.h"
+#include "OGLPostRenderPass.h"
+
+#include "OGLTexture.h"
 
 namespace NCL::Rendering {
 	class OGLFrameBuffer;
 	class OGLShader;
-	class OGLTexture;
+	class TextureBase;
 }
 
 using namespace NCL::Rendering;
 
 namespace NCL::CSC8503 {
-	class HDRRPass : public OGLRenderPass {
+	class HDRRPass : public OGLPostRenderPass {
 	public:
-		HDRRPass(OGLRenderer& renderer, OGLTexture* sceneIn);
+		HDRRPass(OGLRenderer& renderer);
 		~HDRRPass();
 
 		virtual void Render() override;
 
 		void SetExposure(float exposure);
 
-		inline OGLTexture* GetOutTex() const {
+		OGLTexture* GetOutTex() const override {
 			return sceneOutTex;
+		}
+
+		void SetSceneTexIn(TextureBase* sceneTex) override {
+			sceneTexIn = static_cast<OGLTexture*>(sceneTex);
 		}
 	private:
 		OGLFrameBuffer* frameBuffer;
