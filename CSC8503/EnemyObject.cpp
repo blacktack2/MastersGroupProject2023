@@ -14,7 +14,7 @@ player(player), navMap(navMap), stateMachine(new PatrolEnemyState(*this)) {
 		if (dynamic_cast<Bullet*>(other)) {
 			lastHitByBullet = 0;
 		} else if (PlayerObject * player = dynamic_cast<PlayerObject*>(other)) {
-			player->AddPoints(-500);
+			
 		}
 	};
 }
@@ -30,7 +30,7 @@ void EnemyObject::Update(float dt) {
 }
 
 void EnemyObject::Daze() {
-	player.AddPoints(50);
+	
 }
 
 bool EnemyObject::CanSeePlayer() {

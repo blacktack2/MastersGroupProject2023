@@ -12,43 +12,15 @@
 #include "PhysicsObject.h"
 #include "PlayerObject.h"
 #include "GameGrid.h"
+#include "InkEffectManager.h"
+#include "Obstacle.h"
+#include "BossBullet.h"
+#include "SphereVolume.h"
 
 namespace NCL
 {
     namespace CSC8503
     {
-        //class BossBehaviorTree;
-
-        class Bomb : public GameObject
-        {
-        public:
-            Bomb(Vector3 v)
-                : GameObject()
-            {
-                velocity = v;
-            }
-
-            //~Bomb(){}
-
-            virtual void Update(float dt) override
-            {
-                this->GetTransform().SetPosition(this->GetTransform().GetGlobalPosition() + velocity * dt);
-                lifeTime -= dt;
-                if (lifeTime < 0.0f)
-                {
-                    Delete();
-                }
-                if (this->GetTransform().GetGlobalPosition().y < 1.0f)
-                {
-                    GetTransform().SetPosition({ GetTransform().GetGlobalPosition().x, 1.0f, GetTransform().GetGlobalPosition().z });
-                }
-            }
-
-        protected:
-            Vector3 velocity{ 0,0,0 };
-            float lifeTime = 5.0f;
-        };
-
         class Boss : public GameObject
         {
 
@@ -64,11 +36,18 @@ namespace NCL
             virtual void Update(float dt) override
             {
                 deltaTime = dt;
-
+                //check boss health
+                if (GetHealth().GetHealth() <= 0) {
+                    gameStateManager->SetGameState(GameState::Win);
+                }
+                std::cout << "Boss health " << GetHealth().GetHealth() << std::endl;
+                /*
+                GameGridManager::instance().PaintPosition(this->GetTransform().GetGlobalPosition(), paintHell::InkType::BossDamage);
                 if (this->GetTransform().GetGlobalPosition().y < 1.0f)		// please fix the physics system
                 {
                     GetTransform().SetPosition({ GetTransform().GetGlobalPosition().x, 1.0f, GetTransform().GetGlobalPosition().z });
                 }
+                */
             }
 
             void Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
@@ -122,14 +101,22 @@ namespace NCL
                 }
             }
 
-            Bomb* releaseBomb(Vector3 v, Vector3 s)
+            BossBullet* releaseBossBullet(Vector3 v, Vector3 s)
             {
-                Bomb* bomb = new Bomb(v);
+                BossBullet* bomb = new BossBullet(v);
+                SphereVolume* volume = new SphereVolume(s.x);
+                bomb->SetBoundingVolume((CollisionVolume*)volume);
                 Vector3 position = this->GetTransform().GetGlobalPosition();
                 bomb->GetTransform()
                     .SetPosition(position)
                     .SetScale(s);
-
+                bomb->SetPhysicsObject(new PhysicsObject(&bomb->GetTransform(), bomb->GetBoundingVolume(), true));
+                bomb->GetPhysicsObject()->SetInverseMass(0.0f);
+                bomb->GetPhysicsObject()->InitSphereInertia();
+                if (s.Length() >= 1) {
+                    bomb->SetDamage(10);
+                }
+                
                 bombsReleased.push_back(bomb);
 
                 return bomb;
@@ -168,14 +155,14 @@ namespace NCL
                     stabTimer = 0.0f;
                     const float PI = 3.1415926f;
                     float dTheta = PI / 64;
-                    releaseBomb(bombVelocity, bombScale);
+                    releaseBossBullet(bombVelocity, bombScale);
                     Vector3 y{ 0,1,0 };
                     Vector3 yDot = Maths::Vector3::Cross(Maths::Vector3::Cross(bombDirection, y), bombDirection).Normalised();
                     for (int i = 1; i < numOfbombs; i++)
                     {
                         Vector3 dir = (bombDirection * cos(dTheta * i) + yDot * sin(dTheta * i)).Normalised();
                         Vector3 vel = dir * bombSpeed;
-                        releaseBomb(vel, bombScale);
+                        releaseBossBullet(vel, bombScale);
                     }
                     return true;
                 }
@@ -196,7 +183,7 @@ namespace NCL
                     stabTimer = 0.0f;
                     const float PI = 3.1415926f;
                     float dTheta = PI / 64;
-                    releaseBomb(bombVelocity, bombScale);
+                    releaseBossBullet(bombVelocity, bombScale);
                     Vector3 y{ 0,1,0 };
                     Vector3 leftDir = Maths::Vector3::Cross(y, bombDirection);
                     Vector3 yDot = Maths::Vector3::Cross(Maths::Vector3::Cross(bombDirection, leftDir), bombDirection).Normalised();
@@ -205,13 +192,13 @@ namespace NCL
                     {
                         Vector3 dir = (bombDirection * cos(dTheta * i) + yDot * sin(dTheta * i)).Normalised();
                         Vector3 vel = dir * bombSpeed;
-                        releaseBomb(vel, bombScale);
+                        releaseBossBullet(vel, bombScale);
                     }
                     for (int i = 1; i < numOfbombs; i++)
                     {
                         Vector3 dir = (bombDirection * cos(dTheta * i) + yDotDot * sin(dTheta * i)).Normalised();
                         Vector3 vel = dir * bombSpeed;
-                        releaseBomb(vel, bombScale);
+                        releaseBossBullet(vel, bombScale);
                     }
                     return true;
                 }
@@ -238,7 +225,7 @@ namespace NCL
                         for (int j = 0; j < 5; j++)
                         {
                             Vector3 v = bombVelocity + leftDir * dColumn * j + upDir * dRow * i;
-                            releaseBomb(v, bombScale);
+                            releaseBossBullet(v, bombScale);
                         }
                     }
                     for (int i = 0; i < 5; i++)
@@ -246,7 +233,7 @@ namespace NCL
                         for (int j = 1; j < 5; j++)
                         {
                             Vector3 v = bombVelocity - leftDir * dColumn * j + upDir * dRow * i;
-                            releaseBomb(v, bombScale);
+                            releaseBossBullet(v, bombScale);
                         }
                     }
                     return true;
@@ -325,19 +312,9 @@ namespace NCL
                 return true;
             }
 
-            float GetHealth()
+            Health GetHealth()
             {
                 return health;
-            }
-
-            void SetHealth(float hpNew)
-            {
-                health = hpNew;
-            }
-
-            void AddHealth(float hpChanges)
-            {
-                health += hpChanges;
             }
 
             bool InkSea()
@@ -377,7 +354,7 @@ namespace NCL
                         {
                             Vector3 rayDir = this->GetTransform().GetGlobalOrientation() * Vector3(cos(currentPhase), 0, sin(currentPhase));
                             Vector3 bombVelocity = rayDir * bombSpeed;
-                            releaseBomb(bombVelocity, bombScale);
+                            releaseBossBullet(bombVelocity, bombScale);
                         }
                         this->GetPhysicsObject()->SetAngularVelocity(this->GetTransform().GetGlobalOrientation() * Vector3 { 1, 1, 1 });
                     }
@@ -387,12 +364,12 @@ namespace NCL
                 return true;
             }
 
-            std::vector<Bomb*> GetBombsReleasedByBoss()
+            std::vector<BossBullet*> GetBossBulletsReleasedByBoss()
             {
                 return bombsReleased;
             }
 
-            void clearBombList()
+            void clearBossBulletList()
             {
                 bombsReleased.clear();
             }
@@ -408,10 +385,13 @@ namespace NCL
             GameGrid* gameGrid = nullptr;
             float deltaTime = 0.0f;
 
-            std::vector<Bomb*> bombsReleased;
+            std::vector<BossBullet*> bombsReleased;
 
             // Boss' attributes:
-            float health = 100.0f;
+            Health health = Health(100);
+
+            //game state
+            GameStateManager* gameStateManager = &GameStateManager::instance();
 
             // Parameters for boss actions:
             Vector3 randomWalkDirection{ 1,0,1 };
@@ -648,38 +628,38 @@ namespace NCL
                     switch (bossAction)
                     {
                     case NoAction:
-                        std::cout << "Error: Boss' behavior is locked while there is currently no action to perform!\n";
+                        //std::cout << "Error: Boss' behavior is locked while there is currently no action to perform!\n";
                         break;
                     case Dead:
-                        std::cout << "The boss has dead, and it should do nothing.\n";
+                       // std::cout << "The boss has dead, and it should do nothing.\n";
                         // Note that, for current implementation, once the boss has dead, its action remain in Dead forever.
                         break;
                     case RandomWalk:
-                        std::cout << "Boss is walking randomly.\n";
+                       // std::cout << "Boss is walking randomly.\n";
                         finish = boss->RandomWalk();
                         break;
                     case Stab:
-                        std::cout << "Boss stabs the player.\n";
+                        //std::cout << "Boss stabs the player.\n";
                         finish = boss->StabPlayer(player);
                         break;
                     case Spin:
-                        std::cout << "Boss is spining.\n";
+                        //std::cout << "Boss is spining.\n";
                         finish = boss->Spin(player);
                         break;
                     case Laser:
-                        std::cout << "Boss use laser.\n";
+                        //std::cout << "Boss use laser.\n";
                         finish = boss->UseLaserOnPlayer(player);
                         break;
                     case JumpTo:
-                        std::cout << "Boss jumps towards the player.\n";
+                        //std::cout << "Boss jumps towards the player.\n";
                         finish = boss->JumpTo(player);
                         break;
                     case JumpAway:
-                        std::cout << "Boss jumps away from the player.\n";
+                        //std::cout << "Boss jumps away from the player.\n";
                         finish = boss->JumpAway(player);
                         break;
                     case SeekHeal:
-                        std::cout << "Boss is seeking for healing kit.\n";
+                        //std::cout << "Boss is seeking for healing kit.\n";
                         finish = boss->SeekHeal(hasHealKit);
                         if (!hasHealKit)
                         {
@@ -687,11 +667,11 @@ namespace NCL
                         }
                         break;
                     case InkSea:
-                        std::cout << "Boss perfroms Ink Sea.\n";
+                        //std::cout << "Boss perfroms Ink Sea.\n";
                         finish = boss->InkSea();
                         break;
                     case BulletsStorm:
-                        std::cout << "Boss perfroms Bullets Storm.\n";
+                        //std::cout << "Boss perfroms Bullets Storm.\n";
                         finish = boss->BulletsStorm();
                         break;
                     default:
@@ -811,7 +791,7 @@ namespace NCL
                 }
                 virtual bool execute(BehaviorLock* lock)
                 {
-                    if ((lowerLimit < boss->GetHealth()) && (boss->GetHealth() <= upperLimit))
+                    if ((lowerLimit < boss->GetHealth().GetHealth()) && (boss->GetHealth().GetHealth() <= upperLimit))
                     {
                         return true;
                     }

@@ -21,6 +21,7 @@
 #include "HDRRPass.h"
 #include "PresentRPass.h"
 #include "DebugRPass.h"
+#include "PaintingRPass.h"
 
 #include "GameWorld.h"
 
@@ -118,6 +119,7 @@ namespace NCL::CSC8503 {
 		HDRRPass* hdrPass;
 		PresentRPass* presentPass;
 		DebugRPass* debugPass;
+		PaintingRPass* paintingRPass;
 
 		float gamma = 2.2f;
 		size_t bloomAmount = 5;
