@@ -19,21 +19,9 @@ namespace NCL
             {
                 obj = gs;
                 invincible = isInvincible;
-
-                OnTriggerBeginCallback = [&](GameObject* other)
-                {
-                    if (Bomb* bomb = dynamic_cast<Bomb*>(other))
-                    {
-                        if (!invincible)
-                        {
-                            health -= 10.0f;
-                        }
-                        bomb->SetLifeSpan(-1.0f);
-                    }
-                };
             }
 
-            //~Obstacle(){}
+            ~Obstacle();
 
             virtual void Update(float dt) override
             {
@@ -41,6 +29,13 @@ namespace NCL
                 {
                     obj->Destroy(true);
                     Delete();
+                }
+            }
+
+            void Damage(float damage) {
+                if (!invincible)
+                {
+                    health -= 10.0f;
                 }
             }
 

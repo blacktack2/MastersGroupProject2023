@@ -1,9 +1,14 @@
+#include "TutorialGame.h"
+
+
 #include "AssetLibrary.h"
 #include "Bullet.h"
 #include "Bonus.h"
 #include "Debug.h"
+
 #include "GameWorld.h"
 #include "GameGridManager.h"
+#include "InkEffectManager.h"
 #include "Maze.h"
 #include "OrientationConstraint.h"
 #include "PhysicsObject.h"
@@ -12,8 +17,8 @@
 #include "RenderObject.h"
 #include "StateGameObject.h"
 #include "TextureLoader.h"
-#include "TutorialGame.h"
-#include "InkEffectManager.h"
+
+#include "obstacle.h"
 
 //Audio Testing
 
@@ -229,14 +234,6 @@ void TutorialGame::UpdateGame(float dt) {
 	Debug::UpdateRenderables(dt);
 	debugViewPoint->FinishTime("Render");
 
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::PLUS))
-	{
-		testingBoss->SetHealth(100);
-	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::MINUS))
-	{
-		testingBoss->SetHealth(10);
-	}
 }
 
 void TutorialGame::UpdateStateOngoing(float dt) {
@@ -304,15 +301,7 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 	gridManager->Update(dt);
 	//UpdateHealingKit();
 	testingBossBehaviorTree->update();
-	RenderBombsReleasedByBoss();
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::PLUS))
-	{
-		testingBoss->SetHealth(100);
-	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::MINUS))
-	{
-		testingBoss->SetHealth(10);
-	}
+	RenderBossBulletsReleasedByBoss();
 	if (gameLevel->GetShelterTimer() > 20.0f)
 	{
 		gameLevel->SetShelterTimer(0.0f);
@@ -864,10 +853,10 @@ void TutorialGame::BuildLevel()
 	}
 }
 
-void TutorialGame::RenderBombsReleasedByBoss()
+void TutorialGame::RenderBossBulletsReleasedByBoss()
 {
-	std::vector<Bomb*> bossBombs = testingBoss->GetBombsReleasedByBoss();
-	for (auto& bomb : bossBombs)
+	std::vector<BossBullet*> bossBossBullets = testingBoss->GetBossBulletsReleasedByBoss();
+	for (auto& bomb : bossBossBullets)
 	{
 		if (bomb->GetRenderObject() == nullptr)
 		{
@@ -877,7 +866,7 @@ void TutorialGame::RenderBombsReleasedByBoss()
 
 		world->AddGameObject(bomb);
 	}
-	testingBoss->clearBombList();
+	testingBoss->clearBossBulletList();
 	if (testingBoss->isUsingInkSea())
 	{
 		//floor->GetRenderObject()->enableInkSea(testingBoss->GetTransform().GetGlobalPosition());
