@@ -76,8 +76,9 @@ void TutorialGame::InitWorld(InitMode mode) {
 	physics->Clear();
 
 	gameGrid = new GameGrid{ {-200,0,-200},200,200,200 * 2,200 * 2 };	// MUST initialize gameGrid BEFORE boss/player, otherwise boss/player will be referring to nullptr
+	BuildLevel();
 	player = AddPlayerToWorld(Vector3(0, 0, 0));
-	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 5,5,5 }, 1);
+	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
 
 	switch (mode) {
@@ -303,6 +304,11 @@ void TutorialGame::UpdateGame(float dt) {
 	{
 		testingBoss->SetHealth(10);
 	}
+	if (gameLevel->GetShelterTimer() > 20.0f)
+	{
+		gameLevel->SetShelterTimer(0.0f);
+		BuildLevel();							// rebuild Shelters that has been destroyed
+	}
 }
 
 void TutorialGame::InitialiseAssets() {
@@ -313,6 +319,12 @@ void TutorialGame::InitialiseAssets() {
 	npcMesh     = renderer->LoadMesh("Keeper.msh");
 	bonusMesh   = renderer->LoadMesh("Sphere.msh");
 	capsuleMesh = renderer->LoadMesh("capsule.msh");
+
+	// TODO
+	pillarMesh = renderer->LoadMesh("cube.msh");
+	fenceMesh = renderer->LoadMesh("cube.msh");
+	shelterMesh = renderer->LoadMesh("cube.msh");
+
 	AssetLibrary::AddMesh("cube", cubeMesh);
 	AssetLibrary::AddMesh("sphere", sphereMesh);
 	AssetLibrary::AddMesh("cube", charMesh);
@@ -760,7 +772,8 @@ EnemyObject* TutorialGame::AddEnemyToWorld(const Vector3& position, NavigationMa
 	return enemy;
 }
 
-Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
+Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass)
+{
 	Boss* boss = new Boss(*gameGrid);
 
 	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
@@ -769,7 +782,6 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 		.SetPosition(position)
 		.SetScale(dimensions * 2);
 
-	//boss->SetRenderObject(new RenderObject(&boss->GetTransform(), cubeMesh, nullptr, inkableShader, noiseTex, dimensions));
 	boss->SetRenderObject(new RenderObject(&boss->GetTransform(), cubeMesh, nullptr, nullptr));
 
 	boss->GetRenderObject()->SetColour({ 1,1,0,1 });
@@ -783,13 +795,76 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 	return boss;
 }
 
+void TutorialGame::BuildLevel()
+{
+	float interval = 5.0f;
+	Vector3 dimensions{ interval / 2.0f, 1.0f, interval / 2.0f };	// TODO: figure out the right scale
+	gameLevel = new GameLevel{};
+	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -100,0,-70 }, interval);
+	world->AddGameObject(gameLevel);
+
+	for (auto& object : gameLevel->GetGameStuffs())
+	{
+		if (object.HasDestroyed())
+		{
+			object.Destroy(false);
+			if (object.objectType == ObjectType::Pillar)
+			{
+				Obstacle* pillar = new Obstacle{ &object, true };
+				dimensions.y = 5.0f;
+				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+				pillar->GetTransform()
+					.SetPosition(object.worldPos + Vector3{ 0,5,0 })	// TODO: change height if necessary
+					.SetScale(dimensions * 2);
+				pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), pillarMesh, nullptr, nullptr));
+				pillar->SetPhysicsObject(new PhysicsObject(&pillar->GetTransform(), pillar->GetBoundingVolume()));
+				pillar->GetPhysicsObject()->SetInverseMass(0);
+				pillar->GetPhysicsObject()->InitCubeInertia();
+				world->AddGameObject(pillar);
+			}
+			if (object.objectType == ObjectType::Fence)
+			{
+				Obstacle* fence = new Obstacle{ &object, true };
+				dimensions.y = 3.0f;
+				fence->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+				fence->GetTransform()
+					.SetPosition(object.worldPos)	// TODO: change height if necessary
+					.SetScale(dimensions * 2);
+				fence->SetRenderObject(new RenderObject(&fence->GetTransform(), fenceMesh, nullptr, nullptr));		// TODO: change to the right Mesh
+				fence->SetPhysicsObject(new PhysicsObject(&fence->GetTransform(), fence->GetBoundingVolume()));
+				fence->GetPhysicsObject()->SetInverseMass(0);
+				fence->GetPhysicsObject()->InitCubeInertia();
+				world->AddGameObject(fence);
+			}
+			if (object.objectType == ObjectType::Shelter)
+			{
+				Obstacle* shelter = new Obstacle{ &object, false };
+				dimensions.y = 3.0f;
+				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+				shelter->GetTransform()
+					.SetPosition(object.worldPos)	// TODO: change height if necessary
+					.SetScale(dimensions * 2);
+				shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), shelterMesh, nullptr, nullptr));
+				shelter->SetPhysicsObject(new PhysicsObject(&shelter->GetTransform(), shelter->GetBoundingVolume()));
+				shelter->GetPhysicsObject()->SetInverseMass(0);
+				shelter->GetPhysicsObject()->InitCubeInertia();
+				world->AddGameObject(shelter);
+			}
+		}
+	}
+}
+
 void TutorialGame::RenderBombsReleasedByBoss()
 {
 	std::vector<Bomb*> bossBombs = testingBoss->GetBombsReleasedByBoss();
 	for (auto& bomb : bossBombs)
 	{
-		bomb->SetRenderObject(new RenderObject(&bomb->GetTransform(), sphereMesh, nullptr, nullptr));
+		if (bomb->GetRenderObject() == nullptr)
+		{
+			bomb->SetRenderObject(new RenderObject(&bomb->GetTransform(), sphereMesh, nullptr, nullptr));
+		}
 		bomb->GetRenderObject()->SetColour({ 0,0,1,1 });
+
 		world->AddGameObject(bomb);
 	}
 	testingBoss->clearBombList();

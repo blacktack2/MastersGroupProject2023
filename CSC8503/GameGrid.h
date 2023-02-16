@@ -6,13 +6,15 @@
 
 #pragma once
 
+#include <fstream>
 #include <vector>
 #include "Vector3.h"
 #include "Debug.h"
 #include "GameObject.h"
 #include "NavigationPath.h"
- //#include "Boss.h"
- //#include "PlayerObject.h"
+#include "Assets.h"
+
+
 
 using namespace NCL::Maths;
 
@@ -33,8 +35,11 @@ namespace NCL
 		enum NodeType
 		{
 			Air,
-			Impassable,
-			Ink
+			Ink,
+			Impassable		// All the elements >Impassable are not passable
+			//Fence,
+			//Pillar,
+			//Shelter
 		};
 
 		class HealingKit : public GameObject
@@ -109,8 +114,8 @@ namespace NCL
 				numOfColumns = columns;
 
 				gameGridOrigin = gridOrigin;
-				float rowUnitLength = totalLength / (rows - 1);
-				float columnUnitLength = totalWidth / (columns - 1);
+				rowUnitLength = totalLength / (rows - 1);
+				columnUnitLength = totalWidth / (columns - 1);
 				float width = gridOrigin.z;
 				for (int row = 0; row < rows; row++)
 				{
@@ -126,6 +131,7 @@ namespace NCL
 					gameNodes.push_back(r);
 					width += rowUnitLength;
 				}
+
 				UpdateGrid();
 			}
 
@@ -216,7 +222,7 @@ namespace NCL
 									}
 									// ...
 								}
-								if (n.connected[i]->type == Impassable)
+								if (n.connected[i]->type >= Impassable)		// recall that all the NodeTpye > Impassable are not passable
 								{
 									n.connected[i] = nullptr; // You may not pass! disconnect!
 								}
@@ -376,11 +382,11 @@ namespace NCL
 					{
 						if (currentNode.isInked)
 						{
-							Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0,2,0 }, Vector4(1, 0, 0, 1));
+							//Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0,2,0 }, Vector4(1, 0, 0, 1));
 						}
 						else
 						{
-							Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0,2,0 }, Vector4(0, 0, 1, 1));
+							//Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0,2,0 }, Vector4(0, 0, 1, 1));
 						}
 					}
 				}
@@ -443,10 +449,27 @@ namespace NCL
 				return healingKits;
 			}
 
+			std::vector<std::vector<GameNode>> GetAllNodes()
+			{
+				return gameNodes;
+			}
+
+			float GetRowUnitLength()
+			{
+				return rowUnitLength;
+			}
+
+			float GetColumnUnitLength()
+			{
+				return columnUnitLength;
+			}
+
 		protected:
 
 			int numOfRows = 0;
 			int numOfColumns = 0;
+			float rowUnitLength = 0;
+			float columnUnitLength = 0;
 
 			std::vector<std::vector<GameNode>> gameNodes;
 			Vector3 gameGridOrigin;

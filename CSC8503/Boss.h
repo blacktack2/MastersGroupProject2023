@@ -26,6 +26,13 @@ namespace NCL
                 : GameObject()
             {
                 velocity = v;
+
+                OnTriggerBeginCallback = [&](GameObject* other)
+                {
+                    if (PlayerObject* player = dynamic_cast<PlayerObject*>(other)) {
+                        lifeSpan = -1.0f;
+                    }
+                };
             }
 
             //~Bomb(){}
@@ -33,8 +40,8 @@ namespace NCL
             virtual void Update(float dt) override
             {
                 this->GetTransform().SetPosition(this->GetTransform().GetGlobalPosition() + velocity * dt);
-                lifeTime -= dt;
-                if (lifeTime < 0.0f)
+                lifeSpan -= dt;
+                if (lifeSpan < 0.0f)
                 {
                     Delete();
                 }
@@ -44,9 +51,14 @@ namespace NCL
                 }
             }
 
+            void SetLifeSpan(float life)
+            {
+                lifeSpan = life;
+            }
+
         protected:
             Vector3 velocity{ 0,0,0 };
-            float lifeTime = 5.0f;
+            float lifeSpan = 5.0f;
         };
 
         class Boss : public GameObject
@@ -125,11 +137,15 @@ namespace NCL
             Bomb* releaseBomb(Vector3 v, Vector3 s)
             {
                 Bomb* bomb = new Bomb(v);
+                SphereVolume* volume = new SphereVolume(s.x);
+                bomb->SetBoundingVolume((CollisionVolume*)volume);
                 Vector3 position = this->GetTransform().GetGlobalPosition();
                 bomb->GetTransform()
                     .SetPosition(position)
                     .SetScale(s);
-
+                bomb->SetPhysicsObject(new PhysicsObject(&bomb->GetTransform(), bomb->GetBoundingVolume(), true));
+                bomb->GetPhysicsObject()->SetInverseMass(0.0f);
+                bomb->GetPhysicsObject()->InitSphereInertia();
                 bombsReleased.push_back(bomb);
 
                 return bomb;
