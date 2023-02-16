@@ -21,16 +21,19 @@ namespace NCL::CSC8503 {
 		~PaintRenderObject();
 
 		OGLTexture* GetPaintTexture() { return paintTexture; }
-		OGLTexture* GetWorldTexture() { return worldTexture; }
 		std::vector<PaintCollision> GetPaintCollisions() { return paintCollisions; }
 		void ClearPaintCollisions() { paintCollisions.clear(); }
 		void AddPaintCollision(PaintCollision collision) { paintCollisions.push_back(collision); }
 
 		void ConfigerShaderExtras(OGLShader* shaderOGL) const override;
 
+		int GetWidth() const { return width; }
+		int GetHeight() const { return height; }
+
 	private:
 		OGLTexture* paintTexture;
-		OGLTexture* worldTexture;
 		std::vector<PaintCollision> paintCollisions;
+		int width;
+		int height;
 	};
 }

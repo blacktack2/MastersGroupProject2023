@@ -32,6 +32,6 @@ void Bullet::OnCollisionBegin(GameObject* other) {
 	if (other->GetBoundingVolume()->layer == CollisionLayer::PaintAble)
 	{
 		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
-		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), 1.0f));
+		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), 3.0f));
 	}
 }

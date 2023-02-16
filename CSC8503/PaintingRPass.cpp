@@ -35,11 +35,11 @@ void PaintingRPass::Render() {
 		PaintRenderObject* renderObj = (PaintRenderObject*)gameObject->GetRenderObject();
 
 		frameBuffer->AddTexture(renderObj->GetPaintTexture(), 0);
-		frameBuffer->AddTexture(renderObj->GetWorldTexture(), 1);
-		frameBuffer->DrawBuffers(2);
 
 		Matrix4 modelMatrix = renderObj->GetTransform()->GetGlobalMatrix();
 		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "modelMatrix"), 1, GL_FALSE, (GLfloat*)&modelMatrix);
+
+		glViewport(0, 0, renderObj->GetWidth(), renderObj->GetHeight());
 
 		for (PaintCollision paint : renderObj->GetPaintCollisions())
 		{
@@ -48,9 +48,11 @@ void PaintingRPass::Render() {
 			renderObj->GetMesh()->Draw();
 		}
 
-		//renderObj->ClearPaintCollisions();
+		renderObj->ClearPaintCollisions();
 		
 	});
+
+	glViewport(0, 0, renderer.GetWidth(), renderer.GetHeight());
 
 	glEnable(GL_CULL_FACE);
 	shader->Unbind();
