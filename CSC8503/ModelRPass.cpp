@@ -104,8 +104,14 @@ void ModelRPass::Render() {
 		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "modelMatrix"), 1, GL_FALSE, (GLfloat*)&modelMatrix);
 		glUniform4fv(glGetUniformLocation(shader->GetProgramID(), "modelColour"), 1, (GLfloat*)colour.array);
 
-		mesh->Draw();
+		renderObject->ConfigerShaderExtras(shader);
 
+		//mesh->Draw();
+		int layerCount = mesh->GetSubMeshCount();
+		for (int i = 0; i < layerCount; i++)
+		{
+			mesh->Draw(i);
+		}
 		shader->Unbind();
 	});
 
