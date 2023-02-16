@@ -1,5 +1,5 @@
 #pragma once
-#include "OGLRenderPass.h"
+#include "OGLMainRenderPass.h"
 
 #include "GameWorld.h"
 
@@ -14,7 +14,7 @@ namespace NCL::Rendering {
 using namespace NCL::Rendering;
 
 namespace NCL::CSC8503{
-	class PaintingRPass : public OGLRenderPass {
+	class PaintingRPass : public OGLMainRenderPass {
 	public:
 		PaintingRPass(OGLRenderer& renderer);
 		~PaintingRPass();

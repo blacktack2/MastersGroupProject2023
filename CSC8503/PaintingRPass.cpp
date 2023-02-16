@@ -10,7 +10,7 @@ using namespace NCL::CSC8503;
 using namespace NCL::Rendering;
 using namespace paintHell::debug;
 
-PaintingRPass::PaintingRPass(OGLRenderer& renderer) : OGLRenderPass(renderer) {
+PaintingRPass::PaintingRPass(OGLRenderer& renderer) : OGLMainRenderPass(renderer) {
 	shader = new OGLShader("paintStencil.vert", "paintStencil.frag");
 	frameBuffer = new OGLFrameBuffer();
 }
