@@ -14,7 +14,6 @@ set(Header_Files
     "StateGameObject.h"
     "TutorialGame.h"
     "DebugViewPoint.h"
-    "Boss.h"
     "GameGrid.h"
     "GameGridManager.h"
     "GameStateManager.h"
@@ -120,6 +119,13 @@ set(Player_Files
 )
 source_group("Player Files" FILES ${Player_Files})
 
+set(Enemy_Files 
+    "Boss.h"
+    "BossBullet.h"
+	"BossBullet.cpp"
+)
+source_group("Enemy Files" FILES ${Enemy_Files})
+
 set(ALL_FILES
     ${Header_Files}
     ${Source_Files}
@@ -127,6 +133,7 @@ set(ALL_FILES
     ${Render_Files}
     ${Ink_Files}
 	${Player_Files}
+    ${Enemy_Files}
 )
 
 if(USE_VULKAN)
@@ -135,6 +142,9 @@ if(USE_VULKAN)
         ${Source_Files}
         ${SHADER_FILES}
         ${Audio_Files}
+        ${Ink_Files}
+	    ${Player_Files}
+        ${Enemy_Files}
     )
 
 foreach (file ${SHADER_FILES})

@@ -12,9 +12,9 @@
 
 #include "GameGridManager.h"
 
-#include "Boss.h"		/////////
-#include "Obstacle.h"	/////////
-#include "GameLevel.h"	/////////
+#include "Boss.h"	
+#include "Obstacle.h"
+#include "GameLevel.h"
 
 #include "GameStateManager.h"
 
@@ -76,7 +76,7 @@ namespace NCL {
 			PlayerObject* AddPlayerToWorld(const Vector3& position, bool cameraFollow = true);
 			EnemyObject* AddEnemyToWorld(const Vector3& position, NavigationMap& navMap);
 			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);		/////////
-			void RenderBombsReleasedByBoss();															/////////
+			void RenderBossBulletsReleasedByBoss();															/////////
 			HealingKit* UpdateHealingKit();																/////////
 			void BuildLevel();																			/////////
 			NPCObject* AddNPCToWorld(const Vector3& position);
