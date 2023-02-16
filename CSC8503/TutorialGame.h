@@ -114,10 +114,6 @@ namespace NCL {
 			MeshGeometry*	cubeMesh    = nullptr;
 			MeshGeometry* sphereMesh = nullptr;
 
-			MeshGeometry* pillarMesh = nullptr;
-			MeshGeometry* fenceMesh = nullptr;
-			MeshGeometry* shelterMesh = nullptr;
-
 			TextureBase*	basicTex    = nullptr;
 			TextureBase* healingKitTex = nullptr;		/////////
 			TextureBase* inkableTex = nullptr;		/////////
