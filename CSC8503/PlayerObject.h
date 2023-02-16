@@ -2,6 +2,8 @@
 #include "GameObject.h"
 #include "SoundSource.h"
 #include "InputKeyMap.h"
+#include "GameStateManager.h"
+#include "Health.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -14,8 +16,6 @@ namespace NCL {
 
 			void Update(float dt);
 
-			void AddPoints(int points);
-
 			void CollisionWith(GameObject* other);
 
 			void AttachedCamera() {
@@ -26,6 +26,11 @@ namespace NCL {
 			const std::vector<GameObject*> GetLastInstancedObjects() {
 				return lastInstancedObjects;
 			}
+
+			Health* GetHealth() {
+				return &health;
+			}
+
 		protected:
 			void MoveTo(Vector3 position);
 			void Move(Vector3 dir);
@@ -47,6 +52,9 @@ namespace NCL {
 			//keymap
 			paintHell::InputKeyMap& keyMap;
 			unsigned int lastKey;
+			
+			//gameplay
+			Health health = Health(100);
 
 		private:
 
@@ -54,6 +62,7 @@ namespace NCL {
 
 			//jump related 
 			bool onGround = false;
+			float jumpTriggerDist = 1.1f;
 			float jumpTimer = 0.0f;
 			const float jumpCooldown = 0.005f;
 			float jumpSpeed = 10.0f;
@@ -82,12 +91,12 @@ namespace NCL {
 			// legacy variables
 			std::set<int> collidedWith;
 
-			float lastGoosed = 0.0f;
-			const float gooseDelay = 2.0f;
-
 			//sound
 			SoundSource* playerSource;
 			SoundSource* attackSource;
+
+			//game state
+			GameStateManager* gameStateManager = &GameStateManager::instance();
 		};
 	}
 }

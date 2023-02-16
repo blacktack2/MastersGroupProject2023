@@ -3,6 +3,7 @@
 #include "Bonus.h"
 #include "Debug.h"
 #include "GameWorld.h"
+#include "GameGridManager.h"
 #include "Maze.h"
 #include "OrientationConstraint.h"
 #include "PhysicsObject.h"
@@ -12,6 +13,7 @@
 #include "StateGameObject.h"
 #include "TextureLoader.h"
 #include "TutorialGame.h"
+#include "InkEffectManager.h"
 
 //Audio Testing
 
@@ -27,6 +29,7 @@ using namespace NCL;
 using namespace CSC8503;
 
 TutorialGame::TutorialGame() {
+	gameStateManager = &GameStateManager::instance();
 	world = &GameWorld::instance();
 	sunLight = world->AddLight(new Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
 	world->AddLight(new Light({ 0.0f, 5.0f, -10.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, 10.0f));
@@ -43,7 +46,9 @@ TutorialGame::TutorialGame() {
 	debugViewPoint = &paintHell::debug::DebugViewPoint::Instance();
 	
 	SoundSystem::Initialize();
+	gridManager = &GameGridManager::instance();
 	InitialiseAssets();
+	InitWorld();
 }
 
 TutorialGame::~TutorialGame() {
@@ -74,14 +79,17 @@ void TutorialGame::InitWorld(InitMode mode) {
 	mazes = nullptr;
 	world->ClearAndErase();
 	physics->Clear();
+	gridManager->Clear();
 
-	gameGrid = new GameGrid{ {-200,0,-200},200,200,200 * 2,200 * 2 };	// MUST initialize gameGrid BEFORE boss/player, otherwise boss/player will be referring to nullptr
+	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 100, 100, 2 ) );
+	gridManager->AddGameGrid(new GameGrid({ 100,0,0 }, 100, 100, 2));
 	BuildLevel();
 	player = AddPlayerToWorld(Vector3(0, 0, 0));
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
 
 	switch (mode) {
+		default: InitGameExamples(); break;
 		case InitMode::MAZE             : InitMazeWorld(20, 20, 20.0f)                            ; break;
 		case InitMode::MIXED_GRID       : InitMixedGridWorld(1, 1, 3.5f, 3.5f)                  ; break;
 		case InitMode::CUBE_GRID        : InitCubeGridWorld(15, 15, 3.5f, 3.5f, Vector3(1), true) ; break;
@@ -91,7 +99,6 @@ void TutorialGame::InitWorld(InitMode mode) {
 		case InitMode::BRIDGE_TEST_ANG  : InitBridgeConstraintTestWorld(10, 20, 30, true)         ; break;
 		case InitMode::PERFORMANCE_TEST : InitMixedGridWorld(30, 30, 10.0f, 10.0f)                ; break;
 		case InitMode::AUDIO_TEST : InitGameExamples()                ; break;
-		default: break;
 	}
 
 	//InitGameExamples();
@@ -104,7 +111,11 @@ void TutorialGame::InitWorld(InitMode mode) {
 	InitCamera();
 }
 
+
+
 void TutorialGame::UpdateGame(float dt) {
+	GameState gameState = gameStateManager->GetGameState();
+
 	debugViewPoint->BeginFrame();
 	debugViewPoint->MarkTime("Update");
 
@@ -210,72 +221,7 @@ void TutorialGame::UpdateGame(float dt) {
 	SoundSystem::GetSoundSystem()->Update(dt);
 
 	if (gameState == GameState::OnGoing) {
-		Vector2 screenSize = Window::GetWindow()->GetScreenSize();
-
-		Debug::Print(std::string("Score: ").append(std::to_string(score)), Vector2(5, 5), Vector4(1, 1, 0, 1));
-
-		if (!inSelectionMode) {
-			world->GetMainCamera()->UpdateCamera(dt);
-		}
-		Vector3 crossPos = CollisionDetection::Unproject(Vector3(screenSize * 0.5f, 0.99f), *world->GetMainCamera());
-		Debug::DrawAxisLines(Matrix4::Translation(crossPos), 1.0f);
-		if (lockedObject != nullptr) {
-			Vector3 objPos = lockedObject->GetTransform().GetGlobalPosition();
-			Vector3 camPos = objPos + lockedOffset;
-
-			Matrix4 temp = Matrix4::BuildViewMatrix(camPos, objPos, Vector3(0, 1, 0));
-
-			Matrix4 modelMat = temp.Inverse();
-
-			Quaternion q(modelMat);
-			Vector3 angles = q.ToEuler(); //nearly there now!
-
-			world->GetMainCamera()->SetPosition(camPos);
-			world->GetMainCamera()->SetPitch(angles.x);
-			world->GetMainCamera()->SetYaw(angles.y);
-		}
-
-		RayCollision closestCollision;
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::K) && selectionObject) {
-			Vector3 rayPos;
-			Vector3 rayDir;
-
-			rayDir = selectionObject->GetTransform().GetGlobalOrientation() * Vector3(0, 0, -1);
-
-			rayPos = selectionObject->GetTransform().GetGlobalPosition();
-
-			Ray r = Ray(rayPos, rayDir);
-
-			if (world->Raycast(r, closestCollision, true, selectionObject)) {
-				if (objClosest) {
-					objClosest->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
-				}
-				objClosest = (GameObject*)closestCollision.node;
-
-				objClosest->GetRenderObject()->SetColour(Vector4(1, 0, 1, 1));
-			}
-		}
-
-		Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
-
-		if (player == nullptr) {
-			SelectObject();
-			MoveSelectedObject();
-		}
-
-		world->PreUpdateWorld();
-
-		world->UpdateWorld(dt);
-		renderer->Update(dt);
-		physics->Update(dt);
-
-		world->PostUpdateWorld();
-
-		if (score < 0) {
-			gameState = GameState::Lose;
-		} else if (score > 5000) {
-			gameState = GameState::Win;
-		}
+		UpdateStateOngoing(dt);
 	}
 	debugViewPoint->FinishTime("Update");
 	debugViewPoint->MarkTime("Render");
@@ -284,16 +230,80 @@ void TutorialGame::UpdateGame(float dt) {
 	Debug::UpdateRenderables(dt);
 	debugViewPoint->FinishTime("Render");
 
-	/////////
-	gameGrid->UpdateGrid(dt);
-	UpdateHealingKit();
-	gameGrid->UpdateTrace(player);
-	//std::vector<GameNode> v = gameGrid->GetTraceNodes();
-	//std::vector<Vector3> u;
-	//for (const auto& i : v) {
-	//	u.push_back(i.worldPosition);
-	//}
-	//floor->GetRenderObject()->SetTrace(u);
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::PLUS))
+	{
+		testingBoss->SetHealth(100);
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::MINUS))
+	{
+		testingBoss->SetHealth(10);
+	}
+}
+
+void TutorialGame::UpdateStateOngoing(float dt) {
+	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
+
+	Debug::Print(std::string("health: ").append(std::to_string((int)player->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
+
+	if (!inSelectionMode) {
+		world->GetMainCamera()->UpdateCamera(dt);
+	}
+	Vector3 crossPos = CollisionDetection::Unproject(Vector3(screenSize * 0.5f, 0.99f), *world->GetMainCamera());
+	Debug::DrawAxisLines(Matrix4::Translation(crossPos), 1.0f);
+	if (lockedObject != nullptr) {
+		Vector3 objPos = lockedObject->GetTransform().GetGlobalPosition();
+		Vector3 camPos = objPos + lockedOffset;
+
+		Matrix4 temp = Matrix4::BuildViewMatrix(camPos, objPos, Vector3(0, 1, 0));
+
+		Matrix4 modelMat = temp.Inverse();
+
+		Quaternion q(modelMat);
+		Vector3 angles = q.ToEuler(); //nearly there now!
+
+		world->GetMainCamera()->SetPosition(camPos);
+		world->GetMainCamera()->SetPitch(angles.x);
+		world->GetMainCamera()->SetYaw(angles.y);
+	}
+
+	RayCollision closestCollision;
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::K) && selectionObject) {
+		Vector3 rayPos;
+		Vector3 rayDir;
+
+		rayDir = selectionObject->GetTransform().GetGlobalOrientation() * Vector3(0, 0, -1);
+
+		rayPos = selectionObject->GetTransform().GetGlobalPosition();
+
+		Ray r = Ray(rayPos, rayDir);
+
+		if (world->Raycast(r, closestCollision, true, selectionObject)) {
+			if (objClosest) {
+				objClosest->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
+			}
+			objClosest = (GameObject*)closestCollision.node;
+
+			objClosest->GetRenderObject()->SetColour(Vector4(1, 0, 1, 1));
+		}
+	}
+
+	//Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
+
+	if (player == nullptr) {
+		SelectObject();
+		MoveSelectedObject();
+	}
+
+	world->PreUpdateWorld();
+
+	world->UpdateWorld(dt);
+	renderer->Update(dt);
+	physics->Update(dt);
+
+	world->PostUpdateWorld();
+
+	gridManager->Update(dt);
+	//UpdateHealingKit();
 	testingBossBehaviorTree->update();
 	RenderBombsReleasedByBoss();
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::PLUS))
@@ -349,7 +359,7 @@ void TutorialGame::InitialiseAssets() {
 }
 
 void TutorialGame::InitialisePrefabs() {
-	float bulletRadius = 0.1f;
+	float bulletRadius = 0.2f;
 
 	bulletPrefab = new Bullet();
 
@@ -378,47 +388,48 @@ void TutorialGame::InitCamera() {
 }
 
 void TutorialGame::UpdateKeys() {
+	GameState gameState = gameStateManager->GetGameState();
 	switch (gameState) {
-	case GameState::OnGoing: default:
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
-			gameState = GameState::Paused;
-		}
+		case GameState::OnGoing: default:
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
+				gameStateManager->SetGameState(GameState::Paused);
+			}
 
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F1)) {
-			InitWorld(InitMode::MAZE);
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F2)) {
-			InitWorld(InitMode::MIXED_GRID);
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F3)) {
-			InitWorld(InitMode::CUBE_GRID);
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F4)) {
-			InitWorld(InitMode::OBB_GRID);
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F5)) {
-			InitWorld(InitMode::SPHERE_GRID);
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F6)) {
-			InitWorld(InitMode::BRIDGE_TEST);
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F7)) {
-			InitWorld(InitMode::BRIDGE_TEST_ANG);
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F8)) {
-			InitWorld(InitMode::PERFORMANCE_TEST);
-		}
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F1)) {
+				InitWorld(InitMode::MAZE);
+			}
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F2)) {
+				InitWorld(InitMode::MIXED_GRID);
+			}
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F3)) {
+				InitWorld(InitMode::CUBE_GRID);
+			}
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F4)) {
+				InitWorld(InitMode::OBB_GRID);
+			}
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F5)) {
+				InitWorld(InitMode::SPHERE_GRID);
+			}
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F6)) {
+				InitWorld(InitMode::BRIDGE_TEST);
+			}
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F7)) {
+				InitWorld(InitMode::BRIDGE_TEST_ANG);
+			}
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F8)) {
+				InitWorld(InitMode::PERFORMANCE_TEST);
+			}
 
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F11)) {
-			world->ShuffleConstraints(false);
-		}
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F11)) {
+				world->ShuffleConstraints(false);
+			}
 
-		if (lockedObject) {
-			LockedObjectMovement();
-		} else {
-			DebugObjectMovement();
-		}
-		break;
+			if (lockedObject) {
+				LockedObjectMovement();
+			} else {
+				DebugObjectMovement();
+			}
+			break;
 
 		case GameState::Paused:
 			Window::GetWindow()->ShowOSPointer(true);
@@ -428,10 +439,10 @@ void TutorialGame::UpdateKeys() {
 			Debug::Print("Press [q] to quit", Vector2(5, 90), Vector4(1, 1, 1, 1));
 
 			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Q)) {
-				gameState = GameState::Quit;
+				gameStateManager->SetGameState(GameState::Quit);
 			}
 			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
-				gameState = GameState::OnGoing;
+				gameStateManager->SetGameState(GameState::OnGoing);
 				Window::GetWindow()->ShowOSPointer(false);
 				Window::GetWindow()->LockMouseToWindow(true);
 			}
@@ -441,8 +452,8 @@ void TutorialGame::UpdateKeys() {
 			Debug::Print("Press [Space] to play again", Vector2(5, 90), Vector4(1, 1, 1, 1));
 
 			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) {
-				InitWorld(InitMode::MAZE);
-				gameState = GameState::OnGoing;
+				InitWorld();
+				gameStateManager->SetGameState(GameState::OnGoing);
 			}
 			break;
 		case GameState::Lose:
@@ -450,8 +461,8 @@ void TutorialGame::UpdateKeys() {
 			Debug::Print("Press [Space] to play again", Vector2(5, 90), Vector4(1, 1, 1, 1));
 
 			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) {
-				InitWorld(InitMode::MAZE);
-				gameState = GameState::OnGoing;
+				InitWorld();
+				gameStateManager->SetGameState(GameState::OnGoing);
 			}
 			break;
 	}

@@ -10,10 +10,13 @@
 #include "StateGameObject.h"
 #include "DebugViewPoint.h"
 
-#include "GameGrid.h"	/////////
+#include "GameGridManager.h"
+
 #include "Boss.h"		/////////
 #include "Obstacle.h"	/////////
 #include "GameLevel.h"	/////////
+
+#include "GameStateManager.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -23,6 +26,7 @@ namespace NCL {
 		class TutorialGame {
 		public:
 			enum class InitMode {
+				EMPTY,
 				MAZE,
 				MIXED_GRID,
 				CUBE_GRID,
@@ -37,28 +41,22 @@ namespace NCL {
 			TutorialGame();
 			~TutorialGame();
 
-			void InitWorld(InitMode mode = InitMode::MAZE);
+			void InitWorld(InitMode mode = InitMode::EMPTY);
 
 			virtual void UpdateGame(float dt);
 
 			bool IsQuit() {
-				return gameState == GameState::Quit;
+				return gameStateManager->GetGameState() == GameState::Quit;
 			}
 		protected:
-			enum class GameState {
-				OnGoing,
-				Paused,
-				Win,
-				Lose,
-				Quit,
-			};
+
+			void UpdateStateOngoing(float dt);
 
 			void InitialiseAssets();
 			void InitialisePrefabs();
 
 			void InitCamera();
 			void UpdateKeys();
-
 			void InitGameExamples();
 
 			void InitMazeWorld(int numRows, int numCols, float size);
@@ -101,7 +99,9 @@ namespace NCL {
 			paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
 
 			Light* sunLight;
-			GameState gameState;
+
+			GameStateManager* gameStateManager;
+
 			bool inSelectionMode;
 
 			float		forceMagnitude;
@@ -153,6 +153,9 @@ namespace NCL {
 			GameObject* floor = nullptr;	/////////
 			Boss* testingBoss = nullptr;   /////////
 			BossBehaviorTree* testingBossBehaviorTree = nullptr;   /////////
+
+			//GameGrid stuff
+			GameGridManager* gridManager;
 			float wallTimer = 0.0f;
 		};
 	}
