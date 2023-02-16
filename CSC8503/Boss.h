@@ -31,7 +31,9 @@ namespace NCL
                 {
                     if (PlayerObject* player = dynamic_cast<PlayerObject*>(other)) {
                         lifeSpan = -1.0f;
+                        player->GetHealth()->Damage(bulletDamage);
                     }
+                    GameGridManager::instance().PaintPosition(this->GetTransform().GetGlobalPosition(), paintHell::InkType::BossDamage);
                 };
             }
 
@@ -55,10 +57,19 @@ namespace NCL
             {
                 lifeSpan = life;
             }
+            void SetDamage(float damage)
+            {
+                bulletDamage = damage;
+            }
+            float GetDamage()
+            {
+                return bulletDamage;
+            }
 
         protected:
             Vector3 velocity{ 0,0,0 };
             float lifeSpan = 5.0f;
+            float bulletDamage = 5.0f;
         };
 
         class Boss : public GameObject
@@ -146,6 +157,10 @@ namespace NCL
                 bomb->SetPhysicsObject(new PhysicsObject(&bomb->GetTransform(), bomb->GetBoundingVolume(), true));
                 bomb->GetPhysicsObject()->SetInverseMass(0.0f);
                 bomb->GetPhysicsObject()->InitSphereInertia();
+                if (s.Length() >= 1) {
+                    bomb->SetDamage(10);
+                }
+                
                 bombsReleased.push_back(bomb);
 
                 return bomb;

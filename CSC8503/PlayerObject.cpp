@@ -166,7 +166,6 @@ void PlayerObject::CheckGround() {
 		//std::cout << "ground dist " << groundDist << std::endl;
 		if (groundDist < jumpTriggerDist)
 		{
-			
 			onGround = true;
 		}	
 	}

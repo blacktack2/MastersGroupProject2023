@@ -81,8 +81,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 	physics->Clear();
 	gridManager->Clear();
 
-	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 100, 100, 2 ) );
-	gridManager->AddGameGrid(new GameGrid({ 100,0,0 }, 100, 100, 2));
+	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 300, 300, 2 ) );
 	BuildLevel();
 	player = AddPlayerToWorld(Vector3(0, 0, 0));
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);

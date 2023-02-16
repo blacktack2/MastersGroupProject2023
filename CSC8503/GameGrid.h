@@ -165,16 +165,6 @@ namespace NCL
 				return gameNodes;
 			}
 
-			float GetRowUnitLength()
-			{
-				return rowUnitLength;
-			}
-
-			float GetColumnUnitLength()
-			{
-				return columnUnitLength;
-			}
-
 		protected:
 
 			int numOfRows = 0;
