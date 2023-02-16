@@ -6,7 +6,6 @@ set(PROJECT_NAME CSC8503)
 set(Header_Files
 	"Bullet.h"
 	"Bonus.h"
-    
 	"EnemyObject.h"
 	"Maze.h"
     "NetworkedGame.h"
@@ -61,6 +60,14 @@ set(Render_Files
     "PresentRPass.cpp"
     "DebugRPass.h"
     "DebugRPass.cpp"
+    "PresentRPass.h"
+    "PresentRPass.cpp"
+    "PaintRenderObject.h"
+    "PaintRenderObject.cpp"
+    "PaintingRPass.cpp"
+    "PaintingRPass.h"
+    "ModelRPass.h"
+    "ModelRPass.cpp"
 )
 
 if(USE_VULKAN)

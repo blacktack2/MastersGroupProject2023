@@ -12,6 +12,7 @@
 #include "RenderObject.h"
 #include "StateGameObject.h"
 #include "TextureLoader.h"
+#include "PaintRenderObject.h"
 #include "TutorialGame.h"
 #include "InkEffectManager.h"
 
@@ -348,6 +349,9 @@ void TutorialGame::InitialiseAssets() {
 	//AssetLibrary::AddTexture("inkable", inkableTex);						/////////
 	AssetLibrary::AddTexture("noise", noiseTex);							/////////
 	AssetLibrary::AddTexture("basic", basicTex);
+	OGLShader* shader = (OGLShader*)renderer->LoadShader("modelDefault.vert", "modelPaintTexture.frag");
+	AssetLibrary::AddShader("paint", shader);
+	renderer->GetModelPass().AddModelShader(shader);
 
 	//basicShader = renderer->LoadShader("scene.vert", "scene.frag");			/////////
 	//inkableShader = renderer->LoadShader("inkable.vert", "inkable.frag");	/////////
@@ -614,15 +618,16 @@ void TutorialGame::InitDefaultFloor() {
 GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 	GameObject* floor = new GameObject("Floor");
 
-	Vector3 floorSize = Vector3(200, 2, 200);		/////////
-	AABBVolume* volume = new AABBVolume(floorSize);
+	Vector3 floorSize = Vector3(200, 2, 200);
+	AABBVolume* volume = new AABBVolume(floorSize, CollisionLayer::PaintAble);
 	floor->SetBoundingVolume((CollisionVolume*)volume);
 	floor->GetTransform()
 		.SetScale(floorSize * 2)
 		.SetPosition(position);
 
-	//floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, inkableShader, noiseTex, floorSize));	/////////
-	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, nullptr));
+	PaintRenderObject* render = new PaintRenderObject(&floor->GetTransform(), cubeMesh, basicTex);
+	floor->SetRenderObject(render);
+
 	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));
 
 	floor->GetPhysicsObject()->SetStatic();
