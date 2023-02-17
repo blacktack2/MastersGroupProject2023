@@ -1,9 +1,9 @@
 #include "Bullet.h"
-
-#include "CapsuleVolume.h"
 #include "PaintRenderObject.h"
-
+#include "InkEffectManager.h"
 #include "Debug.h"
+#include "GameGridManager.h"
+#include "SphereVolume.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -13,6 +13,7 @@ Bullet::Bullet() : GameObject() {
 
 Bullet::Bullet(Bullet& other) : GameObject(other) {
 	lifespan = other.lifespan;
+	inkType = paintHell::InkType::NoInk;
 }
 
 Bullet::~Bullet() {
@@ -32,16 +33,28 @@ void Bullet::OnCollisionBegin(GameObject* other) {
 	if (other->GetBoundingVolume()->layer == CollisionLayer::PaintAble)
 	{
 		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
-		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), 3.0f, colour));
+		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), paintRadius, colour));
+		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), inkType);
 	}
+	boundingVolume = (CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer);
+	lifespan = -1;
 }
 
 void Bullet::OnTriggerBegin(GameObject* other) {
 	if (other->GetBoundingVolume()->layer == CollisionLayer::PaintAble)
 	{
 		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
-		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), 3.0f, colour));
+		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), paintRadius, colour));
+		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), inkType);
 	}
+	boundingVolume = (CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer);
+	lifespan = -1;
 }
 
-
+void Bullet::UpdateColour() {
+	colour = InkEffectManager::instance().GetColour(inkType);
+	if (this->GetRenderObject()) {
+		this->GetRenderObject()->SetColour(Vector4(colour, 1));
+	}
+	
+}
