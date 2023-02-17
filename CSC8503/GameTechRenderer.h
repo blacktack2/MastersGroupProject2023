@@ -16,6 +16,7 @@
 #include "SkyboxRPass.h"
 #include "ModelRPass.h"
 #include "LightingRPass.h"
+#include "SSAORPass.h"
 #include "CombineRPass.h"
 #include "BloomRPass.h"
 #include "HDRRPass.h"
@@ -113,6 +114,7 @@ namespace NCL::CSC8503 {
 		SkyboxRPass* skyboxPass;
 		ModelRPass* modelPass;
 		LightingRPass* lightingPass;
+		SSAORPass* ssaoPass;
 		CombineRPass* combinePass;
 		BloomRPass* bloomPass;
 		HDRRPass* hdrPass;

@@ -32,9 +32,13 @@ GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetW
 		modelPass->GetDepthOutTex(), modelPass->GetNormalOutTex());
 	AddMainPass(lightingPass);
 
+	ssaoPass = new SSAORPass(*this,
+		modelPass->GetDepthOutTex(), modelPass->GetNormalOutTex());
+	AddMainPass(ssaoPass);
+
 	combinePass = new CombineRPass(*this,
 		skyboxPass->GetOutTex(), modelPass->GetDiffuseOutTex(),
-		lightingPass->GetDiffuseOutTex(), lightingPass->GetSpecularOutTex(),
+		lightingPass->GetDiffuseOutTex(), lightingPass->GetSpecularOutTex(), ssaoPass->GetOutTex(),
 		modelPass->GetNormalOutTex(), modelPass->GetDepthOutTex());
 	SetCombinePass(combinePass);
 

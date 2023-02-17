@@ -7,6 +7,9 @@
  */
 
 namespace NCL::Rendering {
+	/**
+	 * @brief Utility class for encapsulating FrameBuffer functionality.
+	 */
 	class FrameBuffer {
 	public:
 		FrameBuffer();

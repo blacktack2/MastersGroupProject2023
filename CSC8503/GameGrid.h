@@ -402,7 +402,7 @@ namespace NCL
 						}
 					}
 				}
-				this->DrawGameGrid();
+				//this->DrawGameGrid();
 			}
 
 			std::vector<GameNode> GetTraceNodes()

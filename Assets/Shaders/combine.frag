@@ -12,6 +12,7 @@ uniform sampler2D skyboxTex;
 uniform sampler2D diffuseTex;
 uniform sampler2D diffuseLightTex;
 uniform sampler2D specularLightTex;
+uniform sampler2D ssaoTex;
 uniform sampler2D normalTex;
 uniform sampler2D depthTex;
 
@@ -28,10 +29,11 @@ vec3 displayDefault(vec2 texCoord) {
 		return diffuse.rgb;
 	vec3 light = texture(diffuseLightTex,  texCoord).rgb;
 	vec3 spec  = texture(specularLightTex, texCoord).rgb;
+	float ambientOcclusion = texture(ssaoTex, texCoord).r;
 
 	vec3 result = diffuse.rgb * light;
 	result += spec;
-	result += diffuse.rgb * ambienceColour;
+	result += diffuse.rgb * ambienceColour * ambientOcclusion;
 	return result;
 }
 
@@ -55,6 +57,10 @@ vec3 displaySpecularLight(vec2 texCoord) {
 	return texture(specularLightTex, texCoord).rgb;
 }
 
+vec3 displayAmbientOcclusion(vec2 texCoord) {
+	return vec3(texture(ssaoTex, texCoord).r);
+}
+
 in Vertex {
 	vec2 texCoord;
 } IN;
@@ -72,6 +78,8 @@ void main() {
 		fragColour.rgb = displayDiffuseLight(IN.texCoord);
 	} else if (mode == 5) {
 		fragColour.rgb = displaySpecularLight(IN.texCoord);
+	} else if (mode == 6) {
+		fragColour.rgb = displayAmbientOcclusion(IN.texCoord);
 	} else {
 		fragColour.rgb = displayDefault(IN.texCoord);
 	}

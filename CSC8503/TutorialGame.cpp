@@ -77,8 +77,8 @@ void TutorialGame::InitWorld(InitMode mode) {
 
 	gameGrid = new GameGrid{ {-200,0,-200},200,200,200 * 2,200 * 2 };	// MUST initialize gameGrid BEFORE boss/player, otherwise boss/player will be referring to nullptr
 	player = AddPlayerToWorld(Vector3(0, 0, 0));
-	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 5,5,5 }, 1);
-	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
+	//testingBoss = AddBossToWorld({ 0, 5, -20 }, { 5,5,5 }, 1);
+	//testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
 
 	switch (mode) {
 		case InitMode::MAZE             : InitMazeWorld(20, 20, 20.0f)                            ; break;
@@ -135,6 +135,9 @@ void TutorialGame::UpdateGame(float dt) {
 	}
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM6)) {
 		renderer->GetCombinePass().SetRenderMode(RenderMode::SpecularLight);
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM7)) {
+		renderer->GetCombinePass().SetRenderMode(RenderMode::AmbientOcclusion);
 	}
 
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN)) {
@@ -284,25 +287,25 @@ void TutorialGame::UpdateGame(float dt) {
 	debugViewPoint->FinishTime("Render");
 
 	/////////
-	gameGrid->UpdateGrid(dt);
-	UpdateHealingKit();
-	gameGrid->UpdateTrace(player);
+	//gameGrid->UpdateGrid(dt);
+	//UpdateHealingKit();
+	//gameGrid->UpdateTrace(player);
 	//std::vector<GameNode> v = gameGrid->GetTraceNodes();
 	//std::vector<Vector3> u;
 	//for (const auto& i : v) {
 	//	u.push_back(i.worldPosition);
 	//}
 	//floor->GetRenderObject()->SetTrace(u);
-	testingBossBehaviorTree->update();
-	RenderBombsReleasedByBoss();
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::PLUS))
-	{
-		testingBoss->SetHealth(100);
-	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::MINUS))
-	{
-		testingBoss->SetHealth(10);
-	}
+	//testingBossBehaviorTree->update();
+	//RenderBombsReleasedByBoss();
+	//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::PLUS))
+	//{
+	//	testingBoss->SetHealth(100);
+	//}
+	//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::MINUS))
+	//{
+	//	testingBoss->SetHealth(10);
+	//}
 }
 
 void TutorialGame::InitialiseAssets() {

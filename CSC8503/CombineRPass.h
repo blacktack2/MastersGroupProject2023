@@ -25,12 +25,13 @@ namespace NCL::CSC8503 {
 		Diffuse,
 		DiffuseLight,
 		SpecularLight,
+		AmbientOcclusion,
 	};
 	class CombineRPass : public OGLCombineRenderPass {
 	public:
 		CombineRPass(OGLRenderer& renderer,
 			OGLTexture* skyboxTexIn, OGLTexture* diffuseTexIn,
-			OGLTexture* diffuseLightTexIn, OGLTexture* specularLightTexIn,
+			OGLTexture* diffuseLightTexIn, OGLTexture* specularLightTexIn, OGLTexture* ssaoTexIn,
 			OGLTexture* normalTexIn, OGLTexture* depthTexIn);
 		~CombineRPass();
 
@@ -48,6 +49,7 @@ namespace NCL::CSC8503 {
 		OGLTexture* diffuseTexIn;
 		OGLTexture* diffuseLightTexIn;
 		OGLTexture* specularLightTexIn;
+		OGLTexture* ssaoTexIn;
 		OGLTexture* normalTexIn;
 		OGLTexture* depthTexIn;
 

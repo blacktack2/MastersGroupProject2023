@@ -648,38 +648,38 @@ namespace NCL
                     switch (bossAction)
                     {
                     case NoAction:
-                        std::cout << "Error: Boss' behavior is locked while there is currently no action to perform!\n";
+                        //std::cout << "Error: Boss' behavior is locked while there is currently no action to perform!\n";
                         break;
                     case Dead:
-                        std::cout << "The boss has dead, and it should do nothing.\n";
+                        //std::cout << "The boss has dead, and it should do nothing.\n";
                         // Note that, for current implementation, once the boss has dead, its action remain in Dead forever.
                         break;
                     case RandomWalk:
-                        std::cout << "Boss is walking randomly.\n";
+                        //std::cout << "Boss is walking randomly.\n";
                         finish = boss->RandomWalk();
                         break;
                     case Stab:
-                        std::cout << "Boss stabs the player.\n";
+                        //std::cout << "Boss stabs the player.\n";
                         finish = boss->StabPlayer(player);
                         break;
                     case Spin:
-                        std::cout << "Boss is spining.\n";
+                        //std::cout << "Boss is spining.\n";
                         finish = boss->Spin(player);
                         break;
                     case Laser:
-                        std::cout << "Boss use laser.\n";
+                        //std::cout << "Boss use laser.\n";
                         finish = boss->UseLaserOnPlayer(player);
                         break;
                     case JumpTo:
-                        std::cout << "Boss jumps towards the player.\n";
+                        //std::cout << "Boss jumps towards the player.\n";
                         finish = boss->JumpTo(player);
                         break;
                     case JumpAway:
-                        std::cout << "Boss jumps away from the player.\n";
+                        //std::cout << "Boss jumps away from the player.\n";
                         finish = boss->JumpAway(player);
                         break;
                     case SeekHeal:
-                        std::cout << "Boss is seeking for healing kit.\n";
+                        //std::cout << "Boss is seeking for healing kit.\n";
                         finish = boss->SeekHeal(hasHealKit);
                         if (!hasHealKit)
                         {
@@ -687,11 +687,11 @@ namespace NCL
                         }
                         break;
                     case InkSea:
-                        std::cout << "Boss perfroms Ink Sea.\n";
+                        //std::cout << "Boss perfroms Ink Sea.\n";
                         finish = boss->InkSea();
                         break;
                     case BulletsStorm:
-                        std::cout << "Boss perfroms Bullets Storm.\n";
+                        //std::cout << "Boss perfroms Bullets Storm.\n";
                         finish = boss->BulletsStorm();
                         break;
                     default:
