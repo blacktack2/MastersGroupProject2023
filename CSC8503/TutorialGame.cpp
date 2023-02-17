@@ -803,7 +803,7 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 
 void TutorialGame::BuildLevel()
 {
-	float interval = 5.0f;
+	interval = 5.0f;
 	gameLevel = new GameLevel{};
 	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -100,0,-70 }, interval);
 	world->AddGameObject(gameLevel);
@@ -812,7 +812,6 @@ void TutorialGame::BuildLevel()
 
 void TutorialGame::UpdateLevel()
 {
-	float interval = 5.0f;
 	for (auto& object : gameLevel->GetGameStuffs())
 	{
 		if (object.HasDestroyed())

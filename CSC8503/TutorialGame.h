@@ -146,6 +146,7 @@ namespace NCL {
 			paintHell::debug::DebugViewPoint* debugViewPoint;
 
 			GameLevel* gameLevel = nullptr;	/////////
+			float interval = 0.0f;			/////////
 			GameGrid* gameGrid = nullptr;	/////////
 			GameObject* floor = nullptr;	/////////
 			Boss* testingBoss = nullptr;   /////////
