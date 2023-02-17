@@ -33,12 +33,11 @@ void main() {
 
 	float depth = texture(depthTex, IN.texCoord).r;
 	vec3 ndcPos = vec3(IN.texCoord, depth) * 2.0 - 1.0;
-	vec4 viewPos = inverse(projMatrix) * vec4(ndcPos, 1.0);
-	viewPos.xyz /= viewPos.w;
+	vec4 invClipPos = inverse(projView) * vec4(ndcPos, 1.0);
+	vec3 worldPos   = invClipPos.xyz / invClipPos.w;
 
 	vec3 random = normalize(texture(noiseTex, IN.texCoord * noiseScale).xyz) * 2.0 - 1.0;
 	vec3 normal = normalize(texture(normalTex, IN.texCoord).xyz) * 2.0 - 1.0;
-	normal = mat3(viewMatrix) * normal;
 	vec3 tangent  = normalize(random - normal * dot(random, normal));
 	vec3 binormal = cross(tangent, normal);
 	mat3 TBN = mat3(tangent, binormal, normal);
@@ -46,21 +45,19 @@ void main() {
 	float occlusion = 0.0;
 	for (uint i = 0; i < 1; i++) {
 		vec3 samplePos = TBN * kernels[i];
-		samplePos = viewPos.xyz + samplePos * radius;
+		samplePos = worldPos + samplePos * radius;
 
-		vec4 offset = projMatrix * vec4(samplePos, 1.0);
+		vec4 offset = projView * vec4(samplePos, 1.0);
 		offset.xyz /= offset.w;
-		offset.xyz = offset.xyz * 0.5 + 0.5;
+		offset.xy = offset.xy * 0.5 + 0.5;
 
 		float sampleDepth = texture(depthTex, offset.xy).r;
-		vec3 sampleNDC = vec3(offset.xy, depth) * 2.0 - 1.0;
-		vec4 sampleView = inverse(projMatrix) * vec4(sampleNDC, 1.0);
-		sampleView.xyz /= sampleView.w;
 
-		float rangeCheck = smoothstep(0.0, 1.0, radius / abs(viewPos.z - sampleView.z));
-		occlusion += ((sampleView.z >= samplePos.z + bias) ? 1.0 : 0.0) * rangeCheck;
+		float rangeCheck = smoothstep(0.0, 1.0, radius / abs(offset.z - sampleDepth));
+		occlusion += ((depth >= samplePos.z + bias) ? 1.0 : 0.0) * rangeCheck;
 		
-		fragColour = vec4(-samplePos, 1.0);
+		fragColour = vec4(vec3(sampleDepth), 1.0);
 	}
-	//fragColour = 1.0 - (occlusion / kernels.length());
+	//fragColour = vec4(vec3(1.0 - (occlusion / kernels.length())), 1.0);
+	//fragColour = vec4(tangent, 1.0);
 }
