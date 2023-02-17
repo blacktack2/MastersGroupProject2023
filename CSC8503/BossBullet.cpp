@@ -41,18 +41,4 @@ void BossBullet::OnTriggerBegin(GameObject* other) {
 	}
 
 }
-/*
-void BossBullet::OnCollisionBegin(GameObject* other) {
-	Bullet::OnCollisionBegin(other);
-	if (other->GetBoundingVolume()->layer == CollisionLayer::PaintAble)
-	{
-		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
-		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), 3.0f));
-	}
-	//delete if colliding with boss
-	if (!dynamic_cast<Boss*>(other)) {
-		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), inkType);
-		Delete();
-	}
-	
-}*/
+

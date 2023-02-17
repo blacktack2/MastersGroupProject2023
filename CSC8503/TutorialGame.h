@@ -79,6 +79,7 @@ namespace NCL {
 			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);		/////////
 			HealingKit* UpdateHealingKit();																/////////
 			void BuildLevel();																			/////////
+			void UpdateLevel();																			/////////
 			NPCObject* AddNPCToWorld(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
 			GameObject* AddTriggerToWorld(const Vector3& position, float size);
@@ -145,6 +146,7 @@ namespace NCL {
 			paintHell::debug::DebugViewPoint* debugViewPoint;
 
 			GameLevel* gameLevel = nullptr;	/////////
+			float interval = 0.0f;			/////////
 			GameGrid* gameGrid = nullptr;	/////////
 			GameObject* floor = nullptr;	/////////
 			Boss* testingBoss = nullptr;   /////////

@@ -93,6 +93,11 @@ void TutorialGame::InitWorld(InitMode mode) {
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
 
+	if (mode != InitMode::EMPTY)
+	{
+		InitDefaultFloor();
+	}
+
 	switch (mode) {
 		default: InitGameExamples(); break;
 		case InitMode::MAZE             : InitMazeWorld(20, 20, 20.0f)                            ; break;
@@ -106,8 +111,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 		case InitMode::AUDIO_TEST : InitGameExamples()                ; break;
 	}
 
-	//InitGameExamples();
-	//InitDefaultFloor();
+	
 
 	world->UpdateStaticTree();
 
@@ -303,7 +307,7 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 	if (gameLevel->GetShelterTimer() > 20.0f)
 	{
 		gameLevel->SetShelterTimer(0.0f);
-		BuildLevel();							// rebuild Shelters that has been destroyed
+		UpdateLevel();							// rebuild Shelters that has been destroyed
 	}
 }
 
@@ -818,11 +822,15 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 
 void TutorialGame::BuildLevel()
 {
-	float interval = 5.0f;
+	interval = 5.0f;
 	gameLevel = new GameLevel{};
 	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -100,0,-70 }, interval);
 	world->AddGameObject(gameLevel);
+	UpdateLevel();
+}
 
+void TutorialGame::UpdateLevel()
+{
 	for (auto& object : gameLevel->GetGameStuffs())
 	{
 		if (object.HasDestroyed())
@@ -832,7 +840,7 @@ void TutorialGame::BuildLevel()
 			{
 				Vector3 dimensions{ interval / 2.0f, 10.0f, interval / 2.0f };
 				Obstacle* pillar = new Obstacle{ &object, true };
-				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{1.3,2,1.3}));
+				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3,2,1.3 }));
 				pillar->GetTransform()
 					.SetPosition(object.worldPos + Vector3{ 0,18,0 })
 					.SetScale(dimensions * 2);
