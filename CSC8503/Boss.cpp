@@ -77,17 +77,15 @@ void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
 
 BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s)
 {
-    //BossBullet* ink = new BossBullet(*(BossBullet*)AssetLibrary::GetPrefab("bullet"), paintHell::InkType::BossDamage);
-    std::cout << "new ink " << std::endl;
-    Bullet* ink = new Bullet(*(Bullet*)AssetLibrary::GetPrefab("bullet"), paintHell::InkType::PlayerDamage);
+    BossBullet* ink = new BossBullet(*(BossBullet*)AssetLibrary::GetPrefab("bossBullet"), paintHell::InkType::BossDamage);
     ink->SetLifespan(5.0f);
     ink->GetTransform()
         .SetPosition(this->GetTransform().GetGlobalPosition());
-    ink->GetTransform().SetScale(Vector3(2, 2, 2));
-    ink->GetPhysicsObject()->SetInverseMass(0.0f);
+    ink->GetPhysicsObject()->SetInverseMass(1.0f);
     ink->GetPhysicsObject()->SetGravWeight(0);
+    ink->GetPhysicsObject()->SetDampingWeight(0);
     //ink->GetPhysicsObject()->SetLinearVelocity(this->physicsObject->GetLinearVelocity() * Vector3(1, 0, 1));
-    ink->GetPhysicsObject()->ApplyLinearImpulse(v .Normalised() * 1);
+    ink->GetPhysicsObject()->ApplyLinearImpulse(v);
     if (s.Length() >= 1) {
         //ink->SetDamage(10);
     }

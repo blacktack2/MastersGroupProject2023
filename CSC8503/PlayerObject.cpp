@@ -2,7 +2,7 @@
 #include "PlayerObject.h"
 
 #include "AssetLibrary.h"
-#include "Bullet.h"
+#include "PlayerBullet.h"
 #include "Bonus.h"
 #include "Constraint.h"
 #include "GameWorld.h"
@@ -198,7 +198,7 @@ void PlayerObject::Shoot() {
 	if (projectileFireRateTimer > 0)
 		return;
 	projectileFireRateTimer = projectileFireRate;
-	Bullet* ink = new Bullet(*(Bullet*)AssetLibrary::GetPrefab("bullet"), paintHell::InkType::PlayerDamage);
+	PlayerBullet* ink = new PlayerBullet(*(PlayerBullet*)AssetLibrary::GetPrefab("bullet"), paintHell::InkType::PlayerDamage);
 	ink->SetLifespan(projectileLifespan);
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
 	ink->GetPhysicsObject()->SetInverseMass(2.0f);

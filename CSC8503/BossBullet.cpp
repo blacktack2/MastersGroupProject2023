@@ -1,3 +1,11 @@
+/**
+ * @file   BossBullet.cpp
+ * @brief  See BossBullet.h
+ *
+ * @author Xiaoyang Liu
+ * @author Felix Chiu
+ * @date   February 2023
+ */
 #include "BossBullet.h"
 #include "Boss.h"
 #include "PaintRenderObject.h"
@@ -10,34 +18,41 @@ using namespace CSC8503;
 BossBullet::BossBullet() : Bullet() {
 }
 
-BossBullet::BossBullet(BossBullet& other, paintHell::InkType inkType) : Bullet(other) {
-    lifespan = other.lifespan;
-    this->inkType = inkType;
+BossBullet::BossBullet(BossBullet& other, paintHell::InkType inkType) : Bullet(other, inkType) {
 }
 
 BossBullet::~BossBullet() {
 }
 
 void BossBullet::Update(float dt) {
-	Debug::DrawLine(this->GetTransform().GetGlobalPosition(), this->GetTransform().GetGlobalPosition() + Vector3(0, 0.5f, 0), Debug::YELLOW, 1.0f);
-    lifespan -= dt;
-    if (lifespan <= 0) {
-        Delete();
-        return;
-    }
+	Bullet::Update(dt);
 }
-
-void BossBullet::OnCollisionBegin(GameObject* other) {
+void BossBullet::OnTriggerBegin(GameObject* other) {
+	Bullet::OnTriggerBegin(other);
 	if (other->GetBoundingVolume()->layer == CollisionLayer::PaintAble)
 	{
 		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
 		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), 3.0f));
 	}
-	//not work as it is not colliding with boss
-	if (Boss* boss = dynamic_cast<Boss*>(other)) {
-
-		boss->GetHealth()->Damage(10);
+	//delete if colliding with boss
+	if (!dynamic_cast<Boss*>(other)) {
+		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), inkType);
+		Delete();
 	}
-	GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), inkType);
-	Delete();
+
 }
+/*
+void BossBullet::OnCollisionBegin(GameObject* other) {
+	Bullet::OnCollisionBegin(other);
+	if (other->GetBoundingVolume()->layer == CollisionLayer::PaintAble)
+	{
+		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
+		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), 3.0f));
+	}
+	//delete if colliding with boss
+	if (!dynamic_cast<Boss*>(other)) {
+		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), inkType);
+		Delete();
+	}
+	
+}*/

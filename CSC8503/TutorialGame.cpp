@@ -2,7 +2,7 @@
 
 
 #include "AssetLibrary.h"
-#include "Bullet.h"
+#include "PlayerBullet.h"
 #include "Bonus.h"
 #include "Debug.h"
 
@@ -89,7 +89,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 
 	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 300, 300, 2 ) );
 	BuildLevel();
-	player = AddPlayerToWorld(Vector3(0, 0, 90));
+	player = AddPlayerToWorld(Vector3(0, 5, 90));
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
 
@@ -107,7 +107,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 	}
 
 	//InitGameExamples();
-	InitDefaultFloor();
+	//InitDefaultFloor();
 
 	world->UpdateStaticTree();
 
@@ -352,13 +352,13 @@ void TutorialGame::InitialiseAssets() {
 void TutorialGame::InitialisePrefabs() {
 	float bulletRadius = 0.2f;
 
-	bulletPrefab = new Bullet();
+	bulletPrefab = new PlayerBullet();
 
 	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::PlayerProj));
 	bulletPrefab->GetTransform().SetScale(Vector3(bulletRadius));
 
 	bulletPrefab->SetRenderObject(new RenderObject(&bulletPrefab->GetTransform(), sphereMesh, nullptr, nullptr));
-	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume()));
+	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume(), true));
 
 	bulletPrefab->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.8f, 1.0f));
 
@@ -367,6 +367,24 @@ void TutorialGame::InitialisePrefabs() {
 	bulletPrefab->GetPhysicsObject()->InitCapsuleInertia();
 
 	AssetLibrary::AddPrefab("bullet", bulletPrefab);
+
+	bulletRadius = 0.75f;
+
+	bulletPrefab = new BossBullet();
+
+	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::EnemyProj));
+	bulletPrefab->GetTransform().SetScale(Vector3(bulletRadius));
+
+	bulletPrefab->SetRenderObject(new RenderObject(&bulletPrefab->GetTransform(), sphereMesh, nullptr, nullptr));
+	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume(), true));
+
+	bulletPrefab->GetRenderObject()->SetColour(Vector4(0.2f, 1.0f, 0.5f, 1.0f));
+
+	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
+	bulletPrefab->GetPhysicsObject()->SetGravWeight(1.0f);
+	bulletPrefab->GetPhysicsObject()->InitCapsuleInertia();
+
+	AssetLibrary::AddPrefab("bossBullet", bulletPrefab);
 }
 
 void TutorialGame::InitCamera() {

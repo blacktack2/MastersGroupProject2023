@@ -57,6 +57,14 @@ namespace NCL {
 				gravWeight = weight;
 			}
 
+			float GetDampingWeight() const {
+				return dampingWeight;
+			}
+
+			void SetDampingWeight(float weight) {
+				dampingWeight = weight;
+			}
+
 			float GetGravWeight() const {
 				return gravWeight;
 			}
@@ -122,6 +130,7 @@ namespace NCL {
 			//linear stuff
 			Vector3 linearVelocity;
 			Vector3 force;
+			float dampingWeight;
 			
 			//angular stuff
 			Vector3 angularVelocity;

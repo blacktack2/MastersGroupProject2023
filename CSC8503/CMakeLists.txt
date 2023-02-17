@@ -4,7 +4,6 @@ set(PROJECT_NAME CSC8503)
 # Source groups
 ################################################################################
 set(Header_Files
-	"Bullet.h"
 	"Bonus.h"
 	"EnemyObject.h"
 	"Maze.h"
@@ -23,7 +22,6 @@ set(Header_Files
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
-	"Bullet.cpp"
 	"Bonus.cpp"
 	"EnemyObject.cpp"
     "Main.cpp"
@@ -110,6 +108,17 @@ set(Ink_Files
 )
 source_group("Ink Files" FILES ${Ink_Files})
 
+set(Bullet_Files 
+    "Bullet.h"
+    "Bullet.cpp"
+    "BossBullet.h"
+	"BossBullet.cpp"
+    "PlayerBullet.h"
+    "PlayerBullet.cpp"
+	
+)
+source_group("Bullet Files" FILES ${Bullet_Files})
+
 set(Player_Files 
     "health.h"
 	"health.cpp"
@@ -122,8 +131,6 @@ source_group("Player Files" FILES ${Player_Files})
 set(Enemy_Files 
     "Boss.h"
     "Boss.cpp"
-    "BossBullet.h"
-	"BossBullet.cpp"
 )
 source_group("Enemy Files" FILES ${Enemy_Files})
 
@@ -133,6 +140,7 @@ set(ALL_FILES
     ${Audio_Files}
     ${Render_Files}
     ${Ink_Files}
+    ${Bullet_Files}
 	${Player_Files}
     ${Enemy_Files}
 )
@@ -144,6 +152,7 @@ if(USE_VULKAN)
         ${SHADER_FILES}
         ${Audio_Files}
         ${Ink_Files}
+        ${Bullet_Files}
 	    ${Player_Files}
         ${Enemy_Files}
     )
