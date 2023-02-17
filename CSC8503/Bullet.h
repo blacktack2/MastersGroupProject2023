@@ -20,6 +20,7 @@ namespace NCL {
 				lifespan = ls;
 			}
 		protected:
+			float paintRadius = 1.5f;
 			float lifespan = 0;
 			Vector3 colour = Vector3(1, 0, 1);
 			paintHell::InkType inkType;
