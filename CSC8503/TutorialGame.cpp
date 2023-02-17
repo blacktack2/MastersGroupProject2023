@@ -1,8 +1,7 @@
 #include "TutorialGame.h"
 
-
 #include "AssetLibrary.h"
-#include "Bullet.h"
+#include "PlayerBullet.h"
 #include "Bonus.h"
 #include "Debug.h"
 
@@ -89,7 +88,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 
 	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 300, 300, 2 ) );
 	BuildLevel();
-	player = AddPlayerToWorld(Vector3(0, 0, 0));
+	player = AddPlayerToWorld(Vector3(0, 5, 90));
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
 
@@ -111,7 +110,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 		case InitMode::AUDIO_TEST : InitGameExamples()                ; break;
 	}
 
-	//InitGameExamples();
+	
 
 	world->UpdateStaticTree();
 
@@ -119,8 +118,6 @@ void TutorialGame::InitWorld(InitMode mode) {
 
 	InitCamera();
 }
-
-
 
 void TutorialGame::UpdateGame(float dt) {
 	GameState gameState = gameStateManager->GetGameState();
@@ -306,7 +303,6 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 	gridManager->Update(dt);
 	//UpdateHealingKit();
 	testingBossBehaviorTree->update();
-	RenderBossBulletsReleasedByBoss();
 	if (gameLevel->GetShelterTimer() > 20.0f)
 	{
 		gameLevel->SetShelterTimer(0.0f);
@@ -359,14 +355,13 @@ void TutorialGame::InitialiseAssets() {
 void TutorialGame::InitialisePrefabs() {
 	float bulletRadius = 0.2f;
 
-	bulletPrefab = new Bullet();
+	bulletPrefab = new PlayerBullet();
 
 	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::PlayerProj));
 	bulletPrefab->GetTransform().SetScale(Vector3(bulletRadius));
 
 	bulletPrefab->SetRenderObject(new RenderObject(&bulletPrefab->GetTransform(), sphereMesh, nullptr, nullptr));
-	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume()));
-
+	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume(), true));
 	bulletPrefab->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.8f, 1.0f));
 
 	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
@@ -374,6 +369,24 @@ void TutorialGame::InitialisePrefabs() {
 	bulletPrefab->GetPhysicsObject()->InitCapsuleInertia();
 
 	AssetLibrary::AddPrefab("bullet", bulletPrefab);
+
+	bulletRadius = 0.75f;
+
+	bulletPrefab = new BossBullet();
+
+	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::EnemyProj));
+	bulletPrefab->GetTransform().SetScale(Vector3(bulletRadius));
+
+	bulletPrefab->SetRenderObject(new RenderObject(&bulletPrefab->GetTransform(), sphereMesh, nullptr, nullptr));
+	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume(), true));
+
+	bulletPrefab->GetRenderObject()->SetColour(Vector4(0.2f, 1.0f, 0.5f, 1.0f));
+
+	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
+	bulletPrefab->GetPhysicsObject()->SetGravWeight(1.0f);
+	bulletPrefab->GetPhysicsObject()->InitCapsuleInertia();
+
+	AssetLibrary::AddPrefab("bossBullet", bulletPrefab);
 }
 
 void TutorialGame::InitCamera() {
@@ -892,30 +905,6 @@ void TutorialGame::UpdateLevel()
 				world->AddGameObject(wall);
 			}
 		}
-	}
-}
-
-void TutorialGame::RenderBossBulletsReleasedByBoss()
-{
-	std::vector<BossBullet*> bossBossBullets = testingBoss->GetBossBulletsReleasedByBoss();
-	for (auto& bomb : bossBossBullets)
-	{
-		if (bomb->GetRenderObject() == nullptr)
-		{
-			bomb->SetRenderObject(new RenderObject(&bomb->GetTransform(), sphereMesh, nullptr, nullptr));
-		}
-		bomb->GetRenderObject()->SetColour({ 0,0,1,1 });
-
-		world->AddGameObject(bomb);
-	}
-	testingBoss->clearBossBulletList();
-	if (testingBoss->isUsingInkSea())
-	{
-		//floor->GetRenderObject()->enableInkSea(testingBoss->GetTransform().GetGlobalPosition());
-	}
-	else
-	{
-		//floor->GetRenderObject()->disableInkSea();
 	}
 }
 

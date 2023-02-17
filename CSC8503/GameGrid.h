@@ -128,7 +128,10 @@ namespace NCL
 			void UpdateGrid(float dt = 0.0f);
 
 			bool FindCatmullRomPath(const Vector3& from, const Vector3& to, NavigationPath& outPath);
+
 			GameNode* NearestNode(Vector3 position);
+
+			std::vector<GameNode*> AreaNode(Vector3 position, float radius);
 
 			void DrawDebugGameGrid();
 
