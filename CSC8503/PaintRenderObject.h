@@ -8,9 +8,16 @@ namespace NCL::CSC8503 {
 	struct PaintCollision{
 		Vector3 center;
 		float radius;
+		Vector3 colour;
+		PaintCollision(Vector3 center, float radius, Vector3 colour) {
+			this->center = center;
+			this->radius = radius;
+			this->colour = colour;
+		}
 		PaintCollision(Vector3 center, float radius) {
 			this->center = center;
 			this->radius = radius;
+			this->colour = Vector3(1,1,1);
 		}
 	};
 

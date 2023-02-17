@@ -104,7 +104,7 @@ namespace NCL
             BossBullet* releaseBossBullet(Vector3 v, Vector3 s)
             {
                 BossBullet* bomb = new BossBullet(v);
-                SphereVolume* volume = new SphereVolume(s.x);
+                SphereVolume* volume = new SphereVolume(s.x, CollisionLayer::EnemyProj);
                 bomb->SetBoundingVolume((CollisionVolume*)volume);
                 Vector3 position = this->GetTransform().GetGlobalPosition();
                 bomb->GetTransform()

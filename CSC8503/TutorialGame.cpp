@@ -93,6 +93,11 @@ void TutorialGame::InitWorld(InitMode mode) {
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
 
+	if (mode != InitMode::EMPTY)
+	{
+		InitDefaultFloor();
+	}
+
 	switch (mode) {
 		default: InitGameExamples(); break;
 		case InitMode::MAZE             : InitMazeWorld(20, 20, 20.0f)                            ; break;
@@ -107,7 +112,6 @@ void TutorialGame::InitWorld(InitMode mode) {
 	}
 
 	//InitGameExamples();
-	InitDefaultFloor();
 
 	world->UpdateStaticTree();
 
