@@ -9,15 +9,18 @@
 #include "Boss.h"
 #include "PaintRenderObject.h"
 #include "InkEffectManager.h"
-#include "GameGridManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
 PlayerBullet::PlayerBullet() : Bullet() {
+	inkType = paintHell::InkType::PlayerDamage;
+	UpdateColour();
 }
 
-PlayerBullet::PlayerBullet(PlayerBullet& other, paintHell::InkType inkType) : Bullet(other, inkType) {
+PlayerBullet::PlayerBullet(PlayerBullet& other) : Bullet(other) {
+	inkType = paintHell::InkType::PlayerDamage;
+	UpdateColour();
 }
 
 PlayerBullet::~PlayerBullet() {
@@ -34,7 +37,4 @@ void PlayerBullet::OnTriggerBegin(GameObject* other) {
 		boss->GetHealth()->Damage(10);
 
 	}
-	GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), inkType);
-	lifespan = -1;
-
 }

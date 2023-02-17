@@ -7,12 +7,14 @@ namespace NCL {
 		class Bullet : public GameObject {
 		public:
 			Bullet();
-			Bullet(Bullet& other, paintHell::InkType inkType);
+			Bullet(Bullet& other);
 			~Bullet();
 
 			virtual void Update(float dt) override;
 			void OnTriggerBegin(GameObject* other) override;
 			void OnCollisionBegin(GameObject* other) override;
+
+			void UpdateColour();
 
 			void SetLifespan(float ls) {
 				lifespan = ls;

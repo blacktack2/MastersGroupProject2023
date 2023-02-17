@@ -77,7 +77,7 @@ void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
 
 BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s)
 {
-    BossBullet* ink = new BossBullet(*(BossBullet*)AssetLibrary::GetPrefab("bossBullet"), paintHell::InkType::BossDamage);
+    BossBullet* ink = new BossBullet(*(BossBullet*)AssetLibrary::GetPrefab("bossBullet"));
     ink->SetLifespan(5.0f);
     ink->GetTransform()
         .SetPosition(this->GetTransform().GetGlobalPosition());

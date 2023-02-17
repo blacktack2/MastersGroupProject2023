@@ -15,7 +15,7 @@ namespace NCL {
 		class BossBullet : public Bullet {
 		public:
 			BossBullet();
-			BossBullet(BossBullet& other, paintHell::InkType inkType);
+			BossBullet(BossBullet& other);
 			~BossBullet();
 
 			void Update(float dt) override;

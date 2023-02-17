@@ -14,7 +14,7 @@ namespace NCL {
 		class PlayerBullet : public Bullet {
 		public:
 			PlayerBullet();
-			PlayerBullet(PlayerBullet& other, paintHell::InkType inkType);
+			PlayerBullet(PlayerBullet& other);
 			~PlayerBullet();
 
 			void Update(float dt) override;

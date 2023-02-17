@@ -198,7 +198,7 @@ void PlayerObject::Shoot() {
 	if (projectileFireRateTimer > 0)
 		return;
 	projectileFireRateTimer = projectileFireRate;
-	PlayerBullet* ink = new PlayerBullet(*(PlayerBullet*)AssetLibrary::GetPrefab("bullet"), paintHell::InkType::PlayerDamage);
+	PlayerBullet* ink = new PlayerBullet(*(PlayerBullet*)AssetLibrary::GetPrefab("bullet"));
 	ink->SetLifespan(projectileLifespan);
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
 	ink->GetPhysicsObject()->SetInverseMass(2.0f);

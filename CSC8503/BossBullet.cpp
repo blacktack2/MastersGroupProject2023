@@ -16,9 +16,13 @@ using namespace NCL;
 using namespace CSC8503;
 
 BossBullet::BossBullet() : Bullet() {
+	inkType = paintHell::InkType::BossDamage;
+	UpdateColour();
 }
 
-BossBullet::BossBullet(BossBullet& other, paintHell::InkType inkType) : Bullet(other, inkType) {
+BossBullet::BossBullet(BossBullet& other) : Bullet(other) {
+	inkType = paintHell::InkType::BossDamage;
+	UpdateColour();
 }
 
 BossBullet::~BossBullet() {
@@ -29,18 +33,16 @@ void BossBullet::Update(float dt) {
 }
 
 void BossBullet::OnTriggerBegin(GameObject* other) {
-	Bullet::OnTriggerBegin(other);
+	//delete if colliding with boss
+	if (!dynamic_cast<Boss*>(other)) {
+		Bullet::OnTriggerBegin(other);
+	}
+	
 	if (PlayerObject* player = dynamic_cast<PlayerObject*>(other)) {
 		player->GetHealth()->Damage(10);
 	}
 	if (Obstacle* obj = dynamic_cast<Obstacle*>(other)) {
 		obj->Damage(10);
 	}
-	//delete if colliding with boss
-	if (!dynamic_cast<Boss*>(other)) {
-		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), inkType);
-		lifespan = -1;
-	}
-
 }
 
