@@ -79,6 +79,7 @@ namespace NCL {
 			void RenderBossBulletsReleasedByBoss();															/////////
 			HealingKit* UpdateHealingKit();																/////////
 			void BuildLevel();																			/////////
+			void UpdateLevel();																			/////////
 			NPCObject* AddNPCToWorld(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
 			GameObject* AddTriggerToWorld(const Vector3& position, float size);

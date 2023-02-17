@@ -306,7 +306,7 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 	if (gameLevel->GetShelterTimer() > 20.0f)
 	{
 		gameLevel->SetShelterTimer(0.0f);
-		BuildLevel();							// rebuild Shelters that has been destroyed
+		UpdateLevel();							// rebuild Shelters that has been destroyed
 	}
 }
 
@@ -807,7 +807,12 @@ void TutorialGame::BuildLevel()
 	gameLevel = new GameLevel{};
 	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -100,0,-70 }, interval);
 	world->AddGameObject(gameLevel);
+	UpdateLevel();
+}
 
+void TutorialGame::UpdateLevel()
+{
+	float interval = 5.0f;
 	for (auto& object : gameLevel->GetGameStuffs())
 	{
 		if (object.HasDestroyed())
@@ -817,7 +822,7 @@ void TutorialGame::BuildLevel()
 			{
 				Vector3 dimensions{ interval / 2.0f, 10.0f, interval / 2.0f };
 				Obstacle* pillar = new Obstacle{ &object, true };
-				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{1.3,2,1.3}));
+				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3,2,1.3 }));
 				pillar->GetTransform()
 					.SetPosition(object.worldPos + Vector3{ 0,18,0 })
 					.SetScale(dimensions * 2);
