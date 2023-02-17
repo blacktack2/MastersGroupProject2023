@@ -11,11 +11,16 @@ namespace NCL {
 
 			virtual void Update(float dt) override;
 
+			void OnCollisionBegin(GameObject* other) override;
+
+			void OnTriggerBegin(GameObject* otherObject) override;
+
 			void SetLifespan(float ls) {
 				lifespan = ls;
 			}
 		protected:
 			float lifespan = 0;
+			Vector3 colour = Vector3(1, 0, 1);
 		};
 	}
 }

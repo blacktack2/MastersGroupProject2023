@@ -12,6 +12,9 @@
 
 #include "RenderObject.h"
 
+#include "GameGridManager.h"
+#include "InkEffectManager.h"
+
 #include "InputKeyMap.h"
 #include "SoundSource.h"
 #include "Sound.h"
@@ -39,10 +42,8 @@ PlayerObject::~PlayerObject() {
 }
 
 void PlayerObject::Update(float dt) {
-	/*if (this->GetTransform().GetGlobalPosition().y < 1.0f)		// please fix the physics system
-	{
-		GetTransform().SetPosition({ GetTransform().GetGlobalPosition().x, 1.0f, GetTransform().GetGlobalPosition().z });
-	}*/
+	health.Update(dt);
+	
 
 	lastInstancedObjects.clear();
 	jumpTimer -= dt;
@@ -57,7 +58,20 @@ void PlayerObject::Update(float dt) {
 		Move(dir);
 		MoveCamera();
 	}
-	
+	//temp ink
+	///*
+	if (onGround) {
+		GameNode* node = GameGridManager::instance().NearestNode(this->GetTransform().GetGlobalPosition());
+		InkEffectManager::instance().ApplyInkEffect(node->inkType, &health, 0);
+
+		
+		//GameGridManager::instance().PaintPosition(this->GetTransform().GetGlobalPosition(), PlayerDamage);
+	}
+	//*/
+
+	if (health.GetHealth() <= 0) {
+		gameStateManager->SetGameState(GameState::Lose);
+	}
 	
 }
 
@@ -150,9 +164,8 @@ void PlayerObject::CheckGround() {
 		objClosest = (GameObject*)closestCollision.node;
 		float groundDist = (closestCollision.collidedAt - this->GetTransform().GetGlobalPosition()).Length();
 		//std::cout << "ground dist " << groundDist << std::endl;
-		if (groundDist < 1.02f)
+		if (groundDist < jumpTriggerDist)
 		{
-			
 			onGround = true;
 		}	
 	}
@@ -167,14 +180,6 @@ void PlayerObject::RotateToCamera() {
 		RotateYaw(gameWorld.GetMainCamera()->GetYaw());
 	}
 	
-}
-
-//legacy 
-void PlayerObject::AddPoints(int points) {
-	if (lastGoosed > gooseDelay) {
-		lastGoosed = 0.0f;
-		//scoreCounter += points;
-	}
 }
 
 void PlayerObject::CollisionWith(GameObject* other) {
@@ -200,11 +205,12 @@ void PlayerObject::Shoot() {
 	ink->SetLifespan(projectileLifespan);
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
 	ink->GetPhysicsObject()->SetInverseMass(2.0f);
+	ink->GetPhysicsObject()->SetLinearVelocity(this->physicsObject->GetLinearVelocity() * Vector3(1, 0, 1));
 	ink->GetPhysicsObject()->ApplyLinearImpulse(transform.GetGlobalOrientation() * Vector3(0, 0, -1) * projectileForce);
 	gameWorld.AddGameObject(ink);
-
-	ink->OnCollisionBeginCallback = [&](GameObject* other) {
-		CollisionWith(other);
+	ink->OnCollisionBeginCallback = [ink](GameObject* other) {
+		GameGridManager::instance().PaintPosition(ink->GetTransform().GetGlobalPosition(), paintHell::InkType::PlayerDamage);
+		ink->Delete();
 	};
 	lastInstancedObjects.push_back(ink);
 }

@@ -1,6 +1,7 @@
 #include "Bullet.h"
 
 #include "CapsuleVolume.h"
+#include "PaintRenderObject.h"
 
 #include "Debug.h"
 
@@ -26,3 +27,21 @@ void Bullet::Update(float dt) {
 
 	//Debug::DrawLine(transform.GetGlobalPosition(), transform.GetGlobalPosition() + Vector3(0, 0.01f , 0), Vector4(0, 1, 1, 1));
 }
+
+void Bullet::OnCollisionBegin(GameObject* other) {
+	if (other->GetBoundingVolume()->layer == CollisionLayer::PaintAble)
+	{
+		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
+		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), 3.0f, colour));
+	}
+}
+
+void Bullet::OnTriggerBegin(GameObject* other) {
+	if (other->GetBoundingVolume()->layer == CollisionLayer::PaintAble)
+	{
+		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
+		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), 3.0f, colour));
+	}
+}
+
+

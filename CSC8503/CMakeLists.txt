@@ -6,18 +6,19 @@ set(PROJECT_NAME CSC8503)
 set(Header_Files
 	"Bullet.h"
 	"Bonus.h"
-    
 	"EnemyObject.h"
 	"Maze.h"
     "NetworkedGame.h"
     "NetworkPlayer.h"
 	"NPCObject.h"
-	"PlayerObject.h"
     "StateGameObject.h"
     "TutorialGame.h"
     "DebugViewPoint.h"
-    "Boss.h"
     "GameGrid.h"
+    "GameGridManager.h"
+    "GameStateManager.h"
+    "Obstacle.h"
+    "GameLevel.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -30,10 +31,13 @@ set(Source_Files
     "NetworkedGame.cpp"
     "NetworkPlayer.cpp"
 	"NPCObject.cpp"
-	"PlayerObject.cpp"
     "StateGameObject.cpp"
     "TutorialGame.cpp"
     "DebugViewPoint.cpp"
+    "GameGrid.cpp"
+    "GameGridManager.cpp"
+    "GameStateManager.cpp"
+    "GameLevel.cpp"
 )
 
 set(Render_Files
@@ -57,6 +61,14 @@ set(Render_Files
     "PresentRPass.cpp"
     "DebugRPass.h"
     "DebugRPass.cpp"
+    "PresentRPass.h"
+    "PresentRPass.cpp"
+    "PaintRenderObject.h"
+    "PaintRenderObject.cpp"
+    "PaintingRPass.cpp"
+    "PaintingRPass.h"
+    "ModelRPass.h"
+    "ModelRPass.cpp"
 )
 
 if(USE_VULKAN)
@@ -90,11 +102,40 @@ set(Audio_Files
 )
 source_group("Audio Files" FILES ${Audio_Files})
 
+set(Ink_Files 
+    "InkEffectManager.h"
+    "InkEffectManager.cpp"
+    "InkEffect.h"
+	"InkEffect.cpp"
+    "InkEffectOverTime.h"
+    "InkEffectOverTime.cpp"
+)
+source_group("Ink Files" FILES ${Ink_Files})
+
+set(Player_Files 
+    "health.h"
+	"health.cpp"
+    "PlayerObject.h"
+    "PlayerObject.cpp"
+	
+)
+source_group("Player Files" FILES ${Player_Files})
+
+set(Enemy_Files 
+    "Boss.h"
+    "BossBullet.h"
+	"BossBullet.cpp"
+)
+source_group("Enemy Files" FILES ${Enemy_Files})
+
 set(ALL_FILES
     ${Header_Files}
     ${Source_Files}
     ${Audio_Files}
     ${Render_Files}
+    ${Ink_Files}
+	${Player_Files}
+    ${Enemy_Files}
 )
 
 if(USE_VULKAN)
@@ -103,6 +144,9 @@ if(USE_VULKAN)
         ${Source_Files}
         ${SHADER_FILES}
         ${Audio_Files}
+        ${Ink_Files}
+	    ${Player_Files}
+        ${Enemy_Files}
     )
 
 foreach (file ${SHADER_FILES})

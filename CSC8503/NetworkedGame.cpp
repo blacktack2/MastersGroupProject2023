@@ -12,6 +12,7 @@
 #include "AssetLibrary.h"
 
 #include <bitset>
+#include <Maths.h>
 
 #define COLLISION_MSG 30
 #define OBJECTID_START 10; //reserve 0-4 for playerID
@@ -150,7 +151,7 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	//std::cout << "client: " << std::bitset<16>(newPacket.buttonstates) << std::endl;
 	//std::cout << "client yaw: " << world->GetMainCamera()->GetYaw() << std::endl;
 	if (!Window::GetKeyboard()->KeyDown(KeyboardKeys::C)) {
-		newPacket.yaw = world->GetMainCamera()->GetYaw() * 1000;
+		newPacket.yaw = (int) world->GetMainCamera()->GetYaw() * 1000;
 	}
 	else {
 		newPacket.yaw = NULL;
