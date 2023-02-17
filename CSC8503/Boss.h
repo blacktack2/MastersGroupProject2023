@@ -603,7 +603,7 @@ namespace NCL
                 SequenceNode* inkRain = new SequenceNode();
                 chooseDefensiveRemoteCombat->addChild(inkRain);
 
-                RandomBivalentSelectorNode* possibilityToUseInkRain = new RandomBivalentSelectorNode(100);
+                RandomBivalentSelectorNode* possibilityToUseInkRain = new RandomBivalentSelectorNode(30);
                 inkRain->addChild(possibilityToUseInkRain);
 
                 UseInkRainNode* useInkRain = new UseInkRainNode();
