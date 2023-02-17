@@ -11,6 +11,8 @@ namespace NCL {
 			~Bullet();
 
 			virtual void Update(float dt) override;
+			void OnTriggerBegin(GameObject* other) override;
+			void OnCollisionBegin(GameObject* other) override;
 
 			void SetLifespan(float ls) {
 				lifespan = ls;

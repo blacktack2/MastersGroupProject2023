@@ -19,7 +19,6 @@ namespace NCL {
 
 			void Update(float dt);
 			void OnTriggerBegin(GameObject* other) override;
-			void OnCollisionBegin(GameObject* other) override;
 
 			void SetDamage(float damage)
 			{

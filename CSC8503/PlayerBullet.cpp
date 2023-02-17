@@ -26,38 +26,16 @@ PlayerBullet::~PlayerBullet() {
 void PlayerBullet::Update(float dt) {
 	Bullet::Update(dt);
 }
+
 void PlayerBullet::OnTriggerBegin(GameObject* other) {
 	Bullet::OnTriggerBegin(other);
-	if (other->GetBoundingVolume()->layer == CollisionLayer::PaintAble)
-	{
-		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
-		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), 3.0f));
-	}
 	//not work as it is not colliding with boss
 	if (Boss* boss = dynamic_cast<Boss*>(other)) {
 
 		boss->GetHealth()->Damage(10);
-		std::cout << "hit boss " << boss->GetHealth() << std::endl;
+
 	}
 	GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), inkType);
-	Delete();
+	lifeSpan = -1;
 
-}
-
-
-void PlayerBullet::OnCollisionBegin(GameObject* other) {
-	Bullet::OnCollisionBegin(other);
-	if (other->GetBoundingVolume()->layer == CollisionLayer::PaintAble)
-	{
-		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
-		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), 3.0f));
-	}
-	//not work as it is not colliding with boss
-	if (Boss* boss = dynamic_cast<Boss*>(other)) {
-
-		boss->GetHealth()->Damage(10);
-		std::cout << "hit boss " << boss->GetHealth() << std::endl;
-	}
-	GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), inkType);
-	Delete();
 }

@@ -1,4 +1,6 @@
 #include "Bullet.h"
+#include "PaintRenderObject.h"
+#include "InkEffectManager.h"
 #include "Debug.h"
 
 using namespace NCL;
@@ -10,6 +12,8 @@ Bullet::Bullet() : GameObject() {
 Bullet::Bullet(Bullet& other, paintHell::InkType inkType) : GameObject(other) {
 	lifespan = other.lifespan;
 	this->inkType = inkType;
+	colour = InkEffectManager::instance().GetColour(inkType);
+
 }
 
 Bullet::~Bullet() {
@@ -29,7 +33,7 @@ void Bullet::OnCollisionBegin(GameObject* other) {
 	if (other->GetBoundingVolume()->layer == CollisionLayer::PaintAble)
 	{
 		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
-		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), 3.0f, colour));
+		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), 1.5f, colour));
 	}
 }
 
@@ -37,7 +41,7 @@ void Bullet::OnTriggerBegin(GameObject* other) {
 	if (other->GetBoundingVolume()->layer == CollisionLayer::PaintAble)
 	{
 		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
-		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), 3.0f, colour));
+		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), 1.5f, colour));
 	}
 }
 
