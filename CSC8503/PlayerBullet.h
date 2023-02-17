@@ -17,7 +17,7 @@ namespace NCL {
 			PlayerBullet(PlayerBullet& other, paintHell::InkType inkType);
 			~PlayerBullet();
 
-			void Update(float dt);
+			void Update(float dt) override;
 			void OnTriggerBegin(GameObject* other) override;
 
 			void SetDamage(float damage)

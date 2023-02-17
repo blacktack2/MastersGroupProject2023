@@ -33,6 +33,9 @@ void BossBullet::OnTriggerBegin(GameObject* other) {
 	if (PlayerObject* player = dynamic_cast<PlayerObject*>(other)) {
 		player->GetHealth()->Damage(10);
 	}
+	if (Obstacle* obj = dynamic_cast<Obstacle*>(other)) {
+		obj->Damage(10);
+	}
 	//delete if colliding with boss
 	if (!dynamic_cast<Boss*>(other)) {
 		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), inkType);
