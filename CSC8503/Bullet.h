@@ -1,12 +1,13 @@
 #pragma once
 #include "GameObject.h"
+#include "InkEffectManager.h"
 
 namespace NCL {
 	namespace CSC8503 {
 		class Bullet : public GameObject {
 		public:
 			Bullet();
-			Bullet(Bullet& other);
+			Bullet(Bullet& other, paintHell::InkType inkType);
 			~Bullet();
 
 			virtual void Update(float dt) override;
@@ -18,6 +19,7 @@ namespace NCL {
 			}
 		protected:
 			float lifespan = 0;
+			paintHell::InkType inkType;
 		};
 	}
 }

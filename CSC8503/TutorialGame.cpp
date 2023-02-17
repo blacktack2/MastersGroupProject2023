@@ -89,7 +89,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 
 	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 300, 300, 2 ) );
 	BuildLevel();
-	player = AddPlayerToWorld(Vector3(0, 0, 0));
+	player = AddPlayerToWorld(Vector3(0, 0, 90));
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
 
@@ -115,8 +115,6 @@ void TutorialGame::InitWorld(InitMode mode) {
 
 	InitCamera();
 }
-
-
 
 void TutorialGame::UpdateGame(float dt) {
 	GameState gameState = gameStateManager->GetGameState();
@@ -302,7 +300,6 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 	gridManager->Update(dt);
 	//UpdateHealingKit();
 	testingBossBehaviorTree->update();
-	RenderBossBulletsReleasedByBoss();
 	if (gameLevel->GetShelterTimer() > 20.0f)
 	{
 		gameLevel->SetShelterTimer(0.0f);
@@ -884,30 +881,6 @@ void TutorialGame::BuildLevel()
 				world->AddGameObject(wall);
 			}
 		}
-	}
-}
-
-void TutorialGame::RenderBossBulletsReleasedByBoss()
-{
-	std::vector<BossBullet*> bossBossBullets = testingBoss->GetBossBulletsReleasedByBoss();
-	for (auto& bomb : bossBossBullets)
-	{
-		if (bomb->GetRenderObject() == nullptr)
-		{
-			bomb->SetRenderObject(new RenderObject(&bomb->GetTransform(), sphereMesh, nullptr, nullptr));
-		}
-		bomb->GetRenderObject()->SetColour({ 0,0,1,1 });
-
-		world->AddGameObject(bomb);
-	}
-	testingBoss->clearBossBulletList();
-	if (testingBoss->isUsingInkSea())
-	{
-		//floor->GetRenderObject()->enableInkSea(testingBoss->GetTransform().GetGlobalPosition());
-	}
-	else
-	{
-		//floor->GetRenderObject()->disableInkSea();
 	}
 }
 

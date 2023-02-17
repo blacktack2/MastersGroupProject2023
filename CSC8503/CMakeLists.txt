@@ -121,6 +121,7 @@ source_group("Player Files" FILES ${Player_Files})
 
 set(Enemy_Files 
     "Boss.h"
+    "Boss.cpp"
     "BossBullet.h"
 	"BossBullet.cpp"
 )

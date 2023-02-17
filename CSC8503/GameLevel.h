@@ -52,7 +52,7 @@ namespace NCL
                 origin = o;
             }
 
-            //~GameLevel(){}
+            ~GameLevel(){}
 
             virtual void Update(float dt) override
             {

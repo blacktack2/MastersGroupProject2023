@@ -6,10 +6,12 @@ namespace NCL {
 	namespace CSC8503 {
 		class BossBullet : public Bullet {
 		public:
-			BossBullet(Vector3 vel);
+			BossBullet();
+			BossBullet(BossBullet& other, paintHell::InkType inkType);
 			~BossBullet();
 
-			virtual void Update(float dt) override;
+			void Update(float dt);
+			void OnCollisionBegin(GameObject* other);
 
 			void SetLifeSpan(float life)
 			{
@@ -23,7 +25,6 @@ namespace NCL {
 			{
 				return bulletDamage;
 			}
-
 		protected:
 			Vector3 velocity{ 0,0,0 };
 			float lifeSpan = 0.0f;

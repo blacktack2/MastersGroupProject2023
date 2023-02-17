@@ -58,17 +58,14 @@ void PlayerObject::Update(float dt) {
 		Move(dir);
 		MoveCamera();
 	}
-	//temp ink
-	///*
+
+	//If on ink
 	if (onGround) {
 		GameNode* node = GameGridManager::instance().NearestNode(this->GetTransform().GetGlobalPosition());
 		InkEffectManager::instance().ApplyInkEffect(node->inkType, &health, 0);
-
-		
-		//GameGridManager::instance().PaintPosition(this->GetTransform().GetGlobalPosition(), PlayerDamage);
 	}
-	//*/
 
+	//Change game state
 	if (health.GetHealth() <= 0) {
 		gameStateManager->SetGameState(GameState::Lose);
 	}
@@ -201,17 +198,13 @@ void PlayerObject::Shoot() {
 	if (projectileFireRateTimer > 0)
 		return;
 	projectileFireRateTimer = projectileFireRate;
-	Bullet* ink = new Bullet(*(Bullet*)AssetLibrary::GetPrefab("bullet"));
+	Bullet* ink = new Bullet(*(Bullet*)AssetLibrary::GetPrefab("bullet"), paintHell::InkType::PlayerDamage);
 	ink->SetLifespan(projectileLifespan);
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
 	ink->GetPhysicsObject()->SetInverseMass(2.0f);
 	ink->GetPhysicsObject()->SetLinearVelocity(this->physicsObject->GetLinearVelocity() * Vector3(1, 0, 1));
 	ink->GetPhysicsObject()->ApplyLinearImpulse(transform.GetGlobalOrientation() * Vector3(0, 0, -1) * projectileForce);
 	gameWorld.AddGameObject(ink);
-	ink->OnCollisionBeginCallback = [ink](GameObject* other) {
-		GameGridManager::instance().PaintPosition(ink->GetTransform().GetGlobalPosition(), paintHell::InkType::PlayerDamage);
-		ink->Delete();
-	};
 	lastInstancedObjects.push_back(ink);
 }
 

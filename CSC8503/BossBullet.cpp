@@ -1,45 +1,43 @@
 #include "BossBullet.h"
 #include "Boss.h"
+#include "PaintRenderObject.h"
 #include "InkEffectManager.h"
 #include "GameGridManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
-BossBullet::BossBullet(Vector3 vel) : Bullet() {
-    velocity = vel;
-    lifeSpan = 5.0f;
-    OnTriggerBeginCallback = [&](GameObject* other)
-    {
-        if (PlayerObject* player = dynamic_cast<PlayerObject*>(other)) {
-            lifeSpan = -1.0f;
-            player->GetHealth()->Damage(bulletDamage);
-        }
+BossBullet::BossBullet() : Bullet() {
+}
 
-        if (Obstacle* obstacle = dynamic_cast<Obstacle*>(other)) {
-            lifeSpan = -1.0f;
-            obstacle->Damage(bulletDamage);
-        }
-        
-        if (!dynamic_cast<Boss*>(other)) {
-            GameGridManager::instance().PaintPosition(this->GetTransform().GetGlobalPosition(), paintHell::InkType::BossDamage);
-        }
-        
-    };
+BossBullet::BossBullet(BossBullet& other, paintHell::InkType inkType) : Bullet(other) {
+    lifespan = other.lifespan;
+    this->inkType = inkType;
 }
 
 BossBullet::~BossBullet() {
 }
 
 void BossBullet::Update(float dt) {
-    this->GetTransform().SetPosition(this->GetTransform().GetGlobalPosition() + velocity * dt);
-    lifeSpan -= dt;
-    if (lifeSpan < 0.0f)
-    {
+	Debug::DrawLine(this->GetTransform().GetGlobalPosition(), this->GetTransform().GetGlobalPosition() + Vector3(0, 0.5f, 0), Debug::YELLOW, 1.0f);
+    lifespan -= dt;
+    if (lifespan <= 0) {
         Delete();
+        return;
     }
-    if (this->GetTransform().GetGlobalPosition().y < 1.0f)
-    {
-        GetTransform().SetPosition({ GetTransform().GetGlobalPosition().x, 1.0f, GetTransform().GetGlobalPosition().z });
-    }
+}
+
+void BossBullet::OnCollisionBegin(GameObject* other) {
+	if (other->GetBoundingVolume()->layer == CollisionLayer::PaintAble)
+	{
+		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
+		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), 3.0f));
+	}
+	//not work as it is not colliding with boss
+	if (Boss* boss = dynamic_cast<Boss*>(other)) {
+
+		boss->GetHealth()->Damage(10);
+	}
+	GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), inkType);
+	Delete();
 }
