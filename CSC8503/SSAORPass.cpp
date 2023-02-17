@@ -59,6 +59,9 @@ OGLMainRenderPass(renderer), depthTexIn(depthTexIn), normalTexIn(normalTexIn) {
 	projMatrixUniform = glGetUniformLocation(ssaoShader->GetProgramID(), "projMatrix");
 	noiseScaleUniform = glGetUniformLocation(ssaoShader->GetProgramID(), "noiseScale");
 
+	radiusUniform = glGetUniformLocation(ssaoShader->GetProgramID(), "radius");
+	biasUniform   = glGetUniformLocation(ssaoShader->GetProgramID(), "bias");
+
 	glUniform1i(glGetUniformLocation(ssaoShader->GetProgramID(), "depthTex"), 0);
 	glUniform1i(glGetUniformLocation(ssaoShader->GetProgramID(), "normalTex"), 1);
 	glUniform1i(glGetUniformLocation(ssaoShader->GetProgramID(), "noiseTex"), 2);
@@ -106,9 +109,32 @@ void SSAORPass::Render() {
 	glEnable(GL_BLEND);
 }
 
+void SSAORPass::SetRadius(float radius) {
+	ssaoShader->Bind();
+
+	glUniform1f(radiusUniform, radius);
+
+	ssaoShader->Unbind();
+}
+
+void SSAORPass::SetBias(float bias) {
+	ssaoShader->Bind();
+
+	glUniform1f(biasUniform, bias);
+
+	ssaoShader->Unbind();
+}
+
+void SSAORPass::SetNumKernels(size_t num) {
+	numKernels = num;
+	GenerateKernels();
+}
+
 void SSAORPass::DrawSSAO() {
 	ssaoFrameBuffer->Bind();
+	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(0, 0, 0, 0);
 	ssaoShader->Bind();
 
 	depthTexIn->Bind(0);

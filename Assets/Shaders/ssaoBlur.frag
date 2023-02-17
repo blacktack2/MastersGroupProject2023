@@ -13,7 +13,7 @@ in Vertex {
 	vec2 texCoord;
 } IN;
 
-out float fragColour;
+out vec4 fragColour;
 
 void main() {
 	vec2 texelSize = 1.0 / vec2(textureSize(ssaoTex, 0));
@@ -24,5 +24,6 @@ void main() {
 			result += texture(ssaoTex, IN.texCoord + offset).r;
 		}
 	}
-	fragColour = result / 16.0;
+	//fragColour = result / 16.0;
+	fragColour = texture(ssaoTex, IN.texCoord);
 }

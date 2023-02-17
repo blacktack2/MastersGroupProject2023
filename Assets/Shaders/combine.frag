@@ -58,7 +58,7 @@ vec3 displaySpecularLight(vec2 texCoord) {
 }
 
 vec3 displayAmbientOcclusion(vec2 texCoord) {
-	return vec3(texture(ssaoTex, texCoord).r);
+	return vec3(texture(ssaoTex, texCoord).rgb);
 }
 
 in Vertex {

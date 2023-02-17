@@ -33,6 +33,10 @@ namespace NCL::CSC8503 {
 
 		virtual void Render() override;
 
+		void SetRadius(float radius);
+		void SetBias(float bias);
+		void SetNumKernels(size_t numKernels);
+
 		inline OGLTexture* GetOutTex() const {
 			return ssaoOutTex;
 		}
@@ -63,6 +67,9 @@ namespace NCL::CSC8503 {
 		GLint viewMatrixUniform;
 		GLint projMatrixUniform;
 		GLint noiseScaleUniform;
+
+		GLint radiusUniform;
+		GLint biasUniform;
 
 		GLsizei noiseTexSize = 4;
 		size_t numKernels = 64;

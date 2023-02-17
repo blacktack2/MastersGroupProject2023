@@ -103,6 +103,22 @@ namespace NCL::CSC8503 {
 		inline float GetHDRExposure() {
 			return hdrExposure;
 		}
+
+		void SetSSAORadius(float radius) {
+			ssaoRadius = radius;
+			ssaoPass->SetRadius(ssaoRadius);
+		}
+		inline float GetSSAORadius() {
+			return ssaoRadius;
+		}
+
+		void SetSSAOBias(float bias) {
+			ssaoBias = bias;
+			ssaoPass->SetBias(ssaoBias);
+		}
+		inline float GetSSAOBias() {
+			return ssaoBias;
+		}
 	protected:
 		GameWorld& gameWorld;
 
@@ -122,9 +138,14 @@ namespace NCL::CSC8503 {
 		DebugRPass* debugPass;
 
 		float gamma = 2.2f;
+
 		size_t bloomAmount = 5;
 		float bloomBias = 0.04f;
+
 		float hdrExposure = 1.0f;
+
+		float ssaoRadius = 0.5f;
+		float ssaoBias = 0.025f;
 	};
 }
 

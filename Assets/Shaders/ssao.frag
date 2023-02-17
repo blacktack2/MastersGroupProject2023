@@ -20,13 +20,13 @@ uniform mat4 projMatrix;
 uniform vec2 noiseScale;
 
 uniform float radius = 0.5;
-uniform float bias = 0.025;
+uniform float bias = 0.0;
 
 in Vertex {
 	vec2 texCoord;
 } IN;
 
-out float fragColour;
+out vec4 fragColour;
 
 void main() {
 	mat4 projView = projMatrix * viewMatrix;
@@ -36,14 +36,15 @@ void main() {
 	vec4 viewPos = inverse(projMatrix) * vec4(ndcPos, 1.0);
 	viewPos.xyz /= viewPos.w;
 
-	vec3 random = normalize(texture(noiseTex, IN.texCoord * noiseScale).xyz);
-	vec3 normal = normalize(texture(normalTex, IN.texCoord).xyz);
+	vec3 random = normalize(texture(noiseTex, IN.texCoord * noiseScale).xyz) * 2.0 - 1.0;
+	vec3 normal = normalize(texture(normalTex, IN.texCoord).xyz) * 2.0 - 1.0;
+	normal = mat3(viewMatrix) * normal;
 	vec3 tangent  = normalize(random - normal * dot(random, normal));
 	vec3 binormal = cross(tangent, normal);
 	mat3 TBN = mat3(tangent, binormal, normal);
 
 	float occlusion = 0.0;
-	for (uint i = 0; i < 64; i++) {
+	for (uint i = 0; i < 1; i++) {
 		vec3 samplePos = TBN * kernels[i];
 		samplePos = viewPos.xyz + samplePos * radius;
 
@@ -58,9 +59,8 @@ void main() {
 
 		float rangeCheck = smoothstep(0.0, 1.0, radius / abs(viewPos.z - sampleView.z));
 		occlusion += ((sampleView.z >= samplePos.z + bias) ? 1.0 : 0.0) * rangeCheck;
-
-		//fragColour = vec4(-sampleView.xyz, 1.0);
+		
+		fragColour = vec4(-samplePos, 1.0);
 	}
-	//fragColour = (occlusion / kernels.length());
-	fragColour = 1.0 - (occlusion / kernels.length());
+	//fragColour = 1.0 - (occlusion / kernels.length());
 }
