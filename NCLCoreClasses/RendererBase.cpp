@@ -3,6 +3,7 @@
  * @brief  See RendererBase.h.
  * 
  * @author Stuart Lewis
+ * @author Rich Davidson
  * @date   February 2023
  */
 #include "RendererBase.h"

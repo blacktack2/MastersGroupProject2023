@@ -154,6 +154,9 @@ void TutorialGame::UpdateGame(float dt) {
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM6)) {
 		renderer->GetCombinePass().SetRenderMode(RenderMode::SpecularLight);
 	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM7)) {
+		renderer->GetCombinePass().SetRenderMode(RenderMode::AmbientOcclusion);
+	}
 
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN)) {
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::G)) {
@@ -168,6 +171,12 @@ void TutorialGame::UpdateGame(float dt) {
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::B)) {
 			renderer->SetBloomBias(renderer->GetBloomBias() - 0.02f);
 		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::R)) {
+			renderer->SetSSAORadius(renderer->GetSSAORadius() - 0.1f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::F)) {
+			renderer->SetSSAOBias(renderer->GetSSAOBias() - 0.005f);
+		}
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP)) {
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::G)) {
@@ -181,6 +190,12 @@ void TutorialGame::UpdateGame(float dt) {
 		}
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::B)) {
 			renderer->SetBloomBias(renderer->GetBloomBias() + 0.02f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::R)) {
+			renderer->SetSSAORadius(renderer->GetSSAORadius() + 0.1f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::F)) {
+			renderer->SetSSAOBias(renderer->GetSSAOBias() + 0.005f);
 		}
 	}
 	static bool doMain = true;
@@ -221,9 +236,13 @@ void TutorialGame::UpdateGame(float dt) {
 	} else {
 		Debug::Print(std::string("Bloom -> Disabled"), Vector2(0, 40.0f));
 	}
-	Debug::Print(std::string("Render -> Scene:   ").append(doMain ? "Enabled" : "Disabled"), Vector2(0, 50.0f));
-	Debug::Print(std::string("       -> Post:    ").append(doPost ? "Enabled" : "Disabled"), Vector2(0, 55.0f));
-	Debug::Print(std::string("       -> Overlay: ").append(doOver ? "Enabled" : "Disabled"), Vector2(0, 60.0f));
+	Debug::Print(std::string("SSAO -> Radius: ").append(std::to_string(renderer->GetSSAORadius())), Vector2(0, 50.0f));
+	Debug::Print(std::string("     -> Bias:   ").append(std::to_string(renderer->GetSSAOBias())), Vector2(0, 55.0f));
+
+	Debug::Print(std::string("Render -> Scene:   ").append(doMain ? "Enabled" : "Disabled"), Vector2(0, 60.0f));
+	Debug::Print(std::string("       -> Post:    ").append(doPost ? "Enabled" : "Disabled"), Vector2(0, 65.0f));
+	Debug::Print(std::string("       -> Overlay: ").append(doOver ? "Enabled" : "Disabled"), Vector2(0, 70.0f));
+
 	SoundSystem::GetSoundSystem()->Update(dt);
 
 	if (gameState == GameState::OnGoing) {
@@ -300,8 +319,6 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 
 	world->PostUpdateWorld();
 
-	gridManager->Update(dt);
-	//UpdateHealingKit();
 	testingBossBehaviorTree->update();
 	if (gameLevel->GetShelterTimer() > 20.0f)
 	{

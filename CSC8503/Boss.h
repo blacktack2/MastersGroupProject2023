@@ -332,11 +332,11 @@ namespace NCL
                         //std::cout << "Error: Boss' behavior is locked while there is currently no action to perform!\n";
                         break;
                     case Dead:
-                       // std::cout << "The boss has dead, and it should do nothing.\n";
-                        // Note that, for current implementation, once the boss has dead, its action remain in Dead forever.
+                        //std::cout << "The boss has dead, and it should do nothing.\n";
+                        //Note that, for current implementation, once the boss has dead, its action remain in Dead forever.
                         break;
                     case RandomWalk:
-                       // std::cout << "Boss is walking randomly.\n";
+                        //std::cout << "Boss is walking randomly.\n";
                         finish = boss->RandomWalk();
                         break;
                     case Stab:

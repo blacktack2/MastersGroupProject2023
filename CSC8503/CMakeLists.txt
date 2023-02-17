@@ -47,6 +47,8 @@ set(Render_Files
     "ModelRPass.cpp"
     "LightingRPass.h"
     "LightingRPass.cpp"
+    "SSAORPass.h"
+    "SSAORPass.cpp"
     "CombineRPass.h"
     "CombineRPass.cpp"
     "BloomRPass.h"
