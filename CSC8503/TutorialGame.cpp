@@ -55,6 +55,8 @@ TutorialGame::TutorialGame() {
 	gridManager = &GameGridManager::instance();
 	InitialiseAssets();
 	InitWorld();
+
+
 }
 
 TutorialGame::~TutorialGame() {
@@ -805,7 +807,7 @@ void TutorialGame::BuildLevel()
 {
 	interval = 5.0f;
 	gameLevel = new GameLevel{};
-	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -100,0,-70 }, interval);
+	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -200,0,-170 }, interval);
 	world->AddGameObject(gameLevel);
 	UpdateLevel();
 }
@@ -905,14 +907,7 @@ void TutorialGame::RenderBossBulletsReleasedByBoss()
 		world->AddGameObject(bomb);
 	}
 	testingBoss->clearBossBulletList();
-	if (testingBoss->isUsingInkSea())
-	{
-		//floor->GetRenderObject()->enableInkSea(testingBoss->GetTransform().GetGlobalPosition());
-	}
-	else
-	{
-		//floor->GetRenderObject()->disableInkSea();
-	}
+	
 }
 
 HealingKit* TutorialGame::UpdateHealingKit()

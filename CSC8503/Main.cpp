@@ -54,7 +54,7 @@ int main() {
 	//TestBehaviourTree();
 	//TestPathfinding();
 
-	Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
+	Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720, true);
 	//TestPushdownAutomata(w);
 
 	

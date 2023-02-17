@@ -24,6 +24,11 @@ namespace NCL {
 				return bulletDamage;
 			}
 
+			void SetVelocity(Vector3 vel)
+			{
+				velocity = vel;
+			}
+
 		protected:
 			Vector3 velocity{ 0,0,0 };
 			float lifeSpan = 0.0f;
