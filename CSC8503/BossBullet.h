@@ -24,6 +24,8 @@ namespace NCL {
 				return bulletDamage;
 			}
 
+			void OnTriggerBegin(GameObject* other);
+
 		protected:
 			Vector3 velocity{ 0,0,0 };
 			float lifeSpan = 0.0f;

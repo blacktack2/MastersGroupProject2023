@@ -30,6 +30,7 @@ void PaintingRPass::Render() {
 
 	GLint paintPos = glGetUniformLocation(shader->GetProgramID(), "paintPos");
 	GLint paintSize = glGetUniformLocation(shader->GetProgramID(), "paintSize");
+	GLint paintColour = glGetUniformLocation(shader->GetProgramID(), "paintColour");
 
 	world.OperateOnContents([&](GameObject* gameObject) {
 		const CollisionVolume* volume = gameObject->GetBoundingVolume();
@@ -45,14 +46,15 @@ void PaintingRPass::Render() {
 
 		glViewport(0, 0, renderObj->GetWidth(), renderObj->GetHeight());
 
-		for (PaintCollision paint : renderObj->GetPaintCollisions())
+		for (PaintCollision const paint : renderObj->GetPaintCollisions())
 		{
 			glUniform3fv(paintPos, 1, (GLfloat*)&paint.center);
+			glUniform3fv(paintColour, 1, (GLfloat*)&paint.colour);
 			glUniform1f(paintSize, paint.radius);
 			renderObj->GetMesh()->Draw();
 		}
 
-		renderObj->ClearPaintCollisions();
+		//renderObj->ClearPaintCollisions();
 		
 	});
 
