@@ -31,11 +31,10 @@ void PlayerBullet::OnTriggerBegin(GameObject* other) {
 	Bullet::OnTriggerBegin(other);
 	//not work as it is not colliding with boss
 	if (Boss* boss = dynamic_cast<Boss*>(other)) {
-
 		boss->GetHealth()->Damage(10);
 
 	}
 	GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), inkType);
-	lifeSpan = -1;
+	lifespan = -1;
 
 }

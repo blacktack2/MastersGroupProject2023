@@ -27,12 +27,16 @@ BossBullet::~BossBullet() {
 void BossBullet::Update(float dt) {
 	Bullet::Update(dt);
 }
+
 void BossBullet::OnTriggerBegin(GameObject* other) {
 	Bullet::OnTriggerBegin(other);
+	if (PlayerObject* player = dynamic_cast<PlayerObject*>(other)) {
+		player->GetHealth()->Damage(10);
+	}
 	//delete if colliding with boss
 	if (!dynamic_cast<Boss*>(other)) {
 		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), inkType);
-		lifeSpan = -1;
+		lifespan = -1;
 	}
 
 }

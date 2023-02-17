@@ -29,8 +29,6 @@ namespace NCL {
 				return bulletDamage;
 			}
 		protected:
-			Vector3 velocity{ 0,0,0 };
-			float lifeSpan = 0.0f;
 			float bulletDamage = 5.0f;
 		};
 	}

@@ -203,7 +203,8 @@ void PlayerObject::Shoot() {
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
 	ink->GetPhysicsObject()->SetInverseMass(2.0f);
 	ink->GetPhysicsObject()->SetLinearVelocity(this->physicsObject->GetLinearVelocity() * Vector3(1, 0, 1));
-	ink->GetPhysicsObject()->ApplyLinearImpulse(transform.GetGlobalOrientation() * Vector3(0, 0, -1) * projectileForce);
+	Quaternion dir = transform.GetGlobalOrientation() * Quaternion::EulerAnglesToQuaternion( (rand()%100-50)/20, (rand() % 100 - 50) / 20, (rand() % 100 - 50) / 20);
+	ink->GetPhysicsObject()->ApplyLinearImpulse(dir * Vector3(0, 0, -1) * projectileForce);
 	gameWorld.AddGameObject(ink);
 	lastInstancedObjects.push_back(ink);
 }

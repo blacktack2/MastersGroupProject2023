@@ -13,7 +13,7 @@ Bullet::Bullet(Bullet& other, paintHell::InkType inkType) : GameObject(other) {
 	lifespan = other.lifespan;
 	this->inkType = inkType;
 	colour = InkEffectManager::instance().GetColour(inkType);
-
+	this->GetRenderObject()->SetColour(Vector4(colour, 1));
 }
 
 Bullet::~Bullet() {
