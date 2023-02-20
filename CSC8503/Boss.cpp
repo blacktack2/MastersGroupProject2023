@@ -111,8 +111,8 @@ BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p)
     bomb->SetPhysicsObject(new PhysicsObject(&bomb->GetTransform(), bomb->GetBoundingVolume(), true));
     bomb->GetPhysicsObject()->SetInverseMass(0.0f);
     bomb->GetPhysicsObject()->InitSphereInertia();
-        
-                
+
+
     bombsReleased.push_back(bomb);
 
     return bomb;

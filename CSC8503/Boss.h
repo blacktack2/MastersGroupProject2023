@@ -259,7 +259,7 @@ namespace NCL
                 SequenceNode* inkRain = new SequenceNode();
                 chooseDefensiveRemoteCombat->addChild(inkRain);
 
-                RandomBivalentSelectorNode* possibilityToUseInkRain = new RandomBivalentSelectorNode(30);
+                RandomBivalentSelectorNode* possibilityToUseInkRain = new RandomBivalentSelectorNode(130);
                 inkRain->addChild(possibilityToUseInkRain);
 
                 UseInkRainNode* useInkRain = new UseInkRainNode();
@@ -268,7 +268,7 @@ namespace NCL
                 SequenceNode* bulletsStorm = new SequenceNode();
                 chooseDefensiveRemoteCombat->addChild(bulletsStorm);
 
-                // if not using ink rain, then the boss must be using bullets storm, so we don't need any randomness here.
+                // if not using ink Rain, then the boss must be using bullets storm, so we don't need any randomness here.
 
                 UseBulletsStormNode* useBulletsStorm = new UseBulletsStormNode();
                 bulletsStorm->addChild(useBulletsStorm);
