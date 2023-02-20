@@ -89,8 +89,14 @@ void RendererBase::OnWindowResize(int width, int height) {
 	for (auto& pass : mainRenderPasses) {
 		pass.pass->OnWindowResize(width, height);
 	}
+	if (combinePass) {
+		combinePass->OnWindowResize(width, height);
+	}
 	for (auto& pass : postRenderPasses) {
 		pass.pass->OnWindowResize(width, height);
+	}
+	if (presentPass) {
+		presentPass->OnWindowResize(width, height);
 	}
 	for (auto& pass : overlayRenderPasses) {
 		pass.pass->OnWindowResize(width, height);

@@ -88,7 +88,11 @@ LightingRPass::~LightingRPass() {
 
 void LightingRPass::OnWindowResize(int width, int height) {
 	RenderPassBase::OnWindowResize(width, height);
+	shader->Bind();
+
 	glUniform2f(pixelSizeUniform, 1.0f / (float)width, 1.0f / (float)height);
+
+	shader->Unbind();
 }
 
 void LightingRPass::Render() {
@@ -116,7 +120,7 @@ void LightingRPass::DrawLight(const Light& light) {
 
 	glUniform3fv(cameraPosUniform, 1, (GLfloat*)&gameWorld.GetMainCamera()->GetPosition()[0]);
 	Matrix4 modelMatrix = Matrix4();
-	modelMatrix.SetDiagonal(Vector3(1));
+	modelMatrix.SetDiagonal(Vector4(1));
 	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix();
 	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
 	Matrix4 inverseViewProj = (projMatrix * viewMatrix).Inverse();

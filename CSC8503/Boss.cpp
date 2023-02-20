@@ -291,23 +291,23 @@ bool Boss::SeekHeal(bool& hasHeal)
     // TODO
 
                 /*float speed = 35.0f;
-                std::vector<HealingKit*> healingKits = gameGrid->GetHealingKits();
-                if (healingKits.size() == 0)
-                {
-                    hasHeal = false;
-                    return false;
-                }
-                hasHeal = true;
+    std::vector<HealingKit*> healingKits = gameGrid->GetHealingKits();
+    if (healingKits.size() == 0)
+    {
+        hasHeal = false;
+        return false;
+    }
+    hasHeal = true;
 
-                HealingKit* closest = healingKits[0];
-                for (const auto& k : healingKits)
-                {
-                    if ((k->GetTransform().GetGlobalPosition() - this->GetTransform().GetGlobalPosition()).Length() < (closest->GetTransform().GetGlobalPosition() - this->GetTransform().GetGlobalPosition()).Length())
-                    {
-                        closest = k;
-                    }
-                }
-                Chase(speed, closest->GetTransform().GetGlobalPosition(), gameGrid, deltaTime);
+    HealingKit* closest = healingKits[0];
+    for (const auto& k : healingKits)
+    {
+        if ((k->GetTransform().GetGlobalPosition() - this->GetTransform().GetGlobalPosition()).Length() < (closest->GetTransform().GetGlobalPosition() - this->GetTransform().GetGlobalPosition()).Length())
+        {
+            closest = k;
+        }
+    }
+    Chase(speed, closest->GetTransform().GetGlobalPosition(), gameGrid, deltaTime);
                 return true;*/
 
     hasHeal = false;
