@@ -19,9 +19,9 @@ MenuManager::MenuManager() {
 MenuManager::~MenuManager() {
 }
 
-void MenuManager::Draw()
+void MenuManager::Draw(OGLShader* menuShader, OGLTexture* menuTexture, OGLMesh* quad)
 {
-	menus["start"].Draw();
+	menus["start"].Draw(menuShader, menuTexture, quad);
 }
 
 void MenuManager::Update(float dt) {

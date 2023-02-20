@@ -25,7 +25,7 @@ namespace NCL {
 				return INSTANCE;
 			}
 
-			void Draw();
+			void Draw(OGLShader* menuShader, OGLTexture* menuTexture, OGLMesh* quad);
 
 			void Update(float dt);
 

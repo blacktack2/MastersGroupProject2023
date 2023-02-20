@@ -35,8 +35,6 @@ using namespace CSC8503;
 
 TutorialGame::TutorialGame() {
 	gameStateManager = &GameStateManager::instance();
-	menuManager = &MenuManager::instance();
-
 	world = &GameWorld::instance();
 	sunLight = world->AddLight(new Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
 	world->AddLight(new Light({ 0.0f, 5.0f, -10.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, 10.0f));
@@ -91,6 +89,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 300, 300, 2 ) );
 	BuildLevel();
 	player = AddPlayerToWorld(Vector3(0, 5, 90));
+
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
 
@@ -247,6 +246,8 @@ void TutorialGame::UpdateGame(float dt) {
 
 	SoundSystem::GetSoundSystem()->Update(dt);
 
+	//renderer->EnablePostPass("Menu", false);
+
 	if (gameState == GameState::OnGoing) {
 		UpdateStateOngoing(dt);
 	}
@@ -312,8 +313,6 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 		SelectObject();
 		MoveSelectedObject();
 	}
-
-	menuManager->Update(dt);
 
 	world->PreUpdateWorld();
 
@@ -467,8 +466,8 @@ void TutorialGame::UpdateKeys() {
 			Window::GetWindow()->ShowOSPointer(true);
 			Window::GetWindow()->LockMouseToWindow(false);
 
-			renderer->EnableOverlayPass("Pause", true);
-			renderer->UpdatePipeline();
+			Debug::Print("Press [Escape] to resume", Vector2(5, 80), Vector4(1, 1, 1, 1));
+			Debug::Print("Press [q] to quit", Vector2(5, 90), Vector4(1, 1, 1, 1));
 
 			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Q)) {
 				gameStateManager->SetGameState(GameState::Quit);
@@ -913,7 +912,7 @@ void TutorialGame::UpdateLevel()
 			}
 			if (object.objectType == ObjectType::Wall)
 			{
-				Vector3 dimensions{ interval / 2.0f, 10.0f, interval / 2.0f };
+				Vector3 dimensions{ interval / 2.0f, 30.0f, interval / 2.0f };
 				Obstacle* wall = new Obstacle{ &object, true };
 				wall->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
 				wall->GetTransform()

@@ -54,7 +54,8 @@ MenuRPass::~MenuRPass() {
 
 void MenuRPass::Render() {
 	MenuManager* menuManager = &MenuManager::instance();
-	menuManager->Draw();
+	menuManager->Draw(menuShader, menuTexture, quad);
+	
 	/*
 	menuShader->Bind();
 
