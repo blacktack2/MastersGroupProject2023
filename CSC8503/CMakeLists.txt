@@ -67,6 +67,12 @@ set(Render_Files
     "PaintingRPass.h"
     "ModelRPass.h"
     "ModelRPass.cpp"
+    "MenuRPass.h"
+    "MenuRPass.cpp"
+    "PauseRPass.h"
+    "PauseRPass.cpp"
+         "Button.h"
+         "Button.cpp"
 )
 
 if(USE_VULKAN)

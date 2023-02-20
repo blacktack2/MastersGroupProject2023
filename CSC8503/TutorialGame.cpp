@@ -463,8 +463,8 @@ void TutorialGame::UpdateKeys() {
 			Window::GetWindow()->ShowOSPointer(true);
 			Window::GetWindow()->LockMouseToWindow(false);
 
-			Debug::Print("Press [Escape] to resume", Vector2(5, 80), Vector4(1, 1, 1, 1));
-			Debug::Print("Press [q] to quit", Vector2(5, 90), Vector4(1, 1, 1, 1));
+			renderer->EnableOverlayPass("Pause", true);
+			renderer->UpdatePipeline();
 
 			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Q)) {
 				gameStateManager->SetGameState(GameState::Quit);

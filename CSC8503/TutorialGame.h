@@ -155,6 +155,10 @@ namespace NCL {
 			//GameGrid stuff
 			GameGridManager* gridManager;
 			float wallTimer = 0.0f;
+
+			//menu
+			bool showMenu = false;
+			bool showMouse = false;
 		};
 	}
 }
