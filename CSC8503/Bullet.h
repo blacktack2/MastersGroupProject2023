@@ -19,8 +19,6 @@ namespace NCL {
 			void SetLifespan(float ls) {
 				lifespan = ls;
 			}
-
-			void Resize(Vector3 scale);
 		protected:
 			float paintRadius = 1.5f;
 			float lifespan = 0;

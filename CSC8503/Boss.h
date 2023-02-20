@@ -40,7 +40,7 @@ namespace NCL
 
             void Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt);
 
-            BossBullet* releaseBossBullet(Vector3 v, Vector3 s, Vector3 p = Vector3{ 99999,99999,99999 });
+            BossBullet* releaseBossBullet(Vector3 v, Vector3 s);
 
             bool RandomWalk();
 
@@ -56,7 +56,7 @@ namespace NCL
 
             bool SeekHeal(bool& hasHeal);
 
-            bool InkRain(PlayerObject* player);
+            bool InkSea();
 
             bool BulletsStorm();
 
@@ -75,6 +75,11 @@ namespace NCL
                 bombsReleased.clear();
             }
 
+            bool isUsingInkSea()
+            {
+                return usingInkSea;
+            }
+
         protected:
 
             // Housekeepings:
@@ -84,7 +89,7 @@ namespace NCL
             std::vector<BossBullet*> bombsReleased;
 
             // Boss' attributes:
-            Health health = Health(10);
+            Health health = Health(100);
 
             //game state
             GameStateManager* gameStateManager = &GameStateManager::instance();
@@ -105,11 +110,8 @@ namespace NCL
             float bulletsStormFrequencyTimer = 9999.9f;
             float bulletsStormAngle = 0.0f;
 
-            float inkRainTimer = 0.0f;
-            bool rainIsInitialised = false;
-            int currentRainBomb = 0;
-            std::vector<BossBullet*> rain;
-            std::vector<Vector3> rainBombPositions;
+            float inkSeaTimer = 0.0f;
+            bool usingInkSea = false;
         };
 
         class BossBehaviorTree
@@ -256,19 +258,19 @@ namespace NCL
                 SelectorNode* chooseDefensiveRemoteCombat = new SelectorNode();
                 defensiveRemoteCombat->addChild(chooseDefensiveRemoteCombat);
 
-                SequenceNode* inkRain = new SequenceNode();
-                chooseDefensiveRemoteCombat->addChild(inkRain);
+                SequenceNode* inkSea = new SequenceNode();
+                chooseDefensiveRemoteCombat->addChild(inkSea);
 
-                RandomBivalentSelectorNode* possibilityToUseInkRain = new RandomBivalentSelectorNode(130);
-                inkRain->addChild(possibilityToUseInkRain);
+                RandomBivalentSelectorNode* possibilityToUseInkSea = new RandomBivalentSelectorNode(30);
+                inkSea->addChild(possibilityToUseInkSea);
 
-                UseInkRainNode* useInkRain = new UseInkRainNode();
-                inkRain->addChild(useInkRain);
+                UseInkSeaNode* useInkSea = new UseInkSeaNode();
+                inkSea->addChild(useInkSea);
 
                 SequenceNode* bulletsStorm = new SequenceNode();
                 chooseDefensiveRemoteCombat->addChild(bulletsStorm);
 
-                // if not using ink Rain, then the boss must be using bullets storm, so we don't need any randomness here.
+                // if not using ink sea, then the boss must be using bullets storm, so we don't need any randomness here.
 
                 UseBulletsStormNode* useBulletsStorm = new UseBulletsStormNode();
                 bulletsStorm->addChild(useBulletsStorm);
@@ -300,7 +302,7 @@ namespace NCL
                 JumpTo,
                 JumpAway,
                 SeekHeal,
-                InkRain,
+                InkSea,
                 BulletsStorm
             };
 
@@ -365,9 +367,9 @@ namespace NCL
                             bossAction = RandomWalk;
                         }
                         break;
-                    case InkRain:
-                        //std::cout << "Boss perfroms Ink Rain.\n";
-                        finish = boss->InkRain(player);
+                    case InkSea:
+                        //std::cout << "Boss perfroms Ink Sea.\n";
+                        finish = boss->InkSea();
                         break;
                     case BulletsStorm:
                         //std::cout << "Boss perfroms Bullets Storm.\n";
@@ -608,12 +610,12 @@ namespace NCL
                 }
             };
 
-            class UseInkRainNode : public Node
+            class UseInkSeaNode : public Node
             {
             public:
                 virtual bool execute(BehaviorLock* lock)
                 {
-                    lock->SetBossAction(InkRain);
+                    lock->SetBossAction(InkSea);
                     return true;
                 }
             };
