@@ -13,6 +13,7 @@ using namespace Maths;
 
 MenuManager::MenuManager() {
 	menus["start"] = Menu(Vector2(10,10),Vector2(10,10));
+	menus["start"].AddButton(new Button(10, 10, 10, 10));
 }
 
 MenuManager::~MenuManager() {

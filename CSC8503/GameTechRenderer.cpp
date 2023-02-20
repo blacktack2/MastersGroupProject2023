@@ -60,14 +60,14 @@ GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetW
 	SetGamma(gamma);
 	SetPresentPass(presentPass);
 
-	debugPass = new DebugRPass(*this, gameWorld);
-	AddOverlayPass(debugPass, "Debug");
-
 	menuPass = new MenuRPass(*this, gameWorld);
 	AddOverlayPass(menuPass, "Menu");
 
-	pausePass = new PauseRPass(*this, gameWorld);
-	AddOverlayPass(pausePass, "Pause");
+	//pausePass = new PauseRPass(*this, gameWorld);
+	//AddOverlayPass(pausePass, "Pause");
+
+	debugPass = new DebugRPass(*this, gameWorld);
+	AddOverlayPass(debugPass, "Debug");
 
 	UpdatePipeline();
 }

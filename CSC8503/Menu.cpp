@@ -17,6 +17,10 @@ Menu::Menu(Vector2 screenPos, Vector2 dimension) {
 }
 
 Menu::~Menu() {
+	for (Button* btn : buttons) {
+		delete btn;
+	}
+	buttons.empty();
 }
 
 void Menu::Draw()

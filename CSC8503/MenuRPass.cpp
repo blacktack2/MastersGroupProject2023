@@ -8,6 +8,7 @@
 #include "OGLShader.h"
 #include "OGLTexture.h"
 #include "OGLFrameBuffer.h"
+#include "MenuManager.h"
 
 using namespace NCL::CSC8503;
 
@@ -52,6 +53,9 @@ MenuRPass::~MenuRPass() {
 };
 
 void MenuRPass::Render() {
+	MenuManager* menuManager = &MenuManager::instance();
+	menuManager->Draw();
+	/*
 	menuShader->Bind();
 
 	glUniformMatrix4fv(glGetUniformLocation(menuShader->GetProgramID(), "modelMatrix"), 1, false, (GLfloat*)modelMatrix.array);
@@ -73,6 +77,7 @@ void MenuRPass::Render() {
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
+	*/
 }
 
 void MenuRPass::LoadButton() {

@@ -9,7 +9,8 @@
 #include <cstdlib>
 #include <cmath>
 #include <ctime>
-#include <GL/glut.h>
+
+#include "Debug.h"
 
 namespace NCL::Rendering {
 	class OGLShader;
@@ -53,6 +54,9 @@ namespace NCL::CSC8503 {
 
             glOrtho(0, 20, 0, 20, 0, 100);
             glColor3f(0, 0, 0);
+        }
+        void Draw() {
+            Debug::Print("[]", Vector2(m_fPosX, m_fPosY), Vector4(0, 1, 0, 1), 30.0f);
         }
 
     };
