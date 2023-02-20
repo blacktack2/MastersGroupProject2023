@@ -877,7 +877,7 @@ void TutorialGame::UpdateLevel()
 			}
 			if (object.objectType == ObjectType::Wall)
 			{
-				Vector3 dimensions{ interval / 2.0f, 10.0f, interval / 2.0f };
+				Vector3 dimensions{ interval / 2.0f, 20.0f, interval / 2.0f };
 				Obstacle* wall = new Obstacle{ &object, true };
 				wall->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
 				wall->GetTransform()
