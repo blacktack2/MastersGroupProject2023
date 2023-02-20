@@ -26,7 +26,7 @@ Menu::~Menu() {
 void Menu::Draw()
 {
 	for (Button* btn:buttons) {
-		btn->Draw();
+		btn->Draw(Debug::GREEN);
 	}
 }
 

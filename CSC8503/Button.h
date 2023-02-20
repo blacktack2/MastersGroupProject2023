@@ -36,28 +36,11 @@ namespace NCL::CSC8503 {
 
         bool m_bPressed;
 
-        Button(float PosX, float PosY, float Width, float Height)
-        {
-            m_bPressed = false;
-            m_fPosX = PosX;
-            m_fPosY = PosY;
-            m_fWidth = Width;
-            m_fHeight = Height;
-            r = 0xff;
-            g = 0x00;
-            b = 0x00;
-        }
-        void Render()
-        {
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
+        Button(float PosX, float PosY, float Width, float Height);
 
-            glOrtho(0, 20, 0, 20, 0, 100);
-            glColor3f(0, 0, 0);
-        }
-        void Draw() {
-            Debug::Print("[]", Vector2(m_fPosX, m_fPosY), Vector4(0, 1, 0, 1), 30.0f);
-        }
+        void Render();
+
+        void Draw(Vector4 colour);
 
     };
 }
