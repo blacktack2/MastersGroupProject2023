@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLComputeShader.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLFrameBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLMesh.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLMainRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLCombineRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLPostRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLPresentRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLOverlayRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLShader.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLTexture.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLComputeShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLFrameBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLMainRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLCombineRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLPostRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLPresentRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLOverlayRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\OGLTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\glad\gl.h">
+      <Filter>GLAD</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\OpenGLRendering\glad\gl.c">
+      <Filter>GLAD</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\study\CSC8508\OpenGLRendering\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="GLAD">
+      <UniqueIdentifier>{13A515DC-842B-3314-BAE3-9A65397E9AFF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{263BA810-71A5-3FBD-9EB1-6EC07DA44DF6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{8EB7A974-15AF-353B-A5F3-7BE1965E564D}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

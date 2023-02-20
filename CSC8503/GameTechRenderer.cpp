@@ -4,6 +4,7 @@
  * 
  * @author Rich Davidson
  * @author Stuart Lewis
+ * @author Yifei Hu
  * @date   February 2023
  */
 #include "GameTechRenderer.h"
@@ -54,6 +55,12 @@ GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetW
 	debugPass = new DebugRPass(*this, gameWorld);
 	AddOverlayPass(debugPass, "Debug");
 
+	menuPass = new MenuRPass(*this, gameWorld);
+	AddOverlayPass(menuPass, "Menu");
+
+	pausePass = new PauseRPass(*this, gameWorld);
+	AddOverlayPass(pausePass, "Pause");
+
 	UpdatePipeline();
 }
 
@@ -66,6 +73,8 @@ GameTechRenderer::~GameTechRenderer() {
 	delete bloomPass;
 	delete hdrPass;
 	delete debugPass;
+	delete menuPass;
+	delete pausePass;
 }
 
 void GameTechRenderer::BuildObjectList() {

@@ -1,0 +1,6 @@
+E:/study/CSC8508/CSC8503/CMakeFiles/ALL_BUILD.dir
+E:/study/CSC8508/CSC8503/CMakeFiles/ZERO_CHECK.dir
+E:/study/CSC8508/CSC8503/NCLCoreClasses/CMakeFiles/NCLCoreClasses.dir
+E:/study/CSC8508/CSC8503/CSC8503CoreClasses/CMakeFiles/CSC8503CoreClasses.dir
+E:/study/CSC8508/CSC8503/OpenGLRendering/CMakeFiles/OpenGLRendering.dir
+E:/study/CSC8508/CSC8503/CSC8503/CMakeFiles/CSC8503.dir

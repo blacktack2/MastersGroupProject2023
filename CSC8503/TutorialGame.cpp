@@ -366,7 +366,43 @@ void TutorialGame::InitCamera() {
 }
 
 void TutorialGame::UpdateKeys() {
+	float mousex = Window::GetMouse()->GetAbsolutePosition().x;
+	float mousey = Window::GetMouse()->GetAbsolutePosition().y;
+
 	switch (gameState) {
+	case GameState::Start:
+		Window::GetWindow()->ShowOSPointer(true);
+		Window::GetWindow()->LockMouseToWindow(false);
+
+		renderer->EnableOverlayPass("Pause", false);
+		renderer->EnableOverlayPass("Menu", true);
+		renderer->UpdatePipeline();
+
+		if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT)) {
+			if(mousex > 805 && mousex < 1120 &&	mousey > 300 && mousey < 365 ) {
+				//std::cout << "(" << mousex << ", " << mousey << ")" << std::endl;
+				renderer->EnableOverlayPass("Menu", false);
+				renderer->UpdatePipeline();
+
+				gameState = GameState::OnGoing;
+			}
+		}
+	
+		if (Window::GetMouse()->ButtonPressed(MouseButtons::RIGHT)) {
+			if (mousex > 805 && mousex < 1120 && mousey > 407 && mousey < 472) {
+				renderer->EnableOverlayPass("Menu", false);
+				renderer->UpdatePipeline();
+
+				gameState = GameState::Option;
+			}
+		}
+
+		if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT)) {
+			if (mousex > 805 && mousex < 1120 && mousey > 515 && mousey < 580) {
+				gameState = GameState::Quit;
+			}
+		}
+		break;
 	case GameState::OnGoing: default:
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
 			gameState = GameState::Paused;
@@ -412,16 +448,25 @@ void TutorialGame::UpdateKeys() {
 			Window::GetWindow()->ShowOSPointer(true);
 			Window::GetWindow()->LockMouseToWindow(false);
 
-			Debug::Print("Press [Escape] to resume", Vector2(5, 80), Vector4(1, 1, 1, 1));
-			Debug::Print("Press [q] to quit", Vector2(5, 90), Vector4(1, 1, 1, 1));
+			renderer->EnableOverlayPass("Pause", true);
+			renderer->UpdatePipeline();
 
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Q)) {
-				gameState = GameState::Quit;
+			if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT)) {
+				if (mousex > 510 && mousex < 740 && mousey > 440 && mousey < 480) {
+					//std::cout << "(" << mousex << ", " << mousey << ")" << std::endl;
+					gameState = GameState::Start;
+				}
 			}
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
-				gameState = GameState::OnGoing;
-				Window::GetWindow()->ShowOSPointer(false);
-				Window::GetWindow()->LockMouseToWindow(true);
+
+			if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT) 
+				|| Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE)) {
+				if (mousex > 510 && mousex < 740 && mousey > 220 && mousey < 260) {
+					gameState = GameState::OnGoing;
+					Window::GetWindow()->ShowOSPointer(false);
+					Window::GetWindow()->LockMouseToWindow(true);
+					renderer->EnableOverlayPass("Pause", false);
+					renderer->UpdatePipeline();
+				}
 			}
 			break;
 		case GameState::Win:

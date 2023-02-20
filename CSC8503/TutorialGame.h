@@ -44,6 +44,8 @@ namespace NCL {
 			}
 		protected:
 			enum class GameState {
+				Start,
+				Option,
 				OnGoing,
 				Paused,
 				Win,
@@ -145,6 +147,10 @@ namespace NCL {
 			GameObject* floor = nullptr;	/////////
 			Boss* testingBoss = nullptr;   /////////
 			BossBehaviorTree* testingBossBehaviorTree = nullptr;   /////////
+
+			//menu
+			bool showMenu = false;
+			bool showMouse = false;
 		};
 	}
 }
