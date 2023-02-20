@@ -75,8 +75,8 @@ namespace NCL {
 
 			PlayerObject* AddPlayerToWorld(const Vector3& position, bool cameraFollow = true);
 			EnemyObject* AddEnemyToWorld(const Vector3& position, NavigationMap& navMap);
+
 			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);		/////////
-			void RenderBossBulletsReleasedByBoss();															/////////
 			HealingKit* UpdateHealingKit();																/////////
 			void BuildLevel();																			/////////
 			void UpdateLevel();																			/////////

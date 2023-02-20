@@ -16,10 +16,10 @@ using namespace NCL::CSC8503;
 
 CombineRPass::CombineRPass(OGLRenderer& renderer,
 	OGLTexture* skyboxTexIn, OGLTexture* diffuseTexIn,
-	OGLTexture* diffuseLightTexIn, OGLTexture* specularLightTexIn,
+	OGLTexture* diffuseLightTexIn, OGLTexture* specularLightTexIn, OGLTexture* ssaoTexIn,
 	OGLTexture* normalTexIn, OGLTexture* depthTexIn) :
 OGLCombineRenderPass(renderer), skyboxTexIn(skyboxTexIn), diffuseTexIn(diffuseTexIn),
-diffuseLightTexIn(diffuseLightTexIn), specularLightTexIn(specularLightTexIn),
+diffuseLightTexIn(diffuseLightTexIn), specularLightTexIn(specularLightTexIn), ssaoTexIn(ssaoTexIn),
 normalTexIn(normalTexIn), depthTexIn(depthTexIn) {
 	sceneOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
 	AddScreenTexture(sceneOutTex);
@@ -60,8 +60,9 @@ normalTexIn(normalTexIn), depthTexIn(depthTexIn) {
 	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "diffuseTex"      ), 1);
 	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "diffuseLightTex" ), 2);
 	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "specularLightTex"), 3);
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "normalTex"       ), 4);
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "depthTex"        ), 5);
+	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "ssaoTex"         ), 4);
+	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "normalTex"       ), 5);
+	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "depthTex"        ), 6);
 
 	shader->Unbind();
 }
@@ -85,8 +86,9 @@ void CombineRPass::Render() {
 	diffuseTexIn->Bind(1);
 	diffuseLightTexIn->Bind(2);
 	specularLightTexIn->Bind(3);
-	normalTexIn->Bind(4);
-	depthTexIn->Bind(5);
+	ssaoTexIn->Bind(4);
+	normalTexIn->Bind(5);
+	depthTexIn->Bind(6);
 
 	quad->Draw();
 

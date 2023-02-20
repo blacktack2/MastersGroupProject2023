@@ -1,8 +1,7 @@
 #include "TutorialGame.h"
 
-
 #include "AssetLibrary.h"
-#include "Bullet.h"
+#include "PlayerBullet.h"
 #include "Bonus.h"
 #include "Debug.h"
 
@@ -55,8 +54,6 @@ TutorialGame::TutorialGame() {
 	gridManager = &GameGridManager::instance();
 	InitialiseAssets();
 	InitWorld();
-
-
 }
 
 TutorialGame::~TutorialGame() {
@@ -91,9 +88,14 @@ void TutorialGame::InitWorld(InitMode mode) {
 
 	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 300, 300, 2 ) );
 	BuildLevel();
-	player = AddPlayerToWorld(Vector3(0, 0, 0));
+	player = AddPlayerToWorld(Vector3(0, 5, 90));
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
+
+	if (mode != InitMode::EMPTY)
+	{
+		InitDefaultFloor();
+	}
 
 	switch (mode) {
 		default: InitGameExamples(); break;
@@ -108,8 +110,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 		case InitMode::AUDIO_TEST : InitGameExamples()                ; break;
 	}
 
-	//InitGameExamples();
-	InitDefaultFloor();
+	
 
 	world->UpdateStaticTree();
 
@@ -117,8 +118,6 @@ void TutorialGame::InitWorld(InitMode mode) {
 
 	InitCamera();
 }
-
-
 
 void TutorialGame::UpdateGame(float dt) {
 	GameState gameState = gameStateManager->GetGameState();
@@ -155,6 +154,9 @@ void TutorialGame::UpdateGame(float dt) {
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM6)) {
 		renderer->GetCombinePass().SetRenderMode(RenderMode::SpecularLight);
 	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM7)) {
+		renderer->GetCombinePass().SetRenderMode(RenderMode::AmbientOcclusion);
+	}
 
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN)) {
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::G)) {
@@ -169,6 +171,12 @@ void TutorialGame::UpdateGame(float dt) {
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::B)) {
 			renderer->SetBloomBias(renderer->GetBloomBias() - 0.02f);
 		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::R)) {
+			renderer->SetSSAORadius(renderer->GetSSAORadius() - 0.1f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::F)) {
+			renderer->SetSSAOBias(renderer->GetSSAOBias() - 0.005f);
+		}
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP)) {
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::G)) {
@@ -182,6 +190,12 @@ void TutorialGame::UpdateGame(float dt) {
 		}
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::B)) {
 			renderer->SetBloomBias(renderer->GetBloomBias() + 0.02f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::R)) {
+			renderer->SetSSAORadius(renderer->GetSSAORadius() + 0.1f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::F)) {
+			renderer->SetSSAOBias(renderer->GetSSAOBias() + 0.005f);
 		}
 	}
 	static bool doMain = true;
@@ -222,9 +236,13 @@ void TutorialGame::UpdateGame(float dt) {
 	} else {
 		Debug::Print(std::string("Bloom -> Disabled"), Vector2(0, 40.0f));
 	}
-	Debug::Print(std::string("Render -> Scene:   ").append(doMain ? "Enabled" : "Disabled"), Vector2(0, 50.0f));
-	Debug::Print(std::string("       -> Post:    ").append(doPost ? "Enabled" : "Disabled"), Vector2(0, 55.0f));
-	Debug::Print(std::string("       -> Overlay: ").append(doOver ? "Enabled" : "Disabled"), Vector2(0, 60.0f));
+	Debug::Print(std::string("SSAO -> Radius: ").append(std::to_string(renderer->GetSSAORadius())), Vector2(0, 50.0f));
+	Debug::Print(std::string("     -> Bias:   ").append(std::to_string(renderer->GetSSAOBias())), Vector2(0, 55.0f));
+
+	Debug::Print(std::string("Render -> Scene:   ").append(doMain ? "Enabled" : "Disabled"), Vector2(0, 60.0f));
+	Debug::Print(std::string("       -> Post:    ").append(doPost ? "Enabled" : "Disabled"), Vector2(0, 65.0f));
+	Debug::Print(std::string("       -> Overlay: ").append(doOver ? "Enabled" : "Disabled"), Vector2(0, 70.0f));
+
 	SoundSystem::GetSoundSystem()->Update(dt);
 
 	if (gameState == GameState::OnGoing) {
@@ -301,10 +319,7 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 
 	world->PostUpdateWorld();
 
-	gridManager->Update(dt);
-	//UpdateHealingKit();
 	testingBossBehaviorTree->update();
-	RenderBossBulletsReleasedByBoss();
 	if (gameLevel->GetShelterTimer() > 20.0f)
 	{
 		gameLevel->SetShelterTimer(0.0f);
@@ -357,14 +372,13 @@ void TutorialGame::InitialiseAssets() {
 void TutorialGame::InitialisePrefabs() {
 	float bulletRadius = 0.2f;
 
-	bulletPrefab = new Bullet();
+	bulletPrefab = new PlayerBullet();
 
 	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::PlayerProj));
 	bulletPrefab->GetTransform().SetScale(Vector3(bulletRadius));
 
 	bulletPrefab->SetRenderObject(new RenderObject(&bulletPrefab->GetTransform(), sphereMesh, nullptr, nullptr));
-	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume()));
-
+	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume(), true));
 	bulletPrefab->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.8f, 1.0f));
 
 	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
@@ -372,6 +386,24 @@ void TutorialGame::InitialisePrefabs() {
 	bulletPrefab->GetPhysicsObject()->InitCapsuleInertia();
 
 	AssetLibrary::AddPrefab("bullet", bulletPrefab);
+
+	bulletRadius = 0.75f;
+
+	bulletPrefab = new BossBullet();
+
+	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::EnemyProj));
+	bulletPrefab->GetTransform().SetScale(Vector3(bulletRadius));
+
+	bulletPrefab->SetRenderObject(new RenderObject(&bulletPrefab->GetTransform(), sphereMesh, nullptr, nullptr));
+	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume(), true));
+
+	bulletPrefab->GetRenderObject()->SetColour(Vector4(0.2f, 1.0f, 0.5f, 1.0f));
+
+	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
+	bulletPrefab->GetPhysicsObject()->SetGravWeight(1.0f);
+	bulletPrefab->GetPhysicsObject()->InitCapsuleInertia();
+
+	AssetLibrary::AddPrefab("bossBullet", bulletPrefab);
 }
 
 void TutorialGame::InitCamera() {
@@ -807,7 +839,7 @@ void TutorialGame::BuildLevel()
 {
 	interval = 5.0f;
 	gameLevel = new GameLevel{};
-	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -200,0,-170 }, interval);
+	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -100,0,-70 }, interval);
 	world->AddGameObject(gameLevel);
 	UpdateLevel();
 }
@@ -877,7 +909,7 @@ void TutorialGame::UpdateLevel()
 			}
 			if (object.objectType == ObjectType::Wall)
 			{
-				Vector3 dimensions{ interval / 2.0f, 20.0f, interval / 2.0f };
+				Vector3 dimensions{ interval / 2.0f, 30.0f, interval / 2.0f };
 				Obstacle* wall = new Obstacle{ &object, true };
 				wall->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
 				wall->GetTransform()
@@ -891,23 +923,6 @@ void TutorialGame::UpdateLevel()
 			}
 		}
 	}
-}
-
-void TutorialGame::RenderBossBulletsReleasedByBoss()
-{
-	std::vector<BossBullet*> bossBossBullets = testingBoss->GetBossBulletsReleasedByBoss();
-	for (auto& bomb : bossBossBullets)
-	{
-		if (bomb->GetRenderObject() == nullptr)
-		{
-			bomb->SetRenderObject(new RenderObject(&bomb->GetTransform(), sphereMesh, nullptr, nullptr));
-		}
-		bomb->GetRenderObject()->SetColour({ 0,0,1,1 });
-
-		world->AddGameObject(bomb);
-	}
-	testingBoss->clearBossBulletList();
-	
 }
 
 HealingKit* TutorialGame::UpdateHealingKit()

@@ -503,6 +503,5 @@ PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, bo
 		character->AttachedCamera();
 	}
 
-	character->GetPhysicsObject()->SetGravWeight(0);
 	return character;
 }
