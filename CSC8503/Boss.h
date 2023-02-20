@@ -59,26 +59,13 @@ namespace NCL
             bool InkRain(PlayerObject* player);
 
             bool BulletsStorm();
-                Vector3 position = this->GetTransform().GetGlobalPosition();
+                
             Health* GetHealth()
             {
                 return &health;
             }
 
-                        float dAngle = (2 * PI) / rayNum;
-                        for (; currentPhase < (2 * PI + bulletsStormAngle); currentPhase += dAngle)
-                        {
-                            Vector3 rayDir = this->GetTransform().GetGlobalOrientation() * Vector3(cos(currentPhase), 0, sin(currentPhase));
-                            Vector3 bombVelocity = rayDir * bombSpeed;
-                            releaseBossBullet(bombVelocity, bombScale);
-                        }
-                        this->GetPhysicsObject()->SetAngularVelocity(this->GetTransform().GetGlobalOrientation() * Vector3 { 1, 1, 1 });
-                    }
-                    return false;
-                }
-                bulletsStormTimer = 0.0f;
-                return true;
-            }
+    
 
             std::vector<BossBullet*> GetBossBulletsReleasedByBoss()
             {
