@@ -21,7 +21,6 @@ RenderPassBase::~RenderPassBase() {
 
 void RenderPassBase::OnWindowResize(int width, int height) {
 	for (auto tex : textures) {
-		tex->Bind();
 		tex->Resize(width, height);
 	}
 }

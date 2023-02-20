@@ -127,7 +127,7 @@ void BloomRPass::SetBloomDepth(size_t depth) {
 
 		BloomMip mip{
 			mipWidth, mipHeight,
-			new OGLTexture(mipWidth, mipHeight, GL_R11F_G11F_B10F, GL_RGB, GL_FLOAT)
+			new OGLTexture(mip.width, mip.height, GL_R11F_G11F_B10F, GL_RGB, GL_FLOAT)
 		};
 		mip.texture->Bind();
 		mip.texture->SetEdgeClamp();

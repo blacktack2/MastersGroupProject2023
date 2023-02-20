@@ -58,3 +58,10 @@ void Bullet::UpdateColour() {
 	}
 	
 }
+
+void Bullet::Resize(Vector3 scale) {
+	CollisionLayer layer = boundingVolume->GetCollisionLayer();
+	delete boundingVolume;
+	boundingVolume = (CollisionVolume*) new SphereVolume(scale.x, layer);
+	transform.SetScale(scale);
+}
