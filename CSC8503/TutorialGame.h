@@ -17,6 +17,7 @@
 #include "GameLevel.h"
 
 #include "GameStateManager.h"
+#include "MenuManager.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -102,6 +103,7 @@ namespace NCL {
 			Light* sunLight;
 
 			GameStateManager* gameStateManager;
+			MenuManager* menuManager;
 
 			bool inSelectionMode;
 

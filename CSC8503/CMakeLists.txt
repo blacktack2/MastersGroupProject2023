@@ -142,6 +142,16 @@ set(Enemy_Files
 )
 source_group("Enemy Files" FILES ${Enemy_Files})
 
+set(Menu_Files 
+    "MenuManager.h"
+    "MenuManager.cpp"
+    "Menu.h"
+    "Menu.cpp"
+    "Button.h"
+    "Button.cpp"
+)
+source_group("Menu Files" FILES ${Menu_Files})
+
 set(ALL_FILES
     ${Header_Files}
     ${Source_Files}
@@ -151,6 +161,7 @@ set(ALL_FILES
     ${Bullet_Files}
 	${Player_Files}
     ${Enemy_Files}
+    ${Menu_Files}
 )
 
 if(USE_VULKAN)
@@ -163,6 +174,7 @@ if(USE_VULKAN)
         ${Bullet_Files}
 	    ${Player_Files}
         ${Enemy_Files}
+        ${Menu_Files}
     )
 
 foreach (file ${SHADER_FILES})
