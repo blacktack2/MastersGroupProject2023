@@ -5,8 +5,10 @@
 #pragma once
 #include "OGLOverlayRenderPass.h"
 
+#include "MenuManager.h"
 #include "GameWorld.h"
 #include "Button.h"
+
 
 namespace NCL::Rendering {
 	class OGLShader;
@@ -24,11 +26,18 @@ namespace NCL::CSC8503 {
 
 		virtual void Render() override;
 		
+		void DrawMenu();
+		void DrawButton(Button* btn);
+		void DrawButtons();
+
+
 		void LoadButton();
 		void RenderButton();
 
 	private:
 		void SelectTexture(int n);
+
+		MenuManager* menuManager;
 
 		GameWorld& gameWorld;
 		OGLMesh* quad;

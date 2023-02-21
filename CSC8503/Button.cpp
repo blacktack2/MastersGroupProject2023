@@ -22,6 +22,12 @@ Button::Button(float PosX, float PosY, float Width, float Height) {
     b = 0x00;
 }
 
+void Button::Update(float dt)
+{
+    isMouseHover = false;
+
+}
+
 void Button::Render()
 {
     glMatrixMode(GL_PROJECTION);
@@ -34,4 +40,32 @@ void Button::Render()
 void Button::Draw(Vector4 colour) {
     Debug::Print("[]", Vector2(m_fPosX, m_fPosY), colour, 1.0f);
     Debug::Print("[]", Vector2(m_fPosX + m_fWidth, m_fPosY + m_fHeight), colour, 1.0f);
+}
+
+Button* Button::CheckMousePosition(Vector2 mousePos)
+{
+    if (mousePos.x < (m_fPosX - m_fWidth/2)) {
+        return nullptr;
+    }
+    if (mousePos.x > (m_fPosX + m_fWidth/2)) {
+        return nullptr;
+    }
+    if (mousePos.y < (m_fPosY - m_fHeight/2)) {
+        return nullptr;
+    }
+    if (mousePos.y > (m_fPosY + m_fHeight /2)) {
+        return nullptr;
+    }
+    isMouseHover = true;
+    return this;
+}
+
+Vector4 Button::GetDimension()
+{
+    return Vector4(
+        m_fPosX,
+        m_fPosY,
+        m_fWidth,
+        m_fHeight
+    );
 }

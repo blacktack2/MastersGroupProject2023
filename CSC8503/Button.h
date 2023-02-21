@@ -11,6 +11,7 @@
 #include <ctime>
 
 #include "Debug.h"
+#include <RenderObject.h>
 
 namespace NCL::Rendering {
 	class OGLShader;
@@ -24,9 +25,29 @@ namespace NCL::CSC8503 {
 #pragma once
     class Button
     {
-    private:
-        UCHAR r, g, b;
+
     public:
+
+        Button(float PosX, float PosY, float Width, float Height);
+
+        void Update(float dt);
+
+        RenderObject* GetRenderObject() const {
+            return renderObject;
+        }
+
+        void SetRenderObject(RenderObject* newObject) {
+            renderObject = newObject;
+        }
+
+        void Render();
+
+        void Draw(Vector4 colour);
+
+        Button* CheckMousePosition(Vector2 mousePos);
+
+        Vector4 GetDimension();
+
         float m_fPosX;
         float m_fPosY;
         float m_fWidth;
@@ -36,11 +57,11 @@ namespace NCL::CSC8503 {
 
         bool m_bPressed;
 
-        Button(float PosX, float PosY, float Width, float Height);
+        bool isMouseHover;
+    private:
+        UCHAR r, g, b;
 
-        void Render();
-
-        void Draw(Vector4 colour);
+        RenderObject* renderObject = nullptr;
 
     };
 }

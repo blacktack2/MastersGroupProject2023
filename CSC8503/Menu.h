@@ -9,10 +9,7 @@
 #include "Vector2.h"
 #include "Button.h"
 #include <vector>
-
-#include "OGLShader.h"
-#include "OGLTexture.h"
-#include "OGLMesh.h"
+#include <RenderObject.h>
 
 namespace NCL {
 	namespace CSC8503 {
@@ -32,11 +29,28 @@ namespace NCL {
 				buttons.push_back(btn);
 			}
 
+			RenderObject* GetRenderObject() const {
+				return renderObject;
+			}
+
+			void SetRenderObject(RenderObject* newObject) {
+				renderObject = newObject;
+			}
+			vector<Button*>* GetButtons() {
+				return &buttons;
+			}
+
+			Vector4 GetDimension();
+
 		protected:
 			Vector2 screenPos;
 			Vector2 dimension;
 
+			RenderObject* renderObject = nullptr;
+
 			vector<Button*> buttons;
+
+			int buttonSelect = 0;
 		};
 	}
 }

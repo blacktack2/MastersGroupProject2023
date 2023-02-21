@@ -29,8 +29,25 @@ namespace NCL {
 
 			void Update(float dt);
 
+			Vector4 GetMenuDimension();
+
+			Menu* GetCurrentMenu() {
+				return menus[currentMenu];
+			}
+			/**
+			* @brief function class for Converting pixel coordinates to -1 to 1 range for quad
+			* @param screenWidth Current screen Width.
+			* @param screenHeight Current screen Height.
+			* @param componentDimension The dimension (x, y, width, height) of the quad/component in terms of pixels. (x and y are center of component)
+			* @return Vector4 containing (vector2 topLeft, vector2 bottomRight) in screen space
+			*/
+			Vector4 PixelToScreenSpace(float screenWidth, float screenHeight, Vector4 componentDimension);
+
 		protected:
-			map<string, Menu> menus;
+			void initMainMenu();
+
+			map<string, Menu*> menus;
+			string currentMenu = "start";
 		};
 	}
 }

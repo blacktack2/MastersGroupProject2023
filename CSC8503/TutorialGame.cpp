@@ -35,6 +35,8 @@ using namespace CSC8503;
 
 TutorialGame::TutorialGame() {
 	gameStateManager = &GameStateManager::instance();
+	menuManager = &MenuManager::instance();
+
 	world = &GameWorld::instance();
 	sunLight = world->AddLight(new Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
 	world->AddLight(new Light({ 0.0f, 5.0f, -10.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, 10.0f));
@@ -122,6 +124,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 
 void TutorialGame::UpdateGame(float dt) {
 	GameState gameState = gameStateManager->GetGameState();
+	menuManager->Update(dt);
 
 	debugViewPoint->BeginFrame();
 	debugViewPoint->MarkTime("Update");
