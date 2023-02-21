@@ -41,7 +41,7 @@ TutorialGame::TutorialGame() {
 #ifdef USEVULKAN
 	renderer = new GameTechVulkanRenderer(*world);
 #else 
-	renderer = new GameTechRenderer(*world);
+	renderer = &GameTechRenderer::instance();
 #endif
 
 	physics		= new PhysicsSystem(*world);
@@ -68,7 +68,6 @@ TutorialGame::~TutorialGame() {
 	delete basicTex;
 
 	delete physics;
-	delete renderer;
 
 	delete[] mazes;
 
