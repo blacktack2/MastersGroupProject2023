@@ -27,6 +27,7 @@ namespace NCL::CSC8503 {
     {
 
     public:
+        typedef std::function<void()> overlap_func;
 
         Button(float PosX, float PosY, float Width, float Height);
         ~Button();
@@ -41,6 +42,15 @@ namespace NCL::CSC8503 {
 
         Vector4 GetDimension();
 
+        virtual void OnClickBegin() {
+            if (OnClickBeginCallback) OnClickBeginCallback();
+        }
+        //void OnClickBegin();
+
+        virtual void OnClickEnd() {
+            if (OnClickEndCallback) OnClickEndCallback();
+        }
+
         float m_fPosX;
         float m_fPosY;
         float m_fWidth;
@@ -51,6 +61,9 @@ namespace NCL::CSC8503 {
         bool m_bPressed;
 
         bool isMouseHover;
+
+        overlap_func OnClickBeginCallback = nullptr;
+        overlap_func OnClickEndCallback = nullptr;
     private:
         UCHAR r, g, b;
 
