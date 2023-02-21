@@ -9,13 +9,14 @@
 #include "Vector2.h"
 #include "Button.h"
 #include <vector>
-#include <RenderObject.h>
+#include "UIObject.h"
 
 namespace NCL {
 	namespace CSC8503 {
 		using namespace Maths;
 		using namespace std;
-		class Menu{
+		class Menu : public UIObject 
+		{
 		public:
 			Menu(){}
 			Menu(Vector2 screenPos, Vector2 dimension);
@@ -23,19 +24,12 @@ namespace NCL {
 
 			void Draw(OGLShader* menuShader, OGLTexture* menuTexture, OGLMesh* quad);
 
-			void Update(float dt);
+			void Update(float dt) override;
 
 			void AddButton(Button* btn) {
 				buttons.push_back(btn);
 			}
 
-			RenderObject* GetRenderObject() const {
-				return renderObject;
-			}
-
-			void SetRenderObject(RenderObject* newObject) {
-				renderObject = newObject;
-			}
 			vector<Button*>* GetButtons() {
 				return &buttons;
 			}
@@ -45,8 +39,6 @@ namespace NCL {
 		protected:
 			Vector2 screenPos;
 			Vector2 dimension;
-
-			RenderObject* renderObject = nullptr;
 
 			vector<Button*> buttons;
 

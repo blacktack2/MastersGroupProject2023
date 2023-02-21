@@ -6,10 +6,13 @@
  * @date   February 2023
  */
 #pragma once
+
 #include "menu.h"
 #include "Vector2.h"
 #include <map>
 #include <string>
+
+#include "GameTechRenderer.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -44,10 +47,13 @@ namespace NCL {
 			Vector4 PixelToScreenSpace(float screenWidth, float screenHeight, Vector4 componentDimension);
 
 		protected:
+			void initQuad();
 			void initMainMenu();
 
 			map<string, Menu*> menus;
 			string currentMenu = "start";
+			GameTechRenderer* renderer;
+			MeshGeometry* quad;
 		};
 	}
 }

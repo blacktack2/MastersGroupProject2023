@@ -21,9 +21,12 @@ Button::Button(float PosX, float PosY, float Width, float Height) {
     g = 0x00;
     b = 0x00;
 }
+Button::~Button() {
+}
 
 void Button::Update(float dt)
 {
+    UIObject::Update(dt);
     isMouseHover = false;
 
 }
@@ -62,6 +65,14 @@ Button* Button::CheckMousePosition(Vector2 mousePos)
 
 Vector4 Button::GetDimension()
 {
+    if (isMouseHover) {
+        return Vector4(
+            m_fPosX,
+            m_fPosY,
+            m_fWidth+2,
+            m_fHeight+2
+        );
+    }
     return Vector4(
         m_fPosX,
         m_fPosY,

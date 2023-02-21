@@ -1,13 +1,11 @@
 /**
  * @author Yifei Hu
+ * @author Felix Chiu
  * @date   February 2023
  */
 #include "MenuRPass.h"
 
 #include "Debug.h"
-#include "OGLShader.h"
-#include "OGLTexture.h"
-#include "OGLFrameBuffer.h"
 
 #include "MenuManager.h"
 
@@ -16,49 +14,25 @@ using namespace NCL::CSC8503;
 MenuRPass::MenuRPass(OGLRenderer& renderer, GameWorld& gameWorld) :
 	OGLOverlayRenderPass(renderer), gameWorld(gameWorld) {
 
-	menuManager = &MenuManager::instance();
+	defaultTexture = (OGLTexture*)OGLTexture::RGBATextureFromFilename("defaultstart.jpg");
 
-	quad = new OGLMesh();
-	quad->SetVertexPositions({
-		Vector3(-1, 1, -1),
-		Vector3(-1, -1, -1),
-		Vector3(1, -1, -1),
-		Vector3(1, 1, -1),
-		});
-	quad->SetVertexTextureCoords({
-		Vector2(0, 1),
-		Vector2(0, 0),
-		Vector2(1, 0),
-		Vector2(1, 1),
-		});
-	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
-	quad->SetVertexColours({
-		Vector4(1, 1, 1, 1),
-		Vector4(1, 1, 1, 1),
-		Vector4(1, 1, 1, 1),
-		Vector4(1, 1, 1, 1),
-		});
-	quad->UploadToGPU();
+	defaultShader = new OGLShader("menuVertex.vert", "menuFragment.frag");
 
-	menuTexture = (OGLTexture*)OGLTexture::RGBATextureFromFilename("defaultstart.jpg");
-
-	menuShader = new OGLShader("menuVertex.vert", "menuFragment.frag");
-
-	menuTexture->Bind();
-	glUniform1i(glGetUniformLocation(menuShader->GetProgramID(), "diffuseTex"), 0);
-	menuTexture->Unbind();
+	defaultTexture->Bind();
+	glUniform1i(glGetUniformLocation(defaultShader->GetProgramID(), "diffuseTex"), 0);
+	defaultTexture->Unbind();
 
 	//LoadButton();
 }
 
 MenuRPass::~MenuRPass() {
-	delete menuShader;
-	delete menuTexture;
+	delete defaultShader;
+	delete defaultTexture;
 };
 
 void MenuRPass::Render() {
 	
-	//DrawMenu();
+	DrawMenu();
 	DrawButtons();
 
 
@@ -68,79 +42,75 @@ void MenuRPass::Render() {
 
 void MenuRPass::DrawMenu()
 {
-	Vector4 menuDimension = menuManager->GetMenuDimension();
-	
-	Vector4 menuScreenDimension = menuManager->PixelToScreenSpace((float)renderer.GetWidth(), (float)renderer.GetHeight(), menuDimension);
-
-	quad->SetVertexPositions({
-		Vector3(menuScreenDimension.x, menuScreenDimension.y, -1),
-		Vector3(menuScreenDimension.x, menuScreenDimension.w, -1),
-		Vector3(menuScreenDimension.z, menuScreenDimension.w, -1),
-		Vector3(menuScreenDimension.z, menuScreenDimension.y, -1),
-	});
-
-	quad->UploadToGPU();
-
-	menuShader->Bind();
-
-	glUniformMatrix4fv(glGetUniformLocation(menuShader->GetProgramID(), "modelMatrix"), 1, false, (GLfloat*)modelMatrix.array);
-	glUniformMatrix4fv(glGetUniformLocation(menuShader->GetProgramID(), "viewMatrix"), 1, false, (GLfloat*)viewMatrix.array);
-	glUniformMatrix4fv(glGetUniformLocation(menuShader->GetProgramID(), "projMatrix"), 1, false, (GLfloat*)projMatrix.array);
-	glUniformMatrix4fv(glGetUniformLocation(menuShader->GetProgramID(), "textureMatrix"), 1, false, (GLfloat*)textureMatrix.array);
-
-	menuTexture->Bind(0);
-
-	quad->Draw();
-
-	menuShader->Unbind();
+	MenuManager* menuManager = &MenuManager::instance();
+	Menu* menu = menuManager->GetCurrentMenu();
+	DrawUIObject((UIObject *) menu);
 }
 
-void MenuRPass::DrawButton(Button* btn)
+void MenuRPass::DrawUIObject(UIObject* obj)
 {
-	Vector4 btnDimension = btn->GetDimension();
-
-	Vector4 btnScreenDimension = menuManager->PixelToScreenSpace((float)renderer.GetWidth(), (float)renderer.GetHeight(), btnDimension);
-
-	quad->SetVertexPositions({
-		Vector3(btnScreenDimension.x, btnScreenDimension.y, -1),
-		Vector3(btnScreenDimension.x, btnScreenDimension.w, -1),
-		Vector3(btnScreenDimension.z, btnScreenDimension.w, -1),
-		Vector3(btnScreenDimension.z, btnScreenDimension.y, -1),
-		});
-	if (btn->isMouseHover) {
-		btnScreenDimension.x -= 0.01;
-		btnScreenDimension.y -= 0.01;
-		btnScreenDimension.z += 0.01;
-		btnScreenDimension.w += 0.01;
-		quad->SetVertexPositions({
-		Vector3(btnScreenDimension.x, btnScreenDimension.y, -1),
-		Vector3(btnScreenDimension.x, btnScreenDimension.w, -1),
-		Vector3(btnScreenDimension.z, btnScreenDimension.w, -1),
-		Vector3(btnScreenDimension.z, btnScreenDimension.y, -1),
-			});
+	MenuManager* menuManager = &MenuManager::instance();
+	const RenderObject* renderObject = obj->GetRenderObject();
+	if (!renderObject) {
+		return;
+	}
+	OGLMesh* mesh = (OGLMesh*)renderObject->GetMesh();
+	if (!(mesh = dynamic_cast<OGLMesh*>(renderObject->GetMesh()))) {
+		return;
+	}
+	OGLShader* shader;
+	if (!(shader = dynamic_cast<OGLShader*>(renderObject->GetShader()))) {
+		shader = defaultShader;
 	}
 
-	quad->UploadToGPU();
+	OGLTexture* texture;
+	if (!(texture = dynamic_cast<OGLTexture*>(renderObject->GetDefaultTexture()))) {
+		texture = defaultTexture;
+	}
 
-	menuShader->Bind();
+	Vector4 dimension = obj->GetDimension();
 
-	glUniformMatrix4fv(glGetUniformLocation(menuShader->GetProgramID(), "modelMatrix"), 1, false, (GLfloat*)modelMatrix.array);
-	glUniformMatrix4fv(glGetUniformLocation(menuShader->GetProgramID(), "viewMatrix"), 1, false, (GLfloat*)viewMatrix.array);
-	glUniformMatrix4fv(glGetUniformLocation(menuShader->GetProgramID(), "projMatrix"), 1, false, (GLfloat*)projMatrix.array);
-	glUniformMatrix4fv(glGetUniformLocation(menuShader->GetProgramID(), "textureMatrix"), 1, false, (GLfloat*)textureMatrix.array);
+	Vector4 screenDimension = menuManager->PixelToScreenSpace((float)renderer.GetWidth(), (float)renderer.GetHeight(), dimension);
 
-	menuTexture->Bind(0);
+	mesh->UploadToGPU();
 
-	quad->Draw();
+	shader->Bind();
 
-	menuShader->Unbind();
+	Matrix4 quadMatrix = modelMatrix;
+	quadMatrix = quadMatrix *
+		Matrix4::Translation(
+			Vector3(
+					(screenDimension.x + screenDimension.z) / 2,
+					(screenDimension.y + screenDimension.w) / 2,
+					0.0f
+				) 
+			) * 
+		Matrix4::Scale(
+			Vector3(
+					(screenDimension.z - screenDimension.x),
+					(screenDimension.y - screenDimension.w),
+					1.0f
+				)
+			);
+
+	glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "modelMatrix"), 1, false, (GLfloat*)quadMatrix.array);
+	glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "viewMatrix"), 1, false, (GLfloat*)viewMatrix.array);
+	glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "projMatrix"), 1, false, (GLfloat*)projMatrix.array);
+	glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "textureMatrix"), 1, false, (GLfloat*)textureMatrix.array);
+
+	texture->Bind(0);
+
+	mesh->Draw();
+
+	shader->Unbind();
 }
 
 void MenuRPass::DrawButtons()
 {
+	MenuManager* menuManager = &MenuManager::instance();
 	Menu* menu = menuManager->GetCurrentMenu();
 	for (Button* btn : *(menu->GetButtons())) {
-		DrawButton(btn);
+		DrawUIObject((UIObject*)btn);
 	}
 }
 

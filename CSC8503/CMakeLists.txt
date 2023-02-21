@@ -145,6 +145,8 @@ source_group("Enemy Files" FILES ${Enemy_Files})
 set(Menu_Files 
     "MenuManager.h"
     "MenuManager.cpp"
+    "UIObject.h"
+    "UIObject.cpp"
     "Menu.h"
     "Menu.cpp"
     "Button.h"

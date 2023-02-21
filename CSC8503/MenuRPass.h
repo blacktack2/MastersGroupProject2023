@@ -1,19 +1,18 @@
 /**
  * @author Yifei Hu
+ * @author Felix Chiu
  * @date   February 2023
  */
 #pragma once
 #include "OGLOverlayRenderPass.h"
 
-#include "MenuManager.h"
 #include "GameWorld.h"
-#include "Button.h"
+#include "UIObject.h"
 
 
 namespace NCL::Rendering {
 	class OGLShader;
 	class OGLTexture;
-	class OGLFrameBuffer;
 }
 
 using namespace NCL::Rendering;
@@ -27,7 +26,7 @@ namespace NCL::CSC8503 {
 		virtual void Render() override;
 		
 		void DrawMenu();
-		void DrawButton(Button* btn);
+		void DrawUIObject(UIObject* obj);
 		void DrawButtons();
 
 
@@ -37,36 +36,11 @@ namespace NCL::CSC8503 {
 	private:
 		void SelectTexture(int n);
 
-		MenuManager* menuManager;
-
 		GameWorld& gameWorld;
 		OGLMesh* quad;
 		OGLShader* lineShader;
-		OGLShader* menuShader;
-		OGLTexture* menuTexture;
-		OGLTexture* diffuseOutTex;
-
-		OGLFrameBuffer* frameBuffer;
-
-		GLuint viewProjMatrixUniform;
-
-		OGLShader* textShader;
-
-		std::vector<Vector3> debugLineData;
-
-		std::vector<Vector3> debugTextPos;
-		std::vector<Vector4> debugTextColours;
-		std::vector<Vector2> debugTextUVs;
-
-		GLuint lineVAO;
-		GLuint lineVertVBO;
-		size_t lineCount;
-
-		GLuint textVAO;
-		GLuint textVertVBO;
-		GLuint textColourVBO;
-		GLuint textTexVBO;
-		size_t textCount;
+		OGLShader* defaultShader;
+		OGLTexture* defaultTexture;
 
 		//btn
 		OGLShader* btnShader;
