@@ -6,6 +6,7 @@
 #include "OGLOverlayRenderPass.h"
 
 #include "GameWorld.h"
+#include "Button.h"
 
 namespace NCL::Rendering {
 	class OGLShader;
@@ -31,14 +32,8 @@ namespace NCL::CSC8503 {
 
 		GameWorld& gameWorld;
 		OGLMesh* quad;
-		OGLShader* lineShader;
 		OGLShader* pauseShader;
 		OGLTexture* pauseTexture;
-		OGLTexture* diffuseOutTex;
-
-		OGLFrameBuffer* frameBuffer;
-
-		GLuint viewProjMatrixUniform;
 
 		OGLShader* textShader;
 
@@ -58,5 +53,8 @@ namespace NCL::CSC8503 {
 		GLuint textTexVBO;
 		size_t textCount;
 
+		//Button
+		Button* pBtn;
+		Vector2 position;
 	};
 }
