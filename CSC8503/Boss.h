@@ -40,7 +40,7 @@ namespace NCL
 
             void Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt);
 
-            BossBullet* releaseBossBullet(Vector3 v, Vector3 s);
+            BossBullet* releaseBossBullet(Vector3 v, Vector3 s, Vector3 p = Vector3{ 99999,99999,99999 });
 
             bool RandomWalk();
 
@@ -56,14 +56,16 @@ namespace NCL
 
             bool SeekHeal(bool& hasHeal);
 
-            bool InkSea();
+            bool InkRain(PlayerObject* player);
 
             bool BulletsStorm();
-
+                
             Health* GetHealth()
             {
                 return &health;
             }
+
+    
 
             std::vector<BossBullet*> GetBossBulletsReleasedByBoss()
             {
@@ -75,11 +77,6 @@ namespace NCL
                 bombsReleased.clear();
             }
 
-            bool isUsingInkSea()
-            {
-                return usingInkSea;
-            }
-
         protected:
 
             // Housekeepings:
@@ -89,7 +86,7 @@ namespace NCL
             std::vector<BossBullet*> bombsReleased;
 
             // Boss' attributes:
-            Health health = Health(100);
+            Health health = Health(10);
 
             //game state
             GameStateManager* gameStateManager = &GameStateManager::instance();
@@ -110,8 +107,11 @@ namespace NCL
             float bulletsStormFrequencyTimer = 9999.9f;
             float bulletsStormAngle = 0.0f;
 
-            float inkSeaTimer = 0.0f;
-            bool usingInkSea = false;
+            float inkRainTimer = 0.0f;
+            bool rainIsInitialised = false;
+            int currentRainBomb = 0;
+            std::vector<BossBullet*> rain;
+            std::vector<Vector3> rainBombPositions;
         };
 
         class BossBehaviorTree
@@ -258,19 +258,19 @@ namespace NCL
                 SelectorNode* chooseDefensiveRemoteCombat = new SelectorNode();
                 defensiveRemoteCombat->addChild(chooseDefensiveRemoteCombat);
 
-                SequenceNode* inkSea = new SequenceNode();
-                chooseDefensiveRemoteCombat->addChild(inkSea);
+                SequenceNode* inkRain = new SequenceNode();
+                chooseDefensiveRemoteCombat->addChild(inkRain);
 
-                RandomBivalentSelectorNode* possibilityToUseInkSea = new RandomBivalentSelectorNode(30);
-                inkSea->addChild(possibilityToUseInkSea);
+                RandomBivalentSelectorNode* possibilityToUseInkRain = new RandomBivalentSelectorNode(30);
+                inkRain->addChild(possibilityToUseInkRain);
 
-                UseInkSeaNode* useInkSea = new UseInkSeaNode();
-                inkSea->addChild(useInkSea);
+                UseInkRainNode* useInkRain = new UseInkRainNode();
+                inkRain->addChild(useInkRain);
 
                 SequenceNode* bulletsStorm = new SequenceNode();
                 chooseDefensiveRemoteCombat->addChild(bulletsStorm);
 
-                // if not using ink sea, then the boss must be using bullets storm, so we don't need any randomness here.
+                // if not using ink rain, then the boss must be using bullets storm, so we don't need any randomness here.
 
                 UseBulletsStormNode* useBulletsStorm = new UseBulletsStormNode();
                 bulletsStorm->addChild(useBulletsStorm);
@@ -302,7 +302,7 @@ namespace NCL
                 JumpTo,
                 JumpAway,
                 SeekHeal,
-                InkSea,
+                InkRain,
                 BulletsStorm
             };
 
@@ -367,9 +367,9 @@ namespace NCL
                             bossAction = RandomWalk;
                         }
                         break;
-                    case InkSea:
-                        //std::cout << "Boss perfroms Ink Sea.\n";
-                        finish = boss->InkSea();
+                    case InkRain:
+                        //std::cout << "Boss perfroms Ink Rain.\n";
+                        finish = boss->InkRain(player);
                         break;
                     case BulletsStorm:
                         //std::cout << "Boss perfroms Bullets Storm.\n";
@@ -610,12 +610,12 @@ namespace NCL
                 }
             };
 
-            class UseInkSeaNode : public Node
+            class UseInkRainNode : public Node
             {
             public:
                 virtual bool execute(BehaviorLock* lock)
                 {
-                    lock->SetBossAction(InkSea);
+                    lock->SetBossAction(InkRain);
                     return true;
                 }
             };

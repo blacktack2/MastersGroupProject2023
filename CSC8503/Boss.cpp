@@ -75,12 +75,18 @@ void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
     }
 }
 
-BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s)
+BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p)
 {
     BossBullet* ink = new BossBullet(*(BossBullet*)AssetLibrary::GetPrefab("bossBullet"));
     ink->SetLifespan(5.0f);
+    Vector3 position = this->GetTransform().GetGlobalPosition();
+    if (p != Vector3{ 99999,99999,99999 })
+    {
+        position = p;
+    }
     ink->GetTransform()
-        .SetPosition(this->GetTransform().GetGlobalPosition());
+        .SetPosition(position);
+    ink->Resize(s);
     ink->GetPhysicsObject()->SetInverseMass(1.0f);
     ink->GetPhysicsObject()->SetGravWeight(0);
     ink->GetPhysicsObject()->SetDampingWeight(0);
@@ -282,7 +288,9 @@ bool Boss::JumpAway(PlayerObject* player)
 
 bool Boss::SeekHeal(bool& hasHeal)
 {
-    float speed = 35.0f;
+    // TODO
+
+                /*float speed = 35.0f;
     std::vector<HealingKit*> healingKits = gameGrid->GetHealingKits();
     if (healingKits.size() == 0)
     {
@@ -300,20 +308,62 @@ bool Boss::SeekHeal(bool& hasHeal)
         }
     }
     Chase(speed, closest->GetTransform().GetGlobalPosition(), gameGrid, deltaTime);
-    return true;
+                return true;*/
+
+    hasHeal = false;
+    return false;
 }
 
-bool Boss::InkSea()
+bool Boss::InkRain(PlayerObject* player)
 {
-    float inkSeaDuration = 5.0f;
-    inkSeaTimer += deltaTime;
-    if (inkSeaTimer > inkSeaDuration)
+    float rainPeriod = 0.1f;
+    int rainRange = 30;
+    int numOfBomb = 30;
+    float bombSpeed = 100.0f;
+    Vector3 bombScale{ 0.5,0.5,0.5 };
+    Vector3 startingPosition = this->GetTransform().GetGlobalPosition();
+    if (!rainIsInitialised)
     {
-        inkSeaTimer = 0.0f;
-        usingInkSea = false;
+        rain = std::vector<BossBullet*>(numOfBomb);
+        for (int n = 0; n < numOfBomb; n++)
+        {
+            float xDot = std::rand() % rainRange + 1;
+            float xDotDot = -(std::rand() % rainRange + 1);
+            float yDot = std::rand() % rainRange + 1;
+            float zDot = std::rand() % rainRange + 1;
+            float zDotDot = -(std::rand() % rainRange + 1);
+            float dx = xDot + xDotDot;
+            float dy = yDot;
+            float dz = zDot + zDotDot;
+            Vector3 bombPostion{ startingPosition.x + dx, startingPosition.y + dy, startingPosition.z + dz };
+            rainBombPositions.push_back(bombPostion);   // we NEED this extra container to store the positions, otherwise it will cause memory violation!
+            BossBullet* b = releaseBossBullet({ 0,0,0 }, bombScale, bombPostion);
+            b->SetLifespan(99999.0f);
+            rain[n] = b;
+        }
+        rainIsInitialised = true;
+        return false;
+    }
+    if (currentRainBomb == rain.size())
+    {
+        rainBombPositions.clear();
+        rainIsInitialised = false;
+        inkRainTimer = 0.0f;
+        currentRainBomb = 0;
         return true;
     }
-    usingInkSea = true;
+    inkRainTimer += deltaTime;
+    if (inkRainTimer > rainPeriod)
+    {
+        inkRainTimer = 0.0f;
+        rain[currentRainBomb]->SetLifespan(0.0f);
+        Vector3 bombDirection = (player->GetTransform().GetGlobalPosition() - rainBombPositions[currentRainBomb]).Normalised();
+        Vector3 bombVelocity = bombDirection * bombSpeed;
+        BossBullet* b = releaseBossBullet(bombVelocity, bombScale, rainBombPositions[currentRainBomb]);
+        b->SetLifespan(5.0f);
+        rain[currentRainBomb] = b;
+        currentRainBomb++;
+    }
     return false;
 }
 

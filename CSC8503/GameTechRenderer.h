@@ -40,9 +40,12 @@ namespace NCL::CSC8503 {
 	class RenderObject;
 
 	class GameTechRenderer : public OGLRenderer {
+
 	public:
-		GameTechRenderer(GameWorld& world);
-		~GameTechRenderer();
+		static GameTechRenderer& instance() {
+			static GameTechRenderer INSTANCE;
+			return INSTANCE;
+		}
 
 		MeshGeometry* LoadMesh(const std::string& name);
 		TextureBase*  LoadTexture(const std::string& name);
@@ -130,6 +133,9 @@ namespace NCL::CSC8503 {
 			return ssaoBias;
 		}
 	protected:
+		GameTechRenderer();
+		~GameTechRenderer();
+
 		GameWorld& gameWorld;
 
 		void BuildObjectList();

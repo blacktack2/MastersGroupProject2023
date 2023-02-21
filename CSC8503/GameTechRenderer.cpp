@@ -18,7 +18,7 @@ using namespace CSC8503;
 
 Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(Vector3(0.5f, 0.5f, 0.5f));
 
-GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetWindow()), gameWorld(world) {
+GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()), gameWorld(GameWorld::instance()) {
 	glClearColor(0, 0, 0, 0);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -39,7 +39,7 @@ GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetW
 
 	ssaoPass = new SSAORPass(*this,
 		modelPass->GetDepthOutTex(), modelPass->GetNormalOutTex());
-	//AddMainPass(ssaoPass);
+	AddMainPass(ssaoPass);
 
 	combinePass = new CombineRPass(*this,
 		skyboxPass->GetOutTex(), modelPass->GetDiffuseOutTex(),
