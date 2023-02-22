@@ -123,7 +123,7 @@ void TutorialGame::UpdateGame(float dt) {
 
 	debugViewPoint->BeginFrame();
 	debugViewPoint->MarkTime("Update");
-
+	
 	UpdateKeys();
 	static bool moveSun = false;
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM0)) {
@@ -864,6 +864,7 @@ void TutorialGame::UpdateLevel()
 				pillar->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(pillar);
 			}
+			/*
 			if (object.objectType == ObjectType::FenceX)
 			{
 				Vector3 dimensions{ interval / 4.0f, 0.5f, interval / 5.0f };
@@ -892,6 +893,7 @@ void TutorialGame::UpdateLevel()
 				fenceY->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(fenceY);
 			}
+			*/
 			if (object.objectType == ObjectType::Shelter)
 			{
 				Vector3 dimensions{ interval / 5.0f, 2.0f, interval / 2.0f };
@@ -906,6 +908,7 @@ void TutorialGame::UpdateLevel()
 				shelter->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(shelter);
 			}
+			/*
 			if (object.objectType == ObjectType::Wall)
 			{
 				Vector3 dimensions{ interval / 2.0f, 30.0f, interval / 2.0f };
@@ -920,6 +923,7 @@ void TutorialGame::UpdateLevel()
 				wall->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(wall);
 			}
+			*/
 		}
 	}
 }
