@@ -159,7 +159,7 @@ void ReadBindposes(std::ifstream& file, vector<SubMeshPoses>& bindPoses) {//New!
 	}
 }
 
-MeshGeometry::MeshGeometry(const std::string&filename) {
+MeshGeometry::MeshGeometry(const std::string&filename) {		// Anim
 	primType = GeometryPrimitive::Triangles;
 	std::ifstream file(Assets::MESHDIR + filename);
 

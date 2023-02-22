@@ -178,6 +178,19 @@ namespace NCL {
 
 		static MeshGeometry* GenerateTriangle(MeshGeometry* input);
 
+		// testing animation
+		const int* GetBindPoseIndices() const {
+			return bindPoseIndices.data();
+		}
+		bool GetBindPoseState(int subMesh, SubMeshPoses& pose) const {
+			if (subMesh < 0 || subMesh >= (int)bindPoseStates.size()) {
+				return false;
+			}
+			pose = bindPoseStates[subMesh];
+			return true;
+		}
+
+
 	protected:
 		MeshGeometry();
 		MeshGeometry(const std::string&filename);
