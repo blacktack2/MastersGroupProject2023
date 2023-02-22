@@ -137,8 +137,7 @@ void ModelRPass::Render() {
 				glUniformMatrix4fv(j, frameMatrices.size(), false, (float*)frameMatrices.data());
 				renderObj->GetAnimatedMesh()->Draw(i);
 			}
-
-
+			((OGLShader*)AssetLibrary::GetShader("animation"))->Unbind();
 		}
 
 		// AnimatedRenderObject returns nullptr when GetMesh(), thus all AnimatedRenderObjects will return from the next block.

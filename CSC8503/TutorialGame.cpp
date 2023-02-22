@@ -22,6 +22,7 @@
 
 // testing animation
 #include "AnimatedRenderObject.h"
+#include "./stb/stb_image.h"
 
 //Audio Testing
 
@@ -400,7 +401,9 @@ void TutorialGame::InitaliseAnimationAssets()		// testing animation
 
 		if (filename) {
 			string path = Assets::TEXTUREDIR + *filename;
+			stbi_set_flip_vertically_on_load(true);
 			texID = ((OGLTexture*)renderer->LoadTexture(path))->GetObjectID();
+			stbi_set_flip_vertically_on_load(false);
 			//texID = SOIL_load_OGL_texture(path.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y);
 			SetTextureRepeating(texID, true);
 		}
