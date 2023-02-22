@@ -109,9 +109,6 @@ void MenuRPass::DrawButtons()
 	Menu* menu = menuManager->GetCurrentMenu();
 	for (Button* btn : *(menu->GetButtons())) {
 		DrawUIObject((UIObject*)btn);
-		Vector4 dimension = btn->GetDimension();
-
-		Vector4 screenDimension = menuManager->PixelToScreenSpace((float)renderer.GetWidth(), (float)renderer.GetHeight(), dimension);
 	}
 }
 
