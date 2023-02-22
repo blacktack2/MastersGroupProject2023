@@ -34,8 +34,15 @@ namespace NCL {
 
 			Vector4 GetMenuDimension();
 
+			void AddMenu(string name, Menu* menu);
+
 			Menu* GetCurrentMenu() {
 				return menus[currentMenu];
+			}
+			void SetCurrentMenu(string name) {
+				if (menus[name] != nullptr) {
+					currentMenu = name;
+				}
 			}
 			/**
 			* @brief function class for Converting pixel coordinates to -1 to 1 range for quad
@@ -47,8 +54,6 @@ namespace NCL {
 			Vector4 PixelToScreenSpace(float screenWidth, float screenHeight, Vector4 componentDimension);
 
 		protected:
-			void initQuad();
-			void initMainMenu();
 
 			map<string, Menu*> menus;
 			string currentMenu = "main";

@@ -8,14 +8,14 @@
 #include "MenuManager.h"
 #include "AssetLibrary.h"
 
+#include "PushDownStateChangeManager.h"
+
 using namespace NCL;
 using namespace CSC8503;
 using namespace Maths;
 
 MenuManager::MenuManager() {
 	renderer = &GameTechRenderer::instance();
-	initQuad();
-	initMainMenu();
 }
 
 MenuManager::~MenuManager() {
@@ -41,6 +41,13 @@ Vector4 MenuManager::GetMenuDimension()
 	return menus[currentMenu]->GetDimension();
 }
 
+void MenuManager::AddMenu(string name, Menu* menu)
+{
+	if (!menus[name]) {
+		menus[name] = menu;
+	}
+}
+
 Vector4 MenuManager::PixelToScreenSpace(float screenWidth, float screenHeight, Vector4 componentDimension) {
 	float x = componentDimension.x - componentDimension.z / 2;
 	float y = componentDimension.y - componentDimension.w / 2;
@@ -48,45 +55,6 @@ Vector4 MenuManager::PixelToScreenSpace(float screenWidth, float screenHeight, V
 	return Vector4(x / screenWidth * 2 - 1,- ( y / screenHeight * 2 - 1 ), (x + componentDimension.z) / screenWidth * 2 - 1, - ( (y + componentDimension.w) / screenHeight * 2 - 1 ) );
 }
 
-void MenuManager::initQuad()
-{
-	quad = new OGLMesh();
-	quad->SetVertexPositions({
-		Vector3(-1, 1, -1),
-		Vector3(-1, -1, -1),
-		Vector3(1, -1, -1),
-		Vector3(1, 1, -1),
-		});
-	quad->SetVertexTextureCoords({
-		Vector2(0, 0),
-		Vector2(0, 1),
-		Vector2(1, 1),
-		Vector2(1, 0),
-		});
-	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
-	quad->SetVertexColours({
-		Vector4(1, 1, 1, 1),
-		Vector4(1, 1, 1, 1),
-		Vector4(1, 1, 1, 1),
-		Vector4(1, 1, 1, 1),
-		});
-}
 
-void MenuManager::initMainMenu() {
-	OGLShader* shader = (OGLShader*)renderer->LoadShader("menuVertex.vert", "menuFragment.frag");
-	TextureBase* mainMenuBg = renderer->LoadTexture("defaultMain.jpg");
-	AssetLibrary::AddTexture("mainMenuBg", mainMenuBg);
-	menus["main"] = new Menu(Vector2(renderer->GetWidth() / 2, renderer->GetHeight() / 2), Vector2(renderer->GetWidth()/2, renderer->GetHeight()/2));
-	menus["main"]->SetRenderObject(new RenderObject(nullptr, quad, mainMenuBg, shader));
-	
-	TextureBase* quitBtn = renderer->LoadTexture("button3.jpg");
-	float scale = 0.2f;
-	Button* btn = new Button(1000, 600, 790 * scale, 180 * scale);
-	btn->SetRenderObject(new RenderObject(nullptr, quad, quitBtn, shader));
-	menus["main"]->AddButton(btn);
 
-	btn->OnClickCallback = [&]() {
-		std::cout << "quit btn clicked" << std::endl;
-	};
-}
 
