@@ -124,6 +124,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 void TutorialGame::UpdateGame(float dt) {
 	GameState gameState = gameStateManager->GetGameState();
 	menuManager->Update(dt);
+	keyMap.Update();
 
 	debugViewPoint->BeginFrame();
 	debugViewPoint->MarkTime("Update");

@@ -21,8 +21,6 @@ MenuRPass::MenuRPass(OGLRenderer& renderer, GameWorld& gameWorld) :
 	defaultTexture->Bind();
 	glUniform1i(glGetUniformLocation(defaultShader->GetProgramID(), "diffuseTex"), 0);
 	defaultTexture->Unbind();
-
-	//LoadButton();
 }
 
 MenuRPass::~MenuRPass() {
@@ -111,6 +109,9 @@ void MenuRPass::DrawButtons()
 	Menu* menu = menuManager->GetCurrentMenu();
 	for (Button* btn : *(menu->GetButtons())) {
 		DrawUIObject((UIObject*)btn);
+		Vector4 dimension = btn->GetDimension();
+
+		Vector4 screenDimension = menuManager->PixelToScreenSpace((float)renderer.GetWidth(), (float)renderer.GetHeight(), dimension);
 	}
 }
 

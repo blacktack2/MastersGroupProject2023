@@ -3,7 +3,6 @@
  * @date   February 2023
  */
 #include "Button.h"
-
 #include "Debug.h"
 
 using namespace NCL;
@@ -11,7 +10,7 @@ using namespace CSC8503;
 using namespace Maths;
 
 
-Button::Button(float PosX, float PosY, float Width, float Height) {
+Button::Button(float PosX, float PosY, float Width, float Height): keyMap(paintHell::InputKeyMap::instance()) {
     m_bPressed = false;
     m_fPosX = PosX;
     m_fPosY = PosY;
@@ -28,7 +27,14 @@ void Button::Update(float dt)
 {
     UIObject::Update(dt);
     isMouseHover = false;
-
+    if (keyMap.HasMouse()) {
+        Vector2 mousePos = keyMap.GetMousePosition();
+        CheckMousePosition(mousePos);
+        if (isMouseHover && keyMap.GetButton(InputType::MouseLeftClick)) {
+            this->OnClickCallback();
+        }
+    }
+    
 }
 
 void Button::Render()
@@ -47,16 +53,16 @@ void Button::Draw(Vector4 colour) {
 
 Button* Button::CheckMousePosition(Vector2 mousePos)
 {
-    if (mousePos.x < (m_fPosX - m_fWidth/2)) {
+    if (mousePos.x < (m_fPosX - m_fWidth)) {
         return nullptr;
     }
-    if (mousePos.x > (m_fPosX + m_fWidth/2)) {
+    if (mousePos.x > (m_fPosX + m_fWidth)) {
         return nullptr;
     }
-    if (mousePos.y < (m_fPosY - m_fHeight/2)) {
+    if (mousePos.y < (m_fPosY - m_fHeight)) {
         return nullptr;
     }
-    if (mousePos.y > (m_fPosY + m_fHeight /2)) {
+    if (mousePos.y > (m_fPosY + m_fHeight)) {
         return nullptr;
     }
     isMouseHover = true;
@@ -70,7 +76,7 @@ Vector4 Button::GetDimension()
             m_fPosX,
             m_fPosY,
             m_fWidth+2,
-            m_fHeight+2
+            m_fHeight
         );
     }
     return Vector4(

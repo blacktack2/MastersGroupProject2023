@@ -32,19 +32,8 @@ void Menu::Draw(OGLShader* menuShader, OGLTexture* menuTexture, OGLMesh* quad)
 
 void Menu::Update(float dt) {
 	UIObject::Update(dt);
-	Vector2 mousePos;
-	bool hasMouse = false;
-	if (Window::GetMouse()) {
-		mousePos = Window::GetMouse()->GetAbsolutePosition();
-		hasMouse = true;
-	}
 	for (Button* btn : buttons) {
 		btn->Update(dt);
-		if (hasMouse) {
-			if (btn->CheckMousePosition(mousePos)) {
-				return;
-			}	
-		}
 	}
 }
 

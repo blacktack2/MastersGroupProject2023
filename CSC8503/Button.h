@@ -12,6 +12,8 @@
 
 #include "Debug.h"
 #include "UIObject.h"
+#include "InputKeyMap.h"
+#include <functional>
 
 namespace NCL::Rendering {
 	class OGLShader;
@@ -42,13 +44,8 @@ namespace NCL::CSC8503 {
 
         Vector4 GetDimension();
 
-        virtual void OnClickBegin() {
-            if (OnClickBeginCallback) OnClickBeginCallback();
-        }
-        //void OnClickBegin();
-
-        virtual void OnClickEnd() {
-            if (OnClickEndCallback) OnClickEndCallback();
+        virtual void OnClick() {
+            if (OnClickCallback) OnClickCallback();
         }
 
         float m_fPosX;
@@ -62,10 +59,11 @@ namespace NCL::CSC8503 {
 
         bool isMouseHover;
 
-        overlap_func OnClickBeginCallback = nullptr;
-        overlap_func OnClickEndCallback = nullptr;
+        overlap_func OnClickCallback = nullptr;
     private:
         UCHAR r, g, b;
+
+        paintHell::InputKeyMap& keyMap;
 
     };
 }

@@ -11,6 +11,11 @@ enum InputType :unsigned int {
 	Action1 = (1u << 5),
 	Action2 = (1u << 6),
 	FreeLook = (1u << 7),
+	
+	
+	MouseLeftClick = (1u << 12),
+	MouseRightClick = (1u << 13),
+
 	All = 256
 }; 
 
@@ -36,8 +41,18 @@ namespace paintHell {
 			return state & key;
 		}
 
+		Vector2 GetMousePosition() {
+			return mousePosition;
+		}
+		bool HasMouse() {
+			return Window::GetMouse();
+		}
+
 		void Update() {
 			buttonstates = InputType::Empty;
+			movementAxis = Vector2(0);
+			cameraAxis = Vector2(0);
+
 			if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W))
 			{
 				buttonstates |= InputType::Foward;
@@ -58,25 +73,45 @@ namespace paintHell {
 			{
 				buttonstates |= InputType::Jump;
 			}
-			if (Window::GetMouse()->ButtonDown(MouseButtons::LEFT))
-			{
-				buttonstates |= InputType::Action1;
-			}
-			if (Window::GetMouse()->ButtonPressed(MouseButtons::RIGHT))
-			{
-				buttonstates |= InputType::Action2;
-			}
 			if (Window::GetKeyboard()->KeyDown(KeyboardKeys::C))
 			{
 				buttonstates |= InputType::FreeLook;
 			}
+			if (Window::GetMouse()) {
+				if (Window::GetMouse()->ButtonDown(MouseButtons::LEFT))
+				{
+					buttonstates |= InputType::Action1;
+				}
+				if (Window::GetMouse()->ButtonPressed(MouseButtons::RIGHT))
+				{
+					buttonstates |= InputType::Action2;
+				}
+
+				if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
+				{
+					buttonstates |= InputType::MouseLeftClick;
+				}
+				if (Window::GetMouse()->ButtonPressed(MouseButtons::RIGHT))
+				{
+					buttonstates |= InputType::MouseRightClick;
+				}
+				mousePosition = Window::GetMouse()->GetAbsolutePosition();
+			}
 		}
+
 	private:
-		InputKeyMap(){}
+		InputKeyMap(){
+			buttonstates = InputType::Empty;
+			movementAxis = Vector2(0);
+			cameraAxis = Vector2(0);
+			mousePosition = Vector2(0);
+		}
 		~InputKeyMap(){}
 		unsigned int buttonstates;
 
-		
+		Vector2 movementAxis;
+		Vector2 cameraAxis;
+		Vector2 mousePosition;
 
 	};
 }

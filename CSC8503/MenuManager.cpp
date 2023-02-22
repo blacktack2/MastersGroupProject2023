@@ -84,5 +84,9 @@ void MenuManager::initMainMenu() {
 	Button* btn = new Button(500, 100, 790 * scale, 180 * scale);
 	btn->SetRenderObject(new RenderObject(nullptr, quad, quitBtn, shader));
 	menus["start"]->AddButton(btn);
+
+	btn->OnClickCallback = [&]() {
+		std::cout << "quit btn clicked" << std::endl;
+	};
 }
 
