@@ -63,13 +63,12 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()), gameWo
 	menuPass = new MenuRPass(*this, gameWorld);
 	AddOverlayPass(menuPass, "Menu");
 
-	//pausePass = new PauseRPass(*this, gameWorld);
-	//AddOverlayPass(pausePass, "Pause");
 
 	debugPass = new DebugRPass(*this, gameWorld);
 	AddOverlayPass(debugPass, "Debug");
 
 	UpdatePipeline();
+
 }
 
 GameTechRenderer::~GameTechRenderer() {
@@ -120,4 +119,9 @@ ShaderBase* GameTechRenderer::LoadShader(const std::string& vertex, const std::s
 }
 
 void GameTechRenderer::Update(float dt) {
+	/*if (dt)
+		menuPass->Update(dt);*/
+	/*for (Billboard* billboard : blood) {
+		billboard->update(player->position);
+	}*/
 }

@@ -159,8 +159,7 @@ namespace NCL {
 			float wallTimer = 0.0f;
 
 			//menu
-			bool showMenu = false;
-			bool showMouse = false;
+			bool isclicked = false;
 		};
 	}
 }

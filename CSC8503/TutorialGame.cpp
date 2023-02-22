@@ -480,6 +480,12 @@ void TutorialGame::UpdateKeys() {
 				Window::GetWindow()->ShowOSPointer(false);
 				Window::GetWindow()->LockMouseToWindow(true);
 			}
+
+			if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT)) {
+				if (mousex > 525 && mousex < 735 && mousey > 365 && mousey < 415) {
+					gameState = GameState::Start;
+				}
+			}
 			break;
 		case GameState::Win:
 			Debug::Print("You Win!", Vector2(5, 80), Vector4(0, 1, 0, 1));

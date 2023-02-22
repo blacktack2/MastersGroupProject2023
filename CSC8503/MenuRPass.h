@@ -34,8 +34,6 @@ namespace NCL::CSC8503 {
 		void RenderButton();
 
 	private:
-		void SelectTexture(int n);
-
 		GameWorld& gameWorld;
 		OGLMesh* quad;
 		OGLShader* lineShader;

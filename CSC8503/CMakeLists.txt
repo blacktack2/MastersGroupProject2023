@@ -73,6 +73,8 @@ set(Render_Files
     "PauseRPass.cpp"
          "Button.h"
          "Button.cpp"
+    "Billboard.h"
+    "Billboard.cpp"
 )
 
 if(USE_VULKAN)

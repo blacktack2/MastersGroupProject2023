@@ -1,14 +1,11 @@
 /**
- * @author Yifei Hu
- * @date   February 2023
- */
+  * @author Yifei Hu
+  * @date   February 2023
+  */
 #pragma once
 #include "OGLOverlayRenderPass.h"
 
-#include <cstdio>
-#include <cstdlib>
-#include <cmath>
-#include <ctime>
+#include "GameWorld.h"
 
 #include "Debug.h"
 #include "UIObject.h"
@@ -55,13 +52,11 @@ namespace NCL::CSC8503 {
         float g_fWidth;
         float g_fHeight;
 
-        bool m_bPressed;
 
         bool isMouseHover;
 
         overlap_func OnClickCallback = nullptr;
     private:
-        UCHAR r, g, b;
 
         paintHell::InputKeyMap& keyMap;
 
