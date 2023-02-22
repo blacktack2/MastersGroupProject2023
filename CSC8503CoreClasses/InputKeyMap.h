@@ -112,6 +112,5 @@ namespace paintHell {
 		Vector2 movementAxis;
 		Vector2 cameraAxis;
 		Vector2 mousePosition;
-
 	};
 }

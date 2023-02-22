@@ -29,7 +29,9 @@ MenuRPass::~MenuRPass() {
 };
 
 void MenuRPass::Render() {
-	
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_DEPTH_TEST);
+
 	DrawMenu();
 	DrawButtons();
 
@@ -68,8 +70,6 @@ void MenuRPass::DrawUIObject(UIObject* obj)
 
 	Vector4 dimension = obj->GetDimension();
 
-	Vector4 screenDimension = menuManager->PixelToScreenSpace((float)renderer.GetWidth(), (float)renderer.GetHeight(), dimension);
-
 	mesh->UploadToGPU();
 
 	shader->Bind();
@@ -78,15 +78,15 @@ void MenuRPass::DrawUIObject(UIObject* obj)
 	quadMatrix = quadMatrix *
 		Matrix4::Translation(
 			Vector3(
-					(screenDimension.x + screenDimension.z) / 2,
-					(screenDimension.y + screenDimension.w) / 2,
+					(dimension.x),
+					(dimension.y),
 					0.0f
 				) 
 			) * 
 		Matrix4::Scale(
 			Vector3(
-					(screenDimension.z - screenDimension.x),
-					(screenDimension.y - screenDimension.w),
+					(dimension.z),
+					(dimension.w),
 					1.0f
 				)
 			);
@@ -110,32 +110,6 @@ void MenuRPass::DrawButtons()
 	for (Button* btn : *(menu->GetButtons())) {
 		DrawUIObject((UIObject*)btn);
 	}
-}
-
-void MenuRPass::LoadButton() {
-	btn = new OGLMesh();
-	btn->SetVertexPositions({
-		Vector3(-0.1, 0.1, 0),
-		Vector3(-0.1, -0.1, 0),
-		Vector3(0.1, -0.1, 0),
-		Vector3(0.1, 0.1, 0),
-		});
-	btn->SetVertexTextureCoords({
-		Vector2(0, 1),
-		Vector2(0, 0),
-		Vector2(1, 0),
-		Vector2(1, 1),
-		});
-	btn->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
-	btn->SetVertexColours({
-		Vector4(1, 1, 1, 1),
-		Vector4(0, 1, 1, 1),
-		Vector4(1, 0, 1, 1),
-		Vector4(1, 1, 0, 1),
-		});
-	btn->UploadToGPU();
-
-	btnShader = new OGLShader("btnVertex.vert", "btnFragment.frag");
 }
 
 
