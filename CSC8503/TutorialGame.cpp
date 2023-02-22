@@ -381,7 +381,9 @@ void TutorialGame::UpdateKeys() {
 		if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT)) {
 			if(mousex > 805 && mousex < 1120 &&	mousey > 300 && mousey < 365 ) {
 				//std::cout << "(" << mousex << ", " << mousey << ")" << std::endl;
+				isclicked = true;
 				renderer->EnableOverlayPass("Menu", false);
+				//renderer->Update(isclicked);
 				renderer->UpdatePipeline();
 
 				gameState = GameState::OnGoing;
@@ -452,20 +454,26 @@ void TutorialGame::UpdateKeys() {
 			renderer->UpdatePipeline();
 
 			if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT)) {
-				if (mousex > 510 && mousex < 740 && mousey > 440 && mousey < 480) {
+				if (mousex > 525 && mousex < 735 && mousey > 470 && mousey < 520) {
 					//std::cout << "(" << mousex << ", " << mousey << ")" << std::endl;
-					gameState = GameState::Start;
+					gameState = GameState::Quit;
 				}
 			}
 
 			if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT) 
 				|| Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE)) {
-				if (mousex > 510 && mousex < 740 && mousey > 220 && mousey < 260) {
+				if (mousex > 525 && mousex < 735 && mousey > 160 && mousey < 210) {
 					gameState = GameState::OnGoing;
 					Window::GetWindow()->ShowOSPointer(false);
 					Window::GetWindow()->LockMouseToWindow(true);
 					renderer->EnableOverlayPass("Pause", false);
 					renderer->UpdatePipeline();
+				}
+			}
+
+			if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT)) {
+				if (mousex > 525 && mousex < 735 && mousey > 365 && mousey < 415) {
+					gameState = GameState::Start;
 				}
 			}
 			break;

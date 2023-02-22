@@ -23,6 +23,7 @@ namespace NCL::CSC8503 {
 		~MenuRPass();
 
 		virtual void Render() override;
+		void Update(bool isclicked);
 
 	private:
 		GameWorld& gameWorld;

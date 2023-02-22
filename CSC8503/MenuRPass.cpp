@@ -83,7 +83,37 @@ void MenuRPass::Render() {
 		pBtn->SetPosition(Vector2(0.53f, -(i * 0.3f)));
 		pBtn->Render();
 	}
+	Update(1);
 	
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
+}
+
+void MenuRPass::Update(bool isclicked) {
+	float mousex = Window::GetMouse()->GetAbsolutePosition().x;
+	float mousey = Window::GetMouse()->GetAbsolutePosition().y;
+
+	if (mousex > 805 && mousex < 1120 && mousey > 300 && mousey < 365) {
+		pBtn->SetFilename("buttonslide1.jpg");
+		pBtn->SetTexture();
+		pBtn->SetScale(Vector2(0.27f, 0.11f));
+		pBtn->SetPosition(Vector2(0.53f, 0));
+		pBtn->Render();
+	}
+
+	if (mousex > 805 && mousex < 1120 && mousey > 407 && mousey < 472) {
+		pBtn->SetFilename("buttonslide2.jpg");
+		pBtn->SetTexture();
+		pBtn->SetScale(Vector2(0.27f, 0.11f));
+		pBtn->SetPosition(Vector2(0.53f, -0.3f));
+		pBtn->Render();
+	}
+
+	if (mousex > 805 && mousex < 1120 && mousey > 515 && mousey < 580) {
+		pBtn->SetFilename("buttonslide3.jpg");
+		pBtn->SetTexture();
+		pBtn->SetScale(Vector2(0.27f, 0.11f));
+		pBtn->SetPosition(Vector2(0.53f, -0.6f));
+		pBtn->Render();
+	}
 }

@@ -103,6 +103,9 @@
     <ClCompile Include="E:\study\CSC8508\CSC8503\Button.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="E:\study\CSC8508\CSC8503\Billboard.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="E:\study\CSC8508\CSC8503\Bullet.h">
@@ -202,6 +205,9 @@
       <Filter>Rendering</Filter>
     </ClInclude>
     <ClInclude Include="E:\study\CSC8508\CSC8503\Button.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\study\CSC8508\CSC8503\Billboard.h">
       <Filter>Rendering</Filter>
     </ClInclude>
     <ClInclude Include="E:\study\CSC8508\CSC8503\CSC8503\CMakeFiles\CSC8503.dir\Debug\cmake_pch.hxx">

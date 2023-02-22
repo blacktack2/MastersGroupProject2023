@@ -23,35 +23,13 @@ namespace NCL::CSC8503 {
 		~PauseRPass();
 
 		virtual void Render() override;
+
+		void Update();
 	private:
-		void SetDebugStringBufferSizes(size_t newVertCount);
-		void SetDebugLineBufferSizes(size_t newVertCount);
-
-		void RenderLines();
-		void RenderText();
-
 		GameWorld& gameWorld;
 		OGLMesh* quad;
 		OGLShader* pauseShader;
 		OGLTexture* pauseTexture;
-
-		OGLShader* textShader;
-
-		std::vector<Vector3> debugLineData;
-
-		std::vector<Vector3> debugTextPos;
-		std::vector<Vector4> debugTextColours;
-		std::vector<Vector2> debugTextUVs;
-
-		GLuint lineVAO;
-		GLuint lineVertVBO;
-		size_t lineCount;
-
-		GLuint textVAO;
-		GLuint textVertVBO;
-		GLuint textColourVBO;
-		GLuint textTexVBO;
-		size_t textCount;
 
 		//Button
 		Button* pBtn;

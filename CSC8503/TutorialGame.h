@@ -149,8 +149,7 @@ namespace NCL {
 			BossBehaviorTree* testingBossBehaviorTree = nullptr;   /////////
 
 			//menu
-			bool showMenu = false;
-			bool showMouse = false;
+			bool isclicked = false;
 		};
 	}
 }

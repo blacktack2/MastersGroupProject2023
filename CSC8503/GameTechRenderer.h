@@ -24,6 +24,7 @@
 #include "DebugRPass.h"
 #include "MenuRPass.h"
 #include "PauseRPass.h"
+#include "Billboard.h"
 
 #include "GameWorld.h"
 
@@ -118,6 +119,7 @@ namespace NCL::CSC8503 {
 		void SortObjectList();
 
 		vector<const RenderObject*> activeObjects;
+		//vector<const Billboard*> blood;
 
 		SkyboxRPass* skyboxPass;
 		ModelRPass* modelPass;

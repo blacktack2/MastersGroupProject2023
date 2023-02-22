@@ -76,6 +76,46 @@ void PauseRPass::Render() {
 		pBtn->Render();
 	}
 
+	Update();
+
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
+}
+
+void PauseRPass::Update() {
+	float mousex = Window::GetMouse()->GetAbsolutePosition().x;
+	float mousey = Window::GetMouse()->GetAbsolutePosition().y;
+
+	if (mousex > 525 && mousex < 735 && mousey > 160 && mousey < 210) {
+		pBtn->SetFilename("buttonslide4.jpg");
+		pBtn->SetTexture();
+		pBtn->SetScale(Vector2(0.18f, 0.09f));;
+		pBtn->SetPosition(Vector2(0, 0.45f));
+		pBtn->Render();
+	}
+
+	if (mousex > 525 && mousex < 735 && mousey > 265 && mousey < 315) {
+		pBtn->SetFilename("buttonslide5.jpg");
+		pBtn->SetTexture();
+		pBtn->SetScale(Vector2(0.18f, 0.09f));
+		pBtn->SetPosition(Vector2(0, 0.15f));
+		pBtn->Render();
+	}
+
+
+	if (mousex > 525 && mousex < 735 && mousey > 365 && mousey < 415) {
+		pBtn->SetFilename("buttonslide6.jpg");
+		pBtn->SetTexture();
+		pBtn->SetScale(Vector2(0.18f, 0.09f));
+		pBtn->SetPosition(Vector2(0, -0.15f));
+		pBtn->Render();
+	}
+
+	if (mousex > 525 && mousex < 735 && mousey > 470 && mousey < 520) {
+		pBtn->SetFilename("buttonslide7.jpg");
+		pBtn->SetTexture();
+		pBtn->SetScale(Vector2(0.18f, 0.09f));
+		pBtn->SetPosition(Vector2(0, -0.45f));
+		pBtn->Render();
+	}
 }
