@@ -69,10 +69,6 @@ set(Render_Files
     "ModelRPass.cpp"
     "MenuRPass.h"
     "MenuRPass.cpp"
-    "PauseRPass.h"
-    "PauseRPass.cpp"
-         "Button.h"
-         "Button.cpp"
     "Billboard.h"
     "Billboard.cpp"
 )
