@@ -19,22 +19,21 @@ Button::Button(float PosX, float PosY, float Width, float Height): keyMap(paintH
 Button::~Button() {
 }
 
-void Button::Update(float dt)
-{
+void Button::Update(float dt){
     UIObject::Update(dt);
     isMouseHover = false;
     if (keyMap.HasMouse()) {
         Vector2 mousePos = keyMap.GetMousePosition();
         CheckMousePosition(mousePos);
+
         if (isMouseHover && keyMap.GetButton(InputType::MouseLeftClick)) {
             this->OnClickCallback();
         }
     }
     
-}
+} 
 
-void Button::Render()
-{
+void Button::Render(){
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
@@ -65,13 +64,12 @@ Button* Button::CheckMousePosition(Vector2 mousePos)
     return this;
 }
 
-Vector4 Button::GetDimension()
-{
+Vector4 Button::GetDimension(){
     if (isMouseHover) {
         return Vector4(
             m_fPosX,
             m_fPosY,
-            m_fWidth+2,
+            m_fWidth + 5,
             m_fHeight
         );
     }

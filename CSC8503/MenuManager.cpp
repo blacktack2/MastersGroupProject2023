@@ -16,6 +16,7 @@ MenuManager::MenuManager() {
 	renderer = &GameTechRenderer::instance();
 	initQuad();
 	initMainMenu();
+	//initPauseMenu();
 }
 
 MenuManager::~MenuManager() {
@@ -25,9 +26,9 @@ MenuManager::~MenuManager() {
 	menus.clear();
 }
 
-void MenuManager::Draw(OGLShader* menuShader, OGLTexture* menuTexture, OGLMesh* quad)
-{
-	menus[currentMenu]->Draw(menuShader, menuTexture, quad);
+void MenuManager::Draw(OGLShader* menuShader, OGLTexture* menuTexture, OGLMesh* quad){
+	menus["main"]->Draw(menuShader, menuTexture, quad);
+	//menus["pause"]->Draw(menuShader, menuTexture, quad);
 }
 
 void MenuManager::Update(float dt) {
@@ -36,8 +37,7 @@ void MenuManager::Update(float dt) {
 	}
 }
 
-Vector4 MenuManager::GetMenuDimension()
-{
+Vector4 MenuManager::GetMenuDimension(){
 	return menus[currentMenu]->GetDimension();
 }
 
@@ -48,8 +48,7 @@ Vector4 MenuManager::PixelToScreenSpace(float screenWidth, float screenHeight, V
 	return Vector4(x / screenWidth * 2 - 1,- ( y / screenHeight * 2 - 1 ), (x + componentDimension.z) / screenWidth * 2 - 1, - ( (y + componentDimension.w) / screenHeight * 2 - 1 ) );
 }
 
-void MenuManager::initQuad()
-{
+void MenuManager::initQuad(){
 	quad = new OGLMesh();
 	quad->SetVertexPositions({
 		Vector3(-1, 1, -1),
@@ -76,17 +75,51 @@ void MenuManager::initMainMenu() {
 	OGLShader* shader = (OGLShader*)renderer->LoadShader("menuVertex.vert", "menuFragment.frag");
 	TextureBase* mainMenuBg = renderer->LoadTexture("defaultMain.jpg");
 	AssetLibrary::AddTexture("mainMenuBg", mainMenuBg);
-	menus["main"] = new Menu(Vector2(renderer->GetWidth() / 2, renderer->GetHeight() / 2), Vector2(renderer->GetWidth()/2, renderer->GetHeight()/2));
-	menus["main"]->SetRenderObject(new RenderObject(nullptr, quad, mainMenuBg, shader));
+	currentMenu = "main";
+	menus[currentMenu] = new Menu(Vector2(renderer->GetWidth() / 2, renderer->GetHeight() / 2), Vector2(renderer->GetWidth()/2, renderer->GetHeight()/2));
+	menus[currentMenu]->SetRenderObject(new RenderObject(nullptr, quad, mainMenuBg, shader));
 	
-	TextureBase* quitBtn = renderer->LoadTexture("button3.jpg");
-	float scale = 0.2f;
-	Button* btn = new Button(1000, 600, 790 * scale, 180 * scale);
-	btn->SetRenderObject(new RenderObject(nullptr, quad, quitBtn, shader));
-	menus["main"]->AddButton(btn);
+	int num = 3;
+	for (int i = 0; i < num; i++) {
+		char path[50] = { 0 };
+		sprintf_s(path, "button%d.jpg", i + 1);
 
-	btn->OnClickCallback = [&]() {
-		std::cout << "quit btn clicked" << std::endl;
-	};
+		float scale = 0.2f;
+		Button* btn = new Button(975, 350 + i * 100, 790 * scale, 180 * scale);
+		TextureBase* quitBtn = renderer->LoadTexture(path);
+
+		btn->SetRenderObject(new RenderObject(nullptr, quad, quitBtn, shader));
+		menus[currentMenu]->AddButton(btn);
+
+		btn->OnClickCallback = [&]() {
+			std::cout << "quit btn clicked" << std::endl;
+		};
+	}
+}
+
+void MenuManager::initPauseMenu() {
+	OGLShader* shader = (OGLShader*)renderer->LoadShader("menuVertex.vert", "menuFragment.frag");
+	TextureBase* pauseMenuBg = renderer->LoadTexture("defaultpause.jpg");
+	AssetLibrary::AddTexture("pauseMenuBg", pauseMenuBg);
+	currentMenu = "pause";
+	menus[currentMenu] = new Menu(Vector2(renderer->GetWidth() / 2, renderer->GetHeight() / 2), Vector2(renderer->GetWidth() / 7, renderer->GetHeight() / 3));
+	menus[currentMenu]->SetRenderObject(new RenderObject(nullptr, quad, pauseMenuBg, shader));
+
+	int num = 4;
+	for (int i = 0; i < num; i++) {
+		char path[50] = { 0 };
+		sprintf_s(path, "button%d.jpg", i + 4);
+
+		float scale = 0.2f;
+		Button* btn = new Button(630, 210 + i * 90, 480 * scale, 120 * scale);
+		TextureBase* quitBtn = renderer->LoadTexture(path);
+
+		btn->SetRenderObject(new RenderObject(nullptr, quad, quitBtn, shader));
+		menus[currentMenu]->AddButton(btn);
+
+		btn->OnClickCallback = [&]() {
+			std::cout << "quit btn clicked" << std::endl;
+		};
+	}
 }
 

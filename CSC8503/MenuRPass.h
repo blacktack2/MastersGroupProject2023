@@ -29,14 +29,9 @@ namespace NCL::CSC8503 {
 		void DrawUIObject(UIObject* obj);
 		void DrawButtons();
 
-
-		void LoadButton();
-		void RenderButton();
-
 	private:
 		GameWorld& gameWorld;
 		OGLMesh* quad;
-		OGLShader* lineShader;
 		OGLShader* defaultShader;
 		OGLTexture* defaultTexture;
 

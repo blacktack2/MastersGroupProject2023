@@ -23,8 +23,7 @@ Menu::~Menu() {
 	buttons.clear();
 }
 
-void Menu::Draw(OGLShader* menuShader, OGLTexture* menuTexture, OGLMesh* quad)
-{
+void Menu::Draw(OGLShader* menuShader, OGLTexture* menuTexture, OGLMesh* quad){
 	for (Button* btn:buttons) {
 		btn->Draw(Debug::GREEN);
 	}
@@ -37,8 +36,7 @@ void Menu::Update(float dt) {
 	}
 }
 
-Vector4 Menu::GetDimension()
-{
+Vector4 Menu::GetDimension(){
 	return Vector4(screenPos, dimension);
 }
 

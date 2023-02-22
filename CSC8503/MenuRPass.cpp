@@ -14,7 +14,7 @@ using namespace NCL::CSC8503;
 MenuRPass::MenuRPass(OGLRenderer& renderer, GameWorld& gameWorld) :
 	OGLOverlayRenderPass(renderer), gameWorld(gameWorld) {
 
-	defaultTexture = (OGLTexture*)OGLTexture::RGBATextureFromFilename("defaultstart.jpg");
+	defaultTexture = (OGLTexture*)OGLTexture::RGBATextureFromFilename("defaultmain.jpg");
 
 	defaultShader = new OGLShader("menuVertex.vert", "menuFragment.frag");
 
@@ -111,31 +111,3 @@ void MenuRPass::DrawButtons()
 		DrawUIObject((UIObject*)btn);
 	}
 }
-
-void MenuRPass::LoadButton() {
-	btn = new OGLMesh();
-	btn->SetVertexPositions({
-		Vector3(-0.1, 0.1, 0),
-		Vector3(-0.1, -0.1, 0),
-		Vector3(0.1, -0.1, 0),
-		Vector3(0.1, 0.1, 0),
-		});
-	btn->SetVertexTextureCoords({
-		Vector2(0, 1),
-		Vector2(0, 0),
-		Vector2(1, 0),
-		Vector2(1, 1),
-		});
-	btn->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
-	btn->SetVertexColours({
-		Vector4(1, 1, 1, 1),
-		Vector4(0, 1, 1, 1),
-		Vector4(1, 0, 1, 1),
-		Vector4(1, 1, 0, 1),
-		});
-	btn->UploadToGPU();
-
-	btnShader = new OGLShader("btnVertex.vert", "btnFragment.frag");
-}
-
-

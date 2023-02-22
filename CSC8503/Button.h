@@ -52,7 +52,6 @@ namespace NCL::CSC8503 {
         float g_fWidth;
         float g_fHeight;
 
-
         bool isMouseHover;
 
         overlap_func OnClickCallback = nullptr;

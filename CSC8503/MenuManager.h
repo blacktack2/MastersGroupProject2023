@@ -49,9 +49,11 @@ namespace NCL {
 		protected:
 			void initQuad();
 			void initMainMenu();
+			void initPauseMenu();
+			void initOptionMenu();
 
 			map<string, Menu*> menus;
-			string currentMenu = "main";
+			string currentMenu;
 			GameTechRenderer* renderer;
 			MeshGeometry* quad;
 		};
