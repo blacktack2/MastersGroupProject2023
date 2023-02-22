@@ -500,6 +500,16 @@ bool NCL::CollisionDetection::SeparatingPlane(const Vector3& delta, const Vector
 	return t > v;
 }
 
+Vector3 OBBSupport(const Transform& worldTransform, Vector3 worldDir) {
+	Vector3 localDir = worldTransform.GetGlobalOrientation().Conjugate() * worldDir;
+	Vector3 vertex;
+	vertex.x = localDir.x < 0 ? -0.5f : 0.5f;
+	vertex.y = localDir.y < 0 ? -0.5f : 0.5f;
+	vertex.z = localDir.z < 0 ? -0.5f : 0.5f;
+
+	return worldTransform.GetGlobalMatrix() * vertex;
+}
+
 bool NCL::CollisionDetection::AABBOBBIntersection(const AABBVolume& volumeA, const Transform& worldTransformA,
 	const OBBVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
 	Vector3 posA = worldTransformA.GetGlobalPosition();
@@ -571,7 +581,7 @@ bool NCL::CollisionDetection::AABBCapsuleIntersection(const AABBVolume& volumeA,
 
 	Vector3 capsulePos = worldTransformB.GetGlobalPosition();
 	Vector3 capsuleDir = worldTransformB.GetGlobalOrientation() * Vector3(0, 1, 0);
-	float capsuleRadius = volumeB.GetRadius() * 0.5f;
+	float capsuleRadius = volumeB.GetRadius();
 	float capsuleHalfHeight = volumeB.GetHalfHeight();
 
 	float capsuleOffset = capsuleHalfHeight - capsuleRadius;

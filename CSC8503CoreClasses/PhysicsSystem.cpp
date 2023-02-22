@@ -152,7 +152,15 @@ void PhysicsSystem::UpdateCollisionList() {
 			info.isEntered = false;
 		}
 
+		if (info.framesLeft > 0 && !info.isEntered) {
+			info.a->OnCollisionStay(info.b);
+			info.b->OnCollisionStay(info.a);
+			CollisionDetection::ObjectIntersection(info.a, info.b, info);
+		}
+
 		info.framesLeft--;
+
+		
 
 		if (info.framesLeft < 0 || info.a->IsMarkedDelete() || info.b->IsMarkedDelete()) {
 			info.a->OnCollisionEnd(info.b);

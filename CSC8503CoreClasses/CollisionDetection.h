@@ -32,17 +32,18 @@ namespace NCL {
 			int framesLeft;
 			bool isEntered;
 
-			ContactPoint point;
+			std::vector<ContactPoint> point;
 
 			CollisionInfo() {
 
 			}
 
 			void AddContactPoint(const Vector3& normal, float p, const Vector3& localA = Vector3(), const Vector3& localB = Vector3()) {
-				point.localA		= localA;
-				point.localB		= localB;
-				point.normal		= normal;
-				point.penetration	= p;
+				point.emplace_back().localA = localA;
+				point.emplace_back().localB		= localB;
+				point.emplace_back().normal		= normal;
+				point.emplace_back().penetration	= p;
+				
 			}
 
 			//Advanced collision detection / resolution
@@ -89,6 +90,7 @@ namespace NCL {
 		static bool	AABBTest(const Vector3& posA, const Vector3& posB, const Vector3& halfSizeA, const Vector3& halfSizeB);
 
 		static bool SeparatingPlane(const Vector3& delta, const Vector3& plane, const Vector3* axes0, const Vector3& halfSize0, const Vector3* axes1, const Vector3& halfSize1);
+		static Vector3 OBBSupport(const Transform& worldTransform, Vector3 worldDir);
 
 		static bool AABBIntersection(	const AABBVolume& volumeA, const Transform& worldTransformA,
 										const AABBVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo);
