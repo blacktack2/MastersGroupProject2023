@@ -76,7 +76,7 @@ void MenuManager::initMainMenu() {
 	TextureBase* mainMenuBg = renderer->LoadTexture("defaultMain.jpg");
 	AssetLibrary::AddTexture("mainMenuBg", mainMenuBg);
 	currentMenu = "main";
-	menus[currentMenu] = new Menu(Vector2(renderer->GetWidth() / 2, renderer->GetHeight() / 2), Vector2(renderer->GetWidth()/2, renderer->GetHeight()/2));
+	menus[currentMenu] = new Menu(Vector2(0,0), Vector2(1,1));
 	menus[currentMenu]->SetRenderObject(new RenderObject(nullptr, quad, mainMenuBg, shader));
 	
 	int num = 3;
@@ -84,8 +84,7 @@ void MenuManager::initMainMenu() {
 		char path[50] = { 0 };
 		sprintf_s(path, "button%d.jpg", i + 1);
 
-		float scale = 0.2f;
-		Button* btn = new Button(975, 350 + i * 100, 790 * scale, 180 * scale);
+		Button* btn = new Button(0.7, i * -0.3, 0.2, 0.1);
 		TextureBase* quitBtn = renderer->LoadTexture(path);
 
 		btn->SetRenderObject(new RenderObject(nullptr, quad, quitBtn, shader));
@@ -102,7 +101,7 @@ void MenuManager::initPauseMenu() {
 	TextureBase* pauseMenuBg = renderer->LoadTexture("defaultpause.jpg");
 	AssetLibrary::AddTexture("pauseMenuBg", pauseMenuBg);
 	currentMenu = "pause";
-	menus[currentMenu] = new Menu(Vector2(renderer->GetWidth() / 2, renderer->GetHeight() / 2), Vector2(renderer->GetWidth() / 7, renderer->GetHeight() / 3));
+	menus[currentMenu] = new Menu(Vector2(0, 0), Vector2(0.7, 0.3));
 	menus[currentMenu]->SetRenderObject(new RenderObject(nullptr, quad, pauseMenuBg, shader));
 
 	int num = 4;
@@ -110,8 +109,7 @@ void MenuManager::initPauseMenu() {
 		char path[50] = { 0 };
 		sprintf_s(path, "button%d.jpg", i + 4);
 
-		float scale = 0.2f;
-		Button* btn = new Button(630, 210 + i * 90, 480 * scale, 120 * scale);
+		Button* btn = new Button(0.7, i * -0.2, 0.2, 0.1);
 		TextureBase* quitBtn = renderer->LoadTexture(path);
 
 		btn->SetRenderObject(new RenderObject(nullptr, quad, quitBtn, shader));
