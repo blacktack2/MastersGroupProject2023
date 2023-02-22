@@ -16,7 +16,7 @@ MenuManager::MenuManager() {
 	renderer = &GameTechRenderer::instance();
 	initQuad();
 	initMainMenu();
-	//initPauseMenu();
+	initPauseMenu();
 }
 
 MenuManager::~MenuManager() {
@@ -24,11 +24,6 @@ MenuManager::~MenuManager() {
 		delete (menu.second);
 	}
 	menus.clear();
-}
-
-void MenuManager::Draw(OGLShader* menuShader, OGLTexture* menuTexture, OGLMesh* quad){
-	menus["main"]->Draw(menuShader, menuTexture, quad);
-	//menus["pause"]->Draw(menuShader, menuTexture, quad);
 }
 
 void MenuManager::Update(float dt) {
@@ -84,7 +79,7 @@ void MenuManager::initMainMenu() {
 		char path[50] = { 0 };
 		sprintf_s(path, "button%d.jpg", i + 1);
 
-		Button* btn = new Button(0.7, i * -0.3, 0.2, 0.1);
+		Button* btn = new Button(0.7f, i * -0.3f, 0.2f, 0.1f);
 		TextureBase* quitBtn = renderer->LoadTexture(path);
 
 		btn->SetRenderObject(new RenderObject(nullptr, quad, quitBtn, shader));
@@ -101,7 +96,7 @@ void MenuManager::initPauseMenu() {
 	TextureBase* pauseMenuBg = renderer->LoadTexture("defaultpause.jpg");
 	AssetLibrary::AddTexture("pauseMenuBg", pauseMenuBg);
 	currentMenu = "pause";
-	menus[currentMenu] = new Menu(Vector2(0, 0), Vector2(0.7, 0.3));
+	menus[currentMenu] = new Menu(Vector2(0, 0), Vector2(0.3, 0.7));
 	menus[currentMenu]->SetRenderObject(new RenderObject(nullptr, quad, pauseMenuBg, shader));
 
 	int num = 4;
@@ -109,7 +104,7 @@ void MenuManager::initPauseMenu() {
 		char path[50] = { 0 };
 		sprintf_s(path, "button%d.jpg", i + 4);
 
-		Button* btn = new Button(0.7, i * -0.2, 0.2, 0.1);
+		Button* btn = new Button(0, 0.45f + i * -0.3f, 0.2f, 0.1f);
 		TextureBase* quitBtn = renderer->LoadTexture(path);
 
 		btn->SetRenderObject(new RenderObject(nullptr, quad, quitBtn, shader));

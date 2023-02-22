@@ -68,11 +68,11 @@ Button* Button::CheckMousePosition(Vector2 mousePos)
 
 Vector4 Button::GetDimension(){
     if (isMouseHover) {
-        float movement = 1.01f;
+        float movement = 0.003f;
 
         return Vector4(
-            m_fPosX * movement,
-            m_fPosY * movement,
+            m_fPosX + movement,
+            m_fPosY + -movement,
             m_fWidth,
             m_fHeight
         );
