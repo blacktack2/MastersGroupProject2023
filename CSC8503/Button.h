@@ -11,6 +11,7 @@
 #include "UIObject.h"
 #include "InputKeyMap.h"
 #include <functional>
+#include "GameTechRenderer.h"
 
 namespace NCL::Rendering {
 	class OGLShader;
@@ -58,6 +59,6 @@ namespace NCL::CSC8503 {
     private:
 
         paintHell::InputKeyMap& keyMap;
-
+        GameTechRenderer& renderer = GameTechRenderer::instance();
     };
 }

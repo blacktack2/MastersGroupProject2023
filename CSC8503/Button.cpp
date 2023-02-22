@@ -48,6 +48,8 @@ void Button::Draw(Vector4 colour) {
 
 Button* Button::CheckMousePosition(Vector2 mousePos)
 {
+    mousePos.x = mousePos.x * 2 / (float)renderer.GetWidth() - 1;
+    mousePos.y = -(mousePos.y * 2 / (float)renderer.GetHeight() - 1);
     if (mousePos.x < (m_fPosX - m_fWidth)) {
         return nullptr;
     }
@@ -66,10 +68,12 @@ Button* Button::CheckMousePosition(Vector2 mousePos)
 
 Vector4 Button::GetDimension(){
     if (isMouseHover) {
+        float movement = 1.01f;
+
         return Vector4(
-            m_fPosX,
-            m_fPosY,
-            m_fWidth + 5,
+            m_fPosX * movement,
+            m_fPosY * movement,
+            m_fWidth,
             m_fHeight
         );
     }
