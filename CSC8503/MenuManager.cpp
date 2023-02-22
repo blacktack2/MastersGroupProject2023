@@ -74,16 +74,16 @@ void MenuManager::initQuad()
 
 void MenuManager::initMainMenu() {
 	OGLShader* shader = (OGLShader*)renderer->LoadShader("menuVertex.vert", "menuFragment.frag");
-	TextureBase* startMenuBg = renderer->LoadTexture("defaultstart.jpg");
-	AssetLibrary::AddTexture("startMenuBg", startMenuBg);
-	menus["start"] = new Menu(Vector2(renderer->GetWidth() / 2, renderer->GetHeight() / 2), Vector2(renderer->GetWidth()/2, renderer->GetHeight()/2));
-	menus["start"]->SetRenderObject(new RenderObject(nullptr, quad, startMenuBg, shader));
+	TextureBase* mainMenuBg = renderer->LoadTexture("defaultMain.jpg");
+	AssetLibrary::AddTexture("mainMenuBg", mainMenuBg);
+	menus["main"] = new Menu(Vector2(renderer->GetWidth() / 2, renderer->GetHeight() / 2), Vector2(renderer->GetWidth()/2, renderer->GetHeight()/2));
+	menus["main"]->SetRenderObject(new RenderObject(nullptr, quad, mainMenuBg, shader));
 	
 	TextureBase* quitBtn = renderer->LoadTexture("button3.jpg");
-	float scale = 0.1f;
-	Button* btn = new Button(500, 100, 790 * scale, 180 * scale);
+	float scale = 0.2f;
+	Button* btn = new Button(1000, 600, 790 * scale, 180 * scale);
 	btn->SetRenderObject(new RenderObject(nullptr, quad, quitBtn, shader));
-	menus["start"]->AddButton(btn);
+	menus["main"]->AddButton(btn);
 
 	btn->OnClickCallback = [&]() {
 		std::cout << "quit btn clicked" << std::endl;

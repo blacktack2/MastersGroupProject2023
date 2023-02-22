@@ -24,7 +24,6 @@
 #include "PresentRPass.h"
 #include "DebugRPass.h"
 #include "MenuRPass.h"
-#include "PauseRPass.h"
 #include "PaintingRPass.h"
 
 #include "GameWorld.h"
@@ -77,9 +76,6 @@ namespace NCL::CSC8503 {
 		}
 		inline MenuRPass& GetMenuRPass() {
 			return *menuPass;
-		}
-		inline PauseRPass& GetPauseRPass() {
-			return *pausePass;
 		}
 
 		virtual void Update(float dt) override;
@@ -154,7 +150,6 @@ namespace NCL::CSC8503 {
 		PresentRPass* presentPass;
 		DebugRPass* debugPass;
 		MenuRPass* menuPass;
-		PauseRPass* pausePass;
 		PaintingRPass* paintingRPass;
 
 		float gamma = 2.2f;

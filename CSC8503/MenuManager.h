@@ -51,7 +51,7 @@ namespace NCL {
 			void initMainMenu();
 
 			map<string, Menu*> menus;
-			string currentMenu = "start";
+			string currentMenu = "main";
 			GameTechRenderer* renderer;
 			MeshGeometry* quad;
 		};

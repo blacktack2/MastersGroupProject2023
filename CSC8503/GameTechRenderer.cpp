@@ -81,7 +81,6 @@ GameTechRenderer::~GameTechRenderer() {
 	delete hdrPass;
 	delete debugPass;
 	delete menuPass;
-	delete pausePass;
 }
 
 void GameTechRenderer::BuildObjectList() {
