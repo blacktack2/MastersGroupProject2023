@@ -4,7 +4,6 @@
  * 
  * @author Rich Davidson
  * @author Stuart Lewis
- * @author Yifei Hu
  * @date   February 2023
  */
 #include "GameTechRenderer.h"
@@ -63,7 +62,6 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()), gameWo
 	menuPass = new MenuRPass(*this, gameWorld);
 	AddOverlayPass(menuPass, "Menu");
 
-
 	debugPass = new DebugRPass(*this, gameWorld);
 	AddOverlayPass(debugPass, "Debug");
 
@@ -118,9 +116,4 @@ ShaderBase* GameTechRenderer::LoadShader(const std::string& vertex, const std::s
 }
 
 void GameTechRenderer::Update(float dt) {
-	/*if (dt)
-		menuPass->Update(dt);*/
-	/*for (Billboard* billboard : blood) {
-		billboard->update(player->position);
-	}*/
 }

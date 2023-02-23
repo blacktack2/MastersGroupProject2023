@@ -23,11 +23,6 @@ MenuManager::~MenuManager() {
 	menus.clear();
 }
 
-void MenuManager::Draw(OGLShader* menuShader, OGLTexture* menuTexture, OGLMesh* quad)
-{
-	menus[currentMenu]->Draw(menuShader, menuTexture, quad);
-}
-
 void MenuManager::Update(float dt) {
 	for (auto menu : menus) {
 		if (!menu.second)
@@ -36,8 +31,7 @@ void MenuManager::Update(float dt) {
 	}
 }
 
-Vector4 MenuManager::GetMenuDimension()
-{
+Vector4 MenuManager::GetMenuDimension(){
 	return menus[currentMenu]->GetDimension();
 }
 

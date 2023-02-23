@@ -247,8 +247,6 @@ void TutorialGame::UpdateGame(float dt) {
 
 	SoundSystem::GetSoundSystem()->Update(dt);
 
-	//renderer->EnablePostPass("Menu", false);
-
 	if (gameState == GameState::OnGoing) {
 		UpdateStateOngoing(dt);
 	}
@@ -420,8 +418,37 @@ void TutorialGame::InitCamera() {
 }
 
 void TutorialGame::UpdateKeys() {
+	float mousex = Window::GetMouse()->GetAbsolutePosition().x;
+	float mousey = Window::GetMouse()->GetAbsolutePosition().y;
+
 	GameState gameState = gameStateManager->GetGameState();
 	switch (gameState) {
+		case GameState::Main: {
+			Window::GetWindow()->ShowOSPointer(true);
+			Window::GetWindow()->LockMouseToWindow(false);
+
+			renderer->EnableOverlayPass("Menu", true);
+			renderer->UpdatePipeline();
+
+			if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT)) {
+				if (mousex > 805 && mousex < 1120 && mousey > 300 && mousey < 365) {
+					std::cout << "(" << mousex << ", " << mousey << ")" << std::endl;
+					renderer->EnableOverlayPass("Menu", false);
+					renderer->UpdatePipeline();
+
+					gameState = GameState::OnGoing;
+				}
+			}
+
+			if (Window::GetMouse()->ButtonPressed(MouseButtons::RIGHT)) {
+				gameState = GameState::Option;
+			}
+
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Q)) {
+				gameState = GameState::Quit;
+			}
+			break;
+		}
 		case GameState::OnGoing: default:
 			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
 				gameStateManager->SetGameState(GameState::Paused);
@@ -466,6 +493,8 @@ void TutorialGame::UpdateKeys() {
 		case GameState::Paused:
 			Window::GetWindow()->ShowOSPointer(true);
 			Window::GetWindow()->LockMouseToWindow(false);
+
+			renderer->EnableOverlayPass("Menu", true);
 
 			Debug::Print("Press [Escape] to resume", Vector2(5, 80), Vector4(1, 1, 1, 1));
 			Debug::Print("Press [q] to quit", Vector2(5, 90), Vector4(1, 1, 1, 1));

@@ -29,7 +29,7 @@ namespace NCL::CSC8503 {
     public:
         typedef std::function<void()> overlap_func;
 
-        Button(float PosX, float PosY, float Width, float Height);
+        Button(float PosX, float PosY, float Width, float Height, Vector4 colour);
         ~Button();
 
         void Update(float dt) override;
@@ -40,7 +40,10 @@ namespace NCL::CSC8503 {
 
         Button* CheckMousePosition(Vector2 mousePos);
 
+        void SetColour(Vector4 c) { btncolour = c; };
+
         Vector4 GetDimension();
+        Vector4 GetColour() { return Vector4(0, 1, 0, 1); };
 
         virtual void OnClick() {
             if (OnClickCallback) OnClickCallback();
@@ -52,7 +55,7 @@ namespace NCL::CSC8503 {
         float m_fHeight;
         float g_fWidth;
         float g_fHeight;
-
+        Vector4 btncolour;
 
         bool isMouseHover;
 

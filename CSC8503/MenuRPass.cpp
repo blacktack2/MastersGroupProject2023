@@ -14,7 +14,7 @@ using namespace NCL::CSC8503;
 MenuRPass::MenuRPass(OGLRenderer& renderer, GameWorld& gameWorld) :
 	OGLOverlayRenderPass(renderer), gameWorld(gameWorld) {
 
-	defaultTexture = (OGLTexture*)OGLTexture::RGBATextureFromFilename("defaultstart.jpg");
+	defaultTexture = (OGLTexture*)OGLTexture::RGBATextureFromFilename("defaultmain.jpg");
 
 	defaultShader = new OGLShader("menuVertex.vert", "menuFragment.frag");
 
@@ -39,8 +39,7 @@ void MenuRPass::Render() {
 	glEnable(GL_DEPTH_TEST);
 }
 
-void MenuRPass::DrawMenu()
-{
+void MenuRPass::DrawMenu(){
 	MenuManager* menuManager = &MenuManager::instance();
 	Menu* menu = menuManager->GetCurrentMenu();
 	if (menu) {
@@ -48,8 +47,7 @@ void MenuRPass::DrawMenu()
 	}
 }
 
-void MenuRPass::DrawUIObject(UIObject* obj)
-{
+void MenuRPass::DrawUIObject(UIObject* obj){
 	MenuManager* menuManager = &MenuManager::instance();
 	const RenderObject* renderObject = obj->GetRenderObject();
 	if (!renderObject) {
@@ -104,8 +102,7 @@ void MenuRPass::DrawUIObject(UIObject* obj)
 	shader->Unbind();
 }
 
-void MenuRPass::DrawButtons()
-{
+void MenuRPass::DrawButtons(){
 	MenuManager* menuManager = &MenuManager::instance();
 	Menu* menu = menuManager->GetCurrentMenu();
 	if (!menu)
@@ -116,5 +113,6 @@ void MenuRPass::DrawButtons()
 		DrawUIObject((UIObject*)btn);
 	}
 }
+
 
 
