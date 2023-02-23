@@ -83,7 +83,7 @@ void ModelRPass::Render() {
 		{
 			AnimatedRenderObject* renderObj = (AnimatedRenderObject*)renderObject;
 
-			renderObj->SetFrameTime(renderObj->GetFrameTime() - gameWorld.GetDeltaTime());
+			renderObj->SetFrameTime(renderObj->GetFrameTime() - gameWorld.GetDeltaTime() * renderObj->GetAnimSpeed());
 			while (renderObj->GetFrameTime() < 0.0f) {
 				renderObj->SetCurrentFrame((renderObj->GetCurrentFrame() + 1) % renderObj->GetAnimation()->GetFrameCount());
 				renderObj->SetNextFrame((renderObj->GetCurrentFrame() + 1) % renderObj->GetAnimation()->GetFrameCount());
@@ -116,20 +116,21 @@ void ModelRPass::Render() {
 				how many matrices, are used for each submesh i.
 				*/
 
-				SubMeshPoses pose;
-				renderObj->GetAnimatedMesh()->GetBindPoseState(i, pose);
+				//SubMeshPoses pose;
+				//renderObj->GetAnimatedMesh()->GetBindPoseState(i, pose);
 
 				vector<Matrix4> frameMatrices;
-				for (unsigned int i = 0; i < pose.count; ++i) {
+				for (unsigned int i = 0; i < renderObj->GetAnimatedMesh()->GetJointCount(); ++i) {			// i < pose.count;
 					/*
 					We can now grab the correct matrix for a given pose.
 					Each matrix is relative to a given joint on the original mesh.
 					We can perform the lookup for this by grabbing a set of indices
 					from the mesh.
 					*/
-					int jointID = bindPoseIndices[pose.start + i];
+					//int jointID = bindPoseIndices[pose.start + i];
 
-					Matrix4 mat = frameData[jointID] * invBindPose[pose.start + i];
+					//Matrix4 mat = frameData[jointID] * invBindPose[pose.start + i];
+					Matrix4 mat = frameData[i] * invBindPose[i];
 
 					frameMatrices.emplace_back(mat);
 				}

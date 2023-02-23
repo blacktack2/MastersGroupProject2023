@@ -21,6 +21,12 @@ namespace NCL::CSC8503 {
 			return anim;
 		}
 
+		void SetAnimation(MeshAnimation* ani)
+		{
+			currentFrame = 0;
+			anim = ani;
+		}
+
 		MeshGeometry* GetAnimatedMesh() const
 		{
 			return animMesh;
@@ -56,6 +62,16 @@ namespace NCL::CSC8503 {
 			return matTextures;
 		}
 
+		float GetAnimSpeed()
+		{
+			return animSpeed;
+		}
+
+		void SetAnimSpeed(float s)
+		{
+			animSpeed = s;
+		}
+
 	protected:
 		MeshMaterial* material = nullptr;
 		MeshAnimation* anim = nullptr;
@@ -64,5 +80,6 @@ namespace NCL::CSC8503 {
 		int		currentFrame;
 		int		nextFrame;
 		float	frameTime;
+		float	animSpeed = 1.0f;
 	};
 }

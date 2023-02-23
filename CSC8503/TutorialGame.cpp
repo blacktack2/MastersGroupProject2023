@@ -335,7 +335,7 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 void TutorialGame::InitialiseAssets() {
 	cubeMesh    = renderer->LoadMesh("cube.msh");
 	sphereMesh  = renderer->LoadMesh("sphere.msh");
-	charMesh    = renderer->LoadMesh("shelterMsh.msh");
+	charMesh    = renderer->LoadMesh("Goat.msh");
 	enemyMesh   = renderer->LoadMesh("goose.msh");
 	npcMesh     = renderer->LoadMesh("Keeper.msh");
 	bonusMesh   = renderer->LoadMesh("Sphere.msh");
@@ -387,9 +387,17 @@ void TutorialGame::InitaliseAnimationAssets()		// testing animation
 	AssetLibrary::AddShader("animation", animationShader);
 	renderer->GetModelPass().AddModelShader(animationShader);
 
-	maleguardMaterial = new MeshMaterial("Male_Guard.mat");
-	maleguardMesh = renderer->LoadMesh("Male_Guard.msh");
-	maleguardAnim = new MeshAnimation("Idle1.anm");
+	maleguardMaterial = new MeshMaterial("Boss/Boss.mat");
+	maleguardMesh = renderer->LoadMesh("Boss/Boss.msh");
+	maleguardAnim = new MeshAnimation("Boss/walk.anm");
+	AssetLibrary::AddAnimation("WalkForward", maleguardAnim);
+	AssetLibrary::AddAnimation("Jump", new MeshAnimation("Boss/Jump.anm"));
+	AssetLibrary::AddAnimation("Attack1", new MeshAnimation("Boss/SillyDancing.anm"));
+	AssetLibrary::AddAnimation("Attack2", new MeshAnimation("Boss/HipHopDancing.anm"));
+	AssetLibrary::AddAnimation("Attack3", new MeshAnimation("Boss/JoyfulJump.anm"));
+	AssetLibrary::AddAnimation("Attack4", new MeshAnimation("Boss/RumbaDancing.anm"));
+	AssetLibrary::AddAnimation("Attack5", new MeshAnimation("Boss/NorthernSoulSpin.anm"));
+	AssetLibrary::AddAnimation("Attack6", new MeshAnimation("Boss/SambaDancing.anm"));
 
 	for (int i = 0; i < maleguardMesh->GetSubMeshCount(); ++i) {
 		const MeshMaterialEntry* matEntry = maleguardMaterial->GetMaterialForLayer(i);
@@ -820,8 +828,8 @@ PlayerObject* TutorialGame::AddPlayerToWorld(const Vector3& position, bool camer
 		.SetScale(Vector3(1, 1, 1))
 		.SetPosition(position);
 
-	//character->SetRenderObject(new RenderObject(&character->GetTransform(), charMesh, healingKitTex, nullptr));
-	character->SetRenderObject(new AnimatedRenderObject(maleguardMaterial, maleguardAnim, maleguardMesh, maleguardMatTextures, &character->GetTransform()));
+	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMesh, healingKitTex, nullptr));
+	//character->SetRenderObject(new AnimatedRenderObject(maleguardMaterial, maleguardAnim, maleguardMesh, maleguardMatTextures, &character->GetTransform()));
 	
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 
@@ -873,9 +881,10 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 		.SetPosition(position)
 		.SetScale(dimensions * 2);
 
-	boss->SetRenderObject(new RenderObject(&boss->GetTransform(), cubeMesh, nullptr, nullptr));
+	//boss->SetRenderObject(new RenderObject(&boss->GetTransform(), cubeMesh, nullptr, nullptr));
+	boss->SetRenderObject(new AnimatedRenderObject(maleguardMaterial, maleguardAnim, maleguardMesh, maleguardMatTextures, &boss->GetTransform()));
 
-	boss->GetRenderObject()->SetColour({ 1,1,0,1 });
+	boss->GetRenderObject()->SetColour({ 1,1,1,1 });
 	boss->SetPhysicsObject(new PhysicsObject(&boss->GetTransform(), boss->GetBoundingVolume()));
 
 	boss->GetPhysicsObject()->SetInverseMass(inverseMass);
