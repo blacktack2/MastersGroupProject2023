@@ -54,7 +54,7 @@ void PaintingRPass::Render() {
 			renderObj->GetMesh()->Draw();
 		}
 
-		//renderObj->ClearPaintCollisions();
+		renderObj->ClearPaintCollisions();
 		
 	});
 
