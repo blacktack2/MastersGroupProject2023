@@ -1,25 +1,27 @@
 /**
- * @file   ScreenPause.cpp
- * @brief  See ScreenPause.h .
+ * @file   ScreenOption.cpp
+ * @brief  See ScreenOption.h .
  *
  * @author Felix Chiu
  * @date   February 2023
  */
 #pragma once
-#include "ScreenPause.h"
+#include "ScreenOption.h"
 #include "AssetLibrary.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
-void ScreenPause::initMenu() {
+void ScreenOption::initMenu() {
+	std::cout << "init Option" << std::endl;
+
 	ShaderBase* shader = (ShaderBase*)AssetLibrary::GetShader("menu");
 
-	TextureBase* texture = renderer.LoadTexture("defaultpause.jpg");
-	AssetLibrary::AddTexture("pauseMenuBg", texture);
+	TextureBase* texture = renderer.LoadTexture("defaultmain.jpg");
+	AssetLibrary::AddTexture("optionMenuBg", texture);
 
 	MeshGeometry* quad = (MeshGeometry*)AssetLibrary::GetMesh("quad");
-	Menu* menu = new Menu(Vector2(0, 0), Vector2(0.3, 0.7));
+	Menu* menu = new Menu(Vector2(0, 0), Vector2(1.0f, 1.0f ));
 	menu->SetRenderObject(new RenderObject(nullptr, quad, texture, shader));
 	menuManager.AddMenu(name, menu);
 
@@ -30,10 +32,10 @@ void ScreenPause::initMenu() {
 		char path[50] = { 0 };
 		sprintf_s(path, "button%d.jpg", i + 4);
 
-		Button* btn = new Button(0, 0.45f + i * -0.3f, 0.16f, 0.08f, Vector4(0, 0, 0, 1));
-		TextureBase* quitBtn = renderer.LoadTexture(path);
+		Button* btn = new Button(0, 0.45f + i * -0.3f, 0.16f, 0.08f);
+		TextureBase* tex = renderer.LoadTexture(path);
 
-		btn->SetRenderObject(new RenderObject(nullptr, quad, quitBtn, shader));
+		btn->SetRenderObject(new RenderObject(nullptr, quad, tex, shader));
 		menu->AddButton(btn);
 		buttons.push_back(btn);
 	}

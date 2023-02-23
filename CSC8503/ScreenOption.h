@@ -1,6 +1,6 @@
 /**
- * @file   ScreenPause.h
- * @brief  A Pushdown automata state for Pausing the game.
+ * @file   ScreenOption.h
+ * @brief  A Pushdown automata state for game options.
  *
  * @author Felix Chiu
  * @date   February 2023
@@ -13,31 +13,31 @@
 using namespace NCL;
 using namespace CSC8503;
 
-class ScreenPause : public PushdownState {
+class ScreenOption : public PushdownState {
 public:
-	ScreenPause() {
+	ScreenOption() {
 		initMenu();
 	}
-	~ScreenPause() {}
+	~ScreenOption() {}
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
 		menuManager.Update(dt);
 		keyMap.Update();
 		renderer.Render();
 		if (menuState == ChangeState::Resume) {
-			renderer.EnableOverlayPass("Debug", true);
+			std::cout << "pop" << std::endl;
 			return PushdownResult::Pop;
 		}
 		if (menuState == ChangeState::Quit) {
-			renderer.EnableOverlayPass("Debug", true);
 			return PushdownResult::Pop;
 		}
+		menuState = ChangeState::OnGoing;
 		return PushdownResult::NoChange;
 	}
 	void OnAwake() override {
 		menuState = ChangeState::None;
 		menuManager.SetCurrentMenu(name);
 		renderer.EnableOverlayPass("Menu", true);
-		renderer.EnableOverlayPass("Debug", false);
+		renderer.EnableRenderScene(false);
 		renderer.UpdatePipeline();
 		Window::GetWindow()->ShowOSPointer(true);
 		Window::GetWindow()->LockMouseToWindow(false);
@@ -59,5 +59,5 @@ private:
 	};
 	ChangeState menuState = ChangeState::None;
 
-	string name = "pause";
+	string name = "option";
 };

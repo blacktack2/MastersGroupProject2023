@@ -79,7 +79,7 @@ namespace paintHell {
 			}
 			if (Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE))
 			{
-				buttonstates |= InputType::FreeLook;
+				buttonstates |= InputType::ESC;
 			}
 			if (Window::GetMouse()) {
 				if (Window::GetMouse()->ButtonDown(MouseButtons::LEFT))

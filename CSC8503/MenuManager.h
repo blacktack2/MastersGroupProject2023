@@ -28,17 +28,22 @@ namespace NCL {
 				return INSTANCE;
 			}
 
-			void Draw(OGLShader* menuShader, OGLTexture* menuTexture, OGLMesh* quad);
-
 			void Update(float dt);
 
 			Vector4 GetMenuDimension();
 
 			void AddMenu(string name, Menu* menu);
 
+			void RemoveMenu(string name);
+
 			Menu* GetCurrentMenu() {
 				return menus[currentMenu];
 			}
+
+			string GetCurrentMenuName() {
+				return currentMenu;
+			}
+
 			void SetCurrentMenu(string name) {
 				if (menus[name] != nullptr) {
 					currentMenu = name;

@@ -37,8 +37,14 @@ Vector4 MenuManager::GetMenuDimension(){
 
 void MenuManager::AddMenu(string name, Menu* menu)
 {
-	if (!menus[name]) {
-		menus[name] = menu;
+	RemoveMenu(name);
+	menus[name] = menu;
+}
+
+void MenuManager::RemoveMenu(string name)
+{
+	if (menus[name]) {
+		delete menus[name];
 	}
 }
 

@@ -10,6 +10,7 @@
 #include "Window.h"
 #include "MenuManager.h"
 #include "ScreenGame.h"
+#include "ScreenOption.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -29,16 +30,20 @@ public:
 			*newState = new ScreenGame();
 			return PushdownResult::Push;
 		}
+		if (menuState == ChangeState::Option) {
+			*newState = new ScreenOption();
+			return PushdownResult::Push;
+		}
 		if (menuState == ChangeState::Quit) {
-			renderer.EnableRenderScene(true);
-			renderer.UpdatePipeline();
 			return PushdownResult::Pop;
 		}
-		menuState = ChangeState::None;
+		menuState = ChangeState::OnGoing;
 		return PushdownResult::NoChange;
 	}
 	void OnAwake() override {
-		menuManager.SetCurrentMenu("main");
+		menuState = ChangeState::None;
+		menuManager.SetCurrentMenu(name);
+		renderer.EnableOverlayPass("Menu", true);
 		renderer.EnableRenderScene(false);
 		renderer.UpdatePipeline();
 		Window::GetWindow()->ShowOSPointer(true);
@@ -59,9 +64,12 @@ private:
 		None,
 		OnGoing,
 		Start,
+		Option,
 		Quit
 	};
 	ChangeState menuState = ChangeState::None;
+
+	string name = "main";
 };
 
 

@@ -26,11 +26,13 @@ public:
 
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
 		keyMap.Update();
+		/*
 		if (keyMap.GetButton(InputType::ESC)) {
 			std::cout << "Pausing\n";
 			*newState = new ScreenPause();
 			return PushdownResult::Push;
 		}
+		*/
 		game->UpdateGame(dt);
 		if (game->IsQuit()) {
 			menuState = ChangeState::Quit;
@@ -46,6 +48,7 @@ public:
 		return PushdownResult::NoChange;
 	}
 	void OnAwake() override {
+		menuState = ChangeState::None;
 		Window::GetWindow()->ShowOSPointer(false);
 		Window::GetWindow()->LockMouseToWindow(true);
 		renderer.EnableRenderScene(true);

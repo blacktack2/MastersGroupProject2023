@@ -14,36 +14,51 @@ using namespace CSC8503;
 
 void ScreenMain::initMenu() {
 	initQuad();
-	ShaderBase* shader = (ShaderBase*)renderer.LoadShader("menuVertex.vert", "menuFragment.frag");
+	ShaderBase* shader = (ShaderBase*)AssetLibrary::GetShader("menu");
+
 	TextureBase* mainMenuBg = renderer.LoadTexture("defaultMain.jpg");
 	AssetLibrary::AddTexture("mainMenuBg", mainMenuBg);
+
 	MeshGeometry* quad = (MeshGeometry*)AssetLibrary::GetMesh("quad");
-	Menu* main = new Menu(Vector2(0,0), Vector2(1,1));
-	main->SetRenderObject(new RenderObject(nullptr, quad, mainMenuBg, shader));
-	menuManager.AddMenu("main",main);
+	Menu* menu = new Menu(Vector2(0,0), Vector2(1,1));
+	menu->SetRenderObject(new RenderObject(nullptr, quad, mainMenuBg, shader));
+	menuManager.AddMenu(name, menu);
 
+	//button 1
 	TextureBase* startTex = renderer.LoadTexture("button1.jpg");
-	Button* startBtn = new Button(0.7f, -0.3f, 0.2f, 0.1f);
+	Button* startBtn = new Button(0.5f, 0.0f, 0.2f, 0.1f);
 	startBtn->SetRenderObject(new RenderObject(nullptr, quad, startTex, shader));
-	main->AddButton(startBtn);
-
+	menu->AddButton(startBtn);
 	startBtn->OnClickCallback = [&]() {
 		std::cout << "Start btn clicked" << std::endl;
 		menuState = ChangeState::Start;
 	};
 
-	TextureBase* quitTex = renderer.LoadTexture("button3.jpg");
-	Button* quitBtn = new Button(0.7f, -0.6f, 0.2f, 0.1f);
-	quitBtn->SetRenderObject(new RenderObject(nullptr, quad, quitTex, shader));
-	main->AddButton(quitBtn);
+	//button 2
+	TextureBase* optionTex = renderer.LoadTexture("button2.jpg");
+	Button* optionBtn = new Button(0.5f, -0.3f, 0.2f, 0.1f);
+	optionBtn->SetRenderObject(new RenderObject(nullptr, quad, optionTex, shader));
+	menu->AddButton(optionBtn);
+	optionBtn->OnClickCallback = [&]() {
+		std::cout << "Option btn clicked" << std::endl;
+		menuState = ChangeState::Option;
+	};
 
+	//button 3
+	TextureBase* quitTex = renderer.LoadTexture("button3.jpg");
+	Button* quitBtn = new Button(0.5f, 2 * -0.3f, 0.2f, 0.1f);
+	quitBtn->SetRenderObject(new RenderObject(nullptr, quad, quitTex, shader));
+	menu->AddButton(quitBtn);
 	quitBtn->OnClickCallback = [&]() {
-		std::cout << "quit btn clicked" << std::endl;
+		std::cout << "Quit btn clicked" << std::endl;
 		menuState = ChangeState::Quit;
 	};
 }
 void ScreenMain::initQuad()
 {
+	ShaderBase* shader = (ShaderBase*)renderer.LoadShader("menuVertex.vert", "menuFragment.frag");
+	AssetLibrary::AddShader("menu", shader);
+
 	OGLMesh* quad = new OGLMesh();
 	quad->SetVertexPositions({
 		Vector3(-1, 1, -1),

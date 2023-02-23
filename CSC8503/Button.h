@@ -29,7 +29,7 @@ namespace NCL::CSC8503 {
     public:
         typedef std::function<void()> overlap_func;
 
-        Button(float PosX, float PosY, float Width, float Height, Vector4 colour);
+        Button(float PosX, float PosY, float Width, float Height, Vector4 colour = Vector4(0.0f, 0.0f, 0.0f, 1.0f));
         ~Button();
 
         void Update(float dt) override;

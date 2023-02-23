@@ -155,6 +155,8 @@ set(Menu_Files
     "ScreenMain.cpp"
     "ScreenGame.cpp"
     "ScreenPause.cpp"
+    "ScreenOption.h"
+    "ScreenOption.cpp"
 
 )
 source_group("Menu Files" FILES ${Menu_Files})
