@@ -60,7 +60,6 @@ SoundSystem::SoundSystem(unsigned int channels) {
 
 SoundSystem::~SoundSystem() {
 	
-	delete mListener;
 	//check if it should be added elsewhere
 	for (vector < SoundSource* >::iterator i = mSources.begin();
 		i != mSources.end(); ++i) {
