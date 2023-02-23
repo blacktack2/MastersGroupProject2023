@@ -18,6 +18,7 @@ using namespace CSC8503;
 class ScreenGame : public PushdownState {
 public:
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
+		keyMap.Update();
 		if (keyMap.GetButton(InputType::ESC)) {
 			std::cout << "Pausing\n";
 			*newState = new ScreenPause();
@@ -33,7 +34,6 @@ public:
 			Window::GetWindow()->LockMouseToWindow(false);
 			renderer.EnableOverlayPass("Menu", true);
 			renderer.UpdatePipeline();
-			delete game;
 			return PushdownResult::Pop;
 		}
 		return PushdownResult::NoChange;
@@ -46,6 +46,11 @@ public:
 		renderer.UpdatePipeline();
 		game = new NetworkedGame();
 	}
+
+	~ScreenGame() {
+		delete game;
+	}
+
 
 	NetworkedGame* game;
 	GameTechRenderer& renderer = GameTechRenderer::instance();

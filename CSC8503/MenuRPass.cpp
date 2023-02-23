@@ -35,7 +35,6 @@ void MenuRPass::Render() {
 	DrawMenu();
 	DrawButtons();
 
-
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 }
@@ -44,7 +43,9 @@ void MenuRPass::DrawMenu()
 {
 	MenuManager* menuManager = &MenuManager::instance();
 	Menu* menu = menuManager->GetCurrentMenu();
-	DrawUIObject((UIObject *) menu);
+	if (menu) {
+		DrawUIObject((UIObject*)menu);
+	}
 }
 
 void MenuRPass::DrawUIObject(UIObject* obj)
@@ -107,7 +108,11 @@ void MenuRPass::DrawButtons()
 {
 	MenuManager* menuManager = &MenuManager::instance();
 	Menu* menu = menuManager->GetCurrentMenu();
+	if (!menu)
+		return;
 	for (Button* btn : *(menu->GetButtons())) {
+		if (!btn)
+			return;
 		DrawUIObject((UIObject*)btn);
 	}
 }

@@ -93,7 +93,7 @@ protected:
 	float pauseReminder = 1;
 };
 
-void TestPushdownAutomata(Window* w) {
+void StartPushdownAutomata(Window* w) {
 	PushdownMachine machine(new ScreenMain());
 	while (w->UpdateWindow()) {
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
@@ -116,12 +116,12 @@ int main() {
 		return -1;
 	}	
 
-	TestPushdownAutomata(w);
+	StartPushdownAutomata(w);
 
+	/*
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
 
-	/*
 	NetworkedGame* g = new NetworkedGame();
 	//g->InitWorld(NCL::CSC8503::TutorialGame::InitMode::AUDIO_TEST);
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!

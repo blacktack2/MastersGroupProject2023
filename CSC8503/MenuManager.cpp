@@ -30,6 +30,8 @@ void MenuManager::Draw(OGLShader* menuShader, OGLTexture* menuTexture, OGLMesh* 
 
 void MenuManager::Update(float dt) {
 	for (auto menu : menus) {
+		if (!menu.second)
+			continue;
 		(menu.second)->Update(dt);
 	}
 }
