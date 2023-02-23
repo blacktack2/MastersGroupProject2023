@@ -7,32 +7,42 @@
  */
 #pragma once
 #include "PushdownState.h"
-#include "PushDownStateChangeManager.h"
+#include "Window.h"
+#include "MenuManager.h"
+
+using namespace NCL;
+using namespace CSC8503;
 
 class ScreenPause : public PushdownState {
+public:
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
-		menuManager.Update(dt);
 		keyMap.Update();
-		renderer.Render();
-		if (stateChangeManager.GetChangeState() == ChangeState::Quit) {
-			renderer.EnableRenderScene(true);
-			renderer.UpdatePipeline();
-			stateChangeManager.SetChangeState();
+		if (keyMap.GetButton(InputType::ESC)) {
 			return PushdownResult::Pop;
 		}
 		return PushdownResult::NoChange;
 	}
 	void OnAwake() override {
-		std::cout << "Welcome!\n";
-		std::cout << "Press space to begin, or escape to quit!\n";
-		menuManager.SetCurrentMenu("pause");
-		renderer.EnableRenderScene(false);
+		std::cout << "Press ESC to unpause game\n";
+		Window::GetWindow()->ShowOSPointer(false);
+		Window::GetWindow()->LockMouseToWindow(true);
+		renderer.EnableRenderScene(true);
+		renderer.EnableOverlayPass("Menu", false);
 		renderer.UpdatePipeline();
-		stateChangeManager.SetChangeState();
 	}
 
-	PushDownStateChangeManager& stateChangeManager = PushDownStateChangeManager::instance();
 	GameTechRenderer& renderer = GameTechRenderer::instance();
 	MenuManager& menuManager = MenuManager::instance();
 	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+
+private:
+	void initMenu();
+
+	enum class ChangeState {
+		None,
+		OnGoing,
+		Start,
+		Quit
+	};
+	ChangeState menuState = ChangeState::None;
 };

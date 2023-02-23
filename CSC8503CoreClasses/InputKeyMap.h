@@ -11,7 +11,7 @@ enum InputType :unsigned int {
 	Action1 = (1u << 5),
 	Action2 = (1u << 6),
 	FreeLook = (1u << 7),
-	
+	ESC = (1u << 8),
 	
 	MouseLeftClick = (1u << 12),
 	MouseRightClick = (1u << 13),
@@ -74,6 +74,10 @@ namespace paintHell {
 				buttonstates |= InputType::Jump;
 			}
 			if (Window::GetKeyboard()->KeyDown(KeyboardKeys::C))
+			{
+				buttonstates |= InputType::FreeLook;
+			}
+			if (Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE))
 			{
 				buttonstates |= InputType::FreeLook;
 			}

@@ -149,10 +149,12 @@ set(Menu_Files
     "Menu.cpp"
     "Button.h"
     "Button.cpp"
-    "PushDownStateChangeManager.h"
     "ScreenMain.h"
     "ScreenGame.h"
     "ScreenPause.h"
+    "ScreenMain.cpp"
+    "ScreenGame.cpp"
+    "ScreenPause.cpp"
 
 )
 source_group("Menu Files" FILES ${Menu_Files})
