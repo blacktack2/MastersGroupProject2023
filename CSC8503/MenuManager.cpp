@@ -16,7 +16,8 @@ MenuManager::MenuManager() {
 	renderer = &GameTechRenderer::instance();
 	initQuad();
 	initMainMenu();
-	initPauseMenu();
+	//initPauseMenu();
+	//initOptionMenu();
 }
 
 MenuManager::~MenuManager() {
@@ -67,6 +68,7 @@ void MenuManager::initQuad(){
 }
 
 void MenuManager::initMainMenu() {
+	//Load background
 	OGLShader* shader = (OGLShader*)renderer->LoadShader("menuVertex.vert", "menuFragment.frag");
 	TextureBase* mainMenuBg = renderer->LoadTexture("defaultMain.jpg");
 	AssetLibrary::AddTexture("mainMenuBg", mainMenuBg);
@@ -74,12 +76,13 @@ void MenuManager::initMainMenu() {
 	menus[currentMenu] = new Menu(Vector2(0,0), Vector2(1,1));
 	menus[currentMenu]->SetRenderObject(new RenderObject(nullptr, quad, mainMenuBg, shader));
 	
+	//Load button
 	int num = 3;
 	for (int i = 0; i < num; i++) {
 		char path[50] = { 0 };
 		sprintf_s(path, "button%d.jpg", i + 1);
 
-		Button* btn = new Button(0.7f, i * -0.3f, 0.2f, 0.1f);
+		Button* btn = new Button(0.5f, i * -0.3f, 0.2f, 0.1f, Vector4(0, 0, 0, 1));
 		TextureBase* quitBtn = renderer->LoadTexture(path);
 
 		btn->SetRenderObject(new RenderObject(nullptr, quad, quitBtn, shader));
@@ -92,6 +95,7 @@ void MenuManager::initMainMenu() {
 }
 
 void MenuManager::initPauseMenu() {
+	//Load background
 	OGLShader* shader = (OGLShader*)renderer->LoadShader("menuVertex.vert", "menuFragment.frag");
 	TextureBase* pauseMenuBg = renderer->LoadTexture("defaultpause.jpg");
 	AssetLibrary::AddTexture("pauseMenuBg", pauseMenuBg);
@@ -99,12 +103,13 @@ void MenuManager::initPauseMenu() {
 	menus[currentMenu] = new Menu(Vector2(0, 0), Vector2(0.3, 0.7));
 	menus[currentMenu]->SetRenderObject(new RenderObject(nullptr, quad, pauseMenuBg, shader));
 
+	//Load button
 	int num = 4;
 	for (int i = 0; i < num; i++) {
 		char path[50] = { 0 };
 		sprintf_s(path, "button%d.jpg", i + 4);
 
-		Button* btn = new Button(0, 0.45f + i * -0.3f, 0.2f, 0.1f);
+		Button* btn = new Button(0, 0.45f + i * -0.3f, 0.16f, 0.08f, Vector4(0, 0, 0, 1));
 		TextureBase* quitBtn = renderer->LoadTexture(path);
 
 		btn->SetRenderObject(new RenderObject(nullptr, quad, quitBtn, shader));
@@ -116,3 +121,37 @@ void MenuManager::initPauseMenu() {
 	}
 }
 
+void MenuManager::initOptionMenu() {
+	//Load background
+	OGLShader* shader = (OGLShader*)renderer->LoadShader("menuVertex.vert", "menuFragment.frag");
+	TextureBase* optionMenuBg = renderer->LoadTexture("defaultmain.jpg");
+	AssetLibrary::AddTexture("optionMenuBg", optionMenuBg);
+	currentMenu = "option";
+	menus[currentMenu] = new Menu(Vector2(0, 0), Vector2(1, 1));
+	menus[currentMenu]->SetRenderObject(new RenderObject(nullptr, quad, optionMenuBg, shader));
+
+	//Load button
+	int num = 4;
+	for (int i = 0; i < num; i++) {
+		char path[50] = { 0 };
+		sprintf_s(path, "button%d.jpg", i + 4);
+
+		Button* btn = new Button(0, 0.45f + i * -0.3f, 0.16f, 0.08f, Vector4(0, 0, 0, 1));
+		TextureBase* quitBtn = renderer->LoadTexture(path);
+		btn->SetRenderObject(new RenderObject(nullptr, quad, quitBtn, shader));
+		menus[currentMenu]->AddButton(btn);
+
+		btn->OnClickCallback = [&]() {
+			std::cout << "quit btn clicked" << std::endl;
+		};
+	}
+
+	//Load checkbox
+	Button* checkbox = new Button(0, 0.15f, 0.08f, 0.08f, Vector4(0, 0, 0, 1));
+	checkbox->SetRenderObject(new RenderObject(nullptr, quad, nullptr, shader));
+	menus[currentMenu]->AddButton(checkbox);
+
+	checkbox->OnClickCallback = [&]() {
+		std::cout << "check!" << std::endl;
+	};
+}

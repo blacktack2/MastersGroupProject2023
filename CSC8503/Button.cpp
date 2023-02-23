@@ -10,12 +10,14 @@ using namespace CSC8503;
 using namespace Maths;
 
 
-Button::Button(float PosX, float PosY, float Width, float Height): keyMap(paintHell::InputKeyMap::instance()) {
+Button::Button(float PosX, float PosY, float Width, float Height, Vector4 colour): keyMap(paintHell::InputKeyMap::instance()) {
     m_fPosX = PosX;
     m_fPosY = PosY;
     m_fWidth = Width;
     m_fHeight = Height;
+    btncolour = colour;
 }
+
 Button::~Button() {
 }
 
@@ -27,6 +29,7 @@ void Button::Update(float dt){
         CheckMousePosition(mousePos);
 
         if (isMouseHover && keyMap.GetButton(InputType::MouseLeftClick)) {
+            this->GetColour();
             this->OnClickCallback();
         }
     }
@@ -38,7 +41,7 @@ void Button::Render(){
     glLoadIdentity();
 
     glOrtho(0, 20, 0, 20, 0, 100);
-    glColor3f(0, 0, 0);
+    glColor4f(0, 1, 0, 1);
 }
 
 void Button::Draw(Vector4 colour) {
