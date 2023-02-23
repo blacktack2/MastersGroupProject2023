@@ -57,7 +57,8 @@ TutorialGame::TutorialGame() {
 }
 
 TutorialGame::~TutorialGame() {
-	//world->ClearAndErase();
+	world->ClearAndErase();
+	gridManager->Clear();
 
 	delete cubeMesh;
 	delete sphereMesh;
@@ -71,19 +72,17 @@ TutorialGame::~TutorialGame() {
 
 	delete[] mazes;
 
-	delete bulletPrefab;
-
 	SoundSystem::Destroy();
 }
 
 void TutorialGame::InitWorld(InitMode mode) {
-	score = 1000;
 
 	delete[] mazes;
 	mazes = nullptr;
 	world->ClearAndErase();
 	physics->Clear();
 	gridManager->Clear();
+	delete testingBossBehaviorTree;
 
 	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 300, 300, 2 ) );
 	BuildLevel();
@@ -91,11 +90,8 @@ void TutorialGame::InitWorld(InitMode mode) {
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
 
-	if (mode != InitMode::EMPTY)
-	{
-		InitDefaultFloor();
-	}
-
+	InitGameExamples();
+	/*
 	switch (mode) {
 		default: InitGameExamples(); break;
 		case InitMode::MAZE             : InitMazeWorld(20, 20, 20.0f)                            ; break;
@@ -107,7 +103,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 		case InitMode::BRIDGE_TEST_ANG  : InitBridgeConstraintTestWorld(10, 20, 30, true)         ; break;
 		case InitMode::PERFORMANCE_TEST : InitMixedGridWorld(30, 30, 10.0f, 10.0f)                ; break;
 		case InitMode::AUDIO_TEST : InitGameExamples()                ; break;
-	}
+	}*/
 
 	
 
@@ -123,7 +119,7 @@ void TutorialGame::UpdateGame(float dt) {
 
 	debugViewPoint->BeginFrame();
 	debugViewPoint->MarkTime("Update");
-
+	
 	UpdateKeys();
 	static bool moveSun = false;
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM0)) {
@@ -223,6 +219,7 @@ void TutorialGame::UpdateGame(float dt) {
 		renderer->EnablePostPass("HDR", doHDR = !doHDR);
 		renderer->UpdatePipeline();
 	}
+	/*
 	Debug::Print(std::string("Gamma: ").append(std::to_string(renderer->GetGamma())), Vector2(0, 30.0f));
 	if (doHDR) {
 		Debug::Print(std::string("HDR:   ").append(std::to_string(renderer->GetHDRExposure())), Vector2(0, 35.0f));
@@ -241,6 +238,7 @@ void TutorialGame::UpdateGame(float dt) {
 	Debug::Print(std::string("Render -> Scene:   ").append(doMain ? "Enabled" : "Disabled"), Vector2(0, 60.0f));
 	Debug::Print(std::string("       -> Post:    ").append(doPost ? "Enabled" : "Disabled"), Vector2(0, 65.0f));
 	Debug::Print(std::string("       -> Overlay: ").append(doOver ? "Enabled" : "Disabled"), Vector2(0, 70.0f));
+	*/
 
 	SoundSystem::GetSoundSystem()->Update(dt);
 
@@ -370,7 +368,7 @@ void TutorialGame::InitialiseAssets() {
 
 void TutorialGame::InitialisePrefabs() {
 	float bulletRadius = 0.2f;
-
+	GameObject* bulletPrefab;
 	bulletPrefab = new PlayerBullet();
 
 	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::PlayerProj));
@@ -864,6 +862,7 @@ void TutorialGame::UpdateLevel()
 				pillar->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(pillar);
 			}
+			/*
 			if (object.objectType == ObjectType::FenceX)
 			{
 				Vector3 dimensions{ interval / 4.0f, 0.5f, interval / 5.0f };
@@ -892,6 +891,7 @@ void TutorialGame::UpdateLevel()
 				fenceY->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(fenceY);
 			}
+			*/
 			if (object.objectType == ObjectType::Shelter)
 			{
 				Vector3 dimensions{ interval / 5.0f, 2.0f, interval / 2.0f };
@@ -906,6 +906,7 @@ void TutorialGame::UpdateLevel()
 				shelter->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(shelter);
 			}
+			/*
 			if (object.objectType == ObjectType::Wall)
 			{
 				Vector3 dimensions{ interval / 2.0f, 30.0f, interval / 2.0f };
@@ -920,6 +921,7 @@ void TutorialGame::UpdateLevel()
 				wall->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(wall);
 			}
+			*/
 		}
 	}
 }
