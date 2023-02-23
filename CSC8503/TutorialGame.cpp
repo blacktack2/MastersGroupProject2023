@@ -72,8 +72,6 @@ TutorialGame::~TutorialGame() {
 
 	delete[] mazes;
 
-	//delete bulletPrefab;
-
 	SoundSystem::Destroy();
 }
 
@@ -370,7 +368,7 @@ void TutorialGame::InitialiseAssets() {
 
 void TutorialGame::InitialisePrefabs() {
 	float bulletRadius = 0.2f;
-
+	GameObject* bulletPrefab;
 	bulletPrefab = new PlayerBullet();
 
 	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::PlayerProj));
