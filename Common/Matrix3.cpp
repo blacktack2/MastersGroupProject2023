@@ -41,17 +41,17 @@ Matrix3::Matrix3(float elements[9]) {
 }
 
 Matrix3::Matrix3(const Matrix4 &m4) {
-	array[0] = m4.array[0];
-	array[1] = m4.array[1];
-	array[2] = m4.array[2];
+	array[0] = m4.array[0][0];
+	array[1] = m4.array[0][1];
+	array[2] = m4.array[0][2];
 
-	array[3] = m4.array[4];
-	array[4] = m4.array[5];
-	array[5] = m4.array[6];
+	array[3] = m4.array[1][0];
+	array[4] = m4.array[1][1];
+	array[5] = m4.array[1][2];
 
-	array[6] = m4.array[8];
-	array[7] = m4.array[9];
-	array[8] = m4.array[10];
+	array[6] = m4.array[2][0];
+	array[7] = m4.array[2][1];
+	array[8] = m4.array[2][2];
 }
 
 Matrix3::Matrix3(const Matrix2 &m2) {

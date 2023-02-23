@@ -35,8 +35,10 @@ MeshAnimation::MeshAnimation(const std::string& filename) : MeshAnimation() {
 	for (unsigned int f = 0; f < frameCount; ++f) {
 		for (unsigned int j = 0; j < jointCount; ++j) {
 			Matrix4 mat;
-			for (int i = 0; i < 16; ++i) {
-				file >> mat.array[i];
+			for (int i = 0; i < 4; ++i) {
+				for (int j = 0; j < 4; ++j) {
+					file >> mat.array[i][j];
+				}
 			}
 			allJoints.emplace_back(mat);
 		}

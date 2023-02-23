@@ -303,8 +303,10 @@ void MeshGeometry::ReadRigPose(std::ifstream& file, vector<Matrix4>& into) {
 
 	for (int i = 0; i < matCount; ++i) {
 		Matrix4 mat;
-		for (int i = 0; i < 16; ++i) {
-			file >> mat.array[i];
+		for (int i = 0; i < 4; ++i) {
+			for (int j = 0; j < 4; ++j) {
+				file >> mat.array[i][j];
+			}
 		}
 		into.emplace_back(mat);
 	}

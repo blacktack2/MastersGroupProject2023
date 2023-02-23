@@ -39,24 +39,24 @@ Quaternion::Quaternion(const Vector3& vector, float w) {
 }
 
 Quaternion::Quaternion(const Matrix4 &m) {
-	w = sqrt(std::max(0.0f, (1.0f + m.array[0] + m.array[5] + m.array[10])))  * 0.5f;
+	w = sqrt(std::max(0.0f, (1.0f + m.array[0][0] + m.array[1][1] + m.array[2][2]))) * 0.5f;
 
 	if (abs(w) < 0.0001f) {
-		x = sqrt(std::max(0.0f, (1.0f + m.array[0] - m.array[5] - m.array[10]))) / 2.0f;
-		y = sqrt(std::max(0.0f, (1.0f - m.array[0] + m.array[5] - m.array[10]))) / 2.0f;
-		z = sqrt(std::max(0.0f, (1.0f - m.array[0] - m.array[5] + m.array[10]))) / 2.0f;
+		x = sqrt(std::max(0.0f, (1.0f + m.array[0][0] - m.array[1][1] - m.array[2][2]))) / 2.0f;
+		y = sqrt(std::max(0.0f, (1.0f - m.array[0][0] + m.array[1][1] - m.array[2][2]))) / 2.0f;
+		z = sqrt(std::max(0.0f, (1.0f - m.array[0][0] - m.array[1][1] + m.array[2][2]))) / 2.0f;
 
-		x = (float)copysign(x, m.array[9] - m.array[6]);
-		y = (float)copysign(y, m.array[2] - m.array[8]);
-		z = (float)copysign(z, m.array[4] - m.array[1]);
+		x = (float)copysign(x, m.array[2][1] - m.array[1][2]);
+		y = (float)copysign(y, m.array[0][2] - m.array[2][0]);
+		z = (float)copysign(z, m.array[1][0] - m.array[0][1]);
 	}
 	else {
 		float qrFour = 4.0f * w;
 		float qrFourRecip = 1.0f / qrFour;
 
-		x = (m.array[6] - m.array[9]) * qrFourRecip;
-		y = (m.array[8] - m.array[2]) * qrFourRecip;
-		z = (m.array[1] - m.array[4]) * qrFourRecip;
+		x = (m.array[1][2] - m.array[2][1]) * qrFourRecip;
+		y = (m.array[2][0] - m.array[0][2]) * qrFourRecip;
+		z = (m.array[0][1] - m.array[1][0]) * qrFourRecip;
 	}
 }
 

@@ -28,6 +28,7 @@ namespace NCL {
 			};
 		public:
 			constexpr Vector3(void) : x(0.0f), y(0.0f), z(0.0f) {}
+			explicit constexpr Vector3(float val) : x(val), y(val), z(val) {}
 
 			constexpr Vector3(float xVal, float yVal, float zVal) : x(xVal), y(yVal), z(zVal) {}
 
@@ -89,6 +90,18 @@ namespace NCL {
 
 			static Vector3	Cross(const Vector3 &a, const Vector3 &b) {
 				return Vector3((a.y*b.z) - (a.z*b.y), (a.z*b.x) - (a.x*b.z), (a.x*b.y) - (a.y*b.x));
+			}
+
+			static inline std::pair<Vector3, bool> CrossSAT(const Vector3& a, const Vector3& b) {
+				Vector3 m = Cross(a.Normalised(), b.Normalised());
+				if (m == Vector3(0)) {
+					Vector3 n = Cross(a, b - a);
+					m = Cross(a.Normalised(), n.Normalised());
+					return std::make_pair(m, n != Vector3(0));
+				}
+				else {
+					return std::make_pair(m, true);
+				}
 			}
 
 			inline Vector3  operator+(const Vector3  &a) const {

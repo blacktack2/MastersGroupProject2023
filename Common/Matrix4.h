@@ -25,7 +25,7 @@ namespace NCL {
 			Matrix4(const Quaternion& quat);
 			~Matrix4(void);
 
-			float	array[16];
+			float	array[4][4];
 
 			//Set all matrix values to zero
 			void	ToZero();
@@ -57,9 +57,9 @@ namespace NCL {
 			//field of vision, respectively.
 			static Matrix4 Perspective(float znear, float zfar, float aspect, float fov);
 
-			//Creates an orthographic matrix with 'znear' and 'zfar' as the near and 
+			//Creates an orthographic matrix with 'near' and 'far' as the near and 
 			//far planes, and so on. Descriptive variable names are a good thing!
-			static Matrix4 Orthographic(float znear, float zfar, float right, float left, float top, float bottom);
+			static Matrix4 Orthographic(float left, float right, float bottom, float top, float near, float far);
 
 			//Builds a view matrix suitable for sending straight to the vertex shader.
 			//Puts the camera at 'from', with 'lookingAt' centered on the screen, with
@@ -69,6 +69,8 @@ namespace NCL {
 			void    Invert();
 			Matrix4 Inverse() const;
 
+			void	Transpose();
+			Matrix4 Transposed() const;
 
 			Vector4 GetRow(unsigned int row) const;
 			Vector4 GetColumn(unsigned int column) const;
@@ -76,12 +78,11 @@ namespace NCL {
 			//Multiplies 'this' matrix by matrix 'a'. Performs the multiplication in 'OpenGL' order (ie, backwards)
 			inline Matrix4 operator*(const Matrix4& a) const {
 				Matrix4 out;
-				//Students! You should be able to think up a really easy way of speeding this up...
-				for (unsigned int r = 0; r < 4; ++r) {
-					for (unsigned int c = 0; c < 4; ++c) {
-						out.array[c + (r * 4)] = 0.0f;
+				for (unsigned int c = 0; c < 4; ++c) {
+					for (unsigned int r = 0; r < 4; ++r) {
+						out.array[c][r] = 0.0f;
 						for (unsigned int i = 0; i < 4; ++i) {
-							out.array[c + (r * 4)] += this->array[c + (i * 4)] * a.array[(r * 4) + i];
+							out.array[c][r] += this->array[i][r] * a.array[c][i];
 						}
 					}
 				}
@@ -94,10 +95,10 @@ namespace NCL {
 			//Handy string output for the matrix. Can get a bit messy, but better than nothing!
 			inline friend std::ostream& operator<<(std::ostream& o, const Matrix4& m) {
 				o << "Mat4(";
-				o << "\t" << m.array[0] << "," << m.array[1] << "," << m.array[2] << "," << m.array[3] << std::endl;
-				o << "\t\t" << m.array[4] << "," << m.array[5] << "," << m.array[6] << "," << m.array[7] << std::endl;
-				o << "\t\t" << m.array[8] << "," << m.array[9] << "," << m.array[10] << "," << m.array[11] << std::endl;
-				o << "\t\t" << m.array[12] << "," << m.array[13] << "," << m.array[14] << "," << m.array[15] << " )" << std::endl;
+				o << "\t" << m.array[0][0] << "," << m.array[0][1] << "," << m.array[0][2] << "," << m.array[0][3] << "\n";
+				o << "\t\t" << m.array[1][0] << "," << m.array[1][1] << "," << m.array[1][2] << "," << m.array[1][3] << "\n";
+				o << "\t\t" << m.array[2][0] << "," << m.array[2][1] << "," << m.array[2][2] << "," << m.array[2][3] << "\n";
+				o << "\t\t" << m.array[3][0] << "," << m.array[3][1] << "," << m.array[3][2] << "," << m.array[3][3] << " )\n";
 				return o;
 			}
 		};
