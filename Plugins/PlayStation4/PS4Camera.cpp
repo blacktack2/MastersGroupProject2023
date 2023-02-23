@@ -50,17 +50,17 @@ void NCL::PS4::PS4Camera::UpdateCamera(float dt)
 	//std::cout << "Forward: " << forward << std::endl;
 	//std::cout << "Right: " << right<< std::endl;
 
-	if (mInput->GetAxis(2).y>0 || forward<0 ) {
+	if (mInput->GetAxis(2).y>0 || (int)forward<0 ) {
 		position += Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
 	}
-	if (mInput->GetAxis(2).x>0 || right >0) {
+	if (mInput->GetAxis(2).x>0 || (int)right >0) {
 		position += Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(1, 0, 0) * frameSpeed;
 	}
 
-	if (mInput->GetAxis(2).y < 0|| forward>0) {
+	if (mInput->GetAxis(2).y < 0|| (int)forward>0) {
 		position -= Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
 	}
-	if (mInput->GetAxis(2).x < 0||right<0) {
+	if (mInput->GetAxis(2).x < 0|| (int)right<0) {
 		position -= Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(1, 0, 0) * frameSpeed;
 	}
 
