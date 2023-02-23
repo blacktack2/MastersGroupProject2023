@@ -15,6 +15,12 @@ using namespace NCL;
 using namespace CSC8503;
 
 class ScreenMain : public PushdownState {
+public:
+	ScreenMain(){
+		initMenu();
+	}
+	~ScreenMain(){}
+
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
 		menuManager.Update(dt);
 		keyMap.Update();
@@ -37,8 +43,8 @@ class ScreenMain : public PushdownState {
 		renderer.UpdatePipeline();
 		Window::GetWindow()->ShowOSPointer(true);
 		Window::GetWindow()->LockMouseToWindow(false);
-		initMenu();
 	}
+	
 
 
 	GameTechRenderer& renderer = GameTechRenderer::instance();

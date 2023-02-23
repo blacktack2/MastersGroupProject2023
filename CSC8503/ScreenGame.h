@@ -17,6 +17,13 @@ using namespace CSC8503;
 
 class ScreenGame : public PushdownState {
 public:
+	ScreenGame() {
+		game = new NetworkedGame();
+	}
+	~ScreenGame() {
+		delete game;
+	}
+
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
 		keyMap.Update();
 		if (keyMap.GetButton(InputType::ESC)) {
@@ -44,13 +51,7 @@ public:
 		renderer.EnableRenderScene(true);
 		renderer.EnableOverlayPass("Menu", false);
 		renderer.UpdatePipeline();
-		game = new NetworkedGame();
 	}
-
-	~ScreenGame() {
-		delete game;
-	}
-
 
 	NetworkedGame* game;
 	GameTechRenderer& renderer = GameTechRenderer::instance();

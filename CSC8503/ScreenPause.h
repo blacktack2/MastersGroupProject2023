@@ -15,6 +15,10 @@ using namespace CSC8503;
 
 class ScreenPause : public PushdownState {
 public:
+	ScreenPause() {
+		initMenu();
+	}
+	~ScreenPause() {}
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
 		keyMap.Update();
 		if (keyMap.GetButton(InputType::ESC)) {
