@@ -53,6 +53,8 @@ set(Interfaces
 source_group("Interfaces" FILES ${Interfaces})
 
 set(Rendering
+    "BufferObjectBase.cpp"
+    "BufferObjectBase.h"
     "FrameBuffer.cpp"
     "FrameBuffer.h"
     "MeshAnimation.cpp"

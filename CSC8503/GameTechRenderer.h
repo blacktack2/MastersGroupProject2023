@@ -16,6 +16,7 @@
 #include "SkyboxRPass.h"
 #include "ModelRPass.h"
 #include "LightingRPass.h"
+#include "SSAORPass.h"
 #include "CombineRPass.h"
 #include "BloomRPass.h"
 #include "HDRRPass.h"
@@ -36,9 +37,12 @@ namespace NCL::CSC8503 {
 	class RenderObject;
 
 	class GameTechRenderer : public OGLRenderer {
+
 	public:
-		GameTechRenderer(GameWorld& world);
-		~GameTechRenderer();
+		static GameTechRenderer& instance() {
+			static GameTechRenderer INSTANCE;
+			return INSTANCE;
+		}
 
 		MeshGeometry* LoadMesh(const std::string& name);
 		TextureBase*  LoadTexture(const std::string& name);
@@ -103,7 +107,26 @@ namespace NCL::CSC8503 {
 		inline float GetHDRExposure() {
 			return hdrExposure;
 		}
+
+		void SetSSAORadius(float radius) {
+			ssaoRadius = radius;
+			ssaoPass->SetRadius(ssaoRadius);
+		}
+		inline float GetSSAORadius() {
+			return ssaoRadius;
+		}
+
+		void SetSSAOBias(float bias) {
+			ssaoBias = bias;
+			ssaoPass->SetBias(ssaoBias);
+		}
+		inline float GetSSAOBias() {
+			return ssaoBias;
+		}
 	protected:
+		GameTechRenderer();
+		~GameTechRenderer();
+
 		GameWorld& gameWorld;
 
 		void BuildObjectList();
@@ -114,6 +137,7 @@ namespace NCL::CSC8503 {
 		SkyboxRPass* skyboxPass;
 		ModelRPass* modelPass;
 		LightingRPass* lightingPass;
+		SSAORPass* ssaoPass;
 		CombineRPass* combinePass;
 		BloomRPass* bloomPass;
 		HDRRPass* hdrPass;
@@ -122,9 +146,14 @@ namespace NCL::CSC8503 {
 		PaintingRPass* paintingRPass;
 
 		float gamma = 2.2f;
+
 		size_t bloomAmount = 5;
 		float bloomBias = 0.04f;
+
 		float hdrExposure = 1.0f;
+
+		float ssaoRadius = 0.5f;
+		float ssaoBias = 0.025f;
 	};
 }
 

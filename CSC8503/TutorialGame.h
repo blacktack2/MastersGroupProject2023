@@ -75,10 +75,11 @@ namespace NCL {
 
 			PlayerObject* AddPlayerToWorld(const Vector3& position, bool cameraFollow = true);
 			EnemyObject* AddEnemyToWorld(const Vector3& position, NavigationMap& navMap);
+
 			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);		/////////
-			void RenderBossBulletsReleasedByBoss();															/////////
 			HealingKit* UpdateHealingKit();																/////////
 			void BuildLevel();																			/////////
+			void UpdateLevel();																			/////////
 			NPCObject* AddNPCToWorld(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
 			GameObject* AddTriggerToWorld(const Vector3& position, float size);
@@ -127,8 +128,6 @@ namespace NCL {
 			MeshGeometry*	npcMesh	  = nullptr;
 			MeshGeometry*	bonusMesh = nullptr;
 
-			Bullet* bulletPrefab = nullptr;
-
 			//Coursework Additional functionality	
 			GameObject* lockedObject	= nullptr;
 			Vector3 lockedOffset		= Vector3(0, 14, 20);
@@ -145,6 +144,7 @@ namespace NCL {
 			paintHell::debug::DebugViewPoint* debugViewPoint;
 
 			GameLevel* gameLevel = nullptr;	/////////
+			float interval = 0.0f;			/////////
 			GameGrid* gameGrid = nullptr;	/////////
 			GameObject* floor = nullptr;	/////////
 			Boss* testingBoss = nullptr;   /////////

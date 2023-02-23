@@ -1,8 +1,7 @@
 /**
- * @file   BossBullet.cpp
- * @brief  A Class for defining boss projectile behaviour
+ * @file   Player Bullet.cpp
+ * @brief  A Class for defining Player projectile behaviour
  *
- * @author Xiaoyang Liu
  * @author Felix Chiu
  * @date   February 2023
  */
@@ -12,11 +11,11 @@
 
 namespace NCL {
 	namespace CSC8503 {
-		class BossBullet : public Bullet {
+		class PlayerBullet : public Bullet {
 		public:
-			BossBullet();
-			BossBullet(BossBullet& other);
-			~BossBullet();
+			PlayerBullet();
+			PlayerBullet(PlayerBullet& other);
+			~PlayerBullet();
 
 			void Update(float dt) override;
 			void OnTriggerBegin(GameObject* other) override;

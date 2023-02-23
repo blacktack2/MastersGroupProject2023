@@ -1,5 +1,6 @@
 #pragma once
 #include "Health.h"
+#include "Vector4.h"
 
 namespace paintHell {
 	enum InkType
@@ -11,7 +12,7 @@ namespace paintHell {
 }
 namespace NCL {
 	namespace CSC8503 {
-		
+		using namespace Maths;
 		class InkEffectManager {
 		public:
 			static InkEffectManager& instance() {
@@ -20,7 +21,9 @@ namespace NCL {
 			}
 
 			void Update(float dt);
+			Vector3 GetColour(paintHell::InkType type);
 			void ApplyInkEffect(paintHell::InkType type, Health * health, int healthType);
+
 		protected:
 			InkEffectManager();
 			~InkEffectManager();

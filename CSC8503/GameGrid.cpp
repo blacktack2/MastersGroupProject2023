@@ -270,6 +270,22 @@ GameNode* GameGrid::NearestNode(Vector3 position)
 	return resultingNode;
 }
 
+std::vector<GameNode*> GameGrid::AreaNode(Vector3 position, float radius)
+{
+	//translate world position to grid local position
+	Vector3 localPosition = position - gameGridOrigin;
+
+	//translate x,z coord to row col (node)
+	int minRow = std::round((localPosition.x - radius) / unitLength);
+	int maxRow = std::round((localPosition.x + radius) / unitLength);
+	int minCol = std::round((localPosition.z - radius) / unitLength);
+	int maxCol = std::round((localPosition.z + radius) / unitLength);
+	
+	std::vector<GameNode*> t;
+	return t;
+
+}
+
 void GameGrid::DrawDebugGameGrid()
 {
 
