@@ -89,11 +89,8 @@ void TutorialGame::InitWorld(InitMode mode) {
 	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 300, 300, 2 ) );
 	BuildLevel();
 	player = AddPlayerToWorld(Vector3(0, 5, 90));
-	//testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
-	//testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
-
-	//AddCubeToWorld(Vector3(5, 5, 5), Vector3(5, 5, 5), 10.0f, false);
-	AddCapsuleToWorld(Vector3(5, 5, 5), 2.0f, 1.0f, 10.0f);
+	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
+	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
 
 	if (mode != InitMode::EMPTY)
 	{
@@ -322,7 +319,7 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 
 	world->PostUpdateWorld();
 
-	//testingBossBehaviorTree->update();
+	testingBossBehaviorTree->update();
 	if (gameLevel->GetShelterTimer() > 20.0f)
 	{
 		gameLevel->SetShelterTimer(0.0f);

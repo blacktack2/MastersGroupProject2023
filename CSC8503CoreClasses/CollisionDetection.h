@@ -51,10 +51,6 @@ namespace NCL {
 				point[pSize].localB			= localB;
 				point[pSize].normal			= normal;
 				point[pSize].penetration	= p;
-				//point.localA		= localA;
-				//point.localB		= localB;
-				//point.normal		= normal;
-				//point.penetration	= p;
 			}
 
 			//Advanced collision detection / resolution
