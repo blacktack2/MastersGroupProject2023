@@ -49,6 +49,7 @@ void ScreenPause::initMenu() {
 	};
 	buttons[3]->OnClickCallback = [&]() {
 		std::cout << "4 btn clicked" << std::endl;
+		gameStateManager->SetGameState(GameState::Quit);
 		menuState = ChangeState::Quit;
 	};
 }

@@ -44,6 +44,7 @@ public:
 		menuState = ChangeState::None;
 		menuManager.SetCurrentMenu(name);
 		renderer.EnableOverlayPass("Menu", true);
+		renderer.EnableOverlayPass("Debug", false);
 		renderer.EnableRenderScene(false);
 		renderer.UpdatePipeline();
 		Window::GetWindow()->ShowOSPointer(true);
