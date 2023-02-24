@@ -618,7 +618,7 @@ bool NCL::CollisionDetection::AABBCapsuleIntersection(const AABBVolume& volumeA,
 	Vector3 localA = boxPoint + normal * boxSize;
 	Vector3 localB = capsulePoint - normal * capsuleRadius - capsulePos;
 
-	collisionInfo.AddContactPoint(normal, penetration, localA, localB, 2);
+	collisionInfo.AddContactPoint(normal, penetration, localA, localB);
 	return true;
 }
 

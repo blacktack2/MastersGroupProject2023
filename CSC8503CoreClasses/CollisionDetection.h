@@ -38,7 +38,7 @@ namespace NCL {
 
 			}
 
-			void AddContactPoint(const Vector3& normal, float p, const Vector3& localA = Vector3(), const Vector3& localB = Vector3(), const int& numContactPoints = 2) {
+			void AddContactPoint(const Vector3& normal, float p, const Vector3& localA = Vector3(), const Vector3& localB = Vector3()) {
 				if (point.empty()) {
 					point.resize(1);
 				}

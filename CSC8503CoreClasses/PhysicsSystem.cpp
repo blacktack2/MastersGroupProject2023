@@ -155,7 +155,6 @@ void PhysicsSystem::UpdateCollisionList() {
 		if (info.framesLeft > 0 && !info.isEntered) {
 			info.a->OnCollisionStay(info.b);
 			info.b->OnCollisionStay(info.a);
-			CollisionDetection::ObjectIntersection(info.a, info.b, info);
 		}
 
 		info.framesLeft--;
