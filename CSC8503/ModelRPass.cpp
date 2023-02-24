@@ -41,8 +41,8 @@ OGLMainRenderPass(renderer), gameWorld(gameWorld) {
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
-	defaultShader = new OGLShader("modelDefault.vert", "modelDefault.frag");
-	AddModelShader(defaultShader);
+	defaultModelShader = new OGLShader("modelDefault.vert", "modelDefault.frag");
+	AddModelShader(defaultModelShader);
 }
 
 ModelRPass::~ModelRPass() {
@@ -52,7 +52,7 @@ ModelRPass::~ModelRPass() {
 	delete normalOutTex;
 	delete depthOutTex;
 
-	delete defaultShader;
+	delete defaultModelShader;
 }
 
 void ModelRPass::Render() {
@@ -80,6 +80,7 @@ void ModelRPass::Render() {
 		}
 
 		if (renderObject->HasAnimation()) {
+			OGLShader* defaultAnimShader = static_cast<OGLShader*>(AssetLibrary::GetShader("animation"));
 			AnimatedRenderObject* renderObj = (AnimatedRenderObject*)renderObject;
 
 			renderObj->SetFrameTime(renderObj->GetFrameTime() - gameWorld.GetDeltaTime() * renderObj->GetAnimSpeed());
@@ -89,63 +90,41 @@ void ModelRPass::Render() {
 				renderObj->SetFrameTime(renderObj->GetFrameTime() + (1.0f / renderObj->GetAnimation()->GetFrameRate()));
 			}
 
-			//glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-			((OGLShader*)AssetLibrary::GetShader("animation"))->Bind();
-			glUniform1i(glGetUniformLocation(((OGLShader*)AssetLibrary::GetShader("animation"))->GetProgramID(), "diffuseTex"), 0);
+			defaultAnimShader->Bind();
 
-			//Matrix4 modelMatrix = Matrix4::Translation({ 0,20,0 }) * Matrix4::Scale({ 50,50,50 });
+			defaultAnimShader->SetUniformInt("diffuseTex", 0);
+
 			Matrix4 modelMatrix = renderObject->GetTransform()->GetGlobalMatrix();
-			glUniformMatrix4fv(glGetUniformLocation(((OGLShader*)AssetLibrary::GetShader("animation"))->GetProgramID(), "modelMatrix"), 1, GL_FALSE, (GLfloat*)&modelMatrix);
+			defaultAnimShader->SetUniformMatrix("modelMatrix", modelMatrix);
 
 			const Matrix4* bindPose = renderObj->GetAnimatedMesh()->GetBindPose().data();
 			const Matrix4* invBindPose = renderObj->GetAnimatedMesh()->GetInverseBindPose().data();
 			const Matrix4* frameData = renderObj->GetAnimation()->GetJointData(renderObj->GetCurrentFrame());
 			const int* bindPoseIndices = renderObj->GetAnimatedMesh()->GetBindPoseIndices();
 
-			int j = glGetUniformLocation(((OGLShader*)AssetLibrary::GetShader("animation"))->GetProgramID(), "joints");
+			int j = glGetUniformLocation(defaultAnimShader->GetProgramID(), "joints");
 
 			for (int i = 0; i < renderObj->GetAnimatedMesh()->GetSubMeshCount(); ++i) {
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, (renderObj->GetMatTextures())[i]);
-				/*
-				A submesh *might* have a different set of bind pose matrices,
-				depending on how it has been defined. The loader stores all
-				of the bind pose matrices in contiguous memory, and then uses
-				the SubMeshPoses struct to indicate what the first matrix, and
-				how many matrices, are used for each submesh i.
-				*/
-
-				//SubMeshPoses pose;
-				//renderObj->GetAnimatedMesh()->GetBindPoseState(i, pose);
-
 				vector<Matrix4> frameMatrices;
-				for (unsigned int i = 0; i < renderObj->GetAnimatedMesh()->GetJointCount(); ++i) {			// i < pose.count;
-					/*
-					We can now grab the correct matrix for a given pose.
-					Each matrix is relative to a given joint on the original mesh.
-					We can perform the lookup for this by grabbing a set of indices
-					from the mesh.
-					*/
-					//int jointID = bindPoseIndices[pose.start + i];
-
-					//Matrix4 mat = frameData[jointID] * invBindPose[pose.start + i];
+				for (unsigned int i = 0; i < renderObj->GetAnimatedMesh()->GetJointCount(); ++i) {
 					Matrix4 mat = frameData[i] * invBindPose[i];
 
 					frameMatrices.emplace_back(mat);
 				}
-				//Frame matrices now contains the correct set of matrices for this submesh
-				glUniformMatrix4fv(j, frameMatrices.size(), false, (float*)frameMatrices.data());
+				defaultAnimShader->SetUniformMatrix("joints", frameMatrices.size(), frameMatrices.data());
 				renderObj->GetAnimatedMesh()->Draw(i);
 			}
 			((OGLShader*)AssetLibrary::GetShader("animation"))->Unbind();
-		} else { // AnimatedRenderObject returns nullptr when GetMesh(), thus all AnimatedRenderObjects will return from the next block.
+		} else {
 			OGLMesh* mesh;
 			if (!(mesh = dynamic_cast<OGLMesh*>(renderObject->GetMesh()))) {
 				return;
 			}
 			OGLShader* shader;
 			if (!(shader = dynamic_cast<OGLShader*>(renderObject->GetShader()))) {
-				shader = defaultShader;
+				shader = defaultModelShader;
 			}
 
 			OGLTexture* diffuseTex;

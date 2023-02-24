@@ -353,24 +353,15 @@ void TutorialGame::InitialiseAssets() {
 	AssetLibrary::AddMesh("capsule", capsuleMesh);
 
 	basicTex = renderer->LoadTexture("checkerboard.png");
-	//((OGLTexture*)basicTex)->GetObjectID();
-	//inkableTex = renderer->LoadTexture("brick.tga");						/////////
-	healingKitTex = renderer->LoadTexture("shelterTex.jpg");				/////////
-	pillarTex = renderer->LoadTexture("pillarTex.jpg");				/////////
-	//noiseTex = renderer->LoadTexture("Perlin.png");							/////////
-	//AssetLibrary::AddTexture("inkable", inkableTex);						/////////
-	AssetLibrary::AddTexture("noise", noiseTex);							/////////
+	healingKitTex = renderer->LoadTexture("shelterTex.jpg");
+	pillarTex = renderer->LoadTexture("pillarTex.jpg");	
+	AssetLibrary::AddTexture("noise", noiseTex);
 	AssetLibrary::AddTexture("basic", basicTex);
 	OGLShader* shader = (OGLShader*)renderer->LoadShader("modelDefault.vert", "modelPaintTexture.frag");
 	AssetLibrary::AddShader("paint", shader);
 	renderer->GetModelPass().AddModelShader(shader);
 
-	InitaliseAnimationAssets();		// testing animation
-
-	//basicShader = renderer->LoadShader("scene.vert", "scene.frag");
-	//inkableShader = renderer->LoadShader("inkable.vert", "inkable.frag");
-	//AssetLibrary::AddShader("inkable", inkableShader);
-	//AssetLibrary::AddShader("basic", basicShader);
+	InitaliseAnimationAssets();
 
 	InitialisePrefabs();
 }
