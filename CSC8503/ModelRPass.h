@@ -54,7 +54,7 @@ namespace NCL::CSC8503 {
 		OGLTexture* defaultDiffuse;
 		OGLTexture* defaultBump;
 
-		OGLShader* defaultShader;
+		OGLShader* defaultModelShader;
 
 		float gamma = 2.2f;
 

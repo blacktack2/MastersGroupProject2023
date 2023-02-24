@@ -358,24 +358,15 @@ void TutorialGame::InitialiseAssets() {
 	AssetLibrary::AddMesh("capsule", capsuleMesh);
 
 	basicTex = renderer->LoadTexture("checkerboard.png");
-	//((OGLTexture*)basicTex)->GetObjectID();
-	//inkableTex = renderer->LoadTexture("brick.tga");						/////////
-	healingKitTex = renderer->LoadTexture("shelterTex.jpg");				/////////
-	pillarTex = renderer->LoadTexture("pillarTex.jpg");				/////////
-	//noiseTex = renderer->LoadTexture("Perlin.png");							/////////
-	//AssetLibrary::AddTexture("inkable", inkableTex);						/////////
-	AssetLibrary::AddTexture("noise", noiseTex);							/////////
+	healingKitTex = renderer->LoadTexture("shelterTex.jpg");
+	pillarTex = renderer->LoadTexture("pillarTex.jpg");	
+	AssetLibrary::AddTexture("noise", noiseTex);
 	AssetLibrary::AddTexture("basic", basicTex);
 	OGLShader* shader = (OGLShader*)renderer->LoadShader("modelDefault.vert", "modelPaintTexture.frag");
 	AssetLibrary::AddShader("paint", shader);
 	renderer->GetModelPass().AddModelShader(shader);
 
-	InitaliseAnimationAssets();		// testing animation
-
-	//basicShader = renderer->LoadShader("scene.vert", "scene.frag");
-	//inkableShader = renderer->LoadShader("inkable.vert", "inkable.frag");
-	//AssetLibrary::AddShader("inkable", inkableShader);
-	//AssetLibrary::AddShader("basic", basicShader);
+	InitaliseAnimationAssets();
 
 	InitialisePrefabs();
 }
@@ -407,25 +398,17 @@ void TutorialGame::InitaliseAnimationAssets()		// testing animation
 		const string* filename = nullptr;
 
 		matEntry->GetEntry("Diffuse", &filename);
-		GLuint texID = 0;
+		OGLTexture* tex = nullptr;
 
 		if (filename) {
 			string path = Assets::TEXTUREDIR + *filename;
 			stbi_set_flip_vertically_on_load(true);
-			texID = ((OGLTexture*)renderer->LoadTexture(path))->GetObjectID();
+			tex = static_cast<OGLTexture*>(renderer->LoadTexture(path));
 			stbi_set_flip_vertically_on_load(false);
-			//texID = SOIL_load_OGL_texture(path.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y);
-			SetTextureRepeating(texID, true);
+			tex->SetEdgeRepeat();
 		}
-		maleguardMatTextures.emplace_back(texID);
+		maleguardMatTextures.emplace_back(tex);
 	}
-}
-
-void TutorialGame::SetTextureRepeating(GLuint target, bool repeating) {		// testing animation  // No such function in OGLRenderer (?)
-	glBindTexture(GL_TEXTURE_2D, target);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, repeating ? GL_REPEAT : GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, repeating ? GL_REPEAT : GL_CLAMP);
-	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void TutorialGame::InitialisePrefabs() {
@@ -883,7 +866,6 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 		.SetPosition(position)
 		.SetScale(dimensions * 2);
 
-	//boss->SetRenderObject(new RenderObject(&boss->GetTransform(), cubeMesh, nullptr, nullptr));
 	boss->SetRenderObject(new AnimatedRenderObject(maleguardMaterial, maleguardAnim, maleguardMesh, maleguardMatTextures, &boss->GetTransform()));
 
 	boss->GetRenderObject()->SetColour({ 1,1,1,1 });

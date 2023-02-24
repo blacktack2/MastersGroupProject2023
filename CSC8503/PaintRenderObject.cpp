@@ -25,6 +25,5 @@ PaintRenderObject::~PaintRenderObject() {
 }
 
 void PaintRenderObject::ConfigerShaderExtras(OGLShader* shaderOGL) const {
-	glUniform1i(glGetUniformLocation(shaderOGL->GetProgramID(), "paintTex"), 2);
-	paintTexture->Bind(2);
+	paintTexture->Bind(2, shaderOGL->GetUniformLocation("paintTex"));
 }
