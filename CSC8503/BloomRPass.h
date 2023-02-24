@@ -61,10 +61,6 @@ namespace NCL::CSC8503 {
 		OGLShader* upsampleShader;
 		OGLShader* combineShader;
 
-		GLint sourcePixelSizeUniform;
-		GLint filterRadiusUniform;
-		GLint biasUniform;
-
 		size_t bloomDepth = 5;
 	};
 }

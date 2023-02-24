@@ -18,17 +18,11 @@ OGLOverlayRenderPass(renderer), gameWorld(gameWorld) {
 	lineShader = new OGLShader("debugLines.vert", "debugLines.frag");
 	textShader = new OGLShader("debugText.vert" , "debugText.frag" );
 
-	lineShader->Bind();
-
-	viewProjMatrixUniform = glGetUniformLocation(lineShader->GetProgramID(), "viewProjMatrix");
-
-	lineShader->Unbind();
-
 	textShader->Bind();
 
 	Matrix4 viewProjMatrix = Matrix4::Orthographic(0.0, 100.0f, 100, 0, -1.0f, 1.0f);
-	glUniformMatrix4fv(glGetUniformLocation(textShader->GetProgramID(), "viewProjMatrix"), 1, GL_FALSE, (GLfloat*)viewProjMatrix.array);
-	glUniform1i(glGetUniformLocation(textShader->GetProgramID(), "fontTex"), 0);
+	textShader->SetUniformMatrix("viewProjMatrix", viewProjMatrix);
+	textShader->SetUniformInt("fontTex", 0);
 
 	textShader->Unbind();
 
@@ -149,7 +143,7 @@ void DebugRPass::RenderLines() {
 
 	lineShader->Bind();
 
-	glUniformMatrix4fv(viewProjMatrixUniform, 1, GL_FALSE, (GLfloat*)viewProjMatrix.array);
+	lineShader->SetUniformMatrix("viewProjMatrix", viewProjMatrix);
 
 	debugLineData.clear();
 

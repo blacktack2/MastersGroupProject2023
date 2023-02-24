@@ -44,7 +44,5 @@ namespace NCL::CSC8503 {
 		OGLMesh* quad;
 
 		OGLShader* shader;
-
-		GLint exposureUniform;
 	};
 }

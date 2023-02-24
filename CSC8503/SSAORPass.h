@@ -64,13 +64,6 @@ namespace NCL::CSC8503 {
 
 		OGLBufferObject* kernelSSBO;
 
-		GLint viewMatrixUniform;
-		GLint projMatrixUniform;
-		GLint noiseScaleUniform;
-
-		GLint radiusUniform;
-		GLint biasUniform;
-
 		GLsizei noiseTexSize = 4;
 		size_t numKernels = 64;
 		std::vector<Vector3> kernels{};

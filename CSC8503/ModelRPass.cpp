@@ -62,10 +62,10 @@ void ModelRPass::Render() {
 		Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
 		float screenAspect = (float)renderer.GetWidth() / (float)renderer.GetHeight();
 		Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
-		// TODO - Replace with call to the shader class
-		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "viewMatrix"), 1, GL_FALSE, (GLfloat*)&viewMatrix);
-		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "projMatrix"), 1, GL_FALSE, (GLfloat*)&projMatrix);
-		glUniform1f(glGetUniformLocation(shader->GetProgramID(), "gamma"), gamma);
+
+		shader->SetUniformMatrix("viewMatrix", viewMatrix);
+		shader->SetUniformMatrix("projMatrix", projMatrix);
+		shader->SetUniformFloat("gamma", gamma);
 
 		shader->Unbind();
 	}
@@ -101,15 +101,14 @@ void ModelRPass::Render() {
 		bumpTex->Bind(1);
 
 		Matrix4 modelMatrix = renderObject->GetTransform()->GetGlobalMatrix();
-		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "modelMatrix"), 1, GL_FALSE, (GLfloat*)&modelMatrix);
-		glUniform4fv(glGetUniformLocation(shader->GetProgramID(), "modelColour"), 1, (GLfloat*)colour.array);
+		shader->SetUniformMatrix("modelMatrix", modelMatrix);
+
+		shader->SetUniformFloat("modelColour", colour);
 
 		renderObject->ConfigerShaderExtras(shader);
 
-		//mesh->Draw();
 		int layerCount = mesh->GetSubMeshCount();
-		for (int i = 0; i < layerCount; i++)
-		{
+		for (int i = 0; i < layerCount; i++){
 			mesh->Draw(i);
 		}
 		shader->Unbind();
@@ -122,8 +121,8 @@ void ModelRPass::AddModelShader(OGLShader* shader) {
 	modelShaders.push_back(shader);
 	shader->Bind();
 
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "diffuseTex"), 0);
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "bumpTex"), 1);
+	shader->SetUniformInt("diffuseTex", 0);
+	shader->SetUniformInt("bumpTex"   , 1);
 
 	shader->Unbind();
 }
