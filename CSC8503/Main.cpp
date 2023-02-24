@@ -29,6 +29,8 @@
 
 #include "TestAudio.h"
 
+#include "ScreenMain.h"
+
 using namespace NCL;
 using namespace CSC8503;
 
@@ -49,24 +51,76 @@ This time, we've added some extra functionality to the window class - we can
 hide or show the 
 
 */
+
+class PauseScreen : public PushdownState {
+	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::U)) {
+			return PushdownResult::Pop;
+		}
+		return PushdownResult::NoChange;
+	}
+	void OnAwake() override {
+		std::cout << "Press U to unpause game\n";
+	}
+};
+
+class GameScreen : public PushdownState {
+	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
+		pauseReminder -= dt;
+		if (pauseReminder < 0) {
+			std::cout << "Coins mined: " << coinsMined << "\n";
+			std::cout << "Press P to pause the game,\n or C to return to main menu\n";
+			pauseReminder += 1.0f;
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::P)) {
+			*newState = new PauseScreen();
+			return PushdownResult::Push;
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::C)) {
+			std::cout << "Returning to main menu!\n";
+			return PushdownResult::Pop;
+		}
+		if (rand() % 7 == 0) {
+			coinsMined++;
+		}
+		return PushdownResult::NoChange;
+	}
+	void OnAwake() override {
+		std::cout << "Preparing to mine coins!\n";
+	}
+protected:
+	int coinsMined = 0;
+	float pauseReminder = 1;
+};
+
+void StartPushdownAutomata(Window* w) {
+	PushdownMachine machine(new ScreenMain());
+	while (w->UpdateWindow()) {
+		float dt = w->GetTimer()->GetTimeDeltaSeconds();
+		if (dt > 0.1f) {
+			std::cout << "Skipping large time delta" << std::endl;
+			continue; //must have hit a breakpoint or something to have a 1 second frame time!
+		}
+		if (!machine.Update(dt)) {
+			return;
+		}
+	}
+}
+
 int main() {
-	//TestStateMachine();
-	//TestBehaviourTree();
-	//TestPathfinding();
 
 	Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
-	//TestPushdownAutomata(w);
 
 	
 	if (!w->HasInitialised()) {
 		return -1;
 	}	
 
-	//TestNetworking();
+	StartPushdownAutomata(w);
 
+	/*
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
-	//TestAudio::TestAudio2();
 
 	NetworkedGame* g = new NetworkedGame();
 	//g->InitWorld(NCL::CSC8503::TutorialGame::InitMode::AUDIO_TEST);
@@ -94,5 +148,6 @@ int main() {
 		//DisplayPathfinding();
 	}
 	delete g;
+	*/
 	Window::DestroyGameWindow();
 }

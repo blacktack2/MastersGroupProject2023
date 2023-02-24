@@ -40,6 +40,8 @@ using namespace CSC8503;
 
 TutorialGame::TutorialGame() {
 	gameStateManager = &GameStateManager::instance();
+	menuManager = &MenuManager::instance();
+
 	world = &GameWorld::instance();
 	sunLight = world->AddLight(new Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
 	world->AddLight(new Light({ 0.0f, 5.0f, -10.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, 10.0f));
@@ -91,7 +93,8 @@ void TutorialGame::InitWorld(InitMode mode) {
 
 	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 300, 300, 2 ) );
 	BuildLevel();
-	player = AddPlayerToWorld(Vector3(0, 10, 0));
+	player = AddPlayerToWorld(Vector3(0, 5, 90));
+
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
 
@@ -121,6 +124,8 @@ void TutorialGame::InitWorld(InitMode mode) {
 
 void TutorialGame::UpdateGame(float dt) {
 	GameState gameState = gameStateManager->GetGameState();
+	menuManager->Update(dt);
+	keyMap.Update();
 
 	debugViewPoint->BeginFrame();
 	debugViewPoint->MarkTime("Update");
@@ -528,6 +533,7 @@ void TutorialGame::UpdateKeys() {
 				Window::GetWindow()->ShowOSPointer(false);
 				Window::GetWindow()->LockMouseToWindow(true);
 			}
+
 			break;
 		case GameState::Win:
 			Debug::Print("You Win!", Vector2(5, 80), Vector4(0, 1, 0, 1));
@@ -825,8 +831,7 @@ PlayerObject* TutorialGame::AddPlayerToWorld(const Vector3& position, bool camer
 		.SetScale(Vector3(1, 1, 1))
 		.SetPosition(position);
 
-	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMesh, healingKitTex, nullptr));
-	//character->SetRenderObject(new AnimatedRenderObject(maleguardMaterial, maleguardAnim, maleguardMesh, maleguardMatTextures, &character->GetTransform()));
+	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMesh, basicTex, nullptr));
 	
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 

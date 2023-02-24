@@ -4,6 +4,7 @@
  * 
  * @author Rich Davidson
  * @author Stuart Lewis
+ * @author Yifei Hu
  * @date   February 2023
  */
 #pragma once
@@ -22,6 +23,7 @@
 #include "HDRRPass.h"
 #include "PresentRPass.h"
 #include "DebugRPass.h"
+#include "MenuRPass.h"
 #include "PaintingRPass.h"
 
 #include "GameWorld.h"
@@ -71,6 +73,9 @@ namespace NCL::CSC8503 {
 		}
 		inline DebugRPass& GetDebugRPass() {
 			return *debugPass;
+		}
+		inline MenuRPass& GetMenuRPass() {
+			return *menuPass;
 		}
 
 		virtual void Update(float dt) override;
@@ -133,6 +138,7 @@ namespace NCL::CSC8503 {
 		void SortObjectList();
 
 		vector<const RenderObject*> activeObjects;
+		//vector<const Billboard*> blood;
 
 		SkyboxRPass* skyboxPass;
 		ModelRPass* modelPass;
@@ -143,6 +149,7 @@ namespace NCL::CSC8503 {
 		HDRRPass* hdrPass;
 		PresentRPass* presentPass;
 		DebugRPass* debugPass;
+		MenuRPass* menuPass;
 		PaintingRPass* paintingRPass;
 
 		float gamma = 2.2f;
