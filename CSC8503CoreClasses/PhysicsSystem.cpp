@@ -155,6 +155,7 @@ void PhysicsSystem::UpdateCollisionList() {
 		if (info.framesLeft > 0 && !info.isEntered) {
 			info.a->OnCollisionStay(info.b);
 			info.b->OnCollisionStay(info.a);
+			CollisionDetection::ObjectIntersection(info.a, info.b, info);
 		}
 
 		info.framesLeft--;
@@ -221,8 +222,9 @@ void PhysicsSystem::BasicCollisionDetection() {
 			}
 			CollisionDetection::CollisionInfo info;
 			if (CollisionDetection::ObjectIntersection(*i, *j, info)) {
-				for (auto k = 0; k < info.point.size(); k++)
-				ImpulseResolveCollision(*info.a, *info.b, info.point[k]);
+				for (auto k = 0; k < info.point.size(); k++) {
+					ImpulseResolveCollision(*info.a, *info.b, info.point[k]);
+				}
 				info.framesLeft = numCollisionFrames;
 				allCollisions.insert(info);
 			}
