@@ -20,6 +20,8 @@
 #include "BossBullet.h"
 #include "SphereVolume.h"
 
+#include "AnimatedRenderObject.h"
+
 namespace NCL
 {
     namespace CSC8503
@@ -86,7 +88,7 @@ namespace NCL
             std::vector<BossBullet*> bombsReleased;
 
             // Boss' attributes:
-            Health health = Health(10);
+            Health health = Health(100);
 
             //game state
             GameStateManager* gameStateManager = &GameStateManager::instance();
@@ -261,7 +263,7 @@ namespace NCL
                 SequenceNode* inkRain = new SequenceNode();
                 chooseDefensiveRemoteCombat->addChild(inkRain);
 
-                RandomBivalentSelectorNode* possibilityToUseInkRain = new RandomBivalentSelectorNode(30);
+                RandomBivalentSelectorNode* possibilityToUseInkRain = new RandomBivalentSelectorNode(70);
                 inkRain->addChild(possibilityToUseInkRain);
 
                 UseInkRainNode* useInkRain = new UseInkRainNode();
@@ -325,6 +327,7 @@ namespace NCL
                     bool finish = false;
 
                     bool hasHealKit = false;
+
 
                     switch (bossAction)
                     {

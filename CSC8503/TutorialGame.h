@@ -19,6 +19,9 @@
 #include "GameStateManager.h"
 #include "MenuManager.h"
 
+#include "MeshAnimation.h";
+#include "MeshMaterial.h";
+
 namespace NCL {
 	namespace CSC8503 {
 		class Bullet;
@@ -85,6 +88,13 @@ namespace NCL {
 			GameObject* AddBonusToWorld(const Vector3& position);
 			GameObject* AddTriggerToWorld(const Vector3& position, float size);
 
+			void InitaliseAnimationAssets();								// testing animation
+			void SetTextureRepeating(GLuint target, bool repeating);		// testing animation
+			MeshMaterial* maleguardMaterial = nullptr;						// testing animation
+			MeshAnimation* maleguardAnim = nullptr;							// testing animation
+			MeshGeometry* maleguardMesh = nullptr;							// testing animation
+			std::vector<GLuint>  maleguardMatTextures;						// testing animation
+
 			bool SelectObject();
 			void MoveSelectedObject();
 			void DebugObjectMovement();
@@ -118,6 +128,7 @@ namespace NCL {
 			MeshGeometry* sphereMesh = nullptr;
 
 			TextureBase*	basicTex    = nullptr;
+			TextureBase*	pillarTex    = nullptr;
 			TextureBase* healingKitTex = nullptr;		/////////
 			TextureBase* inkableTex = nullptr;		/////////
 			TextureBase* noiseTex = nullptr;		/////////

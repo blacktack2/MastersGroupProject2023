@@ -17,6 +17,7 @@ namespace NCL {
 		class RenderObject
 		{
 		public:
+			RenderObject(Transform* parentTransform, ShaderBase* shader);		// for RenderObject that hasAnimation
 			RenderObject(Transform* parentTransform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader);
 			RenderObject(RenderObject& other, Transform* parentTransform);
 			~RenderObject();
@@ -56,12 +57,18 @@ namespace NCL {
 
 			virtual void ConfigerShaderExtras(OGLShader* shaderOGL) const {}
 
+			bool HasAnimation() const
+			{
+				return hasAnimation;
+			}
+
 		protected:
 			Transform*		transform;
 			MeshGeometry*	mesh;
 			TextureBase*	texture;
 			ShaderBase*		shader;
 			Vector4			colour;
+			bool			hasAnimation = false;
 		};
 	}
 }

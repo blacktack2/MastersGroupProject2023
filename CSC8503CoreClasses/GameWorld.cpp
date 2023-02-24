@@ -116,6 +116,7 @@ void GameWorld::PreUpdateWorld() {
 }
 
 void GameWorld::UpdateWorld(float dt) {
+	deltaTime = dt;
 	runTime += dt;
 
 	auto rng = std::default_random_engine{};

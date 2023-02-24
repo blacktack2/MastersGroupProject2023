@@ -3,6 +3,7 @@
 
 namespace NCL {
 	class MeshGeometry;
+	class MeshAnimation;
 	namespace Rendering {
 		class ShaderBase;
 		class TextureBase;
@@ -23,11 +24,15 @@ namespace NCL {
 
 			static void AddShader(std::string name, ShaderBase* shader);
 			static ShaderBase* GetShader(std::string name);
+
+			static void AddAnimation(std::string name, MeshAnimation* anim);
+			static MeshAnimation* GetAnimation(std::string name);
 		private:
 			static std::map<std::string, GameObject*> prefabs;
 			static std::map<std::string, MeshGeometry*> meshes;
 			static std::map<std::string, TextureBase*> textures;
 			static std::map<std::string, ShaderBase*> shaders;
+			static std::map<std::string, MeshAnimation*> animations;
 		};
 	}
 }
