@@ -3,6 +3,7 @@ set(PROJECT_NAME CSC8503)
 ################################################################################
 # Source groups
 ################################################################################
+
 set(Header_Files
 	"Bonus.h"
 	"EnemyObject.h"
@@ -18,6 +19,8 @@ set(Header_Files
     "GameStateManager.h"
     "Obstacle.h"
     "GameLevel.h"
+    "AnimatedRenderObject.h"
+    "AnimatedRenderObject.cpp"
 )
 source_group("Header Files" FILES ${Header_Files})
 

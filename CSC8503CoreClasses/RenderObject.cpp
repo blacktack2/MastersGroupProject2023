@@ -20,5 +20,14 @@ RenderObject::RenderObject(RenderObject& other, Transform* parentTransform) {
 	colour    = other.colour;
 }
 
+RenderObject::RenderObject(Transform* parentTransform, ShaderBase* shader) {
+	this->hasAnimation = true;
+	this->transform = parentTransform;
+	this->mesh = nullptr;
+	this->texture = nullptr;
+	this->shader = shader;
+	this->colour = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
 RenderObject::~RenderObject() {
 }
