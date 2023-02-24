@@ -9,6 +9,7 @@
 #include "PushdownState.h"
 #include "Window.h"
 #include "MenuManager.h"
+#include "GameStateManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -24,11 +25,9 @@ public:
 		keyMap.Update();
 		renderer.Render();
 		if (menuState == ChangeState::Resume) {
-			renderer.EnableOverlayPass("Debug", true);
 			return PushdownResult::Pop;
 		}
 		if (menuState == ChangeState::Quit) {
-			renderer.EnableOverlayPass("Debug", true);
 			return PushdownResult::Pop;
 		}
 		return PushdownResult::NoChange;
@@ -43,10 +42,6 @@ public:
 		Window::GetWindow()->LockMouseToWindow(false);
 	}
 
-	GameTechRenderer& renderer = GameTechRenderer::instance();
-	MenuManager& menuManager = MenuManager::instance();
-	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
-
 private:
 	void initMenu();
 
@@ -57,6 +52,12 @@ private:
 		Option,
 		Quit
 	};
+
+	GameStateManager* gameStateManager = &GameStateManager::instance();
+	GameTechRenderer& renderer = GameTechRenderer::instance();
+	MenuManager& menuManager = MenuManager::instance();
+	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+
 	ChangeState menuState = ChangeState::None;
 
 	string name = "pause";

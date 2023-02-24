@@ -9,6 +9,7 @@
 #include "PushdownState.h"
 #include "Window.h"
 #include "MenuManager.h"
+#include "GameStateManager.h"
 #include "NetworkedGame.h"
 #include "ScreenPause.h"
 
@@ -26,19 +27,17 @@ public:
 
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
 		keyMap.Update();
-		/*
 		if (keyMap.GetButton(InputType::ESC)) {
-			std::cout << "Pausing\n";
 			*newState = new ScreenPause();
 			return PushdownResult::Push;
 		}
-		*/
-		game->UpdateGame(dt);
 		if (game->IsQuit()) {
 			menuState = ChangeState::Quit;
 		}
+		else {
+			game->UpdateGame(dt);
+		}
 		if (menuState == ChangeState::Quit) {
-			std::cout << "Returning to main menu!\n";
 			Window::GetWindow()->ShowOSPointer(true);
 			Window::GetWindow()->LockMouseToWindow(false);
 			renderer.EnableOverlayPass("Menu", true);
@@ -53,13 +52,10 @@ public:
 		Window::GetWindow()->LockMouseToWindow(true);
 		renderer.EnableRenderScene(true);
 		renderer.EnableOverlayPass("Menu", false);
+		renderer.EnableOverlayPass("Debug", true);
 		renderer.UpdatePipeline();
 	}
 
-	NetworkedGame* game;
-	GameTechRenderer& renderer = GameTechRenderer::instance();
-	MenuManager& menuManager = MenuManager::instance();
-	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
 private:
 	void initMenu();
 
@@ -69,5 +65,13 @@ private:
 		Start,
 		Quit
 	};
+
+	
+	GameStateManager* gameStateManager = &GameStateManager::instance();
+	GameTechRenderer& renderer = GameTechRenderer::instance();
+	MenuManager& menuManager = MenuManager::instance();
+	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	NetworkedGame* game;
+
 	ChangeState menuState = ChangeState::None;
 };
