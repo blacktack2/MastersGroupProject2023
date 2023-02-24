@@ -139,8 +139,6 @@ namespace NCL {
 			MeshGeometry*	npcMesh	  = nullptr;
 			MeshGeometry*	bonusMesh = nullptr;
 
-			Bullet* bulletPrefab = nullptr;
-
 			//Coursework Additional functionality	
 			GameObject* lockedObject	= nullptr;
 			Vector3 lockedOffset		= Vector3(0, 14, 20);

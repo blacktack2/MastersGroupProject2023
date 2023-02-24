@@ -103,10 +103,10 @@ void SSAORPass::OnWindowResize(int width, int height) {
 }
 
 void SSAORPass::Render() {
-	/*glDisable(GL_BLEND);
+	glDisable(GL_BLEND);
 	DrawSSAO();
 	BlurSSAO();
-	glEnable(GL_BLEND);*/
+	glEnable(GL_BLEND);
 }
 
 void SSAORPass::SetRadius(float radius) {
@@ -143,7 +143,8 @@ void SSAORPass::DrawSSAO() {
 
 	Matrix4 viewMatrix = GameWorld::instance().GetMainCamera()->BuildViewMatrix();
 	glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, (GLfloat*)viewMatrix.array);
-	Matrix4 projMatrix = GameWorld::instance().GetMainCamera()->BuildProjectionMatrix();
+	float aspect = (float)renderer.GetWidth() / (float)renderer.GetHeight();
+	Matrix4 projMatrix = GameWorld::instance().GetMainCamera()->BuildProjectionMatrix(aspect);
 	glUniformMatrix4fv(projMatrixUniform, 1, GL_FALSE, (GLfloat*)projMatrix.array);
 
 	quad->Draw();
