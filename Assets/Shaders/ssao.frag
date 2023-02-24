@@ -26,38 +26,40 @@ in Vertex {
 	vec2 texCoord;
 } IN;
 
-out vec4 fragColour;
+out float fragColour;
 
 void main() {
 	mat4 projView = projMatrix * viewMatrix;
 
 	float depth = texture(depthTex, IN.texCoord).r;
 	vec3 ndcPos = vec3(IN.texCoord, depth) * 2.0 - 1.0;
-	vec4 invClipPos = inverse(projView) * vec4(ndcPos, 1.0);
-	vec3 worldPos   = invClipPos.xyz / invClipPos.w;
+	vec4 viewUnscaled = inverse(projMatrix) * vec4(ndcPos, 1.0);
+	vec3 viewPos      = viewUnscaled.xyz / viewUnscaled.w;
 
 	vec3 random = normalize(texture(noiseTex, IN.texCoord * noiseScale).xyz) * 2.0 - 1.0;
-	vec3 normal = normalize(texture(normalTex, IN.texCoord).xyz) * 2.0 - 1.0;
+	vec4 worldNormal = texture(normalTex, IN.texCoord);
+	vec4 viewNormal = viewMatrix * worldNormal;
+	viewNormal.xyz /= viewNormal.w;
+	vec3 normal = normalize(vec3(viewNormal)) * 2.0 - 1.0;
 	vec3 tangent  = normalize(random - normal * dot(random, normal));
 	vec3 binormal = cross(tangent, normal);
 	mat3 TBN = mat3(tangent, binormal, normal);
 
 	float occlusion = 0.0;
-	for (uint i = 0; i < 1; i++) {
+	for (uint i = 0; i < kernels.length(); i++) {
 		vec3 samplePos = TBN * kernels[i];
-		samplePos = worldPos + samplePos * radius;
+		samplePos = viewPos + samplePos * radius;
 
-		vec4 offset = projView * vec4(samplePos, 1.0);
+		vec4 offset = projMatrix * vec4(samplePos, 1.0);
 		offset.xyz /= offset.w;
 		offset.xy = offset.xy * 0.5 + 0.5;
 
 		float sampleDepth = texture(depthTex, offset.xy).r;
+		vec4 depthPos = inverse(projMatrix) * vec4(samplePos.xy, sampleDepth * 2.0 - 1.0, 1.0);
+		depthPos.xyz /= depthPos.w;
 
-		float rangeCheck = smoothstep(0.0, 1.0, radius / abs(offset.z - sampleDepth));
-		occlusion += ((depth >= samplePos.z + bias) ? 1.0 : 0.0) * rangeCheck;
-		
-		fragColour = vec4(vec3(sampleDepth), 1.0);
+		float rangeCheck = 1;//smoothstep(0.0, 1.0, radius / abs(viewPos.z - depthPos.z));
+		occlusion += ((depthPos.z >= samplePos.z + bias) ? 1.0 : 0.0) * rangeCheck;
 	}
-	//fragColour = vec4(vec3(1.0 - (occlusion / kernels.length())), 1.0);
-	//fragColour = vec4(tangent, 1.0);
+	fragColour = 1.0 - (occlusion / kernels.length());
 }
