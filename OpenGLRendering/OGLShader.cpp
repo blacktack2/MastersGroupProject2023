@@ -7,7 +7,15 @@
  * @date   February 2023
  */
 #include "OGLShader.h"
+
 #include "Assets.h"
+#include "Matrix2.h"
+#include "Matrix3.h"
+#include "Matrix4.h"
+#include "Vector2.h"
+#include "Vector3.h"
+#include "Vector4.h"
+
 #include <iostream>
 
 using namespace NCL;
@@ -66,6 +74,70 @@ void OGLShader::ReloadShader() {
 	} else {
 		std::cout << "Shader loaded!" << std::endl;
 	}
+}
+
+void OGLShader::SetUniformFloat(const std::string& uniform, float v1) {
+	glUniform1f(GetUniformLocation(uniform), v1);
+}
+
+void OGLShader::SetUniformFloat(const std::string& uniform, float v1, float v2) {
+	glUniform2f(GetUniformLocation(uniform), v1, v2);
+}
+
+void OGLShader::SetUniformFloat(const std::string& uniform, float v1, float v2, float v3) {
+	glUniform3f(GetUniformLocation(uniform), v1, v2, v3);
+}
+
+void OGLShader::SetUniformFloat(const std::string& uniform, float v1, float v2, float v3, float v4) {
+	glUniform4f(GetUniformLocation(uniform), v1, v2, v3, v4);
+}
+
+void OGLShader::SetUniformFloat(const std::string& uniform, const Vector2& v) {
+	glUniform2fv(GetUniformLocation(uniform), 1, (GLfloat*)v.array);
+}
+
+void OGLShader::SetUniformFloat(const std::string& uniform, const Vector3& v) {
+	glUniform3fv(GetUniformLocation(uniform), 1, (GLfloat*)v.array);
+}
+
+void OGLShader::SetUniformFloat(const std::string& uniform, const Vector4& v) {
+	glUniform4fv(GetUniformLocation(uniform), 1, (GLfloat*)v.array);
+}
+
+void OGLShader::SetUniformInt(const std::string& uniform, int v1) {
+	glUniform1i(GetUniformLocation(uniform), v1);
+}
+
+void OGLShader::SetUniformInt(const std::string& uniform, int v1, int v2) {
+	glUniform2i(GetUniformLocation(uniform), v1, v2);
+}
+
+void OGLShader::SetUniformInt(const std::string& uniform, int v1, int v2, int v3) {
+	glUniform3i(GetUniformLocation(uniform), v1, v2, v3);
+}
+
+void OGLShader::SetUniformInt(const std::string& uniform, int v1, int v2, int v3, int v4) {
+	glUniform4i(GetUniformLocation(uniform), v1, v2, v3, v4);
+}
+
+void OGLShader::SetUniformMatrix(const std::string& uniform, const Matrix2& m) {
+	glUniformMatrix2fv(GetUniformLocation(uniform), 1, GL_FALSE, (GLfloat*)m.array);
+}
+
+void OGLShader::SetUniformMatrix(const std::string& uniform, const Matrix3& m) {
+	glUniformMatrix3fv(GetUniformLocation(uniform), 1, GL_FALSE, (GLfloat*)m.array);
+}
+
+void OGLShader::SetUniformMatrix(const std::string& uniform, const Matrix4& m) {
+	glUniformMatrix4fv(GetUniformLocation(uniform), 1, GL_FALSE, (GLfloat*)m.array);
+}
+
+int OGLShader::GetUniformLocation(const std::string& uniform) {
+	auto u = uniformMap.find(uniform);
+	GLint location = u == uniformMap.end() ?
+		uniformMap.emplace(uniform, glGetUniformLocation(GetProgramID(), uniform.c_str())).first->second :
+		u->second;
+	return location;
 }
 
 void OGLShader::LoadPass(const GLchar* code, ShaderStage type) {
