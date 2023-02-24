@@ -20,7 +20,7 @@ uniform mat4 projMatrix;
 uniform vec2 noiseScale;
 
 uniform float radius = 0.5;
-uniform float bias = 0.0;
+uniform float bias = 0.025;
 
 in Vertex {
 	vec2 texCoord;
