@@ -102,8 +102,6 @@ void ModelRPass::Render() {
 			const Matrix4* frameData = renderObj->GetAnimation()->GetJointData(renderObj->GetCurrentFrame());
 			const int* bindPoseIndices = renderObj->GetAnimatedMesh()->GetBindPoseIndices();
 
-			int j = glGetUniformLocation(defaultAnimShader->GetProgramID(), "joints");
-
 			for (int i = 0; i < renderObj->GetAnimatedMesh()->GetSubMeshCount(); ++i) {
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, (renderObj->GetMatTextures())[i]);
