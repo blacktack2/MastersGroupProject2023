@@ -31,9 +31,10 @@ vec3 displayDefault(vec2 texCoord) {
 	vec3 spec  = texture(specularLightTex, texCoord).rgb;
 	float ambientOcclusion = texture(ssaoTex, texCoord).r;
 
-	vec3 result = diffuse.rgb * light * ambientOcclusion;
+	vec3 result = diffuse.rgb * light;
 	result += spec;
-	result += diffuse.rgb * ambienceColour * ambientOcclusion;
+	result += diffuse.rgb * ambienceColour;
+	result *= ambientOcclusion;
 	return result;
 }
 
