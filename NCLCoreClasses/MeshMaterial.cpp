@@ -9,7 +9,7 @@ using namespace NCL;
 using namespace NCL::Rendering;
 using std::ifstream;
 
-MeshMaterial::MeshMaterial(const std::string& filename) {
+MeshMaterial::MeshMaterial(const std::string& filename) {		// Anim
 	ifstream file(Assets::MESHDIR + filename);
 
 	string dataType;

@@ -44,6 +44,7 @@ namespace NCL {
 	};
 
 	class MeshMaterial	{
+	public:		// testing animation
 		MeshMaterial(const std::string& filename);
 		~MeshMaterial() {}
 		const MeshMaterialEntry* GetMaterialForLayer(int i) const;
