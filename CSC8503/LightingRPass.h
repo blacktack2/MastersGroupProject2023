@@ -51,19 +51,5 @@ namespace NCL::CSC8503 {
 		OGLMesh* quad;
 
 		OGLShader* shader;
-
-		GLint cameraPosUniform;
-		GLint pixelSizeUniform;
-		GLint inverseProjViewUniform;
-
-		GLint lightPositionUniform;
-		GLint lightColourUniform;
-		GLint lightRadiusUniform;
-		GLint lightDirectionUniform;
-		GLint lightAngleUniform;
-
-		GLint modelMatrixUniform;
-		GLint viewMatrixUniform;
-		GLint projMatrixUniform;
 	};
 }

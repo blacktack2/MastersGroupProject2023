@@ -50,19 +50,16 @@ normalTexIn(normalTexIn), depthTexIn(depthTexIn) {
 
 	shader->Bind();
 
-	modeUniform = glGetUniformLocation(shader->GetProgramID(), "mode");
-	ambienceColourUniform = glGetUniformLocation(shader->GetProgramID(), "ambienceColour");
+	shader->SetUniformInt("mode", 0);
+	shader->SetUniformFloat("ambienceColour", 0.1f, 0.1f, 0.1f);
 
-	glUniform1i(modeUniform, 0);
-	glUniform3f(ambienceColourUniform, 0.01f, 0.01f, 0.01f);
-
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "skyboxTex"       ), 0);
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "diffuseTex"      ), 1);
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "diffuseLightTex" ), 2);
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "specularLightTex"), 3);
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "ssaoTex"         ), 4);
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "normalTex"       ), 5);
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "depthTex"        ), 6);
+	shader->SetUniformInt("skyboxTex", 0);
+	shader->SetUniformInt("diffuseTex", 1);
+	shader->SetUniformInt("diffuseLightTex", 2);
+	shader->SetUniformInt("specularLightTex", 3);
+	shader->SetUniformInt("ssaoTex", 4);
+	shader->SetUniformInt("normalTex", 5);
+	shader->SetUniformInt("depthTex", 6);
 
 	shader->Unbind();
 }
@@ -99,7 +96,7 @@ void CombineRPass::Render() {
 void CombineRPass::SetRenderMode(RenderMode mode) {
 	shader->Bind();
 
-	glUniform1i(modeUniform, (GLint)mode);
+	shader->SetUniformInt("mode", (int)mode);
 
 	shader->Unbind();
 }

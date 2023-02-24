@@ -340,7 +340,7 @@ void TutorialGame::InitialiseAssets() {
 	OGLShader* shader = (OGLShader*)AssetLibrary::GetShader("paint");
 	renderer->GetModelPass().AddModelShader(shader);
 
-	InitaliseAnimationAssets();		// testing animation
+	InitaliseAnimationAssets();
 
 	//old stuff
 	enemyMesh = AssetLibrary::GetMesh("cube");
@@ -368,25 +368,17 @@ void TutorialGame::InitaliseAnimationAssets()		// testing animation
 		const string* filename = nullptr;
 
 		matEntry->GetEntry("Diffuse", &filename);
-		GLuint texID = 0;
+		OGLTexture* tex = nullptr;
 
 		if (filename) {
 			string path = Assets::TEXTUREDIR + *filename;
 			stbi_set_flip_vertically_on_load(true);
-			texID = ((OGLTexture*)renderer->LoadTexture(path))->GetObjectID();
+			tex = static_cast<OGLTexture*>(renderer->LoadTexture(path));
 			stbi_set_flip_vertically_on_load(false);
-			//texID = SOIL_load_OGL_texture(path.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y);
-			SetTextureRepeating(texID, true);
+			tex->SetEdgeRepeat();
 		}
-		maleguardMatTextures.emplace_back(texID);
+		maleguardMatTextures.emplace_back(tex);
 	}
-}
-
-void TutorialGame::SetTextureRepeating(GLuint target, bool repeating) {		// testing animation  // No such function in OGLRenderer (?)
-	glBindTexture(GL_TEXTURE_2D, target);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, repeating ? GL_REPEAT : GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, repeating ? GL_REPEAT : GL_CLAMP);
-	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void TutorialGame::InitialisePrefabs() {
@@ -844,7 +836,6 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 		.SetPosition(position)
 		.SetScale(dimensions * 2);
 
-	//boss->SetRenderObject(new RenderObject(&boss->GetTransform(), cubeMesh, nullptr, nullptr));
 	boss->SetRenderObject(new AnimatedRenderObject(maleguardMaterial, maleguardAnim, maleguardMesh, maleguardMatTextures, &boss->GetTransform()));
 
 	boss->GetRenderObject()->SetColour({ 1,1,1,1 });

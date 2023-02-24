@@ -45,9 +45,7 @@ OGLPostRenderPass(renderer) {
 
 	shader->Bind();
 
-	exposureUniform = glGetUniformLocation(shader->GetProgramID(), "exposure");
-
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "sceneTex"), 0);
+	shader->SetUniformInt("sceneTex", 0);
 
 	shader->Unbind();
 }
@@ -78,7 +76,7 @@ void HDRRPass::Render() {
 void HDRRPass::SetExposure(float exposure) {
 	shader->Bind();
 
-	glUniform1f(exposureUniform, exposure);
+	shader->SetUniformFloat("exposure", exposure);
 
 	shader->Unbind();
 }
