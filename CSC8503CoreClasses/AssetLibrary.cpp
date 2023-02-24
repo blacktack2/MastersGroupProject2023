@@ -15,6 +15,7 @@ std::map<std::string, MeshGeometry*> AssetLibrary::meshes{};
 std::map<std::string, TextureBase*> AssetLibrary::textures{};
 std::map<std::string, ShaderBase*> AssetLibrary::shaders{};
 std::map<std::string, MeshAnimation*> AssetLibrary::animations{};
+std::map<std::string, MeshMaterial*> AssetLibrary::meshMaterials{};
 
 void AssetLibrary::AddPrefab(std::string name, GameObject* prefab) {
 	prefabs.emplace(name, prefab);
@@ -55,3 +56,15 @@ void AssetLibrary::AddAnimation(std::string name, MeshAnimation* anim) {
 MeshAnimation* AssetLibrary::GetAnimation(std::string name) {
 	return animations.find(name)->second;
 }
+
+void AssetLibrary::AddMeshMaterial(std::string name, MeshMaterial* material)
+{
+	meshMaterials.emplace(name, material);
+}
+
+MeshMaterial* AssetLibrary::GetMeshMaterial(std::string name)
+{
+	return meshMaterials.find(name)->second;
+}
+
+

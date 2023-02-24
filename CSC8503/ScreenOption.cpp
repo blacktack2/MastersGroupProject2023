@@ -17,8 +17,7 @@ void ScreenOption::initMenu() {
 
 	ShaderBase* shader = (ShaderBase*)AssetLibrary::GetShader("menu");
 
-	TextureBase* texture = renderer.LoadTexture("defaultmain.jpg");
-	AssetLibrary::AddTexture("optionMenuBg", texture);
+	TextureBase* texture = AssetLibrary::GetTexture("menuOption");
 
 	MeshGeometry* quad = (MeshGeometry*)AssetLibrary::GetMesh("quad");
 	Menu* menu = new Menu(Vector2(0, 0), Vector2(1.0f, 1.0f ));
@@ -29,11 +28,11 @@ void ScreenOption::initMenu() {
 	vector<Button*> buttons;
 	int num = 4;
 	for (int i = 0; i < num; i++) {
-		char path[50] = { 0 };
-		sprintf_s(path, "button%d.jpg", i + 4);
+		char name[8] = { 0 };
+		sprintf_s(name, "button%d", i + 4);
 
 		Button* btn = new Button(0, 0.45f + i * -0.3f, 0.16f, 0.08f);
-		TextureBase* tex = renderer.LoadTexture(path);
+		TextureBase* tex = AssetLibrary::GetTexture(name);
 
 		btn->SetRenderObject(new RenderObject(nullptr, quad, tex, shader));
 		menu->AddButton(btn);

@@ -20,7 +20,6 @@
 #include "MenuManager.h"
 
 #include "MeshAnimation.h";
-#include "MeshMaterial.h";
 
 namespace NCL {
 	namespace CSC8503 {
@@ -129,11 +128,7 @@ namespace NCL {
 
 			TextureBase*	basicTex    = nullptr;
 			TextureBase*	pillarTex    = nullptr;
-			TextureBase* healingKitTex = nullptr;		/////////
-			TextureBase* inkableTex = nullptr;		/////////
-			TextureBase* noiseTex = nullptr;		/////////
-			//ShaderBase* inkableShader = nullptr;		/////////
-			//ShaderBase* basicShader = nullptr;
+			TextureBase*	healingKitTex = nullptr;
 
 			//Coursework Meshes
 			MeshGeometry*	charMesh = nullptr;
