@@ -222,7 +222,8 @@ void PhysicsSystem::BasicCollisionDetection() {
 			}
 			CollisionDetection::CollisionInfo info;
 			if (CollisionDetection::ObjectIntersection(*i, *j, info)) {
-				ImpulseResolveCollision(*info.a, *info.b, info.point);
+				for (auto k = 0; k < info.point.size(); k++)
+				ImpulseResolveCollision(*info.a, *info.b, info.point[k]);
 				info.framesLeft = numCollisionFrames;
 				allCollisions.insert(info);
 			}
@@ -349,10 +350,14 @@ void PhysicsSystem::NarrowPhase() {
 			auto exists = allCollisions.find(info);
 			if (exists != allCollisions.end()) {
 				auto& eInfo = const_cast<CollisionDetection::CollisionInfo&>(*exists);
-				ImpulseResolveCollision(*eInfo.a, *eInfo.b, eInfo.point);
+				for (int j = 0; j < eInfo.point.size(); j++) {
+					ImpulseResolveCollision(*eInfo.a, *eInfo.b, eInfo.point[j]);
+				}
 				eInfo.framesLeft = numCollisionFrames;
 			} else {
-				ImpulseResolveCollision(*info.a, *info.b, info.point);
+				for (int j = 0; j < info.point.size(); j++) {
+					ImpulseResolveCollision(*info.a, *info.b, info.point[j]);
+				}
 				info.framesLeft = numCollisionFrames;
 				info.isEntered = !allCollisions.contains(info);
 				allCollisions.insert(info);

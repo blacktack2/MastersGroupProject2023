@@ -38,12 +38,23 @@ namespace NCL {
 
 			}
 
-			void AddContactPoint(const Vector3& normal, float p, const Vector3& localA = Vector3(), const Vector3& localB = Vector3()) {
-				point.emplace_back().localA = localA;
-				point.emplace_back().localB		= localB;
-				point.emplace_back().normal		= normal;
-				point.emplace_back().penetration	= p;
-				
+			void AddContactPoint(const Vector3& normal, float p, const Vector3& localA = Vector3(), const Vector3& localB = Vector3(), const int& numContactPoints = 2) {
+				if (point.empty()) {
+					point.resize(1);
+				}
+				int pSize = point.size() - 1;
+				if (pSize != 0) {
+					point.resize(point.size() + 1);
+					pSize++;
+				}
+				point[pSize].localA			= localA;
+				point[pSize].localB			= localB;
+				point[pSize].normal			= normal;
+				point[pSize].penetration	= p;
+				//point.localA		= localA;
+				//point.localB		= localB;
+				//point.normal		= normal;
+				//point.penetration	= p;
 			}
 
 			//Advanced collision detection / resolution
