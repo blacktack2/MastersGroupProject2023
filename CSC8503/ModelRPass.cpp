@@ -81,13 +81,13 @@ void ModelRPass::Render() {
 
 		if (renderObject->HasAnimation()) {
 			OGLShader* defaultAnimShader = static_cast<OGLShader*>(AssetLibrary::GetShader("animation"));
-			AnimatedRenderObject* renderObj = (AnimatedRenderObject*)renderObject;
+			AnimatedRenderObject* animObject = (AnimatedRenderObject*)renderObject;
 
-			renderObj->SetFrameTime(renderObj->GetFrameTime() - gameWorld.GetDeltaTime() * renderObj->GetAnimSpeed());
-			while (renderObj->GetFrameTime() < 0.0f) {
-				renderObj->SetCurrentFrame((renderObj->GetCurrentFrame() + 1) % renderObj->GetAnimation()->GetFrameCount());
-				renderObj->SetNextFrame((renderObj->GetCurrentFrame() + 1) % renderObj->GetAnimation()->GetFrameCount());
-				renderObj->SetFrameTime(renderObj->GetFrameTime() + (1.0f / renderObj->GetAnimation()->GetFrameRate()));
+			animObject->SetFrameTime(animObject->GetFrameTime() - gameWorld.GetDeltaTime() * animObject->GetAnimSpeed());
+			while (animObject->GetFrameTime() < 0.0f) {
+				animObject->SetCurrentFrame((animObject->GetCurrentFrame() + 1) % animObject->GetAnimation()->GetFrameCount());
+				animObject->SetNextFrame((animObject->GetCurrentFrame() + 1) % animObject->GetAnimation()->GetFrameCount());
+				animObject->SetFrameTime(animObject->GetFrameTime() + (1.0f / animObject->GetAnimation()->GetFrameRate()));
 			}
 
 			defaultAnimShader->Bind();
@@ -97,24 +97,24 @@ void ModelRPass::Render() {
 			Matrix4 modelMatrix = renderObject->GetTransform()->GetGlobalMatrix();
 			defaultAnimShader->SetUniformMatrix("modelMatrix", modelMatrix);
 
-			const Matrix4* bindPose = renderObj->GetAnimatedMesh()->GetBindPose().data();
-			const Matrix4* invBindPose = renderObj->GetAnimatedMesh()->GetInverseBindPose().data();
-			const Matrix4* frameData = renderObj->GetAnimation()->GetJointData(renderObj->GetCurrentFrame());
-			const int* bindPoseIndices = renderObj->GetAnimatedMesh()->GetBindPoseIndices();
+			const Matrix4* bindPose = animObject->GetAnimatedMesh()->GetBindPose().data();
+			const Matrix4* invBindPose = animObject->GetAnimatedMesh()->GetInverseBindPose().data();
+			const Matrix4* frameData = animObject->GetAnimation()->GetJointData(animObject->GetCurrentFrame());
+			const int* bindPoseIndices = animObject->GetAnimatedMesh()->GetBindPoseIndices();
 
-			for (int i = 0; i < renderObj->GetAnimatedMesh()->GetSubMeshCount(); ++i) {
-				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, (renderObj->GetMatTextures())[i]);
-				vector<Matrix4> frameMatrices;
-				for (unsigned int i = 0; i < renderObj->GetAnimatedMesh()->GetJointCount(); ++i) {
+			std::vector<OGLTexture*> matTextures = animObject->GetMatTextures();
+			for (int i = 0; i < animObject->GetAnimatedMesh()->GetSubMeshCount(); ++i) {
+				animObject->GetMatTextures()[i]->Bind(0);
+				std::vector<Matrix4> frameMatrices;
+				for (unsigned int i = 0; i < animObject->GetAnimatedMesh()->GetJointCount(); ++i) {
 					Matrix4 mat = frameData[i] * invBindPose[i];
 
 					frameMatrices.emplace_back(mat);
 				}
 				defaultAnimShader->SetUniformMatrix("joints", frameMatrices.size(), frameMatrices.data());
-				renderObj->GetAnimatedMesh()->Draw(i);
+				animObject->GetAnimatedMesh()->Draw(i);
 			}
-			((OGLShader*)AssetLibrary::GetShader("animation"))->Unbind();
+			defaultAnimShader->Unbind();
 		} else {
 			OGLMesh* mesh;
 			if (!(mesh = dynamic_cast<OGLMesh*>(renderObject->GetMesh()))) {

@@ -5,9 +5,8 @@
 
 using namespace NCL::CSC8503;
 
-AnimatedRenderObject::AnimatedRenderObject(MeshMaterial* mater, MeshAnimation* ani, MeshGeometry* msh, std::vector<GLuint>  matTex, Transform* parentTransform)
-	: RenderObject(parentTransform, AssetLibrary::GetShader("animation"))
-{
+AnimatedRenderObject::AnimatedRenderObject(MeshMaterial* mater, MeshAnimation* ani, MeshGeometry* msh, std::vector<OGLTexture*>  matTex, Transform* parentTransform) :
+RenderObject(parentTransform, AssetLibrary::GetShader("animation")) {
 	material = mater;
 	animMesh = msh;
 	anim = ani;

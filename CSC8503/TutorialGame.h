@@ -79,20 +79,19 @@ namespace NCL {
 			PlayerObject* AddPlayerToWorld(const Vector3& position, bool cameraFollow = true);
 			EnemyObject* AddEnemyToWorld(const Vector3& position, NavigationMap& navMap);
 
-			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);		/////////
-			HealingKit* UpdateHealingKit();																/////////
-			void BuildLevel();																			/////////
-			void UpdateLevel();																			/////////
+			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
+			HealingKit* UpdateHealingKit();
+			void BuildLevel();
+			void UpdateLevel();
 			NPCObject* AddNPCToWorld(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
 			GameObject* AddTriggerToWorld(const Vector3& position, float size);
 
-			void InitaliseAnimationAssets();								// testing animation
-			void SetTextureRepeating(GLuint target, bool repeating);		// testing animation
-			MeshMaterial* maleguardMaterial = nullptr;						// testing animation
-			MeshAnimation* maleguardAnim = nullptr;							// testing animation
-			MeshGeometry* maleguardMesh = nullptr;							// testing animation
-			std::vector<GLuint>  maleguardMatTextures;						// testing animation
+			void InitaliseAnimationAssets();
+			MeshMaterial* maleguardMaterial = nullptr;
+			MeshAnimation* maleguardAnim = nullptr;
+			MeshGeometry* maleguardMesh = nullptr;
+			std::vector<OGLTexture*>  maleguardMatTextures;
 
 			bool SelectObject();
 			void MoveSelectedObject();
