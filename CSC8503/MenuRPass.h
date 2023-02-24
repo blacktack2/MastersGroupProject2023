@@ -32,12 +32,7 @@ namespace NCL::CSC8503 {
 	private:
 		GameWorld& gameWorld;
 		OGLMesh* quad;
-		OGLShader* defaultShader;
-		OGLTexture* defaultTexture;
-
-		//btn
-		OGLShader* btnShader;
-		OGLMesh* btn;
-
+		ShaderBase* defaultShader;
+		TextureBase* defaultTexture;
 	};
 }

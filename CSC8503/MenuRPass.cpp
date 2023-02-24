@@ -19,7 +19,7 @@ MenuRPass::MenuRPass(OGLRenderer& renderer, GameWorld& gameWorld) :
 	defaultShader = new OGLShader("menuVertex.vert", "menuFragment.frag");
 
 	defaultTexture->Bind();
-	glUniform1i(glGetUniformLocation(defaultShader->GetProgramID(), "diffuseTex"), 0);
+	glUniform1i(glGetUniformLocation(((OGLShader*)defaultShader)->GetProgramID(), "diffuseTex"), 0);
 	defaultTexture->Unbind();
 }
 
@@ -59,12 +59,12 @@ void MenuRPass::DrawUIObject(UIObject* obj){
 	}
 	OGLShader* shader;
 	if (!(shader = dynamic_cast<OGLShader*>(renderObject->GetShader()))) {
-		shader = defaultShader;
+		shader = (OGLShader*) defaultShader;
 	}
 
 	OGLTexture* texture;
 	if (!(texture = dynamic_cast<OGLTexture*>(renderObject->GetDefaultTexture()))) {
-		texture = defaultTexture;
+		texture = (OGLTexture*) defaultTexture;
 	}
 
 	Vector4 dimension = obj->GetDimension();
