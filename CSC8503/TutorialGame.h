@@ -17,6 +17,7 @@
 #include "GameLevel.h"
 
 #include "GameStateManager.h"
+#include "MenuManager.h"
 
 #include "MeshAnimation.h";
 #include "MeshMaterial.h";
@@ -111,6 +112,7 @@ namespace NCL {
 			Light* sunLight;
 
 			GameStateManager* gameStateManager;
+			MenuManager* menuManager;
 
 			bool inSelectionMode;
 
@@ -163,6 +165,9 @@ namespace NCL {
 			//GameGrid stuff
 			GameGridManager* gridManager;
 			float wallTimer = 0.0f;
+
+			//menu
+			bool isclicked = false;
 		};
 	}
 }

@@ -70,6 +70,10 @@ set(Render_Files
     "PaintingRPass.h"
     "ModelRPass.h"
     "ModelRPass.cpp"
+    "MenuRPass.h"
+    "MenuRPass.cpp"
+    "Billboard.h"
+    "Billboard.cpp"
 )
 
 if(USE_VULKAN)
@@ -139,6 +143,27 @@ set(Enemy_Files
 )
 source_group("Enemy Files" FILES ${Enemy_Files})
 
+set(Menu_Files 
+    "MenuManager.h"
+    "MenuManager.cpp"
+    "UIObject.h"
+    "UIObject.cpp"
+    "Menu.h"
+    "Menu.cpp"
+    "Button.h"
+    "Button.cpp"
+    "ScreenMain.h"
+    "ScreenGame.h"
+    "ScreenPause.h"
+    "ScreenMain.cpp"
+    "ScreenGame.cpp"
+    "ScreenPause.cpp"
+    "ScreenOption.h"
+    "ScreenOption.cpp"
+
+)
+source_group("Menu Files" FILES ${Menu_Files})
+
 set(ALL_FILES
     ${Header_Files}
     ${Source_Files}
@@ -148,6 +173,7 @@ set(ALL_FILES
     ${Bullet_Files}
 	${Player_Files}
     ${Enemy_Files}
+    ${Menu_Files}
 )
 
 if(USE_VULKAN)
@@ -160,6 +186,7 @@ if(USE_VULKAN)
         ${Bullet_Files}
 	    ${Player_Files}
         ${Enemy_Files}
+        ${Menu_Files}
     )
 
 foreach (file ${SHADER_FILES})

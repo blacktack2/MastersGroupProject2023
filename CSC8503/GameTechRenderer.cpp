@@ -59,10 +59,14 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()), gameWo
 	SetGamma(gamma);
 	SetPresentPass(presentPass);
 
+	menuPass = new MenuRPass(*this, gameWorld);
+	AddOverlayPass(menuPass, "Menu");
+
 	debugPass = new DebugRPass(*this, gameWorld);
 	AddOverlayPass(debugPass, "Debug");
 
 	UpdatePipeline();
+
 }
 
 GameTechRenderer::~GameTechRenderer() {
@@ -74,6 +78,7 @@ GameTechRenderer::~GameTechRenderer() {
 	delete bloomPass;
 	delete hdrPass;
 	delete debugPass;
+	delete menuPass;
 }
 
 void GameTechRenderer::BuildObjectList() {

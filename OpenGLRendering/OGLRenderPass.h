@@ -12,6 +12,7 @@
 #include "OGLRenderer.h"
 
 #include "glad/gl.h"
+#include "Matrix4.h"
 
 
 namespace NCL::Rendering {
@@ -25,5 +26,10 @@ namespace NCL::Rendering {
 		OGLRenderPass(OGLRenderer& renderer);
 
 		OGLRenderer& renderer;
+
+		Matrix4 projMatrix;		//Projection matrix
+		Matrix4 modelMatrix;	//Model matrix. NOT MODELVIEW
+		Matrix4 viewMatrix;		//View matrix
+		Matrix4 textureMatrix;	//Texture matrix
 	};
 }

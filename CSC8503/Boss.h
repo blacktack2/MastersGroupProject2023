@@ -379,7 +379,7 @@ namespace NCL
                         finish = boss->BulletsStorm();
                         break;
                     default:
-                        std::cout << "Error: Boss' action is not a valid enum!\n";
+                        //std::cout << "Error: Boss' action is not a valid enum!\n";
                         break;
                     }
 
