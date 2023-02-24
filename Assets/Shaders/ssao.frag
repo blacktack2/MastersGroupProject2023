@@ -29,21 +29,23 @@ in Vertex {
 out float fragColour;
 
 void main() {
-	mat4 projView = projMatrix * viewMatrix;
+	mat4 inverseProj = inverse(projMatrix);
 
 	float depth = texture(depthTex, IN.texCoord).r;
 	vec3 ndcPos = vec3(IN.texCoord, depth) * 2.0 - 1.0;
-	vec4 viewUnscaled = inverse(projMatrix) * vec4(ndcPos, 1.0);
+	vec4 viewUnscaled = inverseProj * vec4(ndcPos, 1.0);
 	vec3 viewPos      = viewUnscaled.xyz / viewUnscaled.w;
 
 	vec3 random = normalize(texture(noiseTex, IN.texCoord * noiseScale).xyz) * 2.0 - 1.0;
-	vec4 worldNormal = texture(normalTex, IN.texCoord);
-	vec4 viewNormal = viewMatrix * worldNormal;
-	viewNormal.xyz /= viewNormal.w;
-	vec3 normal = normalize(vec3(viewNormal)) * 2.0 - 1.0;
-	vec3 tangent  = normalize(random - normal * dot(random, normal));
-	vec3 binormal = cross(tangent, normal);
-	mat3 TBN = mat3(tangent, binormal, normal);
+
+	vec3 worldNormal = normalize(texture(normalTex, IN.texCoord).xyz) * 2.0 - 1.0;
+	vec3 viewNormal = mat3(viewMatrix) * worldNormal;
+	viewNormal = normalize(viewNormal);
+
+	vec3 tangent  = normalize(random - viewNormal * dot(random, viewNormal));
+	vec3 binormal = cross(tangent, viewNormal);
+
+	mat3 TBN = mat3(tangent, binormal, viewNormal);
 
 	float occlusion = 0.0;
 	for (uint i = 0; i < kernels.length(); i++) {
@@ -55,10 +57,10 @@ void main() {
 		offset.xy = offset.xy * 0.5 + 0.5;
 
 		float sampleDepth = texture(depthTex, offset.xy).r;
-		vec4 depthPos = inverse(projMatrix) * vec4(samplePos.xy, sampleDepth * 2.0 - 1.0, 1.0);
+		vec4 depthPos = inverseProj * vec4(samplePos.xy, sampleDepth * 2.0 - 1.0, 1.0);
 		depthPos.xyz /= depthPos.w;
 
-		float rangeCheck = 1;//smoothstep(0.0, 1.0, radius / abs(viewPos.z - depthPos.z));
+		float rangeCheck = smoothstep(0.0, 1.0, radius / abs(viewPos.z - depthPos.z));
 		occlusion += ((depthPos.z >= samplePos.z + bias) ? 1.0 : 0.0) * rangeCheck;
 	}
 	fragColour = 1.0 - (occlusion / kernels.length());
