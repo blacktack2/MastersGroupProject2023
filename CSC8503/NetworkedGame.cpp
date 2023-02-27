@@ -13,6 +13,7 @@
 
 #include <bitset>
 #include <Maths.h>
+#include "PlayerBullet.h"
 
 #define COLLISION_MSG 30
 #define OBJECTID_START 10; //reserve 0-4 for playerID
@@ -401,11 +402,11 @@ void NetworkedGame::HandleItemInitPacket(GamePacket* payload, int source) {
 	{
 		//server
 	case NetworkInstanceType::Projectile:
-		obj = new Bullet(*(Bullet*)AssetLibrary::GetPrefab("bullet"));
-		((Bullet*)obj)->SetLifespan(5);
+		obj = new PlayerBullet(*(PlayerBullet*)AssetLibrary::GetPrefab("bullet"));
+		((PlayerBullet*)obj)->SetLifespan(5);
 		break;
 	default:
-		obj = new Bullet(*(Bullet*)AssetLibrary::GetPrefab("bullet"));
+		obj = new PlayerBullet(*(PlayerBullet*)AssetLibrary::GetPrefab("bullet"));
 		break;
 	}
 	obj->GetTransform().SetPosition(((ItemInitPacket*)payload)->position);
