@@ -4,6 +4,7 @@
 #include "PhysicsObject.h"
 #include "ShaderBase.h"
 #include "TextureBase.h"
+#include "MeshAnimation.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -13,6 +14,8 @@ std::map<std::string, GameObject*> AssetLibrary::prefabs{};
 std::map<std::string, MeshGeometry*> AssetLibrary::meshes{};
 std::map<std::string, TextureBase*> AssetLibrary::textures{};
 std::map<std::string, ShaderBase*> AssetLibrary::shaders{};
+std::map<std::string, MeshAnimation*> AssetLibrary::animations{};
+std::map<std::string, MeshMaterial*> AssetLibrary::meshMaterials{};
 
 void AssetLibrary::AddPrefab(std::string name, GameObject* prefab) {
 	prefabs.emplace(name, prefab);
@@ -45,3 +48,23 @@ void AssetLibrary::AddShader(std::string name, ShaderBase* shader) {
 ShaderBase* AssetLibrary::GetShader(std::string name) {
 	return shaders.find(name)->second;
 }
+
+void AssetLibrary::AddAnimation(std::string name, MeshAnimation* anim) {
+	animations.emplace(name, anim);
+}
+
+MeshAnimation* AssetLibrary::GetAnimation(std::string name) {
+	return animations.find(name)->second;
+}
+
+void AssetLibrary::AddMeshMaterial(std::string name, MeshMaterial* material)
+{
+	meshMaterials.emplace(name, material);
+}
+
+MeshMaterial* AssetLibrary::GetMeshMaterial(std::string name)
+{
+	return meshMaterials.find(name)->second;
+}
+
+

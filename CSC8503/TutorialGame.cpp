@@ -1,8 +1,7 @@
 #include "TutorialGame.h"
 
-
 #include "AssetLibrary.h"
-#include "Bullet.h"
+#include "PlayerBullet.h"
 #include "Bonus.h"
 #include "Debug.h"
 
@@ -21,6 +20,10 @@
 #include "obstacle.h"
 #include "PaintRenderObject.h"
 
+// testing animation
+#include "AnimatedRenderObject.h"
+#include "./stb/stb_image.h"
+
 //Audio Testing
 
 #include "Sound.h"
@@ -31,18 +34,21 @@
 
 #include <string>
 
+
 using namespace NCL;
 using namespace CSC8503;
 
 TutorialGame::TutorialGame() {
 	gameStateManager = &GameStateManager::instance();
+	menuManager = &MenuManager::instance();
+
 	world = &GameWorld::instance();
 	sunLight = world->AddLight(new Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
 	world->AddLight(new Light({ 0.0f, 5.0f, -10.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, 10.0f));
 #ifdef USEVULKAN
 	renderer = new GameTechVulkanRenderer(*world);
 #else 
-	renderer = new GameTechRenderer(*world);
+	renderer = &GameTechRenderer::instance();
 #endif
 
 	physics		= new PhysicsSystem(*world);
@@ -58,46 +64,34 @@ TutorialGame::TutorialGame() {
 }
 
 TutorialGame::~TutorialGame() {
-	//world->ClearAndErase();
-
-	delete cubeMesh;
-	delete sphereMesh;
-	delete charMesh;
-	delete enemyMesh;
-	delete bonusMesh;
-
-	delete basicTex;
+	world->ClearAndErase();
+	gridManager->Clear();
 
 	delete physics;
-	delete renderer;
 
 	delete[] mazes;
-
-	delete bulletPrefab;
 
 	SoundSystem::Destroy();
 }
 
 void TutorialGame::InitWorld(InitMode mode) {
-	score = 1000;
 
 	delete[] mazes;
 	mazes = nullptr;
 	world->ClearAndErase();
 	physics->Clear();
 	gridManager->Clear();
+	delete testingBossBehaviorTree;
 
 	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 300, 300, 2 ) );
 	BuildLevel();
-	player = AddPlayerToWorld(Vector3(0, 0, 0));
+	player = AddPlayerToWorld(Vector3(0, 5, 90));
+
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
 
-	if (mode != InitMode::EMPTY)
-	{
-		InitDefaultFloor();
-	}
-
+	InitGameExamples();
+	/*
 	switch (mode) {
 		default: InitGameExamples(); break;
 		case InitMode::MAZE             : InitMazeWorld(20, 20, 20.0f)                            ; break;
@@ -109,9 +103,9 @@ void TutorialGame::InitWorld(InitMode mode) {
 		case InitMode::BRIDGE_TEST_ANG  : InitBridgeConstraintTestWorld(10, 20, 30, true)         ; break;
 		case InitMode::PERFORMANCE_TEST : InitMixedGridWorld(30, 30, 10.0f, 10.0f)                ; break;
 		case InitMode::AUDIO_TEST : InitGameExamples()                ; break;
-	}
+	}*/
 
-	//InitGameExamples();
+	
 
 	world->UpdateStaticTree();
 
@@ -120,14 +114,14 @@ void TutorialGame::InitWorld(InitMode mode) {
 	InitCamera();
 }
 
-
-
 void TutorialGame::UpdateGame(float dt) {
 	GameState gameState = gameStateManager->GetGameState();
+	menuManager->Update(dt);
+	keyMap.Update();
 
 	debugViewPoint->BeginFrame();
 	debugViewPoint->MarkTime("Update");
-
+	
 	UpdateKeys();
 	static bool moveSun = false;
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM0)) {
@@ -157,6 +151,9 @@ void TutorialGame::UpdateGame(float dt) {
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM6)) {
 		renderer->GetCombinePass().SetRenderMode(RenderMode::SpecularLight);
 	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM7)) {
+		renderer->GetCombinePass().SetRenderMode(RenderMode::AmbientOcclusion);
+	}
 
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN)) {
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::G)) {
@@ -171,6 +168,12 @@ void TutorialGame::UpdateGame(float dt) {
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::B)) {
 			renderer->SetBloomBias(renderer->GetBloomBias() - 0.02f);
 		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::R)) {
+			renderer->SetSSAORadius(renderer->GetSSAORadius() - 0.1f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::F)) {
+			renderer->SetSSAOBias(renderer->GetSSAOBias() - 0.005f);
+		}
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP)) {
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::G)) {
@@ -184,6 +187,12 @@ void TutorialGame::UpdateGame(float dt) {
 		}
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::B)) {
 			renderer->SetBloomBias(renderer->GetBloomBias() + 0.02f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::R)) {
+			renderer->SetSSAORadius(renderer->GetSSAORadius() + 0.1f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::F)) {
+			renderer->SetSSAOBias(renderer->GetSSAOBias() + 0.005f);
 		}
 	}
 	static bool doMain = true;
@@ -212,6 +221,7 @@ void TutorialGame::UpdateGame(float dt) {
 		renderer->EnablePostPass("HDR", doHDR = !doHDR);
 		renderer->UpdatePipeline();
 	}
+	/*
 	Debug::Print(std::string("Gamma: ").append(std::to_string(renderer->GetGamma())), Vector2(0, 30.0f));
 	if (doHDR) {
 		Debug::Print(std::string("HDR:   ").append(std::to_string(renderer->GetHDRExposure())), Vector2(0, 35.0f));
@@ -224,9 +234,14 @@ void TutorialGame::UpdateGame(float dt) {
 	} else {
 		Debug::Print(std::string("Bloom -> Disabled"), Vector2(0, 40.0f));
 	}
-	Debug::Print(std::string("Render -> Scene:   ").append(doMain ? "Enabled" : "Disabled"), Vector2(0, 50.0f));
-	Debug::Print(std::string("       -> Post:    ").append(doPost ? "Enabled" : "Disabled"), Vector2(0, 55.0f));
-	Debug::Print(std::string("       -> Overlay: ").append(doOver ? "Enabled" : "Disabled"), Vector2(0, 60.0f));
+	Debug::Print(std::string("SSAO -> Radius: ").append(std::to_string(renderer->GetSSAORadius())), Vector2(0, 50.0f));
+	Debug::Print(std::string("     -> Bias:   ").append(std::to_string(renderer->GetSSAOBias())), Vector2(0, 55.0f));
+
+	Debug::Print(std::string("Render -> Scene:   ").append(doMain ? "Enabled" : "Disabled"), Vector2(0, 60.0f));
+	Debug::Print(std::string("       -> Post:    ").append(doPost ? "Enabled" : "Disabled"), Vector2(0, 65.0f));
+	Debug::Print(std::string("       -> Overlay: ").append(doOver ? "Enabled" : "Disabled"), Vector2(0, 70.0f));
+	*/
+
 	SoundSystem::GetSoundSystem()->Update(dt);
 
 	if (gameState == GameState::OnGoing) {
@@ -303,10 +318,7 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 
 	world->PostUpdateWorld();
 
-	gridManager->Update(dt);
-	//UpdateHealingKit();
 	testingBossBehaviorTree->update();
-	RenderBossBulletsReleasedByBoss();
 	if (gameLevel->GetShelterTimer() > 20.0f)
 	{
 		gameLevel->SetShelterTimer(0.0f);
@@ -315,58 +327,70 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 }
 
 void TutorialGame::InitialiseAssets() {
-	cubeMesh    = renderer->LoadMesh("cube.msh");
-	sphereMesh  = renderer->LoadMesh("sphere.msh");
-	charMesh    = renderer->LoadMesh("goat.msh");
-	enemyMesh   = renderer->LoadMesh("goose.msh");
-	npcMesh     = renderer->LoadMesh("Keeper.msh");
-	bonusMesh   = renderer->LoadMesh("Sphere.msh");
-	capsuleMesh = renderer->LoadMesh("capsule.msh");
+	cubeMesh = AssetLibrary::GetMesh("cube");
+	sphereMesh  = AssetLibrary::GetMesh("sphere");
+	charMesh    = AssetLibrary::GetMesh("goat");
+	capsuleMesh = AssetLibrary::GetMesh("capsule");
 
-	// TODO
-	AssetLibrary::AddMesh("pillar", renderer->LoadMesh("pillarCube.msh"));
-	AssetLibrary::AddMesh("fenceX", renderer->LoadMesh("fenceXCube.msh"));
-	AssetLibrary::AddMesh("fenceY", renderer->LoadMesh("fenceYCube.msh"));
-	AssetLibrary::AddMesh("wall", renderer->LoadMesh("cube.msh"));
-	AssetLibrary::AddMesh("shelter", renderer->LoadMesh("shelterCube.msh"));
+	basicTex = AssetLibrary::GetTexture("basic");
+	healingKitTex = AssetLibrary::GetTexture("healingKitTex");
+	pillarTex = AssetLibrary::GetTexture("pillarTex");
 
-	AssetLibrary::AddMesh("cube", cubeMesh);
-	AssetLibrary::AddMesh("sphere", sphereMesh);
-	AssetLibrary::AddMesh("cube", charMesh);
-	AssetLibrary::AddMesh("enemy", enemyMesh);
-	AssetLibrary::AddMesh("bonus", bonusMesh);
-	AssetLibrary::AddMesh("capsule", capsuleMesh);
 
-	basicTex = renderer->LoadTexture("checkerboard.png");
-	//inkableTex = renderer->LoadTexture("brick.tga");						/////////
-	healingKitTex = renderer->LoadTexture("HealingKit.png");				/////////
-	//noiseTex = renderer->LoadTexture("Perlin.png");							/////////
-	//AssetLibrary::AddTexture("inkable", inkableTex);						/////////
-	AssetLibrary::AddTexture("noise", noiseTex);							/////////
-	AssetLibrary::AddTexture("basic", basicTex);
-	OGLShader* shader = (OGLShader*)renderer->LoadShader("modelDefault.vert", "modelPaintTexture.frag");
-	AssetLibrary::AddShader("paint", shader);
+	OGLShader* shader = (OGLShader*)AssetLibrary::GetShader("paint");
 	renderer->GetModelPass().AddModelShader(shader);
 
-	//basicShader = renderer->LoadShader("scene.vert", "scene.frag");			/////////
-	//inkableShader = renderer->LoadShader("inkable.vert", "inkable.frag");	/////////
-	//AssetLibrary::AddShader("inkable", inkableShader);						/////////
-	//AssetLibrary::AddShader("basic", basicShader);							/////////
+	InitaliseAnimationAssets();
+
+	//old stuff
+	enemyMesh = AssetLibrary::GetMesh("cube");
+	npcMesh = AssetLibrary::GetMesh("cube");
+	bonusMesh = AssetLibrary::GetMesh("cube");
 
 	InitialisePrefabs();
 }
 
+void TutorialGame::InitaliseAnimationAssets()		// testing animation
+{
+	OGLShader* animationShader = (OGLShader*)AssetLibrary::GetShader("animation");
+	if (!animationShader->LoadSuccess()) {
+		return;
+	}
+	renderer->GetModelPass().AddModelShader(animationShader);
+
+	maleguardMaterial = AssetLibrary::GetMeshMaterial("boss");
+	maleguardMesh = AssetLibrary::GetMesh("boss");
+	maleguardAnim = AssetLibrary::GetAnimation("WalkForward");
+
+	for (int i = 0; i < maleguardMesh->GetSubMeshCount(); ++i) {
+		const MeshMaterialEntry* matEntry = maleguardMaterial->GetMaterialForLayer(i);
+
+		const string* filename = nullptr;
+
+		matEntry->GetEntry("Diffuse", &filename);
+		OGLTexture* tex = nullptr;
+
+		if (filename) {
+			string path = Assets::TEXTUREDIR + *filename;
+			stbi_set_flip_vertically_on_load(true);
+			tex = static_cast<OGLTexture*>(renderer->LoadTexture(path));
+			stbi_set_flip_vertically_on_load(false);
+			tex->SetEdgeRepeat();
+		}
+		maleguardMatTextures.emplace_back(tex);
+	}
+}
+
 void TutorialGame::InitialisePrefabs() {
 	float bulletRadius = 0.2f;
-
-	bulletPrefab = new Bullet();
+	GameObject* bulletPrefab;
+	bulletPrefab = new PlayerBullet();
 
 	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::PlayerProj));
 	bulletPrefab->GetTransform().SetScale(Vector3(bulletRadius));
 
 	bulletPrefab->SetRenderObject(new RenderObject(&bulletPrefab->GetTransform(), sphereMesh, nullptr, nullptr));
-	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume()));
-
+	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume(), true));
 	bulletPrefab->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.8f, 1.0f));
 
 	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
@@ -374,6 +398,24 @@ void TutorialGame::InitialisePrefabs() {
 	bulletPrefab->GetPhysicsObject()->InitCapsuleInertia();
 
 	AssetLibrary::AddPrefab("bullet", bulletPrefab);
+
+	bulletRadius = 0.75f;
+
+	bulletPrefab = new BossBullet();
+
+	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::EnemyProj));
+	bulletPrefab->GetTransform().SetScale(Vector3(bulletRadius));
+
+	bulletPrefab->SetRenderObject(new RenderObject(&bulletPrefab->GetTransform(), sphereMesh, nullptr, nullptr));
+	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume(), true));
+
+	bulletPrefab->GetRenderObject()->SetColour(Vector4(0.2f, 1.0f, 0.5f, 1.0f));
+
+	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
+	bulletPrefab->GetPhysicsObject()->SetGravWeight(1.0f);
+	bulletPrefab->GetPhysicsObject()->InitCapsuleInertia();
+
+	AssetLibrary::AddPrefab("bossBullet", bulletPrefab);
 }
 
 void TutorialGame::InitCamera() {
@@ -444,6 +486,7 @@ void TutorialGame::UpdateKeys() {
 				Window::GetWindow()->ShowOSPointer(false);
 				Window::GetWindow()->LockMouseToWindow(true);
 			}
+
 			break;
 		case GameState::Win:
 			Debug::Print("You Win!", Vector2(5, 80), Vector4(0, 1, 0, 1));
@@ -741,7 +784,8 @@ PlayerObject* TutorialGame::AddPlayerToWorld(const Vector3& position, bool camer
 		.SetScale(Vector3(1, 1, 1))
 		.SetPosition(position);
 
-	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMesh, nullptr, nullptr));
+	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMesh, basicTex, nullptr));
+	
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 
 	character->GetRenderObject()->SetColour(Vector4(1, 0.9f, 0.8f, 1));
@@ -792,9 +836,9 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 		.SetPosition(position)
 		.SetScale(dimensions * 2);
 
-	boss->SetRenderObject(new RenderObject(&boss->GetTransform(), cubeMesh, nullptr, nullptr));
+	boss->SetRenderObject(new AnimatedRenderObject(maleguardMaterial, maleguardAnim, maleguardMesh, maleguardMatTextures, &boss->GetTransform()));
 
-	boss->GetRenderObject()->SetColour({ 1,1,0,1 });
+	boss->GetRenderObject()->SetColour({ 1,1,1,1 });
 	boss->SetPhysicsObject(new PhysicsObject(&boss->GetTransform(), boss->GetBoundingVolume()));
 
 	boss->GetPhysicsObject()->SetInverseMass(inverseMass);
@@ -823,13 +867,18 @@ void TutorialGame::UpdateLevel()
 			object.Destroy(false);
 			if (object.objectType == ObjectType::Pillar)
 			{
-				Vector3 dimensions{ interval / 2.0f, 10.0f, interval / 2.0f };
+				Vector3 dimensions{ interval / 2.0f, 10, interval / 2.0f };
 				Obstacle* pillar = new Obstacle{ &object, true };
-				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3,2,1.3 }));
+				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3,2,1.3 }, CollisionLayer::PaintAble));
+
 				pillar->GetTransform()
-					.SetPosition(object.worldPos + Vector3{ 0,18,0 })
+					.SetPosition(object.worldPos + Vector3{ 0,20,0 })
 					.SetScale(dimensions * 2);
-				pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), AssetLibrary::GetMesh("pillar"), nullptr, nullptr));
+				//pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), AssetLibrary::GetMesh("pillar"), healingKitTex, nullptr));
+				
+				PaintRenderObject* render = new PaintRenderObject(&pillar->GetTransform(), AssetLibrary::GetMesh("pillar"), pillarTex);
+				pillar->SetRenderObject(render);
+				
 				pillar->SetPhysicsObject(new PhysicsObject(&pillar->GetTransform(), pillar->GetBoundingVolume()));
 				pillar->GetPhysicsObject()->SetInverseMass(0);
 				pillar->GetPhysicsObject()->InitCubeInertia();
@@ -839,11 +888,15 @@ void TutorialGame::UpdateLevel()
 			{
 				Vector3 dimensions{ interval / 4.0f, 0.5f, interval / 5.0f };
 				Obstacle* fenceX = new Obstacle{ &object, true };
-				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
 				fenceX->GetTransform()
 					.SetPosition(object.worldPos + Vector3{ 0,2,0 })
 					.SetScale(dimensions * 2);
-				fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), AssetLibrary::GetMesh("fenceX"), nullptr, nullptr));		// TODO: change to the right Mesh
+				//fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), AssetLibrary::GetMesh("fenceX"), basicTex, nullptr));		// TODO: change to the right Mesh
+				
+				PaintRenderObject* render = new PaintRenderObject(&fenceX->GetTransform(), AssetLibrary::GetMesh("fenceX"), basicTex);
+				fenceX->SetRenderObject(render);
+
 				fenceX->SetPhysicsObject(new PhysicsObject(&fenceX->GetTransform(), fenceX->GetBoundingVolume()));
 				fenceX->GetPhysicsObject()->SetInverseMass(0);
 				fenceX->GetPhysicsObject()->InitCubeInertia();
@@ -853,11 +906,15 @@ void TutorialGame::UpdateLevel()
 			{
 				Vector3 dimensions{ interval / 5.0f, 0.5f, interval / 4.0f };
 				Obstacle* fenceY = new Obstacle{ &object, true };
-				fenceY->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+				fenceY->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
 				fenceY->GetTransform()
 					.SetPosition(object.worldPos + Vector3{ 0,2,0 })
 					.SetScale(dimensions * 2);
-				fenceY->SetRenderObject(new RenderObject(&fenceY->GetTransform(), AssetLibrary::GetMesh("fenceY"), nullptr, nullptr));		// TODO: change to the right Mesh
+				//fenceY->SetRenderObject(new RenderObject(&fenceY->GetTransform(), AssetLibrary::GetMesh("fenceY"), basicTex, nullptr));		// TODO: change to the right Mesh
+				
+				PaintRenderObject* render = new PaintRenderObject(&fenceY->GetTransform(), AssetLibrary::GetMesh("fenceY"), basicTex);
+				fenceY->SetRenderObject(render);
+				
 				fenceY->SetPhysicsObject(new PhysicsObject(&fenceY->GetTransform(), fenceY->GetBoundingVolume()));
 				fenceY->GetPhysicsObject()->SetInverseMass(0);
 				fenceY->GetPhysicsObject()->InitCubeInertia();
@@ -867,55 +924,41 @@ void TutorialGame::UpdateLevel()
 			{
 				Vector3 dimensions{ interval / 5.0f, 2.0f, interval / 2.0f };
 				Obstacle* shelter = new Obstacle{ &object, false };
-				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
 				shelter->GetTransform()
 					.SetPosition(object.worldPos + Vector3{ 0,2.2,0 })
 					.SetScale(dimensions);
-				shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary::GetMesh("shelter"), nullptr, nullptr));
+				//shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary::GetMesh("shelter"), basicTex, nullptr));
+
+				PaintRenderObject* render = new PaintRenderObject(&shelter->GetTransform(), AssetLibrary::GetMesh("shelter"), basicTex);
+				shelter->SetRenderObject(render);
+
 				shelter->SetPhysicsObject(new PhysicsObject(&shelter->GetTransform(), shelter->GetBoundingVolume()));
 				shelter->GetPhysicsObject()->SetInverseMass(0);
 				shelter->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(shelter);
 			}
+			/*
 			if (object.objectType == ObjectType::Wall)
 			{
-				Vector3 dimensions{ interval / 2.0f, 10.0f, interval / 2.0f };
+				Vector3 dimensions{ interval / 2.0f, 30.0f, interval / 2.0f };
 				Obstacle* wall = new Obstacle{ &object, true };
-				wall->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+				wall->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
 				wall->GetTransform()
 					.SetPosition(object.worldPos)
 					.SetScale(dimensions * 2);
-				wall->SetRenderObject(new RenderObject(&wall->GetTransform(), AssetLibrary::GetMesh("wall"), nullptr, nullptr));
+				//wall->SetRenderObject(new RenderObject(&wall->GetTransform(), AssetLibrary::GetMesh("wall"), basicTex, nullptr));
+
+				PaintRenderObject* render = new PaintRenderObject(&wall->GetTransform(), AssetLibrary::GetMesh("wall"), basicTex);
+				wall->SetRenderObject(render);
+
 				wall->SetPhysicsObject(new PhysicsObject(&wall->GetTransform(), wall->GetBoundingVolume()));
 				wall->GetPhysicsObject()->SetInverseMass(0);
 				wall->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(wall);
 			}
+			*/
 		}
-	}
-}
-
-void TutorialGame::RenderBossBulletsReleasedByBoss()
-{
-	std::vector<BossBullet*> bossBossBullets = testingBoss->GetBossBulletsReleasedByBoss();
-	for (auto& bomb : bossBossBullets)
-	{
-		if (bomb->GetRenderObject() == nullptr)
-		{
-			bomb->SetRenderObject(new RenderObject(&bomb->GetTransform(), sphereMesh, nullptr, nullptr));
-		}
-		bomb->GetRenderObject()->SetColour({ 0,0,1,1 });
-
-		world->AddGameObject(bomb);
-	}
-	testingBoss->clearBossBulletList();
-	if (testingBoss->isUsingInkSea())
-	{
-		//floor->GetRenderObject()->enableInkSea(testingBoss->GetTransform().GetGlobalPosition());
-	}
-	else
-	{
-		//floor->GetRenderObject()->disableInkSea();
 	}
 }
 

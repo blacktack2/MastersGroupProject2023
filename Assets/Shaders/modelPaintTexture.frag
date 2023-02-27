@@ -35,7 +35,7 @@ void main() {
 
 	vec4 paint = texture(paintTex, IN.texCoord);
 	if(paint.a > 0.5) {
-		paint.a = 1;
+		paint.a = 0.96;
 	}
 	else {
 		paint.a = 0;
@@ -49,5 +49,5 @@ void main() {
 
 	normalOut = vec4(normal * 0.5 + 0.5, 1.0);
 	
-	diffuseOut.rgb += paint.rgb * paint.a;
+	diffuseOut.rgb = paint.rgb * paint.a + diffuseOut.rgb * (1 - paint.a);
 }

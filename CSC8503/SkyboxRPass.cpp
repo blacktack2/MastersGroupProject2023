@@ -45,16 +45,13 @@ OGLMainRenderPass(renderer), gameWorld(gameWorld) {
 
 	shader->Bind();
 
-	// TODO - Replace with call to the shader class
-	viewMatrixUniform = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
-	sunDirUniform = glGetUniformLocation(shader->GetProgramID(), "sunDir");
-	timeUniform = glGetUniformLocation(shader->GetProgramID(), "time");
+	shader->SetUniformFloat("sunDir", 0.1f, 0.6f, 0.2f);
 
-	glUniform3f(sunDirUniform, 0.1f, 0.6f, 0.2f);
-	glUniform1f(glGetUniformLocation(shader->GetProgramID(), "cirrus"), 0.5f);
-	glUniform1f(glGetUniformLocation(shader->GetProgramID(), "cumulus"), 0.5f);
+	shader->SetUniformFloat("cirrus", 0.5f);
+	shader->SetUniformFloat("cumulus", 0.5f);
+
 	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix();
-	glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "projMatrix"), 1, GL_FALSE, (GLfloat*)projMatrix.array);
+	shader->SetUniformMatrix("projMatrix", projMatrix);
 
 	shader->Unbind();
 }
@@ -72,24 +69,25 @@ SkyboxRPass::~SkyboxRPass() {
 void SkyboxRPass::Render() {
 	frameBuffer->Bind();
 	glClear(GL_COLOR_BUFFER_BIT);
-	glDepthMask(GL_FALSE);
 
 	shader->Bind();
 
 	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-	glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, (GLfloat*)viewMatrix.array);
-	glUniform1f(timeUniform, gameWorld.GetRunTime());
+	shader->SetUniformMatrix("viewMatrix", viewMatrix);
+
+	shader->SetUniformFloat("time", gameWorld.GetRunTime());
 
 	quad->Draw();
 
 	shader->Unbind();
 
-	glDepthMask(GL_TRUE);
 	frameBuffer->Unbind();
 }
 
 void SkyboxRPass::SetSunDir(const Vector3& direction) {
 	shader->Bind();
-	glUniform3fv(sunDirUniform, 1, (GLfloat*)&direction);
+
+	shader->SetUniformFloat("sunDir", direction);
+
 	shader->Unbind();
 }

@@ -35,8 +35,6 @@ namespace NCL::CSC8503 {
 
 		OGLShader* lineShader;
 
-		GLuint viewProjMatrixUniform;
-
 		OGLShader* textShader;
 
 		std::vector<Vector3> debugLineData;

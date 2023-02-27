@@ -53,23 +53,10 @@ OGLMainRenderPass(renderer), gameWorld(gameWorld), depthTexIn(depthTexIn), norma
 
 	shader->Bind();
 
-	cameraPosUniform       = glGetUniformLocation(shader->GetProgramID(), "cameraPos");
-	pixelSizeUniform       = glGetUniformLocation(shader->GetProgramID(), "pixelSize");
-	inverseProjViewUniform = glGetUniformLocation(shader->GetProgramID(), "inverseProjView");
+	shader->SetUniformFloat("pixelSize", 1.0f / (float)renderer.GetWidth(), 1.0f / (float)renderer.GetHeight());
 
-	lightPositionUniform   = glGetUniformLocation(shader->GetProgramID(), "lightPosition");
-	lightColourUniform     = glGetUniformLocation(shader->GetProgramID(), "lightColour");
-	lightRadiusUniform     = glGetUniformLocation(shader->GetProgramID(), "lightRadius");
-	lightDirectionUniform  = glGetUniformLocation(shader->GetProgramID(), "lightDirection");
-	lightAngleUniform      = glGetUniformLocation(shader->GetProgramID(), "lightAngle");
-
-	modelMatrixUniform     = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
-	viewMatrixUniform      = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
-	projMatrixUniform      = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
-
-	glUniform2f(pixelSizeUniform, 1.0f / (float)renderer.GetWidth(), 1.0f / (float)renderer.GetHeight());
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "depthTex"), 0);
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "normalTex"), 1);
+	shader->SetUniformInt("depthTex", 0);
+	shader->SetUniformInt("normalTex", 1);
 
 	shader->Unbind();
 }
@@ -88,7 +75,11 @@ LightingRPass::~LightingRPass() {
 
 void LightingRPass::OnWindowResize(int width, int height) {
 	RenderPassBase::OnWindowResize(width, height);
-	glUniform2f(pixelSizeUniform, 1.0f / (float)width, 1.0f / (float)height);
+	shader->Bind();
+
+	shader->SetUniformFloat("pixelSize", 1.0f / (float)width, 1.0f / (float)height);
+
+	shader->Unbind();
 }
 
 void LightingRPass::Render() {
@@ -114,23 +105,24 @@ void LightingRPass::DrawLight(const Light& light) {
 	depthTexIn->Bind(0);
 	normalTexIn->Bind(1);
 
-	glUniform3fv(cameraPosUniform, 1, (GLfloat*)&gameWorld.GetMainCamera()->GetPosition()[0]);
+	shader->SetUniformFloat("cameraPos", gameWorld.GetMainCamera()->GetPosition());
+
 	Matrix4 modelMatrix = Matrix4();
-	modelMatrix.SetDiagonal(Vector3(1));
+	modelMatrix.SetDiagonal(Vector4(1));
 	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix();
 	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
 	Matrix4 inverseViewProj = (projMatrix * viewMatrix).Inverse();
 
-	glUniform4fv(lightPositionUniform, 1, (GLfloat*)&light.position);
-	glUniform4fv(lightColourUniform, 1, (GLfloat*)&light.colour);
-	glUniform1f(lightRadiusUniform, light.radius);
-	glUniform3fv(lightDirectionUniform, 1, (GLfloat*)&light.direction);
-	glUniform1f(lightAngleUniform, light.angle);
+	shader->SetUniformFloat("lightPosition" , light.position);
+	shader->SetUniformFloat("lightColour"   , light.colour);
+	shader->SetUniformFloat("lightRadius"   , light.radius);
+	shader->SetUniformFloat("lightDirection", light.direction);
+	shader->SetUniformFloat("lightAngle"    , light.angle);
 
-	glUniformMatrix4fv(inverseProjViewUniform, 1, GL_FALSE, (GLfloat*)&inverseViewProj);
-	glUniformMatrix4fv(modelMatrixUniform, 1, GL_FALSE, (GLfloat*)modelMatrix.array);
-	glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, (GLfloat*)viewMatrix.array);
-	glUniformMatrix4fv(projMatrixUniform, 1, GL_FALSE, (GLfloat*)projMatrix.array);
+	shader->SetUniformMatrix("inverseProjView", inverseViewProj);
+	shader->SetUniformMatrix("modelMatrix"    , modelMatrix);
+	shader->SetUniformMatrix("viewMatrix"     , viewMatrix);
+	shader->SetUniformMatrix("projMatrix"     , projMatrix);
 
 	if (light.position.w == 0.0f) {
 		quad->Draw();

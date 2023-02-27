@@ -3,7 +3,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-GameStateManager::GameStateManager(){
+GameStateManager::GameStateManager(): gameState(GameState::OnGoing) {
 }
 
 GameStateManager::~GameStateManager() {

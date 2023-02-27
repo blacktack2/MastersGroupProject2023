@@ -21,5 +21,10 @@ out vec4 fragColour;
 void main() {
 	vec3 relative = IN.worldPos - paintPos;
 	float d = dot(relative, relative);
-	if(d <= (paintSize * paintSize)) {fragColour = vec4(paintColour,1);}
+
+	if (d <= (paintSize * paintSize)) {
+		fragColour = vec4(paintColour, 1);
+	} else {
+		fragColour = vec4(0, 0, 0, 0);
+	}
 }

@@ -110,5 +110,14 @@ namespace NCL {
 
 		//Mouse pointer sensitivity. Set this negative to get a headache!
 		float		sensitivity;
+
+		//mouse position
+		float m_fPosX;
+		float m_fPosY;
+		float m_fWidth;
+		float m_fHeight;
+
+		float g_fWidth = 1280;
+		float g_fHeight = 720;
 	};
 }

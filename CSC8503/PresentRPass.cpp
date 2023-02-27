@@ -33,12 +33,6 @@ OGLPresentRenderPass(renderer) {
 	quad->UploadToGPU();
 
 	shader = new OGLShader("present.vert", "present.frag");
-
-	shader->Bind();
-
-	gammaUniform = glGetUniformLocation(shader->GetProgramID(), "gamma");
-
-	shader->Unbind();
 }
 
 PresentRPass::~PresentRPass() {
@@ -60,7 +54,7 @@ void PresentRPass::Render() {
 void PresentRPass::SetGamma(float gamma) {
 	shader->Bind();
 
-	glUniform1f(gammaUniform, gamma);
+	shader->SetUniformFloat("gamma", gamma);
 
 	shader->Unbind();
 }

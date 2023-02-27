@@ -55,26 +55,16 @@ BloomRPass::BloomRPass(OGLRenderer& renderer) :
 
 	downsampleShader->Bind();
 
-	sourcePixelSizeUniform = glGetUniformLocation(downsampleShader->GetProgramID(), "sourcePixelSize");
-
-	glUniform1i(glGetUniformLocation(downsampleShader->GetProgramID(), "sourceTex"), 0);
-
-	downsampleShader->Unbind();
+	downsampleShader->SetUniformInt("sourceTex", 0);
 
 	upsampleShader->Bind();
 
-	filterRadiusUniform = glGetUniformLocation(upsampleShader->GetProgramID(), "filterRadius");
-
-	glUniform1i(glGetUniformLocation(upsampleShader->GetProgramID(), "sourceTex"), 0);
-
-	upsampleShader->Unbind();
+	upsampleShader->SetUniformInt("sourceTex", 0);
 
 	combineShader->Bind();
 
-	biasUniform = glGetUniformLocation(combineShader->GetProgramID(), "bias");
-
-	glUniform1i(glGetUniformLocation(combineShader->GetProgramID(), "sceneTex"), 0);
-	glUniform1i(glGetUniformLocation(combineShader->GetProgramID(), "bloomTex"), 1);
+	combineShader->SetUniformInt("sceneTex", 0);
+	combineShader->SetUniformInt("bloomTex", 1);
 
 	combineShader->Unbind();
 }
@@ -127,7 +117,7 @@ void BloomRPass::SetBloomDepth(size_t depth) {
 
 		BloomMip mip{
 			mipWidth, mipHeight,
-			new OGLTexture(mip.width, mip.height, GL_R11F_G11F_B10F, GL_RGB, GL_FLOAT)
+			new OGLTexture(mipWidth, mipHeight, GL_R11F_G11F_B10F, GL_RGB, GL_FLOAT)
 		};
 		mip.texture->Bind();
 		mip.texture->SetEdgeClamp();
@@ -140,7 +130,7 @@ void BloomRPass::SetBloomDepth(size_t depth) {
 void BloomRPass::SetBias(float bias) {
 	combineShader->Bind();
 
-	glUniform1f(biasUniform, bias);
+	combineShader->SetUniformFloat("bias", bias);
 
 	combineShader->Unbind();
 }
@@ -156,7 +146,7 @@ void BloomRPass::Downsample() {
 
 		quad->Draw();
 
-		glUniform2f(sourcePixelSizeUniform, 1.0f / mip->width, 1.0f / mip->height);
+		downsampleShader->SetUniformFloat("sourcePixelSize", 1.0f / mip->width, 1.0f / mip->height);
 		mip->texture->Bind(0);
 	}
 

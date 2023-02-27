@@ -78,4 +78,5 @@ void	Sound::DeleteSounds() {
 	for (map<string, Sound*>::iterator i = sSounds.begin(); i != sSounds.end(); ++i) {
 		delete i->second;
 	}
+	sSounds.clear();
 }

@@ -12,6 +12,9 @@
 #include "OGLShader.h"
 #include "OGLTexture.h"
 #include "RenderObject.h"
+#include "AnimatedRenderObject.h"
+#include "AssetLibrary.h"
+#include "Assets.h"
 
 using namespace NCL::CSC8503;
 
@@ -38,8 +41,8 @@ OGLMainRenderPass(renderer), gameWorld(gameWorld) {
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
-	defaultShader = new OGLShader("modelDefault.vert", "modelDefault.frag");
-	AddModelShader(defaultShader);
+	defaultModelShader = new OGLShader("modelDefault.vert", "modelDefault.frag");
+	AddModelShader(defaultModelShader);
 }
 
 ModelRPass::~ModelRPass() {
@@ -49,7 +52,7 @@ ModelRPass::~ModelRPass() {
 	delete normalOutTex;
 	delete depthOutTex;
 
-	delete defaultShader;
+	delete defaultModelShader;
 }
 
 void ModelRPass::Render() {
@@ -62,10 +65,10 @@ void ModelRPass::Render() {
 		Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
 		float screenAspect = (float)renderer.GetWidth() / (float)renderer.GetHeight();
 		Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
-		// TODO - Replace with call to the shader class
-		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "viewMatrix"), 1, GL_FALSE, (GLfloat*)&viewMatrix);
-		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "projMatrix"), 1, GL_FALSE, (GLfloat*)&projMatrix);
-		glUniform1f(glGetUniformLocation(shader->GetProgramID(), "gamma"), gamma);
+
+		shader->SetUniformMatrix("viewMatrix", viewMatrix);
+		shader->SetUniformMatrix("projMatrix", projMatrix);
+		shader->SetUniformFloat("gamma", gamma);
 
 		shader->Unbind();
 	}
@@ -75,44 +78,82 @@ void ModelRPass::Render() {
 		if (!renderObject) {
 			return;
 		}
-		OGLMesh* mesh;
-		if (!(mesh = dynamic_cast<OGLMesh*>(renderObject->GetMesh()))) {
-			return;
+
+		if (renderObject->HasAnimation()) {
+			OGLShader* defaultAnimShader = static_cast<OGLShader*>(AssetLibrary::GetShader("animation"));
+			AnimatedRenderObject* animObject = (AnimatedRenderObject*)renderObject;
+
+			animObject->SetFrameTime(animObject->GetFrameTime() - gameWorld.GetDeltaTime() * animObject->GetAnimSpeed());
+			while (animObject->GetFrameTime() < 0.0f) {
+				animObject->SetCurrentFrame((animObject->GetCurrentFrame() + 1) % animObject->GetAnimation()->GetFrameCount());
+				animObject->SetNextFrame((animObject->GetCurrentFrame() + 1) % animObject->GetAnimation()->GetFrameCount());
+				animObject->SetFrameTime(animObject->GetFrameTime() + (1.0f / animObject->GetAnimation()->GetFrameRate()));
+			}
+
+			defaultAnimShader->Bind();
+
+			defaultAnimShader->SetUniformInt("diffuseTex", 0);
+
+			Matrix4 modelMatrix = renderObject->GetTransform()->GetGlobalMatrix();
+			defaultAnimShader->SetUniformMatrix("modelMatrix", modelMatrix);
+
+			const Matrix4* bindPose = animObject->GetAnimatedMesh()->GetBindPose().data();
+			const Matrix4* invBindPose = animObject->GetAnimatedMesh()->GetInverseBindPose().data();
+			const Matrix4* frameData = animObject->GetAnimation()->GetJointData(animObject->GetCurrentFrame());
+			const int* bindPoseIndices = animObject->GetAnimatedMesh()->GetBindPoseIndices();
+
+			std::vector<OGLTexture*> matTextures = animObject->GetMatTextures();
+			for (int i = 0; i < animObject->GetAnimatedMesh()->GetSubMeshCount(); ++i) {
+				animObject->GetMatTextures()[i]->Bind(0);
+				std::vector<Matrix4> frameMatrices;
+				for (unsigned int i = 0; i < animObject->GetAnimatedMesh()->GetJointCount(); ++i) {
+					Matrix4 mat = frameData[i] * invBindPose[i];
+
+					frameMatrices.emplace_back(mat);
+				}
+				defaultAnimShader->SetUniformMatrix("joints", frameMatrices.size(), frameMatrices.data());
+				animObject->GetAnimatedMesh()->Draw(i);
+			}
+			defaultAnimShader->Unbind();
+		} else {
+			OGLMesh* mesh;
+			if (!(mesh = dynamic_cast<OGLMesh*>(renderObject->GetMesh()))) {
+				return;
+			}
+			OGLShader* shader;
+			if (!(shader = dynamic_cast<OGLShader*>(renderObject->GetShader()))) {
+				shader = defaultModelShader;
+			}
+
+			OGLTexture* diffuseTex;
+			if (!(diffuseTex = dynamic_cast<OGLTexture*>(renderObject->GetDefaultTexture()))) {
+				diffuseTex = defaultDiffuse;
+			}
+			OGLTexture* bumpTex;
+			if (true) {
+				bumpTex = defaultBump;
+			}
+
+			Vector4 colour = renderObject->GetColour();
+
+			shader->Bind();
+
+			diffuseTex->Bind(0);
+			bumpTex->Bind(1);
+
+			Matrix4 modelMatrix = renderObject->GetTransform()->GetGlobalMatrix();
+			shader->SetUniformMatrix("modelMatrix", modelMatrix);
+
+			shader->SetUniformFloat("modelColour", colour);
+
+			renderObject->ConfigerShaderExtras(shader);
+
+			int layerCount = mesh->GetSubMeshCount();
+			for (int i = 0; i < layerCount; i++) {
+				mesh->Draw(i);
+			}
+			shader->Unbind();
 		}
-		OGLShader* shader;
-		if (!(shader = dynamic_cast<OGLShader*>(renderObject->GetShader()))) {
-			shader = defaultShader;
-		}
-
-		OGLTexture* diffuseTex;
-		if (!(diffuseTex = dynamic_cast<OGLTexture*>(renderObject->GetDefaultTexture()))) {
-			diffuseTex = defaultDiffuse;
-		}
-		OGLTexture* bumpTex;
-		if (true) {
-			bumpTex = defaultBump;
-		}
-
-		Vector4 colour = renderObject->GetColour();
-
-		shader->Bind();
-
-		diffuseTex->Bind(0);
-		bumpTex->Bind(1);
-
-		Matrix4 modelMatrix = renderObject->GetTransform()->GetGlobalMatrix();
-		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "modelMatrix"), 1, GL_FALSE, (GLfloat*)&modelMatrix);
-		glUniform4fv(glGetUniformLocation(shader->GetProgramID(), "modelColour"), 1, (GLfloat*)colour.array);
-
-		renderObject->ConfigerShaderExtras(shader);
-
-		//mesh->Draw();
-		int layerCount = mesh->GetSubMeshCount();
-		for (int i = 0; i < layerCount; i++)
-		{
-			mesh->Draw(i);
-		}
-		shader->Unbind();
 	});
 
 	frameBuffer->Unbind();
@@ -122,8 +163,8 @@ void ModelRPass::AddModelShader(OGLShader* shader) {
 	modelShaders.push_back(shader);
 	shader->Bind();
 
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "diffuseTex"), 0);
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "bumpTex"), 1);
+	shader->SetUniformInt("diffuseTex", 0);
+	shader->SetUniformInt("bumpTex"   , 1);
 
 	shader->Unbind();
 }

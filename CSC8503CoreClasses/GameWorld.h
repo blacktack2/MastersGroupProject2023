@@ -95,6 +95,11 @@ namespace NCL {
 			inline float GetRunTime() const {
 				return runTime;
 			}
+
+			inline float GetDeltaTime() const {
+				return deltaTime;
+			}
+
 		protected:
 			std::vector<GameObject*> gameObjects;
 			std::vector<Constraint*> constraints;
@@ -112,6 +117,7 @@ namespace NCL {
 			int worldStateCounter;
 
 			float runTime;
+			float deltaTime = 0.0f;		// Used by Animation
 		};
 	}
 }

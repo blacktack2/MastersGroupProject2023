@@ -37,7 +37,7 @@ texType(TexType::Colour) {
 
 	SetEdgeClamp();
 	InitColour(i, t, f);
-	Resize(width, height);
+	Resize(width, height, data);
 
 	Unbind();
 }
