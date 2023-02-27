@@ -74,6 +74,7 @@ TutorialGame::~TutorialGame() {
 	SoundSystem::Destroy();
 }
 
+
 void TutorialGame::InitWorld(InitMode mode) {
 
 	delete[] mazes;
@@ -82,6 +83,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 	physics->Clear();
 	gridManager->Clear();
 	delete testingBossBehaviorTree;
+	testingBossBehaviorTree = nullptr;
 
 	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 300, 300, 2 ) );
 	BuildLevel();
@@ -317,8 +319,10 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 	physics->Update(dt);
 
 	world->PostUpdateWorld();
-
-	testingBossBehaviorTree->update();
+	if (testingBossBehaviorTree) {
+		testingBossBehaviorTree->update();
+	}
+	
 	if (gameLevel->GetShelterTimer() > 20.0f)
 	{
 		gameLevel->SetShelterTimer(0.0f);

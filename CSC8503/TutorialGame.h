@@ -44,6 +44,7 @@ namespace NCL {
 			TutorialGame();
 			~TutorialGame();
 
+
 			void InitWorld(InitMode mode = InitMode::EMPTY);
 
 			virtual void UpdateGame(float dt);

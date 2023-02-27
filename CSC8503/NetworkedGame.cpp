@@ -43,9 +43,11 @@ NetworkedGame::NetworkedGame()	{
 NetworkedGame::~NetworkedGame()	{
 	delete thisServer;
 	delete thisClient;
+	/*
 	for (auto i = serverPlayers.begin(); i != serverPlayers.end(); i++) {
 		delete i->second;
 	}
+	*/
 }
 
 void NetworkedGame::StartAsServer() {
@@ -257,10 +259,11 @@ GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 }
 
 void NetworkedGame::StartLevel() {
-	world->Clear();
-	//world->ClearAndErase();
+	//world->Clear();
+	delete testingBossBehaviorTree;
+	testingBossBehaviorTree = nullptr;
+	world->ClearAndErase();
 	physics->Clear();
-	InitGameExamples();
 	InitDefaultFloor();
 	world->UpdateStaticTree();
 }
