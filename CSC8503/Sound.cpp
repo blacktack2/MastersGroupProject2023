@@ -6,7 +6,7 @@
 
 
 
-map<string, Sound*> Sound::sSounds;
+std::map<std::string, Sound*> Sound::sSounds;
 
 
 Sound::Sound() {
@@ -19,7 +19,7 @@ Sound::~Sound(void) {
 }
 
 
-void	Sound::LoadFromWAV(string filename) {
+void	Sound::LoadFromWAV(std::string filename) {
 
 	drwav_int16* pSampleData = drwav_open_file_and_read_pcm_frames_s16(filename.c_str(), &mWavData.channels, &mWavData.sampleRate, &mWavData.totalPCMFrameCount, nullptr);
 	if (pSampleData == NULL) {
@@ -41,11 +41,11 @@ void	Sound::LoadFromWAV(string filename) {
 
 }
 
-ALuint Sound::AddSound(string name) {
+ALuint Sound::AddSound(std::string name) {
 	Sound* s = GetSound(name);
 
 	if (!s) {
-		string extension = name.substr(name.length() - 3, 3);
+		std::string extension = name.substr(name.length() - 3, 3);
 
 		if (extension == "wav") {
 			s = new Sound();
@@ -61,7 +61,7 @@ ALuint Sound::AddSound(string name) {
 		}*/
 		else {
 			s = new Sound();
-			cout << "Incompatible file extension '" << extension << "'!" << endl;
+			std::cout << "Incompatible file extension '" << extension << "'!\n";
 		}
 
 		sSounds.insert(make_pair(name, s));
@@ -69,13 +69,13 @@ ALuint Sound::AddSound(string name) {
 	return s->mBuffer;
 }
 
-Sound* Sound::GetSound(string name) {
-	map<string, Sound*>::iterator s = sSounds.find(name);
+Sound* Sound::GetSound(std::string name) {
+	std::map<std::string, Sound*>::iterator s = sSounds.find(name);
 	return (s != sSounds.end() ? s->second : NULL);
 }
 
 void	Sound::DeleteSounds() {
-	for (map<string, Sound*>::iterator i = sSounds.begin(); i != sSounds.end(); ++i) {
+	for (std::map<std::string, Sound*>::iterator i = sSounds.begin(); i != sSounds.end(); ++i) {
 		delete i->second;
 	}
 }
