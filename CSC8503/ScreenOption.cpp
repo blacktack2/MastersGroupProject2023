@@ -7,7 +7,9 @@
  */
 #pragma once
 #include "ScreenOption.h"
+
 #include "AssetLibrary.h"
+#include "MenuRenderObject.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -22,7 +24,7 @@ void ScreenOption::initMenu() {
 
 	MeshGeometry* quad = (MeshGeometry*)AssetLibrary::GetMesh("quad");
 	Menu* menu = new Menu(Vector2(0, 0), Vector2(1.0f, 1.0f ));
-	menu->SetRenderObject(new RenderObject(nullptr, quad, texture, shader));
+	menu->SetRenderObject(new MenuRenderObject(texture));
 	menuManager.AddMenu(name, menu);
 
 	//Load button
@@ -35,7 +37,7 @@ void ScreenOption::initMenu() {
 		Button* btn = new Button(0, 0.45f + i * -0.3f, 0.16f, 0.08f);
 		TextureBase* tex = renderer.LoadTexture(path);
 
-		btn->SetRenderObject(new RenderObject(nullptr, quad, tex, shader));
+		btn->SetRenderObject(new MenuRenderObject(tex));
 		menu->AddButton(btn);
 		buttons.push_back(btn);
 	}

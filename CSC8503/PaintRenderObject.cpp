@@ -1,15 +1,25 @@
+/**
+ * @file   PaintRenderObject.cpp
+ * @brief  See PaintRenderObject.h.
+ * 
+ * @author Harry Brettell
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
 #include "PaintRenderObject.h"
 #include "AssetLibrary.h"
 #include "OGLShader.h"
 
 using namespace NCL::CSC8503;
 
-PaintRenderObject::PaintRenderObject(Transform* parentTransform, MeshGeometry* mesh, TextureBase* tex) : RenderObject(parentTransform, mesh, tex, AssetLibrary::GetShader("paint")) {
+PaintRenderObject::PaintRenderObject(Transform* parentTransform, MeshGeometry* mesh, MeshMaterial* material) : RenderObject(parentTransform, mesh, material) {
 	paintTexture = new OGLTexture(1000, 1000, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 	paintTexture->Bind();
 	paintTexture->SetFilters(GL_LINEAR, GL_LINEAR);
 	paintTexture->Unbind();
+
 	paintCollisions.push_back(PaintCollision(Vector3(0, 0, 0), 1));
+
 	width = 1000;
 	height = 1000;
 }
@@ -24,6 +34,6 @@ PaintRenderObject::~PaintRenderObject() {
 	delete paintTexture;
 }
 
-void PaintRenderObject::ConfigerShaderExtras(OGLShader* shaderOGL) const {
-	paintTexture->Bind(2, shaderOGL->GetUniformLocation("paintTex"));
+void PaintRenderObject::PreDraw(int sublayer, ShaderBase* shader) {
+	paintTexture->Bind(3, shader->GetUniformLocation("paintTex"));
 }

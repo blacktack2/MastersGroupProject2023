@@ -1,6 +1,8 @@
 #include "TutorialGame.h"
 
 #include "AssetLibrary.h"
+#include "PrefabLibrary.h"
+
 #include "PlayerBullet.h"
 #include "Bonus.h"
 #include "Debug.h"
@@ -343,36 +345,65 @@ void TutorialGame::InitialiseAssets() {
 	bonusMesh   = renderer->LoadMesh("Sphere.msh");
 	capsuleMesh = renderer->LoadMesh("capsule.msh");
 
-	// TODO
 	AssetLibrary::AddMesh("pillar", renderer->LoadMesh("pillarMsh.msh"));
 	AssetLibrary::AddMesh("fenceX", renderer->LoadMesh("fenceXCube.msh"));
 	AssetLibrary::AddMesh("fenceY", renderer->LoadMesh("fenceYCube.msh"));
 	AssetLibrary::AddMesh("wall", renderer->LoadMesh("cube.msh"));
 	AssetLibrary::AddMesh("shelter", renderer->LoadMesh("shelterCube.msh"));
 
+	MeshGeometry* quad = new OGLMesh();
+	quad->SetVertexPositions({
+		Vector3(-1,  1, -1),
+		Vector3(-1, -1, -1),
+		Vector3(1, -1, -1),
+		Vector3(1,  1, -1),
+		});
+	quad->SetVertexTextureCoords({
+		Vector2(0, 1),
+		Vector2(0, 0),
+		Vector2(1, 0),
+		Vector2(1, 1),
+		});
+	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
+	quad->UploadToGPU();
+
+	AssetLibrary::AddMesh("quad", quad);
 	AssetLibrary::AddMesh("cube", cubeMesh);
 	AssetLibrary::AddMesh("sphere", sphereMesh);
 	AssetLibrary::AddMesh("cube", charMesh);
 	AssetLibrary::AddMesh("enemy", enemyMesh);
 	AssetLibrary::AddMesh("bonus", bonusMesh);
 	AssetLibrary::AddMesh("capsule", capsuleMesh);
+	AssetLibrary::AddMesh("boss", renderer->LoadMesh("Boss/Boss.msh"));
+
+	AssetLibrary::AddTexture("defaultDiffuse", renderer->LoadTexture("defaultDiffuse.png"));
+	AssetLibrary::AddTexture("defaultBump"   , renderer->LoadTexture("defaultBump.png"));
+	AssetLibrary::AddTexture("defaultSpec"   , renderer->LoadTexture("defaultSpec.png"));
 
 	basicTex = renderer->LoadTexture("checkerboard.png");
 	healingKitTex = renderer->LoadTexture("shelterTex.jpg");
 	pillarTex = renderer->LoadTexture("pillarTex.jpg");	
 	AssetLibrary::AddTexture("noise", noiseTex);
 	AssetLibrary::AddTexture("basic", basicTex);
-	OGLShader* shader = (OGLShader*)renderer->LoadShader("modelDefault.vert", "modelPaintTexture.frag");
-	AssetLibrary::AddShader("paint", shader);
-	renderer->GetModelPass().AddModelShader(shader);
+	AssetLibrary::AddTexture("pillar", pillarTex);
+	AssetLibrary::AddShader("paint", renderer->LoadShader("modelDefault.vert", "modelPaintTexture.frag"));
+	AssetLibrary::AddShader("menu", renderer->LoadShader("menuVertex.vert", "menuFragment.frag"));
+
+	renderer->GetModelPass().AddModelShader((OGLShader*)AssetLibrary::GetShader("paint"));
+
+	AssetLibrary::AddMaterial("default", new MeshMaterial("Default.mat"));
+	AssetLibrary::AddMaterial("boss", new MeshMaterial("Male_Guard.mat"));
+	AssetLibrary::AddMaterial("pillar", new MeshMaterial(
+		{{"Diffuse", AssetLibrary::GetTexture("pillar")}},
+		nullptr
+	));
 
 	InitaliseAnimationAssets();
 
 	InitialisePrefabs();
 }
 
-void TutorialGame::InitaliseAnimationAssets()		// testing animation
-{
+void TutorialGame::InitaliseAnimationAssets() {
 	OGLShader* animationShader = (OGLShader*)renderer->LoadShader("SkinningVertex.glsl", "TexturedFragment.glsl");
 	if (!animationShader->LoadSuccess()) {
 		return;
@@ -392,23 +423,23 @@ void TutorialGame::InitaliseAnimationAssets()		// testing animation
 	AssetLibrary::AddAnimation("Attack5", new MeshAnimation("Boss/NorthernSoulSpin.anm"));
 	AssetLibrary::AddAnimation("Attack6", new MeshAnimation("Boss/SambaDancing.anm"));
 
-	for (int i = 0; i < maleguardMesh->GetSubMeshCount(); ++i) {
-		const MeshMaterialEntry* matEntry = maleguardMaterial->GetMaterialForLayer(i);
+	//for (int i = 0; i < maleguardMesh->GetSubMeshCount(); ++i) {
+	//	const MeshMaterialEntry* matEntry = maleguardMaterial->GetMaterialForLayer(i);
 
-		const string* filename = nullptr;
+	//	const string* filename = nullptr;
 
-		matEntry->GetEntry("Diffuse", &filename);
-		OGLTexture* tex = nullptr;
+	//	matEntry->GetEntry("Diffuse", &filename);
+	//	OGLTexture* tex = nullptr;
 
-		if (filename) {
-			string path = Assets::TEXTUREDIR + *filename;
-			stbi_set_flip_vertically_on_load(true);
-			tex = static_cast<OGLTexture*>(renderer->LoadTexture(path));
-			stbi_set_flip_vertically_on_load(false);
-			tex->SetEdgeRepeat();
-		}
-		maleguardMatTextures.emplace_back(tex);
-	}
+	//	if (filename) {
+	//		string path = Assets::TEXTUREDIR + *filename;
+	//		stbi_set_flip_vertically_on_load(true);
+	//		tex = static_cast<OGLTexture*>(renderer->LoadTexture(path));
+	//		stbi_set_flip_vertically_on_load(false);
+	//		tex->SetEdgeRepeat();
+	//	}
+	//	maleguardMatTextures.emplace_back(tex);
+	//}
 }
 
 void TutorialGame::InitialisePrefabs() {
@@ -419,7 +450,7 @@ void TutorialGame::InitialisePrefabs() {
 	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::PlayerProj));
 	bulletPrefab->GetTransform().SetScale(Vector3(bulletRadius));
 
-	bulletPrefab->SetRenderObject(new RenderObject(&bulletPrefab->GetTransform(), sphereMesh, nullptr, nullptr));
+	bulletPrefab->SetRenderObject(new RenderObject(&bulletPrefab->GetTransform(), sphereMesh, nullptr));
 	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume(), true));
 	bulletPrefab->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.8f, 1.0f));
 
@@ -427,7 +458,7 @@ void TutorialGame::InitialisePrefabs() {
 	bulletPrefab->GetPhysicsObject()->SetGravWeight(1.0f);
 	bulletPrefab->GetPhysicsObject()->InitCapsuleInertia();
 
-	AssetLibrary::AddPrefab("bullet", bulletPrefab);
+	PrefabLibrary::AddPrefab("bullet", bulletPrefab);
 
 	bulletRadius = 0.75f;
 
@@ -436,7 +467,7 @@ void TutorialGame::InitialisePrefabs() {
 	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::EnemyProj));
 	bulletPrefab->GetTransform().SetScale(Vector3(bulletRadius));
 
-	bulletPrefab->SetRenderObject(new RenderObject(&bulletPrefab->GetTransform(), sphereMesh, nullptr, nullptr));
+	bulletPrefab->SetRenderObject(new RenderObject(&bulletPrefab->GetTransform(), sphereMesh, nullptr));
 	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume(), true));
 
 	bulletPrefab->GetRenderObject()->SetColour(Vector4(0.2f, 1.0f, 0.5f, 1.0f));
@@ -445,7 +476,7 @@ void TutorialGame::InitialisePrefabs() {
 	bulletPrefab->GetPhysicsObject()->SetGravWeight(1.0f);
 	bulletPrefab->GetPhysicsObject()->InitCapsuleInertia();
 
-	AssetLibrary::AddPrefab("bossBullet", bulletPrefab);
+	PrefabLibrary::AddPrefab("bossBullet", bulletPrefab);
 }
 
 void TutorialGame::InitCamera() {
@@ -693,7 +724,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 		.SetScale(floorSize * 2)
 		.SetPosition(position);
 
-	PaintRenderObject* render = new PaintRenderObject(&floor->GetTransform(), cubeMesh, basicTex);
+	PaintRenderObject* render = new PaintRenderObject(&floor->GetTransform(), cubeMesh, nullptr);
 	floor->SetRenderObject(render);
 
 	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));
@@ -719,7 +750,7 @@ GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius
 		.SetScale(sphereSize)
 		.SetPosition(position);
 
-	sphere->SetRenderObject(new RenderObject(&sphere->GetTransform(), sphereMesh, basicTex, nullptr));
+	sphere->SetRenderObject(new RenderObject(&sphere->GetTransform(), sphereMesh, nullptr));
 	sphere->SetPhysicsObject(new PhysicsObject(&sphere->GetTransform(), sphere->GetBoundingVolume()));
 
 	sphere->GetPhysicsObject()->SetInverseMass(inverseMass);
@@ -740,7 +771,7 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 		.SetPosition(position)
 		.SetScale(dimensions * 2);
 
-	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, basicTex, nullptr));
+	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, nullptr));
 	cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
 
 	cube->GetPhysicsObject()->SetInverseMass(inverseMass);
@@ -772,7 +803,7 @@ GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfH
 		.SetScale(capsuleSize)
 		.SetPosition(position);
 
-	capsule->SetRenderObject(new RenderObject(&capsule->GetTransform(), capsuleMesh, basicTex, nullptr));
+	capsule->SetRenderObject(new RenderObject(&capsule->GetTransform(), capsuleMesh, nullptr));
 	capsule->SetPhysicsObject(new PhysicsObject(&capsule->GetTransform(), capsule->GetBoundingVolume()));
 
 	capsule->GetPhysicsObject()->SetInverseMass(inverseMass);
@@ -789,7 +820,7 @@ StateGameObject* TutorialGame::AddStateObjectToWorld(const Vector3& position) {
 	SphereVolume* volume = new SphereVolume(1.0f);
 
 	sgo->SetBoundingVolume((CollisionVolume*)volume);
-	sgo->SetRenderObject(new RenderObject(&sgo->GetTransform(), sphereMesh, basicTex, nullptr));
+	sgo->SetRenderObject(new RenderObject(&sgo->GetTransform(), sphereMesh, nullptr));
 	sgo->SetPhysicsObject(new PhysicsObject(&sgo->GetTransform(), sgo->GetBoundingVolume()));
 
 	sgo->GetTransform().SetPosition(position);
@@ -814,7 +845,7 @@ PlayerObject* TutorialGame::AddPlayerToWorld(const Vector3& position, bool camer
 		.SetScale(Vector3(1, 1, 1))
 		.SetPosition(position);
 
-	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMesh, basicTex, nullptr));
+	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMesh, nullptr));
 	
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 
@@ -843,7 +874,7 @@ EnemyObject* TutorialGame::AddEnemyToWorld(const Vector3& position, NavigationMa
 		.SetScale(Vector3(1.0f))
 		.SetPosition(position);
 
-	enemy->SetRenderObject(new RenderObject(&enemy->GetTransform(), enemyMesh, nullptr, nullptr));
+	enemy->SetRenderObject(new RenderObject(&enemy->GetTransform(), enemyMesh, nullptr));
 	enemy->SetPhysicsObject(new PhysicsObject(&enemy->GetTransform(), enemy->GetBoundingVolume()));
 
 	enemy->GetRenderObject()->SetColour(Vector4(1, 0.9f, 0.8f, 1));
@@ -866,7 +897,7 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 		.SetPosition(position)
 		.SetScale(dimensions * 2);
 
-	boss->SetRenderObject(new AnimatedRenderObject(maleguardMaterial, maleguardAnim, maleguardMesh, maleguardMatTextures, &boss->GetTransform()));
+	boss->SetRenderObject(new AnimatedRenderObject(&boss->GetTransform(), AssetLibrary::GetMesh("boss"), AssetLibrary::GetMaterial("boss"), AssetLibrary::GetAnimation("boss")));
 
 	boss->GetRenderObject()->SetColour({ 1,1,1,1 });
 	boss->SetPhysicsObject(new PhysicsObject(&boss->GetTransform(), boss->GetBoundingVolume()));
@@ -906,7 +937,7 @@ void TutorialGame::UpdateLevel()
 					.SetScale(dimensions * 2);
 				//pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), AssetLibrary::GetMesh("pillar"), healingKitTex, nullptr));
 				
-				PaintRenderObject* render = new PaintRenderObject(&pillar->GetTransform(), AssetLibrary::GetMesh("pillar"), pillarTex);
+				PaintRenderObject* render = new PaintRenderObject(&pillar->GetTransform(), AssetLibrary::GetMesh("pillar"), AssetLibrary::GetMaterial("pillar"));
 				pillar->SetRenderObject(render);
 				
 				pillar->SetPhysicsObject(new PhysicsObject(&pillar->GetTransform(), pillar->GetBoundingVolume()));
@@ -962,7 +993,7 @@ void TutorialGame::UpdateLevel()
 					.SetScale(dimensions);
 				//shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary::GetMesh("shelter"), basicTex, nullptr));
 
-				PaintRenderObject* render = new PaintRenderObject(&shelter->GetTransform(), AssetLibrary::GetMesh("shelter"), basicTex);
+				PaintRenderObject* render = new PaintRenderObject(&shelter->GetTransform(), AssetLibrary::GetMesh("shelter"), nullptr);
 				shelter->SetRenderObject(render);
 
 				shelter->SetPhysicsObject(new PhysicsObject(&shelter->GetTransform(), shelter->GetBoundingVolume()));
@@ -994,8 +1025,7 @@ void TutorialGame::UpdateLevel()
 	}
 }
 
-HealingKit* TutorialGame::UpdateHealingKit()
-{
+HealingKit* TutorialGame::UpdateHealingKit() {
 	Vector3 dimension{ 1,1,1 };
 
 	gameGrid->UpdateHealingKits(player, dimension);
@@ -1003,15 +1033,14 @@ HealingKit* TutorialGame::UpdateHealingKit()
 
 	float period = 1.0f;
 
-	if (gameGrid->GetHealingKitTimer() > period)
-	{
+	if (gameGrid->GetHealingKitTimer() > period) {
 		HealingKit* healingKit = new HealingKit();
 		Vector3 position = gameGrid->GetRandomLocationToAddHealingKit(healingKit);	// this function resets the timer, and add the new healingKit to the list used to store all healing kits in gameGrid
 		healingKit->GetTransform()
 			.SetPosition(position)
 			.SetScale(dimension * 2);
 
-		healingKit->SetRenderObject(new RenderObject(&healingKit->GetTransform(), cubeMesh, basicTex, nullptr));
+		healingKit->SetRenderObject(new RenderObject(&healingKit->GetTransform(), cubeMesh, nullptr));
 
 		world->AddGameObject(healingKit);
 
@@ -1030,7 +1059,7 @@ NPCObject* TutorialGame::AddNPCToWorld(const Vector3& position) {
 		.SetScale(Vector3(2.0f))
 		.SetPosition(position);
 
-	npc->SetRenderObject(new RenderObject(&npc->GetTransform(), npcMesh, nullptr, nullptr));
+	npc->SetRenderObject(new RenderObject(&npc->GetTransform(), npcMesh, nullptr));
 	npc->SetPhysicsObject(new PhysicsObject(&npc->GetTransform(), npc->GetBoundingVolume()));
 
 	npc->GetRenderObject()->SetColour(Vector4(1, 1, 0.8f, 1));
@@ -1053,7 +1082,7 @@ GameObject* TutorialGame::AddBonusToWorld(const Vector3& position) {
 		.SetScale(Vector3(1))
 		.SetPosition(position);
 
-	bonus->SetRenderObject(new RenderObject(&bonus->GetTransform(), bonusMesh, nullptr, nullptr));
+	bonus->SetRenderObject(new RenderObject(&bonus->GetTransform(), bonusMesh, nullptr));
 	bonus->SetPhysicsObject(new PhysicsObject(&bonus->GetTransform(), bonus->GetBoundingVolume(), true));
 
 	bonus->GetRenderObject()->SetColour(Vector4(1, 0.2f, 0.2f, 1));
@@ -1075,7 +1104,7 @@ GameObject* TutorialGame::AddTriggerToWorld(const Vector3& position, float size)
 		.SetScale(Vector3(size))
 		.SetPosition(position);
 
-	trigger->SetRenderObject(new RenderObject(&trigger->GetTransform(), sphereMesh, nullptr, nullptr));
+	trigger->SetRenderObject(new RenderObject(&trigger->GetTransform(), sphereMesh, nullptr));
 	trigger->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.5f, 0.5f));
 
 	trigger->SetPhysicsObject(new PhysicsObject(&trigger->GetTransform(), trigger->GetBoundingVolume(), true));

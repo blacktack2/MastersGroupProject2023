@@ -7,7 +7,9 @@
  */
 #pragma once
 #include "ScreenMain.h"
+
 #include "AssetLibrary.h"
+#include "MenuRenderObject.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -21,13 +23,13 @@ void ScreenMain::initMenu() {
 
 	MeshGeometry* quad = (MeshGeometry*)AssetLibrary::GetMesh("quad");
 	Menu* menu = new Menu(Vector2(0,0), Vector2(1,1));
-	menu->SetRenderObject(new RenderObject(nullptr, quad, mainMenuBg, shader));
+	menu->SetRenderObject(new MenuRenderObject(mainMenuBg));
 	menuManager.AddMenu(name, menu);
 
 	//button 1
 	TextureBase* startTex = renderer.LoadTexture("button1.jpg");
 	Button* startBtn = new Button(0.5f, 0.0f, 0.2f, 0.1f);
-	startBtn->SetRenderObject(new RenderObject(nullptr, quad, startTex, shader));
+	startBtn->SetRenderObject(new MenuRenderObject(startTex));
 	menu->AddButton(startBtn);
 	startBtn->OnClickCallback = [&]() {
 		std::cout << "Start btn clicked" << std::endl;
@@ -37,7 +39,7 @@ void ScreenMain::initMenu() {
 	//button 2
 	TextureBase* optionTex = renderer.LoadTexture("button2.jpg");
 	Button* optionBtn = new Button(0.5f, -0.3f, 0.2f, 0.1f);
-	optionBtn->SetRenderObject(new RenderObject(nullptr, quad, optionTex, shader));
+	optionBtn->SetRenderObject(new MenuRenderObject(optionTex));
 	menu->AddButton(optionBtn);
 	optionBtn->OnClickCallback = [&]() {
 		std::cout << "Option btn clicked" << std::endl;
@@ -47,15 +49,14 @@ void ScreenMain::initMenu() {
 	//button 3
 	TextureBase* quitTex = renderer.LoadTexture("button3.jpg");
 	Button* quitBtn = new Button(0.5f, 2 * -0.3f, 0.2f, 0.1f);
-	quitBtn->SetRenderObject(new RenderObject(nullptr, quad, quitTex, shader));
+	quitBtn->SetRenderObject(new MenuRenderObject(quitTex));
 	menu->AddButton(quitBtn);
 	quitBtn->OnClickCallback = [&]() {
 		std::cout << "Quit btn clicked" << std::endl;
 		menuState = ChangeState::Quit;
 	};
 }
-void ScreenMain::initQuad()
-{
+void ScreenMain::initQuad() {
 	ShaderBase* shader = (ShaderBase*)renderer.LoadShader("menuVertex.vert", "menuFragment.frag");
 	AssetLibrary::AddShader("menu", shader);
 

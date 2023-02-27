@@ -1,6 +1,10 @@
 /**
+ * @file   MenuRPass.cpp
+ * @brief  
+ * 
  * @author Yifei Hu
  * @author Felix Chiu
+ * @author Stuart Lewis
  * @date   February 2023
  */
 #pragma once
@@ -18,26 +22,19 @@ namespace NCL::Rendering {
 using namespace NCL::Rendering;
 
 namespace NCL::CSC8503 {
-	class MenuRPass : public OGLOverlayRenderPass{
+	class MenuRPass : public OGLOverlayRenderPass {
 	public:
 		MenuRPass(OGLRenderer& renderer, GameWorld& gameWorld);
 		~MenuRPass();
 
 		virtual void Render() override;
-		
-		void DrawMenu();
-		void DrawUIObject(UIObject* obj);
-		void DrawButtons();
-
 	private:
+		void DrawMenu();
+		void DrawButtons();
+		void DrawUIObject(UIObject* obj);
+
 		GameWorld& gameWorld;
-		OGLMesh* quad;
 		OGLShader* defaultShader;
 		OGLTexture* defaultTexture;
-
-		//btn
-		OGLShader* btnShader;
-		OGLMesh* btn;
-
 	};
 }

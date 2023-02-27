@@ -1,6 +1,10 @@
 /**
+ * @file   MenuRPass.cpp
+ * @brief  See MenuRPass.h.
+ * 
  * @author Yifei Hu
  * @author Felix Chiu
+ * @author Stuart Lewis
  * @date   February 2023
  */
 #include "MenuRPass.h"
@@ -18,9 +22,11 @@ MenuRPass::MenuRPass(OGLRenderer& renderer, GameWorld& gameWorld) :
 
 	defaultShader = new OGLShader("menuVertex.vert", "menuFragment.frag");
 
-	defaultTexture->Bind();
-	glUniform1i(glGetUniformLocation(defaultShader->GetProgramID(), "diffuseTex"), 0);
-	defaultTexture->Unbind();
+	defaultShader->Bind();
+
+	defaultShader->SetUniformInt("diffuseTex", 0);
+
+	defaultShader->Unbind();
 }
 
 MenuRPass::~MenuRPass() {
@@ -40,79 +46,31 @@ void MenuRPass::Render() {
 }
 
 void MenuRPass::DrawMenu(){
-	MenuManager* menuManager = &MenuManager::instance();
-	Menu* menu = menuManager->GetCurrentMenu();
+	MenuManager& menuManager = MenuManager::instance();
+	Menu* menu = menuManager.GetCurrentMenu();
 	if (menu) {
 		DrawUIObject((UIObject*)menu);
 	}
 }
 
-void MenuRPass::DrawUIObject(UIObject* obj){
-	MenuManager* menuManager = &MenuManager::instance();
-	const RenderObject* renderObject = obj->GetRenderObject();
-	if (!renderObject) {
+void MenuRPass::DrawButtons() {
+	MenuManager& menuManager = MenuManager::instance();
+	Menu* menu = menuManager.GetCurrentMenu();
+	if (!menu) {
 		return;
 	}
-	OGLMesh* mesh = (OGLMesh*)renderObject->GetMesh();
-	if (!(mesh = dynamic_cast<OGLMesh*>(renderObject->GetMesh()))) {
-		return;
-	}
-	OGLShader* shader;
-	if (!(shader = dynamic_cast<OGLShader*>(renderObject->GetShader()))) {
-		shader = defaultShader;
-	}
-
-	OGLTexture* texture;
-	if (!(texture = dynamic_cast<OGLTexture*>(renderObject->GetDefaultTexture()))) {
-		texture = defaultTexture;
-	}
-
-	Vector4 dimension = obj->GetDimension();
-
-	mesh->UploadToGPU();
-
-	shader->Bind();
-
-	Matrix4 quadMatrix = modelMatrix;
-	quadMatrix = quadMatrix *
-		Matrix4::Translation(
-			Vector3(
-					(dimension.x),
-					(dimension.y),
-					0.0f
-				) 
-			) * 
-		Matrix4::Scale(
-			Vector3(
-					(dimension.z),
-					(dimension.w),
-					1.0f
-				)
-			);
-
-	glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "modelMatrix"), 1, false, (GLfloat*)quadMatrix.array);
-	glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "viewMatrix"), 1, false, (GLfloat*)viewMatrix.array);
-	glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "projMatrix"), 1, false, (GLfloat*)projMatrix.array);
-	glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "textureMatrix"), 1, false, (GLfloat*)textureMatrix.array);
-
-	texture->Bind(0);
-
-	mesh->Draw();
-
-	shader->Unbind();
-}
-
-void MenuRPass::DrawButtons(){
-	MenuManager* menuManager = &MenuManager::instance();
-	Menu* menu = menuManager->GetCurrentMenu();
-	if (!menu)
-		return;
-	for (Button* btn : *(menu->GetButtons())) {
+	for (Button* btn : *menu->GetButtons()) {
 		if (!btn)
 			return;
 		DrawUIObject((UIObject*)btn);
 	}
 }
 
+void MenuRPass::DrawUIObject(UIObject* obj){
+	MenuRenderObject* renderObject = obj->GetRenderObject();
+	if (!renderObject) {
+		return;
+	}
 
-
+	renderObject->Draw(obj->GetDimension());
+}

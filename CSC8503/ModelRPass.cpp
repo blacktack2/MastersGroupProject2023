@@ -74,86 +74,16 @@ void ModelRPass::Render() {
 	}
 	
 	gameWorld.OperateOnContents([&](GameObject* gameObject) {
-		const RenderObject* renderObject = gameObject->GetRenderObject();
+		RenderObject* renderObject = gameObject->GetRenderObject();
 		if (!renderObject) {
 			return;
 		}
 
-		if (renderObject->HasAnimation()) {
-			OGLShader* defaultAnimShader = static_cast<OGLShader*>(AssetLibrary::GetShader("animation"));
-			AnimatedRenderObject* animObject = (AnimatedRenderObject*)renderObject;
-
-			animObject->SetFrameTime(animObject->GetFrameTime() - gameWorld.GetDeltaTime() * animObject->GetAnimSpeed());
-			while (animObject->GetFrameTime() < 0.0f) {
-				animObject->SetCurrentFrame((animObject->GetCurrentFrame() + 1) % animObject->GetAnimation()->GetFrameCount());
-				animObject->SetNextFrame((animObject->GetCurrentFrame() + 1) % animObject->GetAnimation()->GetFrameCount());
-				animObject->SetFrameTime(animObject->GetFrameTime() + (1.0f / animObject->GetAnimation()->GetFrameRate()));
-			}
-
-			defaultAnimShader->Bind();
-
-			defaultAnimShader->SetUniformInt("diffuseTex", 0);
-
-			Matrix4 modelMatrix = renderObject->GetTransform()->GetGlobalMatrix();
-			defaultAnimShader->SetUniformMatrix("modelMatrix", modelMatrix);
-
-			const Matrix4* bindPose = animObject->GetAnimatedMesh()->GetBindPose().data();
-			const Matrix4* invBindPose = animObject->GetAnimatedMesh()->GetInverseBindPose().data();
-			const Matrix4* frameData = animObject->GetAnimation()->GetJointData(animObject->GetCurrentFrame());
-			const int* bindPoseIndices = animObject->GetAnimatedMesh()->GetBindPoseIndices();
-
-			std::vector<OGLTexture*> matTextures = animObject->GetMatTextures();
-			for (int i = 0; i < animObject->GetAnimatedMesh()->GetSubMeshCount(); ++i) {
-				animObject->GetMatTextures()[i]->Bind(0);
-				std::vector<Matrix4> frameMatrices;
-				for (unsigned int i = 0; i < animObject->GetAnimatedMesh()->GetJointCount(); ++i) {
-					Matrix4 mat = frameData[i] * invBindPose[i];
-
-					frameMatrices.emplace_back(mat);
-				}
-				defaultAnimShader->SetUniformMatrix("joints", frameMatrices.size(), frameMatrices.data());
-				animObject->GetAnimatedMesh()->Draw(i);
-			}
-			defaultAnimShader->Unbind();
-		} else {
-			OGLMesh* mesh;
-			if (!(mesh = dynamic_cast<OGLMesh*>(renderObject->GetMesh()))) {
-				return;
-			}
-			OGLShader* shader;
-			if (!(shader = dynamic_cast<OGLShader*>(renderObject->GetShader()))) {
-				shader = defaultModelShader;
-			}
-
-			OGLTexture* diffuseTex;
-			if (!(diffuseTex = dynamic_cast<OGLTexture*>(renderObject->GetDefaultTexture()))) {
-				diffuseTex = defaultDiffuse;
-			}
-			OGLTexture* bumpTex;
-			if (true) {
-				bumpTex = defaultBump;
-			}
-
-			Vector4 colour = renderObject->GetColour();
-
-			shader->Bind();
-
-			diffuseTex->Bind(0);
-			bumpTex->Bind(1);
-
-			Matrix4 modelMatrix = renderObject->GetTransform()->GetGlobalMatrix();
-			shader->SetUniformMatrix("modelMatrix", modelMatrix);
-
-			shader->SetUniformFloat("modelColour", colour);
-
-			renderObject->ConfigerShaderExtras(shader);
-
-			int layerCount = mesh->GetSubMeshCount();
-			for (int i = 0; i < layerCount; i++) {
-				mesh->Draw(i);
-			}
-			shader->Unbind();
+		if (!dynamic_cast<OGLMesh*>(renderObject->GetMesh())) {
+			return;
 		}
+
+		renderObject->Draw();
 	});
 
 	frameBuffer->Unbind();
