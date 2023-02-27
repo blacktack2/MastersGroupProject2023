@@ -44,8 +44,8 @@ namespace NCL {
 			TutorialGame();
 			~TutorialGame();
 
-
-			void InitWorld(InitMode mode = InitMode::EMPTY);
+			virtual void StartLevel();
+			void InitWorld();
 
 			virtual void UpdateGame(float dt);
 
@@ -81,7 +81,6 @@ namespace NCL {
 			EnemyObject* AddEnemyToWorld(const Vector3& position, NavigationMap& navMap);
 
 			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
-			HealingKit* UpdateHealingKit();
 			void BuildLevel();
 			void UpdateLevel();
 			NPCObject* AddNPCToWorld(const Vector3& position);

@@ -1,5 +1,4 @@
 #pragma once
-
 enum class GameState {
 	OnGoing,
 	Paused,
@@ -15,6 +14,7 @@ namespace NCL {
 			GameStateManager();
 			~GameStateManager();
 			GameState gameState;
+
 		public:
 			static GameStateManager& instance() {
 				static GameStateManager INSTANCE;

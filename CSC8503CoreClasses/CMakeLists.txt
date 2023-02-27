@@ -111,6 +111,7 @@ set(Source_Files
     "Debug.cpp"
     "GameObject.cpp"
     "GameWorld.cpp"
+    "InputKeyMap.cpp"
     "Light.cpp"
     "RenderObject.cpp"
     "Transform.cpp"

@@ -58,8 +58,11 @@ void NetworkedGame::StartAsServer() {
 	thisServer->RegisterPacketHandler(Handshake_Ack, this);
 
 	StartLevel();
-	
+
 	localPlayer = SpawnPlayer(0, true);
+	//player = static_cast<PlayerObject*>(localPlayer);
+	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
+	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, static_cast<PlayerObject*>(localPlayer));
 }
 
 void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
@@ -259,13 +262,7 @@ GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 }
 
 void NetworkedGame::StartLevel() {
-	//world->Clear();
-	delete testingBossBehaviorTree;
-	testingBossBehaviorTree = nullptr;
-	world->ClearAndErase();
-	physics->Clear();
-	InitDefaultFloor();
-	world->UpdateStaticTree();
+	InitWorld();
 }
 
 void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID) {

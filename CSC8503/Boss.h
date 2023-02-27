@@ -141,7 +141,7 @@ namespace NCL
                 SequenceNode* offensiveWhilePlayerAway = new SequenceNode();
                 offensiveMoves->addChild(offensiveWhilePlayerAway);
 
-                CheckPlayerDistanceToBossNode* checkPlayerDistanceToWander = new CheckPlayerDistanceToBossNode(boss, player, bossVision, 9999);
+                CheckPlayerDistanceToBossNode* checkPlayerDistanceToWander = new CheckPlayerDistanceToBossNode(boss, &player, bossVision, 9999);
                 offensiveWhilePlayerAway->addChild(checkPlayerDistanceToWander);
 
                 WanderNode* randomWalk = new WanderNode();
@@ -150,7 +150,7 @@ namespace NCL
                 SequenceNode* offensiveWhilePlayerNear = new SequenceNode();
                 offensiveMoves->addChild(offensiveWhilePlayerNear);
 
-                CheckPlayerDistanceToBossNode* checkPlayerDistanceToAttack = new CheckPlayerDistanceToBossNode(boss, player, -1, bossVision);
+                CheckPlayerDistanceToBossNode* checkPlayerDistanceToAttack = new CheckPlayerDistanceToBossNode(boss, &player, -1, bossVision);
                 offensiveWhilePlayerNear->addChild(checkPlayerDistanceToAttack);
 
                 SelectorNode* offensiveCloseOrRemote = new SelectorNode();
@@ -159,7 +159,7 @@ namespace NCL
                 SequenceNode* offensiveCloseCombat = new SequenceNode();
                 offensiveCloseOrRemote->addChild(offensiveCloseCombat);
 
-                CheckPlayerDistanceToBossNode* checkPlayerDistanceForCloseCombat = new CheckPlayerDistanceToBossNode(boss, player, -1, distanceToHaveCloseCombat);
+                CheckPlayerDistanceToBossNode* checkPlayerDistanceForCloseCombat = new CheckPlayerDistanceToBossNode(boss, &player, -1, distanceToHaveCloseCombat);
                 offensiveCloseCombat->addChild(checkPlayerDistanceForCloseCombat);
 
                 SelectorNode* chooseOffensiveCloseCombat = new SelectorNode();
@@ -185,7 +185,7 @@ namespace NCL
                 SequenceNode* offensiveRemoteCombat = new SequenceNode();
                 offensiveCloseOrRemote->addChild(offensiveRemoteCombat);
 
-                CheckPlayerDistanceToBossNode* checkPlayerDistanceForRemoteCombat = new CheckPlayerDistanceToBossNode(boss, player, distanceToHaveCloseCombat, bossVision);
+                CheckPlayerDistanceToBossNode* checkPlayerDistanceForRemoteCombat = new CheckPlayerDistanceToBossNode(boss, &player, distanceToHaveCloseCombat, bossVision);
                 offensiveRemoteCombat->addChild(checkPlayerDistanceForRemoteCombat);
 
                 SelectorNode* chooseOffensiveRemoteCombat = new SelectorNode();
@@ -220,7 +220,7 @@ namespace NCL
                 SequenceNode* defensiveWhilePlayerAway = new SequenceNode();
                 defensiveMoves->addChild(defensiveWhilePlayerAway);
 
-                CheckPlayerDistanceToBossNode* checkPlayerIsAway = new CheckPlayerDistanceToBossNode(boss, player, bossVision, 9999);
+                CheckPlayerDistanceToBossNode* checkPlayerIsAway = new CheckPlayerDistanceToBossNode(boss, &player, bossVision, 9999);
                 defensiveWhilePlayerAway->addChild(checkPlayerIsAway);
 
                 SelectorNode* defensiveHealOrWalk = new SelectorNode();
@@ -236,7 +236,7 @@ namespace NCL
                 SequenceNode* defensiveWhilePlayerNear = new SequenceNode();
                 defensiveMoves->addChild(defensiveWhilePlayerNear);
 
-                CheckPlayerDistanceToBossNode* checkPlayerIsNear = new CheckPlayerDistanceToBossNode(boss, player, -1, bossVision);
+                CheckPlayerDistanceToBossNode* checkPlayerIsNear = new CheckPlayerDistanceToBossNode(boss, &player, -1, bossVision);
                 defensiveWhilePlayerNear->addChild(checkPlayerIsNear);
 
                 SelectorNode* defensiveCloseOrRemote = new SelectorNode();
@@ -245,7 +245,7 @@ namespace NCL
                 SequenceNode* defensiveCloseCombat = new SequenceNode();
                 defensiveCloseOrRemote->addChild(defensiveCloseCombat);
 
-                CheckPlayerDistanceToBossNode* checkPlayerDistanceForDanger = new CheckPlayerDistanceToBossNode(boss, player, -1, distanceToHaveCloseCombat);
+                CheckPlayerDistanceToBossNode* checkPlayerDistanceForDanger = new CheckPlayerDistanceToBossNode(boss, &player, -1, distanceToHaveCloseCombat);
                 defensiveCloseCombat->addChild(checkPlayerDistanceForDanger);
 
                 JumpAwayFromPlayerNode* jumpAwayFromPlayer = new JumpAwayFromPlayerNode();
@@ -254,7 +254,7 @@ namespace NCL
                 SequenceNode* defensiveRemoteCombat = new SequenceNode();
                 defensiveCloseOrRemote->addChild(defensiveRemoteCombat);
 
-                CheckPlayerDistanceToBossNode* checkPlayerDistanceForKillingMoves = new CheckPlayerDistanceToBossNode(boss, player, distanceToHaveCloseCombat, bossVision);
+                CheckPlayerDistanceToBossNode* checkPlayerDistanceForKillingMoves = new CheckPlayerDistanceToBossNode(boss, &player, distanceToHaveCloseCombat, bossVision);
                 defensiveRemoteCombat->addChild(checkPlayerDistanceForKillingMoves);
 
                 SelectorNode* chooseDefensiveRemoteCombat = new SelectorNode();
@@ -291,6 +291,9 @@ namespace NCL
                 }
             }
 
+            void SetPlayer(PlayerObject* player) {
+                this->behaviorLock->SetPlayer(player);
+            }
         private:
 
             enum BossAction
@@ -398,12 +401,15 @@ namespace NCL
                     return true;
                 }
 
+                void SetPlayer(PlayerObject* player) {
+                    this->player = player;
+                }
+
             private:
                 BossAction bossAction = NoAction;
                 Boss* boss;
                 PlayerObject* player;
             };
-
 
             class Node
             {
@@ -510,12 +516,12 @@ namespace NCL
             class CheckPlayerDistanceToBossNode : public Node
             {
             public:
-                CheckPlayerDistanceToBossNode(Boss* b, PlayerObject* p, float l, float u)
+                CheckPlayerDistanceToBossNode(Boss* b, PlayerObject** p, float l, float u)
                 {
                     lowerLimit = l;
                     upperLimit = u;
                     boss = b;
-                    player = p;
+                    player = *p;
                 }
                 virtual bool execute(BehaviorLock* lock)
                 {

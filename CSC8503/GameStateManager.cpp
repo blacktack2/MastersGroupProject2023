@@ -10,4 +10,5 @@ GameStateManager::~GameStateManager() {
 }
 
 void GameStateManager::Update(float dt) {
+
 }
