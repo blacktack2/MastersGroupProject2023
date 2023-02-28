@@ -34,12 +34,12 @@ GameObject::GameObject(GameObject& other) : gameWorld(GameWorld::instance()), tr
 GameObject::~GameObject()	{
 	if (networkObject != nullptr) {
 		gameWorld.RemoveNetworkObject(networkObject);
+		delete networkObject;
 	}
 		
 	delete boundingVolume;
 	delete physicsObject;
 	delete renderObject;
-	delete networkObject;
 }
 
 bool GameObject::GetBroadphaseAABB(Vector3&outSize) const {

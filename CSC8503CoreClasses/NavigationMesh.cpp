@@ -4,15 +4,14 @@
 #include <fstream>
 using namespace NCL;
 using namespace CSC8503;
-using namespace std;
 
 NavigationMesh::NavigationMesh()
 {
 }
 
-NavigationMesh::NavigationMesh(const std::string&filename)
+NavigationMesh::NavigationMesh(const std::string& filename)
 {
-	ifstream file(Assets::DATADIR + filename);
+	std::ifstream file(Assets::DATADIR + filename);
 
 	int numVertices = 0;
 	int numIndices	= 0;

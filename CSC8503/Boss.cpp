@@ -1,16 +1,17 @@
-
-/*********************************************************************
- * Author: Xiaoyang Liu
- * Date:   February 2023
- *********************************************************************/
-
+/**
+ * @file   Boss.cpp
+ * @brief  See Boss.h.
+ *
+ * @author Xiaoyang Liu
+ * @date   February 2023
+ */
 #pragma once
 #include "Boss.h"
 #include "BulletInstanceManager.h"
 #include "AssetLibrary.h"
+#include "PrefabLibrary.h"
 
-void Boss::Update(float dt)
-{
+void Boss::Update(float dt) {
     health.Update(dt);
     deltaTime = dt;
     // check if inked
@@ -24,10 +25,8 @@ void Boss::Update(float dt)
     }
 }
 
-void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
-{
-    if (gameGrid == nullptr)
-    {
+void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt) {
+    if (gameGrid == nullptr) {
         return;
     }
 
@@ -42,9 +41,8 @@ void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
     }
     if (tempSteps.size() <= 100) {  // enemy is too close and will just go straight to the destination
         this->GetTransform().SetPosition(this->GetTransform().GetGlobalPosition() + ((destination - this->GetTransform().GetGlobalPosition()).Normalised() * (dt * aiSpeed)));
-    }
-    else {
-        Vector3 closest{ 9999,9999,9999 };
+    } else {
+        Vector3 closest{ 9999, 9999, 9999 };
         Vector3 forward;
         for (int n = 0; n < tempSteps.size() - 1; n++) {
             if ((closest - this->GetTransform().GetGlobalPosition()).Length() > (tempSteps[n] - this->GetTransform().GetGlobalPosition()).Length()) {
@@ -75,13 +73,12 @@ void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
     }
 }
 
-BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p)
-{
+BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p) {
     BossBullet* ink = BulletInstanceManager::instance().GetBossBullet();
+
     ink->SetLifespan(5.0f);
     Vector3 position = this->GetTransform().GetGlobalPosition();
-    if (p != Vector3{ 99999,99999,99999 })
-    {
+    if (p != Vector3{ 99999, 99999, 99999 }) {
         position = p;
     }
     ink->GetTransform()
@@ -101,18 +98,15 @@ BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p)
 
 }
 
-bool Boss::RandomWalk()   // TODO: the boss should not go outside the boundaries
-{
-    AnimatedRenderObject* anim = (AnimatedRenderObject*)this->GetRenderObject();
-    if (anim->GetAnimation() != AssetLibrary::GetAnimation("WalkForward"))
-    {
+bool Boss::RandomWalk() {
+    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+    if (anim->GetAnimation() != AssetLibrary::GetAnimation("WalkForward")) {
         anim->SetAnimation(AssetLibrary::GetAnimation("WalkForward"));
     }
     float speed = 20.0f;
     float period = 1.0f;    // change direction in period-seconds
     randomWalkTimer += deltaTime;
-    if (randomWalkTimer > period)
-    {
+    if (randomWalkTimer > period) {
         randomWalkTimer = 0.0f;
         float x = (std::rand() % 11) - 5;
         float z = (std::rand() % 11) - 5;
@@ -125,11 +119,9 @@ bool Boss::RandomWalk()   // TODO: the boss should not go outside the boundaries
     return false;
 }
 
-bool Boss::StabPlayer(PlayerObject* player)
-{
-    AnimatedRenderObject* anim = (AnimatedRenderObject*)this->GetRenderObject();
-    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack1"))
-    {
+bool Boss::StabPlayer(PlayerObject* player) {
+    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack1")) {
         anim->SetAnimation(AssetLibrary::GetAnimation("Attack1"));
     }
 
@@ -140,16 +132,14 @@ bool Boss::StabPlayer(PlayerObject* player)
     float period = 1.0f;
     int numOfbombs = 10;
     stabTimer += deltaTime;
-    if (stabTimer > period)
-    {
+    if (stabTimer > period) {
         stabTimer = 0.0f;
         const float PI = 3.1415926f;
         float dTheta = PI / 64;
         releaseBossBullet(bombVelocity, bombScale);
         Vector3 y{ 0,1,0 };
         Vector3 yDot = Maths::Vector3::Cross(Maths::Vector3::Cross(bombDirection, y), bombDirection).Normalised();
-        for (int i = 1; i < numOfbombs; i++)
-        {
+        for (int i = 1; i < numOfbombs; i++) {
             Vector3 dir = (bombDirection * cos(dTheta * i) + yDot * sin(dTheta * i)).Normalised();
             Vector3 vel = dir * bombSpeed;
             releaseBossBullet(vel, bombScale);
@@ -159,11 +149,9 @@ bool Boss::StabPlayer(PlayerObject* player)
     return false;
 }
 
-bool Boss::Spin(PlayerObject* player)
-{
-    AnimatedRenderObject* anim = (AnimatedRenderObject*)this->GetRenderObject();
-    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack2"))
-    {
+bool Boss::Spin(PlayerObject* player) {
+    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack2")) {
         anim->SetAnimation(AssetLibrary::GetAnimation("Attack2"));
     }
     Vector3 bombScale{ 0.75,0.75,0.75 };
@@ -200,11 +188,9 @@ bool Boss::Spin(PlayerObject* player)
     return false;
 }
 
-bool Boss::UseLaserOnPlayer(PlayerObject* player)
-{
-    AnimatedRenderObject* anim = (AnimatedRenderObject*)this->GetRenderObject();
-    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack3"))
-    {
+bool Boss::UseLaserOnPlayer(PlayerObject* player) {
+    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack3")) {
         anim->SetAnimation(AssetLibrary::GetAnimation("Attack3"));
     }
     Vector3 bombScale{ 2,2,2 };
@@ -241,16 +227,13 @@ bool Boss::UseLaserOnPlayer(PlayerObject* player)
     return false;
 }
 
-bool Boss::JumpTo(PlayerObject* player)
-{
-    AnimatedRenderObject* anim = (AnimatedRenderObject*)this->GetRenderObject();
-    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Jump"))
-    {
+bool Boss::JumpTo(PlayerObject* player) {
+    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Jump")) {
         anim->SetAnimation(AssetLibrary::GetAnimation("Jump"));
     }
     float hangTime = 5.0f;
-    if (jumpToTimer == 0.0f)
-    {
+    if (jumpToTimer == 0.0f) {
         float jumpSpeed = 35.0f;
         const float PI = 3.1415926f;
         float dTheta = PI / 4;
@@ -262,24 +245,20 @@ bool Boss::JumpTo(PlayerObject* player)
         this->GetPhysicsObject()->SetLinearVelocity(vel);
     }
     jumpToTimer += deltaTime;
-    if (jumpToTimer > hangTime)
-    {
+    if (jumpToTimer > hangTime) {
         jumpToTimer = 0.0f;
         return true;
     }
     return false;
 }
 
-bool Boss::JumpAway(PlayerObject* player)
-{
-    AnimatedRenderObject* anim = (AnimatedRenderObject*)this->GetRenderObject();
-    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Jump"))
-    {
+bool Boss::JumpAway(PlayerObject* player) {
+    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Jump")) {
         anim->SetAnimation(AssetLibrary::GetAnimation("Jump"));
     }
     float hangTime = 5.0f;
-    if (jumpAwayTimer == 0.0f)
-    {
+    if (jumpAwayTimer == 0.0f) {
         float jumpSpeed = 35.0f;
         const float PI = 3.1415926f;
         float dTheta = PI / 4;
@@ -291,16 +270,14 @@ bool Boss::JumpAway(PlayerObject* player)
         this->GetPhysicsObject()->SetLinearVelocity(vel);
     }
     jumpAwayTimer += deltaTime;
-    if (jumpAwayTimer > hangTime)
-    {
+    if (jumpAwayTimer > hangTime) {
         jumpAwayTimer = 0.0f;
         return true;
     }
     return false;
 }
 
-bool Boss::SeekHeal(bool& hasHeal)
-{
+bool Boss::SeekHeal(bool& hasHeal) {
     // TODO
 
                 /*float speed = 35.0f;
@@ -327,11 +304,9 @@ bool Boss::SeekHeal(bool& hasHeal)
     return false;
 }
 
-bool Boss::InkRain(PlayerObject* player)
-{
-    AnimatedRenderObject* anim = (AnimatedRenderObject*)this->GetRenderObject();
-    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack6"))
-    {
+bool Boss::InkRain(PlayerObject* player) {
+    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack6")) {
         anim->SetAnimation(AssetLibrary::GetAnimation("Attack6"));
     }
     float rainPeriod = 0.1f;
@@ -340,11 +315,9 @@ bool Boss::InkRain(PlayerObject* player)
     float bombSpeed = 100.0f;
     Vector3 bombScale{ 0.5,0.5,0.5 };
     Vector3 startingPosition = this->GetTransform().GetGlobalPosition();
-    if (!rainIsInitialised)
-    {
+    if (!rainIsInitialised) {
         rain = std::vector<BossBullet*>(numOfBomb);
-        for (int n = 0; n < numOfBomb; n++)
-        {
+        for (int n = 0; n < numOfBomb; n++) {
             float xDot = std::rand() % rainRange + 1;
             float xDotDot = -(std::rand() % rainRange + 1);
             float yDot = std::rand() % rainRange + 1;
@@ -362,8 +335,7 @@ bool Boss::InkRain(PlayerObject* player)
         rainIsInitialised = true;
         return false;
     }
-    if (currentRainBomb == rain.size())
-    {
+    if (currentRainBomb == rain.size()) {
         rainBombPositions.clear();
         rainIsInitialised = false;
         inkRainTimer = 0.0f;
@@ -371,8 +343,7 @@ bool Boss::InkRain(PlayerObject* player)
         return true;
     }
     inkRainTimer += deltaTime;
-    if (inkRainTimer > rainPeriod)
-    {
+    if (inkRainTimer > rainPeriod) {
         inkRainTimer = 0.0f;
         rain[currentRainBomb]->SetLifespan(0.0f);
         Vector3 bombDirection = (player->GetTransform().GetGlobalPosition() - rainBombPositions[currentRainBomb]).Normalised();
@@ -385,11 +356,9 @@ bool Boss::InkRain(PlayerObject* player)
     return false;
 }
 
-bool Boss::BulletsStorm()
-{
-    AnimatedRenderObject* anim = (AnimatedRenderObject*)this->GetRenderObject();
-    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack5"))
-    {
+bool Boss::BulletsStorm() {
+    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack5")) {
         anim->SetAnimation(AssetLibrary::GetAnimation("Attack5"));
     }
     float bulletsStormDuration = 5.0f;
@@ -397,20 +366,17 @@ bool Boss::BulletsStorm()
     Vector3 bombScale{ 1,1,1 };
     float bombSpeed = 30.0f;
 
-    if (bulletsStormTimer < bulletsStormDuration)
-    {
+    if (bulletsStormTimer < bulletsStormDuration) {
         bulletsStormTimer += deltaTime;
         bulletsStormFrequencyTimer += deltaTime;
-        if (bulletsStormFrequencyTimer > bulletsStormPeriod)
-        {
+        if (bulletsStormFrequencyTimer > bulletsStormPeriod) {
             bulletsStormFrequencyTimer = 0.0f;
             const float PI = 3.1415926;
             int rayNum = 16;
             bulletsStormAngle += PI / 50;
             float currentPhase = bulletsStormAngle;
             float dAngle = (2 * PI) / rayNum;
-            for (; currentPhase < (2 * PI + bulletsStormAngle); currentPhase += dAngle)
-            {
+            for (; currentPhase < (2 * PI + bulletsStormAngle); currentPhase += dAngle) {
                 Vector3 rayDir = this->GetTransform().GetGlobalOrientation() * Vector3(cos(currentPhase), 0, sin(currentPhase));
                 Vector3 bombVelocity = rayDir * bombSpeed;
                 releaseBossBullet(bombVelocity, bombScale);

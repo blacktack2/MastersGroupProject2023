@@ -11,7 +11,6 @@
 #include <iostream>
 
 using namespace NCL;
-using namespace std;
 
 bool CollisionDetection::RayPlaneIntersection(const Ray&r, const Plane&p, RayCollision& collisions) {
 	float ln = Vector3::Dot(p.GetNormal(), r.GetDirection());

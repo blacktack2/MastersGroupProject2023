@@ -110,7 +110,10 @@ TextureBase* OGLTexture::RGBATextureFromFilename(const std::string& filename) {
 	int height    = 0;
 	int channels  = 0;
 	int flags     = 0;
-	TextureLoader::LoadTexture(filename, texData, width, height, channels, flags);
+
+	if (!TextureLoader::LoadTexture(filename, texData, width, height, channels, flags)) {
+		return nullptr;
+	}
 
 	TextureBase* glTex = RGBATextureFromData(texData, width, height, channels);
 
