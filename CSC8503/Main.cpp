@@ -87,10 +87,17 @@ void LoadGlobalAssets() {
 	AssetLibrary::AddMesh("shelter", renderer -> LoadMesh("shelterCube.msh"));
 	AssetLibrary::AddMesh("pillar", renderer->LoadMesh("pillarMsh.msh"));
 
+	AssetLibrary::AddTexture("defaultDiffuse", renderer->LoadTexture("DefaultDiffuse.png"));
+	AssetLibrary::AddTexture("defaultBump", renderer->LoadTexture("DefaultBump.png"));
+	AssetLibrary::AddTexture("defaultSpec", renderer->LoadTexture("DefaultSpec.png"));
 	AssetLibrary::AddTexture("basic", renderer->LoadTexture("checkerboard.png"));
 	AssetLibrary::AddTexture("healingKitTex", renderer->LoadTexture("shelterTex.jpg"));
 	AssetLibrary::AddTexture("pillarTex", renderer->LoadTexture("pillarTex.jpg"));
 
+	AssetLibrary::AddMaterial("default", new MeshMaterial("Default.mat"));
+	AssetLibrary::AddMaterial("pillar", new MeshMaterial("pillar.mat"));
+
+	AssetLibrary::AddShader("defaultModel", renderer->LoadShader("modelDefault.vert", "modelDefault.frag"));
 	AssetLibrary::AddShader("paint", renderer->LoadShader("modelDefault.vert", "modelPaintTexture.frag"));
 
 }

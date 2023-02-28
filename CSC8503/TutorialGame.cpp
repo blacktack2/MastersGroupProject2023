@@ -837,7 +837,7 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 		.SetPosition(position)
 		.SetScale(dimensions * 2);
 
-	boss->SetRenderObject(new AnimatedRenderObject(&boss->GetTransform(), AssetLibrary::GetMesh("boss"), AssetLibrary::GetMaterial("boss"), AssetLibrary::GetAnimation("boss")));
+	boss->SetRenderObject(new AnimatedRenderObject(&boss->GetTransform(), AssetLibrary::GetMesh("boss"), AssetLibrary::GetMaterial("boss"), AssetLibrary::GetAnimation("WalkForward")));
 
 	boss->GetRenderObject()->SetColour({ 1,1,1,1 });
 	boss->SetPhysicsObject(new PhysicsObject(&boss->GetTransform(), boss->GetBoundingVolume()));

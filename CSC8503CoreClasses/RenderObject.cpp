@@ -48,9 +48,10 @@ void RenderObject::PreDraw(int sublayer) {
 	MeshMaterial* mat = material ? material : AssetLibrary::GetMaterial("default");
 
 	const MeshMaterialEntry* entry = mat->GetMaterialForLayer(sublayer);
+	entry = entry ? entry : mat->GetMaterialForLayer(0);
 
 	ShaderBase* shader = entry->GetShader();
-	shader = shader ? shader : AssetLibrary::GetShader("DefaultModel");
+	shader = shader ? shader : AssetLibrary::GetShader("defaultModel");
 
 	shader->Bind();
 
@@ -60,15 +61,15 @@ void RenderObject::PreDraw(int sublayer) {
 	shader->SetUniformFloat("modelColour", colour);
 
 	TextureBase* diffuse = entry->GetTexture("Diffuse");
-	diffuse = diffuse ? diffuse : AssetLibrary::GetTexture("DefaultDiffuse");
+	diffuse = diffuse ? diffuse : AssetLibrary::GetTexture("defaultDiffuse");
 	diffuse->Bind(0);
 
 	TextureBase* bump = entry->GetTexture("Bump");
-	bump = bump ? bump : AssetLibrary::GetTexture("DefaultBump");
+	bump = bump ? bump : AssetLibrary::GetTexture("defaultBump");
 	bump->Bind(1);
 
 	TextureBase* spec = entry->GetTexture("Spec");
-	spec = spec ? spec : AssetLibrary::GetTexture("DefaultSpec");
+	spec = spec ? spec : AssetLibrary::GetTexture("defaultSpec");
 	spec->Bind(2);
 
 	PreDraw(sublayer, shader);
