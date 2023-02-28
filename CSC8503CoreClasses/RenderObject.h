@@ -23,7 +23,7 @@ namespace NCL {
 		public:
 			RenderObject(Transform* parentTransform, MeshGeometry* mesh, MeshMaterial* material);
 			RenderObject(RenderObject& other, Transform* parentTransform);
-			~RenderObject();
+			virtual ~RenderObject();
 
 			MeshGeometry* GetMesh() const {
 				return mesh;

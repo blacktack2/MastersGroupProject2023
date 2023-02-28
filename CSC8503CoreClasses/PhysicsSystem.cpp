@@ -38,7 +38,7 @@ any collisions they are in.
 void PhysicsSystem::Clear() {
 	allCollisions.clear();
 	allTriggers.clear();
-	std::cout << "Clear\n";
+	//std::cout << "Clear\n";
 }
 
 /*

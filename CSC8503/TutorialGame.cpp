@@ -644,7 +644,7 @@ void TutorialGame::InitBridgeConstraintTestWorld(int numLinks, float cubeDistanc
 }
 
 void TutorialGame::InitDefaultFloor() {
-	floor = AddFloorToWorld(Vector3(0, -2, 0));
+	AddFloorToWorld(Vector3(0, -2, 0));
 }
 
 GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
@@ -656,7 +656,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 	floor->GetTransform()
 		.SetScale(floorSize * 2)
 		.SetPosition(position);
-
+	
 	PaintRenderObject* render = new PaintRenderObject(&floor->GetTransform(), cubeMesh, nullptr);
 	floor->SetRenderObject(render);
 
@@ -955,29 +955,29 @@ void TutorialGame::UpdateLevel()
 	}
 }
 
-HealingKit* TutorialGame::UpdateHealingKit() {
-	Vector3 dimension{ 1,1,1 };
-
-	gameGrid->UpdateHealingKits(player, dimension);
-	gameGrid->UpdateHealingKits(testingBoss, dimension);
-
-	float period = 1.0f;
-
-	if (gameGrid->GetHealingKitTimer() > period) {
-		HealingKit* healingKit = new HealingKit();
-		Vector3 position = gameGrid->GetRandomLocationToAddHealingKit(healingKit);	// this function resets the timer, and add the new healingKit to the list used to store all healing kits in gameGrid
-		healingKit->GetTransform()
-			.SetPosition(position)
-			.SetScale(dimension * 2);
-
-		healingKit->SetRenderObject(new RenderObject(&healingKit->GetTransform(), cubeMesh, nullptr));
-
-		world->AddGameObject(healingKit);
-
-		return healingKit;
-	}
-	return nullptr;
-}
+//HealingKit* TutorialGame::UpdateHealingKit() {
+//	Vector3 dimension{ 1,1,1 };
+//
+//	gameGrid->UpdateHealingKits(player, dimension);
+//	gameGrid->UpdateHealingKits(testingBoss, dimension);
+//
+//	float period = 1.0f;
+//
+//	if (gameGrid->GetHealingKitTimer() > period) {
+//		HealingKit* healingKit = new HealingKit();
+//		Vector3 position = gameGrid->GetRandomLocationToAddHealingKit(healingKit);	// this function resets the timer, and add the new healingKit to the list used to store all healing kits in gameGrid
+//		healingKit->GetTransform()
+//			.SetPosition(position)
+//			.SetScale(dimension * 2);
+//
+//		healingKit->SetRenderObject(new RenderObject(&healingKit->GetTransform(), cubeMesh, nullptr));
+//
+//		world->AddGameObject(healingKit);
+//
+//		return healingKit;
+//	}
+//	return nullptr;
+//}
 
 NPCObject* TutorialGame::AddNPCToWorld(const Vector3& position) {
 	NPCObject* npc = new NPCObject();

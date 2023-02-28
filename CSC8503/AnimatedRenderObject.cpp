@@ -25,7 +25,7 @@ RenderObject(parentTransform, mesh, material) {
 }
 
 AnimatedRenderObject::~AnimatedRenderObject() {
-	delete anim;
+	
 }
 
 void AnimatedRenderObject::PreDraw(int sublayer, ShaderBase* shader) {

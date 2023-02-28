@@ -21,7 +21,7 @@ namespace NCL
                 invincible = isInvincible;
             }
 
-            ~Obstacle();
+            ~Obstacle() {}
 
             virtual void Update(float dt) override
             {
