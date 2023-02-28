@@ -27,6 +27,8 @@ namespace NCL::CSC8503 {
 		}
 		inline void SetAnimation(MeshAnimation* animation) {
 			anim = animation;
+			currentFrame = 0;
+			nextFrame = 0;
 		}
 	protected:
 		void PreDraw(int sublayer, ShaderBase* shader) override;

@@ -31,8 +31,8 @@ AnimatedRenderObject::~AnimatedRenderObject() {
 void AnimatedRenderObject::PreDraw(int sublayer, ShaderBase* shader) {
 	frameTime -= GameWorld::instance().GetDeltaTime() * animSpeed;
 	while (frameTime < 0.0f) {
-		currentFrame = nextFrame;
-		nextFrame    = ++nextFrame == anim->GetFrameCount() ? 0 : nextFrame;
+		currentFrame = nextFrame++;
+		nextFrame    = nextFrame == anim->GetFrameCount() ? 0 : nextFrame;
 		frameTime += 1.0f / anim->GetFrameRate();
 	}
 
