@@ -409,11 +409,11 @@ void NetworkedGame::HandleItemInitPacket(GamePacket* payload, int source) {
 	{
 		//server
 	case NetworkInstanceType::Projectile:
-		obj = new PlayerBullet(*(PlayerBullet*)AssetLibrary::GetPrefab("bullet"));
+		obj = new PlayerBullet(*(PlayerBullet*)PrefabLibrary::GetPrefab("bullet"));
 		((PlayerBullet*)obj)->SetLifespan(5);
 		break;
 	default:
-		obj = new PlayerBullet(*(PlayerBullet*)AssetLibrary::GetPrefab("bullet"));
+		obj = new PlayerBullet(*(PlayerBullet*)PrefabLibrary::GetPrefab("bullet"));
 		break;
 	}
 	obj->GetTransform().SetPosition(((ItemInitPacket*)payload)->position);
