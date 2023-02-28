@@ -69,7 +69,7 @@ namespace NCL
 
     
 
-            std::vector<BossBullet*> GetBossBulletsReleasedByBoss()
+            /*std::vector<BossBullet*> GetBossBulletsReleasedByBoss()
             {
                 return bombsReleased;
             }
@@ -77,7 +77,7 @@ namespace NCL
             void clearBossBulletList()
             {
                 bombsReleased.clear();
-            }
+            }*/
 
         protected:
 
@@ -85,7 +85,7 @@ namespace NCL
             GameGrid* gameGrid = nullptr;
             float deltaTime = 0.0f;
 
-            std::vector<BossBullet*> bombsReleased;
+            //std::vector<BossBullet*> bombsReleased;
 
             // Boss' attributes:
             Health health = Health(100);

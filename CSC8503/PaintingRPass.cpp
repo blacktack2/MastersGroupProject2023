@@ -47,7 +47,7 @@ void PaintingRPass::Render() {
 
 		glViewport(0, 0, renderObj->GetWidth(), renderObj->GetHeight());
 
-		for (PaintCollision const paint : renderObj->GetPaintCollisions()) {
+		for (PaintCollision const &paint : renderObj->GetPaintCollisions()) {
 			shader->SetUniformFloat("paintPos", paint.center);
 			shader->SetUniformFloat("paintColour", paint.colour);
 			shader->SetUniformFloat("paintSize", paint.radius);

@@ -305,9 +305,11 @@ void PhysicsSystem::BroadPhase() {
 		[&](std::list<QuadTreeEntry>& data, const Vector2& subsetPos, const Vector2& subsetSize) {
 			CollisionDetection::CollisionInfo collisionInfo{};
 			for (auto i = data.begin(); i != data.end(); i++) {
+				auto a = i->object;
+				if (!a->IsActive()) continue;
 				for (auto j = std::next(i); j != data.end(); j++) {
-					auto a = i->object;
 					auto b = j->object;
+					if (!b->IsActive()) continue;
 					collisionInfo.a = std::min(a, b);
 					collisionInfo.b = std::max(a, b);
 					if (a->GetPhysicsObject()->IsTrigger() || b->GetPhysicsObject()->IsTrigger()) {
@@ -395,6 +397,7 @@ void PhysicsSystem::IntegrateAccel(float dt) {
 	gameWorld.GetObjectIterators(first, last);
 
 	for (auto i = first; i != last; i++) {
+		if (!(*i)->IsActive()) continue;
 		PhysicsObject* object = (*i)->GetPhysicsObject();
 		if (object == nullptr) {
 			continue;
@@ -439,6 +442,7 @@ void PhysicsSystem::IntegrateVelocity(float dt) {
 	float frameLinearDamping = 1.0f - (globalDamping * dt);
 
 	for (auto i = first; i != last; i++) {
+		if (!(*i)->IsActive()) continue;
 		PhysicsObject* object = (*i)->GetPhysicsObject();
 		if (object == nullptr || object->IsStatic()) {
 			continue;
