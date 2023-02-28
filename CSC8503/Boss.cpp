@@ -7,7 +7,7 @@
  */
 #pragma once
 #include "Boss.h"
-
+#include "BulletInstanceManager.h"
 #include "AssetLibrary.h"
 #include "PrefabLibrary.h"
 
@@ -74,7 +74,8 @@ void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
 }
 
 BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p) {
-    BossBullet* ink = new BossBullet(*(BossBullet*)PrefabLibrary::GetPrefab("bossBullet"));
+    BossBullet* ink = BulletInstanceManager::instance().GetBossBullet();
+
     ink->SetLifespan(5.0f);
     Vector3 position = this->GetTransform().GetGlobalPosition();
     if (p != Vector3{ 99999, 99999, 99999 }) {
@@ -91,28 +92,10 @@ BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p) {
     if (s.Length() >= 1) {
         //ink->SetDamage(10);
     }
-    GameWorld& gameWorld = GameWorld::instance();
-    gameWorld.AddGameObject(ink);
+    ink->SetActive(true);
 
-    return (BossBullet*)ink;
+    return ink;
 
-    /*
-    BossBullet* bomb = new BossBullet(v);
-    SphereVolume* volume = new SphereVolume(s.x);
-    bomb->SetBoundingVolume((CollisionVolume*)volume);
-    Vector3 position = this->GetTransform().GetGlobalPosition();
-    bomb->GetTransform()
-        .SetPosition(position)
-        .SetScale(s);
-    bomb->SetPhysicsObject(new PhysicsObject(&bomb->GetTransform(), bomb->GetBoundingVolume(), true));
-    bomb->GetPhysicsObject()->SetInverseMass(0.0f);
-    bomb->GetPhysicsObject()->InitSphereInertia();
-        
-                
-    bombsReleased.push_back(bomb);
-
-    return bomb;
-    */
 }
 
 bool Boss::RandomWalk() {

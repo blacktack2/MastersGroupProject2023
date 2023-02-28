@@ -18,7 +18,6 @@ namespace NCL {
 			BossBullet(BossBullet& other);
 			~BossBullet();
 
-			void Update(float dt) override;
 			void OnTriggerBegin(GameObject* other) override;
 
 			void SetDamage(float damage)

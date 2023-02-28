@@ -62,34 +62,14 @@ namespace NCL::CSC8503 {
         {
             return &health;
         }
-
-    
-
-        std::vector<BossBullet*> GetBossBulletsReleasedByBoss()
-        {
-            return bombsReleased;
-        }
-
-        void clearBossBulletList()
-        {
-            bombsReleased.clear();
-        }
-
     protected:
-
-        // Housekeepings:
         GameGrid* gameGrid = nullptr;
         float deltaTime = 0.0f;
 
-        std::vector<BossBullet*> bombsReleased;
-
-        // Boss' attributes:
         Health health = Health(100);
 
-        //game state
         GameStateManager* gameStateManager = &GameStateManager::instance();
 
-        // Parameters for boss actions:
         Vector3 randomWalkDirection{ 1,0,1 };
         float randomWalkTimer = 9999.9f;
 
