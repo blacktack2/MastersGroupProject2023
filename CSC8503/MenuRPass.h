@@ -34,7 +34,8 @@ namespace NCL::CSC8503 {
 		void DrawUIObject(UIObject* obj);
 
 		GameWorld& gameWorld;
-		OGLShader* defaultShader;
-		OGLTexture* defaultTexture;
+
+		ShaderBase* defaultShader;
+		TextureBase* defaultTexture;
 	};
 }

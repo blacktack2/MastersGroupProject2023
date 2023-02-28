@@ -1,3 +1,11 @@
+/**
+ * @file   AssetLibrary.h
+ * @brief  
+ * 
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
+#pragma once
 #include <map>
 #include <string>
 

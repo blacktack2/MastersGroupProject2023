@@ -13,8 +13,8 @@
 #include "MeshMaterial.h"
 #include "Transform.h"
 
-using namespace NCL::CSC8503;
 using namespace NCL;
+using namespace CSC8503;
 
 RenderObject::RenderObject(Transform* parentTransform, MeshGeometry* mesh, MeshMaterial* material) {
 	this->transform = parentTransform;

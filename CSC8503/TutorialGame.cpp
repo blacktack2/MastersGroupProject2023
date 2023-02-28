@@ -69,14 +69,6 @@ TutorialGame::~TutorialGame() {
 	world->ClearAndErase();
 	gridManager->Clear();
 
-	delete cubeMesh;
-	delete sphereMesh;
-	delete charMesh;
-	delete enemyMesh;
-	delete bonusMesh;
-
-	delete basicTex;
-
 	delete physics;
 
 	delete[] mazes;
@@ -337,91 +329,39 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 }
 
 void TutorialGame::InitialiseAssets() {
-	cubeMesh    = renderer->LoadMesh("cube.msh");
-	sphereMesh  = renderer->LoadMesh("sphere.msh");
-	charMesh    = renderer->LoadMesh("Goat.msh");
-	enemyMesh   = renderer->LoadMesh("goose.msh");
-	npcMesh     = renderer->LoadMesh("Keeper.msh");
-	bonusMesh   = renderer->LoadMesh("Sphere.msh");
-	capsuleMesh = renderer->LoadMesh("capsule.msh");
+	cubeMesh = AssetLibrary::GetMesh("cube");
+	sphereMesh  = AssetLibrary::GetMesh("sphere");
+	charMesh    = AssetLibrary::GetMesh("goat");
+	capsuleMesh = AssetLibrary::GetMesh("capsule");
 
-	AssetLibrary::AddMesh("pillar", renderer->LoadMesh("pillarMsh.msh"));
-	AssetLibrary::AddMesh("fenceX", renderer->LoadMesh("fenceXCube.msh"));
-	AssetLibrary::AddMesh("fenceY", renderer->LoadMesh("fenceYCube.msh"));
-	AssetLibrary::AddMesh("wall", renderer->LoadMesh("cube.msh"));
-	AssetLibrary::AddMesh("shelter", renderer->LoadMesh("shelterCube.msh"));
+	basicTex = AssetLibrary::GetTexture("basic");
+	healingKitTex = AssetLibrary::GetTexture("healingKitTex");
+	pillarTex = AssetLibrary::GetTexture("pillarTex");
 
-	MeshGeometry* quad = new OGLMesh();
-	quad->SetVertexPositions({
-		Vector3(-1,  1, -1),
-		Vector3(-1, -1, -1),
-		Vector3(1, -1, -1),
-		Vector3(1,  1, -1),
-		});
-	quad->SetVertexTextureCoords({
-		Vector2(0, 1),
-		Vector2(0, 0),
-		Vector2(1, 0),
-		Vector2(1, 1),
-		});
-	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
-	quad->UploadToGPU();
 
-	AssetLibrary::AddMesh("quad", quad);
-	AssetLibrary::AddMesh("cube", cubeMesh);
-	AssetLibrary::AddMesh("sphere", sphereMesh);
-	AssetLibrary::AddMesh("cube", charMesh);
-	AssetLibrary::AddMesh("enemy", enemyMesh);
-	AssetLibrary::AddMesh("bonus", bonusMesh);
-	AssetLibrary::AddMesh("capsule", capsuleMesh);
-	AssetLibrary::AddMesh("boss", renderer->LoadMesh("Boss/Boss.msh"));
-
-	AssetLibrary::AddTexture("defaultDiffuse", renderer->LoadTexture("defaultDiffuse.png"));
-	AssetLibrary::AddTexture("defaultBump"   , renderer->LoadTexture("defaultBump.png"));
-	AssetLibrary::AddTexture("defaultSpec"   , renderer->LoadTexture("defaultSpec.png"));
-
-	basicTex = renderer->LoadTexture("checkerboard.png");
-	healingKitTex = renderer->LoadTexture("shelterTex.jpg");
-	pillarTex = renderer->LoadTexture("pillarTex.jpg");	
-	AssetLibrary::AddTexture("noise", noiseTex);
-	AssetLibrary::AddTexture("basic", basicTex);
-	AssetLibrary::AddTexture("pillar", pillarTex);
-	AssetLibrary::AddShader("paint", renderer->LoadShader("modelDefault.vert", "modelPaintTexture.frag"));
-	AssetLibrary::AddShader("menu", renderer->LoadShader("menuVertex.vert", "menuFragment.frag"));
-
-	renderer->GetModelPass().AddModelShader((OGLShader*)AssetLibrary::GetShader("paint"));
-
-	AssetLibrary::AddMaterial("default", new MeshMaterial("Default.mat"));
-	AssetLibrary::AddMaterial("boss", new MeshMaterial("Male_Guard.mat"));
-	AssetLibrary::AddMaterial("pillar", new MeshMaterial(
-		{{"Diffuse", AssetLibrary::GetTexture("pillar")}},
-		nullptr
-	));
+	OGLShader* shader = (OGLShader*)AssetLibrary::GetShader("paint");
+	renderer->GetModelPass().AddModelShader(shader);
 
 	InitaliseAnimationAssets();
+
+	//old stuff
+	enemyMesh = AssetLibrary::GetMesh("cube");
+	npcMesh = AssetLibrary::GetMesh("cube");
+	bonusMesh = AssetLibrary::GetMesh("cube");
 
 	InitialisePrefabs();
 }
 
 void TutorialGame::InitaliseAnimationAssets() {
-	OGLShader* animationShader = (OGLShader*)renderer->LoadShader("SkinningVertex.glsl", "TexturedFragment.glsl");
+	OGLShader* animationShader = (OGLShader*)AssetLibrary::GetShader("animation");
 	if (!animationShader->LoadSuccess()) {
 		return;
 	}
-	AssetLibrary::AddShader("animation", animationShader);
 	renderer->GetModelPass().AddModelShader(animationShader);
 
-	maleguardMaterial = new MeshMaterial("Boss/Boss.mat");
-	maleguardMesh = renderer->LoadMesh("Boss/Boss.msh");
-	maleguardAnim = new MeshAnimation("Boss/walk.anm");
-	AssetLibrary::AddAnimation("WalkForward", maleguardAnim);
-	AssetLibrary::AddAnimation("Jump", new MeshAnimation("Boss/Jump.anm"));
-	AssetLibrary::AddAnimation("Attack1", new MeshAnimation("Boss/SillyDancing.anm"));
-	AssetLibrary::AddAnimation("Attack2", new MeshAnimation("Boss/HipHopDancing.anm"));
-	AssetLibrary::AddAnimation("Attack3", new MeshAnimation("Boss/JoyfulJump.anm"));
-	AssetLibrary::AddAnimation("Attack4", new MeshAnimation("Boss/RumbaDancing.anm"));
-	AssetLibrary::AddAnimation("Attack5", new MeshAnimation("Boss/NorthernSoulSpin.anm"));
-	AssetLibrary::AddAnimation("Attack6", new MeshAnimation("Boss/SambaDancing.anm"));
+	maleguardMaterial = AssetLibrary::GetMaterial("boss");
+	maleguardMesh = AssetLibrary::GetMesh("boss");
+	maleguardAnim = AssetLibrary::GetAnimation("WalkForward");
 
 	//for (int i = 0; i < maleguardMesh->GetSubMeshCount(); ++i) {
 	//	const MeshMaterialEntry* matEntry = maleguardMaterial->GetMaterialForLayer(i);
@@ -945,7 +885,6 @@ void TutorialGame::UpdateLevel()
 				pillar->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(pillar);
 			}
-			/*
 			if (object.objectType == ObjectType::FenceX)
 			{
 				Vector3 dimensions{ interval / 4.0f, 0.5f, interval / 5.0f };
@@ -956,7 +895,7 @@ void TutorialGame::UpdateLevel()
 					.SetScale(dimensions * 2);
 				//fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), AssetLibrary::GetMesh("fenceX"), basicTex, nullptr));		// TODO: change to the right Mesh
 				
-				PaintRenderObject* render = new PaintRenderObject(&fenceX->GetTransform(), AssetLibrary::GetMesh("fenceX"), basicTex);
+				PaintRenderObject* render = new PaintRenderObject(&fenceX->GetTransform(), AssetLibrary::GetMesh("fenceX"), nullptr);
 				fenceX->SetRenderObject(render);
 
 				fenceX->SetPhysicsObject(new PhysicsObject(&fenceX->GetTransform(), fenceX->GetBoundingVolume()));
@@ -974,7 +913,7 @@ void TutorialGame::UpdateLevel()
 					.SetScale(dimensions * 2);
 				//fenceY->SetRenderObject(new RenderObject(&fenceY->GetTransform(), AssetLibrary::GetMesh("fenceY"), basicTex, nullptr));		// TODO: change to the right Mesh
 				
-				PaintRenderObject* render = new PaintRenderObject(&fenceY->GetTransform(), AssetLibrary::GetMesh("fenceY"), basicTex);
+				PaintRenderObject* render = new PaintRenderObject(&fenceY->GetTransform(), AssetLibrary::GetMesh("fenceY"), nullptr);
 				fenceY->SetRenderObject(render);
 				
 				fenceY->SetPhysicsObject(new PhysicsObject(&fenceY->GetTransform(), fenceY->GetBoundingVolume()));
@@ -982,7 +921,6 @@ void TutorialGame::UpdateLevel()
 				fenceY->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(fenceY);
 			}
-			*/
 			if (object.objectType == ObjectType::Shelter)
 			{
 				Vector3 dimensions{ interval / 5.0f, 2.0f, interval / 2.0f };

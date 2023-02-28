@@ -1,3 +1,10 @@
+/**
+ * @file   AssetLibrary.cpp
+ * @brief  See AssetLibrary.h.
+ * 
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
 #include "AssetLibrary.h"
 
 #include "MeshGeometry.h"

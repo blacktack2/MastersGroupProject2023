@@ -20,6 +20,7 @@ class ScreenGame : public PushdownState {
 public:
 	ScreenGame() {
 		game = new NetworkedGame();
+		gameStateManager->SetGameState(GameState::OnGoing);
 	}
 	~ScreenGame() {
 		delete game;
