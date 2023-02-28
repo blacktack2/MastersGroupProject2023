@@ -162,7 +162,8 @@ set(Menu_Files
     "ScreenOption.cpp"
     "ScreenMultiplayer.h"
     "ScreenMultiplayer.cpp"
-
+    "ScreenMultiplayerOption.h"
+    "ScreenMultiplayerOption.cpp"
 )
 source_group("Menu Files" FILES ${Menu_Files})
 

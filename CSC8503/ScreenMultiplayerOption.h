@@ -1,6 +1,6 @@
 /**
- * @file   ScreenMain.h
- * @brief  A class for defining the main menu.
+ * @file   ScreenMultiplayerOption.h
+ * @brief  A Pushdown automata state for multiplayer game options.
  *
  * @author Felix Chiu
  * @date   February 2023
@@ -9,35 +9,25 @@
 #include "PushdownState.h"
 #include "Window.h"
 #include "MenuManager.h"
-#include "ScreenGame.h"
-#include "ScreenOption.h"
-#include "ScreenMultiplayerOption.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
-class ScreenMain : public PushdownState {
+class ScreenMultiplayerOption : public PushdownState {
 public:
-	ScreenMain(){
+	ScreenMultiplayerOption() {
 		initMenu();
 	}
-	~ScreenMain(){}
-
+	~ScreenMultiplayerOption() {}
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
 		menuManager.Update(dt);
 		keyMap.Update();
 		renderer.Render();
-		if (menuState == ChangeState::Start) {
-			*newState = new ScreenGame();
-			return PushdownResult::Push;
+		if (menuState == ChangeState::StartServer) {
+			
 		}
-		if (menuState == ChangeState::Multiplayer) {
-			*newState = new ScreenMultiplayerOption();
-			return PushdownResult::Push;
-		}
-		if (menuState == ChangeState::Option) {
-			*newState = new ScreenOption();
-			return PushdownResult::Push;
+		if (menuState == ChangeState::StartClient) {
+
 		}
 		if (menuState == ChangeState::Quit) {
 			return PushdownResult::Pop;
@@ -49,14 +39,11 @@ public:
 		menuState = ChangeState::None;
 		menuManager.SetCurrentMenu(name);
 		renderer.EnableOverlayPass("Menu", true);
-		renderer.EnableOverlayPass("Debug", false);
 		renderer.EnableRenderScene(false);
 		renderer.UpdatePipeline();
 		Window::GetWindow()->ShowOSPointer(true);
 		Window::GetWindow()->LockMouseToWindow(false);
 	}
-	
-
 
 	GameTechRenderer& renderer = GameTechRenderer::instance();
 	MenuManager& menuManager = MenuManager::instance();
@@ -68,14 +55,11 @@ private:
 	enum class ChangeState {
 		None,
 		OnGoing,
-		Start,
-		Multiplayer,
-		Option,
+		StartServer,
+		StartClient,
 		Quit
 	};
 	ChangeState menuState = ChangeState::None;
 
-	string name = "main";
+	string name = "ScreenMultiplayerOption";
 };
-
-

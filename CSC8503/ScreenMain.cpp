@@ -23,16 +23,26 @@ void ScreenMain::initMenu() {
 	menuManager.AddMenu(name, menu);
 
 	//button 1
-	TextureBase* startTex = AssetLibrary::GetTexture("button1");
-	Button* startBtn = new Button(0.5f, 0.0f, 0.2f, 0.1f);
-	startBtn->SetRenderObject(new RenderObject(nullptr, quad, startTex, shader));
-	menu->AddButton(startBtn);
-	startBtn->OnClickCallback = [&]() {
+	TextureBase* tex = AssetLibrary::GetTexture("button1");
+	Button* btn = new Button(0.5f, 0.3f, 0.2f, 0.1f);
+	btn->SetRenderObject(new RenderObject(nullptr, quad, tex, shader));
+	menu->AddButton(btn);
+	btn->OnClickCallback = [&]() {
 		std::cout << "Start btn clicked" << std::endl;
 		menuState = ChangeState::Start;
 	};
 
 	//button 2
+	tex = AssetLibrary::GetTexture("button1");
+	btn = new Button(0.5f, 0.0f, 0.2f, 0.1f);
+	btn->SetRenderObject(new RenderObject(nullptr, quad, tex, shader));
+	menu->AddButton(btn);
+	btn->OnClickCallback = [&]() {
+		std::cout << "Multiplayer btn clicked" << std::endl;
+		menuState = ChangeState::Multiplayer;
+	};
+
+	//button 3
 	TextureBase* optionTex = AssetLibrary::GetTexture("button2");
 	Button* optionBtn = new Button(0.5f, -0.3f, 0.2f, 0.1f);
 	optionBtn->SetRenderObject(new RenderObject(nullptr, quad, optionTex, shader));
@@ -42,7 +52,7 @@ void ScreenMain::initMenu() {
 		menuState = ChangeState::Option;
 	};
 
-	//button 3
+	//button 4
 	TextureBase* quitTex = AssetLibrary::GetTexture("button3");
 	Button* quitBtn = new Button(0.5f, 2 * -0.3f, 0.2f, 0.1f);
 	quitBtn->SetRenderObject(new RenderObject(nullptr, quad, quitTex, shader));
