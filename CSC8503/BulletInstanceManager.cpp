@@ -3,6 +3,7 @@
 #include "PlayerBullet.h"
 #include "AssetLibrary.h"
 #include "GameWorld.h"
+#include "CollisionVolume.h"
 
 
 using namespace NCL::CSC8503;
@@ -29,7 +30,7 @@ void BulletInstanceManager::ObjectIntiation() {
 		newBullet->SetActive(false);
 		world.AddGameObject(newBullet);
 		bullets[0][i] = newBullet;
-		newBullet = new BossBullet(*(BossBullet*)AssetLibrary::GetPrefab("bullet"));
+		newBullet = new BossBullet(*(BossBullet*)AssetLibrary::GetPrefab("bossBullet"));
 		newBullet->SetActive(false);
 		world.AddGameObject(newBullet);
 		bullets[1][i] = newBullet;

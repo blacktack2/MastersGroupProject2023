@@ -97,25 +97,8 @@ BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p)
     }
     ink->SetActive(true);
 
-    return (BossBullet*)ink;
+    return ink;
 
-    /*
-    BossBullet* bomb = new BossBullet(v);
-    SphereVolume* volume = new SphereVolume(s.x);
-    bomb->SetBoundingVolume((CollisionVolume*)volume);
-    Vector3 position = this->GetTransform().GetGlobalPosition();
-    bomb->GetTransform()
-        .SetPosition(position)
-        .SetScale(s);
-    bomb->SetPhysicsObject(new PhysicsObject(&bomb->GetTransform(), bomb->GetBoundingVolume(), true));
-    bomb->GetPhysicsObject()->SetInverseMass(0.0f);
-    bomb->GetPhysicsObject()->InitSphereInertia();
-        
-                
-    bombsReleased.push_back(bomb);
-
-    return bomb;
-    */
 }
 
 bool Boss::RandomWalk()   // TODO: the boss should not go outside the boundaries
