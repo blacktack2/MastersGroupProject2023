@@ -18,6 +18,7 @@ GameWorld::GameWorld() : staticQuadTree(Vector2(1024, 1024), 7, 6), dynamicQuadT
 }
 
 GameWorld::~GameWorld()	{
+	delete mainCamera;
 }
 
 void GameWorld::Clear() {
