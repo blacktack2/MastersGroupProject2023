@@ -6,6 +6,7 @@
 #include "Window.h"
 #include "Maths.h"
 #include "Debug.h"
+#include "PhysicsObject.h"
 
 #include <cmath>
 #include <iostream>
@@ -209,6 +210,16 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
 
 	if (!volA || !volB || !DoCollisionLayersOverlap(volA->layer, volB->layer)) {
 		return false;
+	}
+
+	PhysicsObject* physA = a->GetPhysicsObject();
+	PhysicsObject* physB = b->GetPhysicsObject();
+
+	if (physA) {
+		float elasticityA = physA->GetElasticity();
+	}
+	if (physB) {
+		float elasticityB = physB->GetElasticity();
 	}
 
 	collisionInfo.a = a;
