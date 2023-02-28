@@ -52,6 +52,30 @@ void LoadGlobalAssets() {
 	GameTechRenderer* renderer = &GameTechRenderer::instance();
 
 	//basic assets
+	{
+		OGLMesh* quad = new OGLMesh();
+		quad->SetVertexPositions({
+			Vector3(-1, 1, -1),
+			Vector3(-1, -1, -1),
+			Vector3(1, -1, -1),
+			Vector3(1, 1, -1),
+			});
+		quad->SetVertexTextureCoords({
+			Vector2(0, 0),
+			Vector2(0, 1),
+			Vector2(1, 1),
+			Vector2(1, 0),
+			});
+		quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
+		quad->SetVertexColours({
+			Vector4(1, 1, 1, 1),
+			Vector4(1, 1, 1, 1),
+			Vector4(1, 1, 1, 1),
+			Vector4(1, 1, 1, 1),
+			});
+		quad->UploadToGPU();
+		AssetLibrary::AddMesh("quad", quad);
+	}
 	AssetLibrary::AddMesh("cube", renderer -> LoadMesh("cube.msh"));
 	AssetLibrary::AddMesh("sphere", renderer -> LoadMesh("sphere.msh"));
 	AssetLibrary::AddMesh("goat", renderer -> LoadMesh("Goat.msh"));
@@ -73,27 +97,6 @@ void LoadGlobalAssets() {
 
 void LoadMenuAsset() {
 	GameTechRenderer* renderer = &GameTechRenderer::instance();
-	OGLMesh* quad = new OGLMesh();
-	quad->SetVertexPositions({
-		Vector3(-1, 1, -1),
-		Vector3(-1, -1, -1),
-		Vector3(1, -1, -1),
-		Vector3(1, 1, -1),
-		});
-	quad->SetVertexTextureCoords({
-		Vector2(0, 0),
-		Vector2(0, 1),
-		Vector2(1, 1),
-		Vector2(1, 0),
-		});
-	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
-	quad->SetVertexColours({
-		Vector4(1, 1, 1, 1),
-		Vector4(1, 1, 1, 1),
-		Vector4(1, 1, 1, 1),
-		Vector4(1, 1, 1, 1),
-		});
-	AssetLibrary::AddMesh("quad", quad);
 
 	AssetLibrary::AddTexture("menuMain", renderer->LoadTexture("defaultMain.jpg"));
 	AssetLibrary::AddTexture("menuPause", renderer->LoadTexture("defaultpause.jpg"));
