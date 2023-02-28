@@ -54,13 +54,13 @@ namespace NCL {
 			}
 		protected:
 
-			void UpdateStateOngoing(float dt);
+			void UpdateGameCore(float dt);
+			void ProcessState();
 
 			void InitialiseAssets();
 			void InitialisePrefabs();
 
 			void InitCamera();
-			void UpdateKeys();
 			void InitGameExamples();
 
 			void InitMazeWorld(int numRows, int numCols, float size);

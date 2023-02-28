@@ -1,6 +1,6 @@
 /**
- * @file   ScreenGame.h
- * @brief  A Pushdown automata state for running the game.
+ * @file   ScreenMultiplayer.h
+ * @brief  A Pushdown automata state for running a multiplayer game.
  *
  * @author Felix Chiu
  * @date   February 2023
@@ -9,20 +9,20 @@
 #include "PushdownState.h"
 #include "Window.h"
 #include "MenuManager.h"
-#include "GameStateManager.h"
+#include "ScreenMultiplayer.h"
 #include "NetworkedGame.h"
 #include "ScreenPause.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
-class ScreenGame : public PushdownState {
+class ScreenMultiplayer : public PushdownState {
 public:
-	ScreenGame() {
-		game = new TutorialGame();
+	ScreenMultiplayer() {
+		game = new NetworkedGame();
 		gameStateManager->SetGameState(GameState::OnGoing);
 	}
-	~ScreenGame() {
+	~ScreenMultiplayer() {
 		delete game;
 	}
 
@@ -72,7 +72,7 @@ private:
 	GameTechRenderer& renderer = GameTechRenderer::instance();
 	MenuManager& menuManager = MenuManager::instance();
 	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
-	TutorialGame* game;
+	NetworkedGame* game;
 
 	ChangeState menuState = ChangeState::None;
 };

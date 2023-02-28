@@ -76,8 +76,9 @@ TutorialGame::~TutorialGame() {
 
 
 void TutorialGame::StartLevel() {
+	gameStateManager->SetGameState(GameState::OnGoing);
 	InitWorld();
-	player = AddPlayerToWorld(Vector3(0, 5, 90));
+	player = AddPlayerToWorld(Vector3(0, 5, 90),true);
 
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
@@ -113,7 +114,6 @@ void TutorialGame::UpdateGame(float dt) {
 	debugViewPoint->BeginFrame();
 	debugViewPoint->MarkTime("Update");
 	
-	UpdateKeys();
 	static bool moveSun = false;
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM0)) {
 		moveSun = !moveSun;
@@ -126,11 +126,12 @@ void TutorialGame::UpdateGame(float dt) {
 
 
 	SoundSystem::GetSoundSystem()->Update(dt);
-
-	if (gameState == GameState::OnGoing) {
-		UpdateStateOngoing(dt);
+	if (gameStateManager->GetGameState() == GameState::OnGoing) {
+		UpdateGameCore(dt);
 	}
-	//process game state
+	gameStateManager->Update(dt);
+	ProcessState();
+	
 
 	debugViewPoint->FinishTime("Update");
 	debugViewPoint->MarkTime("Render");
@@ -140,11 +141,11 @@ void TutorialGame::UpdateGame(float dt) {
 	debugViewPoint->FinishTime("Render");
 }
 
-void TutorialGame::UpdateStateOngoing(float dt) {
+void TutorialGame::UpdateGameCore(float dt) {
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 
 	if(player)
-	Debug::Print(std::string("health: ").append(std::to_string((int)player->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
+		Debug::Print(std::string("health: ").append(std::to_string((int)player->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
 
 	if (!inSelectionMode) {
 		world->GetMainCamera()->UpdateCamera(dt);
@@ -188,13 +189,6 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 		}
 	}
 
-	//Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
-
-	if (player == nullptr) {
-		SelectObject();
-		MoveSelectedObject();
-	}
-
 	world->PreUpdateWorld();
 
 	world->UpdateWorld(dt);
@@ -210,6 +204,16 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 	{
 		gameLevel->SetShelterTimer(0.0f);
 		UpdateLevel();							// rebuild Shelters that has been destroyed
+	}
+}
+
+void TutorialGame::ProcessState() {
+	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	if (keyMap.GetButton(InputType::Restart)) {
+		this->StartLevel();
+	}
+	if (keyMap.GetButton(InputType::Return)) {
+		gameStateManager->SetGameState(GameState::Quit);
 	}
 }
 
@@ -314,82 +318,9 @@ void TutorialGame::InitCamera() {
 	lockedObject = nullptr;
 }
 
-void TutorialGame::UpdateKeys() {
-	GameState gameState = gameStateManager->GetGameState();
-	switch (gameState) {
-		case GameState::OnGoing: default:
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
-				gameStateManager->SetGameState(GameState::Paused);
-			}
-
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F1)) {
-				InitWorld();
-			}
-
-			break;
-
-		case GameState::Win:
-			Debug::Print("You Win!", Vector2(5, 80), Vector4(0, 1, 0, 1));
-			Debug::Print("Press [Space] to play again", Vector2(5, 90), Vector4(1, 1, 1, 1));
-
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) {
-				StartLevel();
-				gameStateManager->SetGameState(GameState::OnGoing);
-			}
-			break;
-		case GameState::Lose:
-			Debug::Print("You got Goosed!", Vector2(5, 80), Vector4(1, 0, 0, 1));
-			Debug::Print("Press [Space] to play again", Vector2(5, 90), Vector4(1, 1, 1, 1));
-
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) {
-				StartLevel();
-				gameStateManager->SetGameState(GameState::OnGoing);
-			}
-			break;
-	}
-}
-
 void TutorialGame::InitGameExamples()/*for audio testing*/ {
 	
 	InitDefaultFloor();
-	//GameObject* obj1=AddCubeToWorld({ 55,0,0 }, { 2,2,2 });
-	//obj1->GetRenderObject()->SetColour(Vector4(1.0f, 1.0f, 0.5f, 1.0f));
-
-	//SoundSource* source1 = new SoundSource();
-	//source1->SetLooping(true);
-	//source1->SetTarget(obj1);
-	//
-	//ALuint snd1 = Sound::AddSound("coin2.wav");
-	//ALuint snd2 = Sound::AddSound("random2.wav");
-	//ALuint snd3 = Sound::AddSound("random1.wav");
-	//source1->SetSoundBuffer(snd1);
-	//if(SoundSystem::GetSoundSystem()->GetSource())
-	//	source1->SetSource(SoundSystem::GetSoundSystem()->GetSource());
-
-	//GameObject* obj2 = AddCubeToWorld({ 0,0,55 }, { 2,2,2 });
-	//obj2->GetRenderObject()->SetColour(Vector4(1.0f, 1.0f, 0.5f, 1.0f));
-
-	//SoundSource* source2 = new SoundSource();
-	////source2->SetLooping(true);
-	//source2->SetTarget(obj2);
-	//source2->SetSoundBuffer(snd2);
-	//if (SoundSystem::GetSoundSystem()->GetSource())
-	//	source2->SetSource(SoundSystem::GetSoundSystem()->GetSource());
-
-	//GameObject* obj3 = AddCubeToWorld({ 55,0,55 }, { 2,2,2 });
-	//obj3->GetRenderObject()->SetColour(Vector4(1.0f, 1.0f, 0.5f, 1.0f));
-
-	//SoundSource* source3 = new SoundSource();
-	//source3->SetLooping(true);
-	//source3->SetTarget(obj3);
-	//source3->SetSoundBuffer(snd3);
-	//if (SoundSystem::GetSoundSystem()->GetSource())
-	//	source3->SetSource(SoundSystem::GetSoundSystem()->GetSource());
-
-	//
-	//SoundSystem::GetSoundSystem()->AddSoundSource(source1);
-	//SoundSystem::GetSoundSystem()->AddSoundSource(source2);
-	//SoundSystem::GetSoundSystem()->AddSoundSource(source3);
 	SoundSystem::GetSoundSystem()->SetMasterVolume(1.0f);
 }
 
