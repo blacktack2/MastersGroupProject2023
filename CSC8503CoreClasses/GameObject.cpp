@@ -54,19 +54,19 @@ void GameObject::UpdateBroadphaseAABB() {
 	if (!boundingVolume) {
 		return;
 	}
-	if (boundingVolume->type == VolumeType::AABB) {
+	if ((int)boundingVolume->type & (int)VolumeType::AABB) {
 		broadphaseAABB = ((AABBVolume&) *boundingVolume).GetHalfDimensions();
-	} else if (boundingVolume->type == VolumeType::OBB) {
+	} else if ((int)boundingVolume->type & (int)VolumeType::OBB) {
 		Matrix3 mat = Matrix3(transform.GetGlobalOrientation());
 		mat = mat.Absolute();
 		Vector3 halfSizes = ((OBBVolume&) *boundingVolume).GetHalfDimensions();
 
 		broadphaseAABB = mat * halfSizes;
-	} else if (boundingVolume->type == VolumeType::Sphere) {
+	} else if ((int)boundingVolume->type & (int)VolumeType::Sphere) {
 		float r = ((SphereVolume&) *boundingVolume).GetRadius();
 
 		broadphaseAABB = Vector3(r, r, r);
-	} else if (boundingVolume->type == VolumeType::Capsule) {
+	} else if ((int)boundingVolume->type & (int)VolumeType::Capsule) {
 		Matrix3 mat = Matrix3(transform.GetGlobalOrientation());
 		mat = mat.Absolute();
 		float r = ((CapsuleVolume&) *boundingVolume).GetRadius();
