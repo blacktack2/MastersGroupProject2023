@@ -79,7 +79,7 @@ PS4Mesh* PS4Mesh::GenerateTriangle() {
 	return mesh;
 }
 
-void	PS4Mesh::UploadToGPU(Rendering::RendererBase* renderer) {
+void	PS4Mesh::UploadToGPU() {
 	vertexDataSize = GetVertexCount() * sizeof(MeshVertex);
 	indexDataSize  = GetIndexCount() * sizeof(int);
 

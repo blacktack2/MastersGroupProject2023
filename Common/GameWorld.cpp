@@ -1,16 +1,27 @@
-#include "Camera.h"
+
 #include "CollisionDetection.h"
 #include "Constraint.h"
 #include "GameObject.h"
 #include "GameWorld.h"
 #include "PhysicsObject.h"
 #include<chrono>
+
+#include "Camera.h"
+#ifdef _ORBIS
+#include "../Plugins/PlayStation4/PS4Camera.h"
+#endif // _ORBIS
+
+
 using namespace NCL;
 using namespace NCL::CSC8503;
 
 GameWorld::GameWorld() : staticQuadTree(Vector2(1024, 1024), 7, 6), dynamicQuadTree(Vector2(1024, 1024), 7, 6) {
-	mainCamera = new Camera();
 
+#ifdef _ORBIS
+	mainCamera = new PS4::PS4Camera();
+#else
+	mainCamera = new Camera();
+#endif // _ORBIS
 	shuffleConstraints = false;
 	shuffleObjects = false;
 	worldIDCounter = 0;

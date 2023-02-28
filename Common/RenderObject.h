@@ -10,15 +10,16 @@ namespace NCL {
 
 	using namespace NCL::Rendering;
 
-	class MeshGeometry;
+	
 	namespace CSC8503 {
+		class MeshGeometry;
 		class Transform;
 		using namespace Maths;
 
 		class RenderObject
 		{
 		public:
-			RenderObject(Transform* parentTransform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader);
+			RenderObject(Transform* parentTransform, CSC8503::MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader = nullptr);
 			RenderObject(RenderObject& other, Transform* parentTransform);
 			~RenderObject();
 
@@ -59,7 +60,7 @@ namespace NCL {
 
 		protected:
 			Transform* transform;
-			MeshGeometry* mesh;
+			CSC8503::MeshGeometry* mesh;
 			TextureBase* texture;
 			ShaderBase* shader;
 			Vector4			colour;

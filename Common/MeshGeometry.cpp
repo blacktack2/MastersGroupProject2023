@@ -10,6 +10,7 @@
 
 using namespace NCL;
 using namespace Maths;
+using namespace CSC8503;
 
 MeshGeometry::MeshGeometry()
 {

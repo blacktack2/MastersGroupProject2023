@@ -21,7 +21,7 @@ RenderObject::~RenderObject()
 
 }
 
-RenderObject::RenderObject(MeshGeometry* m, NCL::Rendering::ShaderBase* s, NCL::Rendering::TextureBase* t) {
+RenderObject::RenderObject(CSC8503::MeshGeometry* m, NCL::Rendering::ShaderBase* s, NCL::Rendering::TextureBase* t) {
 	mesh		= m;
 	shader		= s;
 	textures[0] = t;

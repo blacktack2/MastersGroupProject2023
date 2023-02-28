@@ -15,7 +15,7 @@
 namespace NCL::PS4 {
 	using namespace sce;
 	class PS4Mesh :
-		public NCL::MeshGeometry, public PS4MemoryAware
+		public NCL::CSC8503::MeshGeometry, public PS4MemoryAware
 	{
 		friend class PS4RendererBase;
 	public:		
@@ -27,7 +27,7 @@ namespace NCL::PS4 {
 		static PS4Mesh* GenerateQuad();
 		static PS4Mesh* GenerateSinglePoint();
 
-		void	UploadToGPU(Rendering::RendererBase* renderer) override;
+		void	UploadToGPU() override;
 		void	SubmitDraw(Gnmx::GnmxGfxContext& cmdList, Gnm::ShaderStage stage);
 
 		void	InitAttributeBuffer(sce::Gnm::Buffer &buffer, Gnm::DataFormat format, void*offset);

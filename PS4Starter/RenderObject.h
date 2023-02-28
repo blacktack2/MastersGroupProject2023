@@ -16,7 +16,7 @@ namespace NCL {
 			RenderObject();
 			~RenderObject();
 
-			RenderObject(MeshGeometry* m, Rendering::ShaderBase* shader, Rendering::TextureBase* tex);
+			RenderObject(CSC8503::MeshGeometry* m, Rendering::ShaderBase* shader, Rendering::TextureBase* tex);
 
 			const Maths::Matrix4& GetLocalTransform() const;
 			void	SetLocalTransform(const Maths::Matrix4& mat);
@@ -26,7 +26,7 @@ namespace NCL {
 			}
 
 		//protected:
-			MeshGeometry*	mesh;
+			CSC8503::MeshGeometry*	mesh;
 			Rendering::ShaderBase*		shader;
 
 			static const int TEXTURE_COUNT = 4;

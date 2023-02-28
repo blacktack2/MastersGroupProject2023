@@ -41,8 +41,8 @@ void PS4Input::InitController() {
 			
 			deadzoneLeft= padInfo.stickInfo.deadZoneLeft;
 			deadzoneRight=padInfo.stickInfo.deadZoneRight;
-			/*std::cout << "Dead Zone Left:" << (int)padInfo.stickInfo.deadZoneLeft <<std::endl;
-			std::cout << "Dead Zone Right:" << (int)padInfo.stickInfo.deadZoneRight <<std::endl;*/
+			std::cout << "Dead Zone Left:" << (int)padInfo.stickInfo.deadZoneLeft <<std::endl;
+			std::cout << "Dead Zone Right:" << (int)padInfo.stickInfo.deadZoneRight <<std::endl;
 		}
 	}
 }
@@ -54,11 +54,15 @@ void PS4Input::Poll() {
 	
 	if (ret == SCE_OK) {
 		if (data.connected) {
-			axis[0].x = (((data.leftStick.x / 255.0f) * 2) - 1.0f);
-			axis[0].y = (((data.leftStick.y / 255.0f) * 2) - 1.0f);
+			float lowerDeadZoneArea = 128.0f - (int)deadzoneLeft;
+			float higherDeadZoneArea = 128.0f + (int)deadzoneLeft;
+			axis[0].x = ((((floor(((data.leftStick.x <= lowerDeadZoneArea) || (data.leftStick.x >= higherDeadZoneArea) ?data.leftStick.x :128.0f)  / 255.0f * 100.0f) / 100.0f)) * 2 ) - 1.0f);
+			axis[0].y = ((((floor(((data.leftStick.y <= lowerDeadZoneArea) || (data.leftStick.y >= higherDeadZoneArea) ?data.leftStick.y : 128.0f) / 255.0f * 100.0f) / 100.0f)) * 2 ) - 1.0f);
 
-			axis[1].x = (((data.rightStick.x / 255.0f) * 2) - 1.0f);
-			axis[1].y = (((data.rightStick.y / 255.0f) * 2) - 1.0f);
+			lowerDeadZoneArea = 128.0f - (int)deadzoneRight;
+			higherDeadZoneArea = 128.0f + (int)deadzoneRight;
+			axis[1].x = ((((floor(((data.rightStick.x <= lowerDeadZoneArea) || (data.rightStick.x >= higherDeadZoneArea) ? data.rightStick.x : 128.0f) / 255.0f * 100.0f) / 100.0f)) * 2) - 1.0f);
+			axis[1].y = ((((floor(((data.rightStick.y <= lowerDeadZoneArea) || (data.rightStick.y >= higherDeadZoneArea) ? data.rightStick.y : 128.0f) / 255.0f * 100.0f) / 100.0f)) * 2) - 1.0f);
 
 			axis[2].x  = 0.0f;
 			axis[2].x += ((data.buttons & SCE_PAD_BUTTON_RIGHT) ? 1.0f : 0.0f);

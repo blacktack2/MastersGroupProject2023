@@ -19,11 +19,11 @@ ExampleRenderer::ExampleRenderer(PS4Window* window) : PS4RendererBase(window)
 	);
 
 	defaultMesh		= new PS4Mesh("Goat.msh");
-	defaultMesh->UploadToGPU(this);
+	defaultMesh->UploadToGPU();
 	defaultTexture	= PS4Texture::LoadTextureFromFile("doge.gnf");
 
-	defaultObject[0] = new RenderObject((MeshGeometry*)defaultMesh, (ShaderBase*)defaultShader, (TextureBase*)defaultTexture);
-	defaultObject[1] = new RenderObject((MeshGeometry*)defaultMesh, (ShaderBase*)defaultShader, (TextureBase*)defaultTexture);
+	defaultObject[0] = new RenderObject((CSC8503::MeshGeometry*)defaultMesh, (ShaderBase*)defaultShader, (TextureBase*)defaultTexture);
+	defaultObject[1] = new RenderObject((CSC8503::MeshGeometry*)defaultMesh, (ShaderBase*)defaultShader, (TextureBase*)defaultTexture);
 
 
 	viewProjMat = (Matrix4*)onionAllocator->allocate(sizeof(Matrix4), Gnm::kEmbeddedDataAlignment4);

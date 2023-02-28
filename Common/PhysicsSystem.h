@@ -36,6 +36,8 @@ namespace NCL {
 
 			void ImpulseResolveCollision(GameObject& a, GameObject& b, CollisionDetection::ContactPoint& p) const;
 
+			bool Contains(std::set<CollisionDetection::CollisionInfo> setToCheck, CollisionDetection::CollisionInfo val);
+
 			GameWorld& gameWorld;
 
 			Vector3 gravity;

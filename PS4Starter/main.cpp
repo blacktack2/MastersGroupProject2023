@@ -5,6 +5,7 @@ size_t       sceLibcHeapSize = 256 * 1024 * 1024;	/* Set up heap area upper limi
 #include "../Plugins/PlayStation4/PS4Window.h"
 #include "../Plugins/PlayStation4/Ps4AudioSystem.h"
 #include "../Plugins/PlayStation4/PS4Input.h"
+#include "TutorialGame.h"
 
 #include <iostream>
 
@@ -16,11 +17,13 @@ using namespace NCL::PS4;
 int main(void) {
 	PS4Window*w = (PS4Window*)Window::CreateGameWindow("PS4 Example Code", 1920, 1080);
 
-	ExampleRenderer renderer(w);
+	/*ExampleRenderer renderer(w);*/
 	//
 	PS4Input		input		= PS4Input();
 	
-	renderer.CreateCamera(&input);
+	/*renderer.CreateCamera(&input);*/
+
+	TutorialGame* game = new TutorialGame();
 
 	Ps4AudioSystem*	audioSystem = new Ps4AudioSystem(8);
 	
@@ -31,8 +34,9 @@ int main(void) {
 
 		input.Poll();
 
-		renderer.Update(time);
-		renderer.Render();
+		game->UpdateGame(time);
+		/*renderer.Update(time);
+		renderer.Render();*/
 	
 		if (input.GetButton(0)) {
 			std::cout << "LOL BUTTON" << std::endl;

@@ -1,10 +1,9 @@
 #include "RenderObject.h"
 #include "MeshGeometry.h"
 
-using namespace NCL::CSC8503;
 using namespace NCL;
-
-RenderObject::RenderObject(Transform* parentTransform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader) {
+using namespace CSC8503;
+RenderObject::RenderObject(Transform* parentTransform, CSC8503::MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader) {
 	this->transform = parentTransform;
 	this->mesh = mesh;
 	this->texture = tex;

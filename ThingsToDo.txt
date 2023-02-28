@@ -1,0 +1,4 @@
+Check out the RenderObject class in common and remove things related to specific renderer.
+Create a PS4Renderer
+Look into creating a PS4 GameObject
+Test the Physics and collision systems

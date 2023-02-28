@@ -213,6 +213,7 @@
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="OrientationConstraint.cpp" />
     <ClCompile Include="PhysicsObject.cpp" />
+    <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="Plane.cpp" />
     <ClCompile Include="PositionConstraint.cpp" />
     <ClCompile Include="QuadTree.cpp" />
