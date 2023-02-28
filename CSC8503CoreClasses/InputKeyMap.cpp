@@ -66,7 +66,7 @@ void InputKeyMap::UpdateGameStateDependant() {
 	switch (gameState) {
 	case GameState::OnGoing: default:
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
-			buttonstates |= InputType::Return;
+			buttonstates |= InputType::Pause;
 		}
 		break;
 	case GameState::Win:
