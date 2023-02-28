@@ -59,5 +59,5 @@ private:
 	};
 	ChangeState menuState = ChangeState::None;
 
-	string name = "option";
+	std::string name = "option";
 };
