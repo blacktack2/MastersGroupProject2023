@@ -43,6 +43,12 @@ PlayerObject::~PlayerObject() {
 }
 
 void PlayerObject::Update(float dt) {
+	//Change game state
+	if (health.GetHealth() <= 0) {
+		gameStateManager->SetGameState(GameState::Lose);
+		return;
+	}
+		
 	health.Update(dt);
 	
 
@@ -64,11 +70,6 @@ void PlayerObject::Update(float dt) {
 	if (onGround) {
 		GameNode* node = GameGridManager::instance().NearestNode(this->GetTransform().GetGlobalPosition());
 		InkEffectManager::instance().ApplyInkEffect(node->inkType, &health, 0);
-	}
-
-	//Change game state
-	if (health.GetHealth() <= 0) {
-		gameStateManager->SetGameState(GameState::Lose);
 	}
 	
 }

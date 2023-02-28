@@ -18,8 +18,9 @@ using namespace CSC8503;
 
 class ScreenMultiplayer : public PushdownState {
 public:
-	ScreenMultiplayer() {
-		game = new NetworkedGame();
+
+	ScreenMultiplayer(bool isServer = true) {
+		game = new NetworkedGame(isServer);
 		gameStateManager->SetGameState(GameState::OnGoing);
 	}
 	~ScreenMultiplayer() {
@@ -28,7 +29,7 @@ public:
 
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
 		keyMap.Update();
-		if (keyMap.GetButton(InputType::ESC)) {
+		if (keyMap.GetButton(InputType::Pause)) {
 			*newState = new ScreenPause();
 			return PushdownResult::Push;
 		}

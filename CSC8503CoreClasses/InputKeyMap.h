@@ -16,11 +16,12 @@ enum InputType :unsigned int {
 	MouseLeftClick = (1u << 12),
 	MouseRightClick = (1u << 13),
 
-	Restart = (1u << 20),
-	Return = (1u << 21),
-	Confirm = (1u << 22),
+	Pause = (1u << 28),
+	Restart = (1u << 29),
+	Return = (1u << 30),
+	Confirm = (1u << 31),
 
-	All = 256
+	All = -1
 }; 
 
 using namespace NCL;

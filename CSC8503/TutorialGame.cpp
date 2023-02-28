@@ -76,7 +76,6 @@ TutorialGame::~TutorialGame() {
 
 
 void TutorialGame::StartLevel() {
-	gameStateManager->SetGameState(GameState::OnGoing);
 	InitWorld();
 	player = AddPlayerToWorld(Vector3(0, 5, 90),true);
 
@@ -85,7 +84,7 @@ void TutorialGame::StartLevel() {
 }
 
 void TutorialGame::InitWorld() {
-
+	gameStateManager->SetGameState(GameState::OnGoing);
 	delete[] mazes;
 	mazes = nullptr;
 	world->ClearAndErase();
@@ -126,9 +125,9 @@ void TutorialGame::UpdateGame(float dt) {
 
 
 	SoundSystem::GetSoundSystem()->Update(dt);
-	if (gameStateManager->GetGameState() == GameState::OnGoing) {
-		UpdateGameCore(dt);
-	}
+
+	UpdateGameCore(dt);
+
 	gameStateManager->Update(dt);
 	ProcessState();
 	

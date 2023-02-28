@@ -14,7 +14,11 @@ namespace NCL {
 				return health;
 			}
 			void Damage(float damage) {
+				if (health <= 0)
+					return;
 				health -= damage;
+				if (health < 0)
+					health = 0;
 			}
 			void Heal(float heal) {
 				health += heal;

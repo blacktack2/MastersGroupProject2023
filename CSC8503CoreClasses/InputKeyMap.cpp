@@ -53,12 +53,9 @@ void InputKeyMap::Update() {
 
 		if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
 		{
-			buttonstates |= InputType::MouseLeftClick;
+			buttonstates |= InputType::Confirm;
 		}
-		if (Window::GetMouse()->ButtonPressed(MouseButtons::RIGHT))
-		{
-			buttonstates |= InputType::MouseRightClick;
-		}
+
 		mousePosition = Window::GetMouse()->GetAbsolutePosition();
 	}
 }

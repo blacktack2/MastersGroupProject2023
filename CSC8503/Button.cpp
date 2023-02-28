@@ -28,7 +28,7 @@ void Button::Update(float dt){
         Vector2 mousePos = keyMap.GetMousePosition();
         CheckMousePosition(mousePos);
 
-        if (isMouseHover && keyMap.GetButton(InputType::MouseLeftClick)) {
+        if (isMouseHover && keyMap.GetButton(InputType::Confirm)) {
             this->GetColour();
             this->OnClickCallback();
         }

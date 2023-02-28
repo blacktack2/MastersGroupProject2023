@@ -9,6 +9,7 @@
 #include "PushdownState.h"
 #include "Window.h"
 #include "MenuManager.h"
+#include "ScreenMultiplayer.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -24,10 +25,12 @@ public:
 		keyMap.Update();
 		renderer.Render();
 		if (menuState == ChangeState::StartServer) {
-			
+			*newState = new ScreenMultiplayer(true);
+			return PushdownResult::Push;
 		}
 		if (menuState == ChangeState::StartClient) {
-
+			*newState = new ScreenMultiplayer(false);
+			return PushdownResult::Push;
 		}
 		if (menuState == ChangeState::Quit) {
 			return PushdownResult::Pop;
@@ -39,6 +42,7 @@ public:
 		menuState = ChangeState::None;
 		menuManager.SetCurrentMenu(name);
 		renderer.EnableOverlayPass("Menu", true);
+		renderer.EnableOverlayPass("Debug", false);
 		renderer.EnableRenderScene(false);
 		renderer.UpdatePipeline();
 		Window::GetWindow()->ShowOSPointer(true);

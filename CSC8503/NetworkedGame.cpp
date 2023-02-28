@@ -28,7 +28,7 @@ struct MessagePacket : public GamePacket {
 	}
 };
 
-NetworkedGame::NetworkedGame()	{
+NetworkedGame::NetworkedGame(bool isServer)	{
 	thisServer = nullptr;
 	thisClient = nullptr;
 
@@ -37,7 +37,15 @@ NetworkedGame::NetworkedGame()	{
 	packetsToSnapshot = 0;
 	stateID = 0;
 	selfID = 0;
+	game_dt = 0;
 	objectID = OBJECTID_START;
+	if (isServer) {
+		std::cout << "start as server" << std::endl;
+		StartAsServer();
+	}
+	else {
+		StartAsClient(127, 0, 0, 1);
+	}
 }
 
 NetworkedGame::~NetworkedGame()	{
@@ -51,6 +59,7 @@ NetworkedGame::~NetworkedGame()	{
 }
 
 void NetworkedGame::StartAsServer() {
+	SetName("server");
 	thisServer = new GameServer(NetworkBase::GetDefaultPort(), 4);
 	thisServer->RegisterPacketHandler(Received_State, this);
 	thisServer->RegisterPacketHandler(Player_Connected, this);
@@ -58,14 +67,10 @@ void NetworkedGame::StartAsServer() {
 	thisServer->RegisterPacketHandler(Handshake_Ack, this);
 
 	StartLevel();
-
-	localPlayer = SpawnPlayer(0, true);
-	//player = static_cast<PlayerObject*>(localPlayer);
-	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
-	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, static_cast<PlayerObject*>(localPlayer));
 }
 
 void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
+	SetName("client");
 	thisClient = new GameClient();
 	thisClient->Connect(a, b, c, d, NetworkBase::GetDefaultPort());
 	thisClient->RegisterPacketHandler(Delta_State, this);
@@ -74,6 +79,7 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(Player_Disconnected, this);
 	thisClient->RegisterPacketHandler(Handshake_Message, this);
 	thisClient->RegisterPacketHandler(Item_Init_Message, this);
+
 	StartLevel();
 }
 
@@ -88,16 +94,6 @@ void NetworkedGame::UpdateGame(float dt) {
 			UpdateAsClient(dt);
 		}
 		timeToNextPacket = packetGap;
-	}
-
-	if (!thisServer && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9)) {
-		SetName("server");
-		StartAsServer();
-	}
-	if (!thisClient && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F10)) {
-		SetName("client");
-		StartAsClient(127,0,0,1);
-		
 	}
 
 	TutorialGame::UpdateGame(dt);
@@ -252,7 +248,7 @@ GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 	else if (playerID == 3) {
 		colour = Vector4(0, 1, 1, 1);
 	}
-	GameObject* newPlayer = AddNetworkPlayerToWorld(Vector3(5, 5, 5), isSelf, playerID);
+	GameObject* newPlayer = AddNetworkPlayerToWorld(Vector3(0, 5, 90), isSelf, playerID);
 	if (isSelf) {
 		world->GetMainCamera()->SetFollow(&(newPlayer->GetNetworkObject()->GetRenderTransform()));
 	}
@@ -263,6 +259,12 @@ GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 
 void NetworkedGame::StartLevel() {
 	InitWorld();
+	if (thisServer) {
+		localPlayer = SpawnPlayer(0, true);
+		player = static_cast<PlayerObject*>(localPlayer);
+		testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
+		testingBossBehaviorTree = new BossBehaviorTree(testingBoss, static_cast<PlayerObject*>(localPlayer));
+	}
 }
 
 void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID) {

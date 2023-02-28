@@ -11,7 +11,7 @@ namespace NCL {
 
 		class NetworkedGame : public TutorialGame, public PacketReceiver {
 		public:
-			NetworkedGame();
+			NetworkedGame(bool isServer = true);
 			~NetworkedGame();
 
 			void StartAsServer();
