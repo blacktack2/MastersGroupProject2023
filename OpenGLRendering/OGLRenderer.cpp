@@ -202,9 +202,9 @@ bool OGLRenderer::SetVerticalSync(VerticalSyncState s) {
 	GLuint state;
 
 	switch (s) {
-		case VerticalSyncState::VSync_OFF      : state =  0; break;
-		case VerticalSyncState::VSync_ON       : state =  1; break;
-		case VerticalSyncState::VSync_ADAPTIVE : state = -1; break;
+		case VerticalSyncState::Off      : state =  0; break;
+		case VerticalSyncState::On       : state =  1; break;
+		case VerticalSyncState::Adaptive : state = -1; break;
 	}
 
 	return wglSwapIntervalEXT(state);

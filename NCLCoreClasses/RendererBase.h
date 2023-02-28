@@ -23,10 +23,11 @@
 
 namespace NCL::Rendering {
 	enum class VerticalSyncState {
-		VSync_ON,
-		VSync_OFF,
-		VSync_ADAPTIVE
+		On,
+		Off,
+		Adaptive
 	};
+
 	/**
 	 * @brief Base rendering class for handling general updates and pipeline
 	 * organisation.
