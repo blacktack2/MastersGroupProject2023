@@ -86,7 +86,10 @@ void GameWorld::GetLightIterators(LightIterator& first, LightIterator& last) con
 
 void GameWorld::OperateOnContents(GameObjectFunc f) {
 	for (GameObject* g : gameObjects) {
-		f(g);
+		if (g->IsActive())
+		{
+			f(g);
+		}
 	}
 }
 
