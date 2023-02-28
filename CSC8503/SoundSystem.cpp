@@ -61,11 +61,11 @@ SoundSystem::SoundSystem(unsigned int channels) {
 SoundSystem::~SoundSystem() {
 	
 	//check if it should be added elsewhere
-	for (vector < SoundSource* >::iterator i = mSources.begin();
+	for (std::vector < SoundSource* >::iterator i = mSources.begin();
 		i != mSources.end(); ++i) {
 		delete (*i);
 	}
-	for (vector < OALSource* >::iterator i = mOALSources.begin();
+	for (std::vector < OALSource* >::iterator i = mOALSources.begin();
 		i != mOALSources.end(); ++i) {
 		alDeleteSources(1, &(*i)->source);
 		delete (*i);
@@ -131,7 +131,7 @@ void SoundSystem::CullNodes()
 
 OALSource* SoundSystem::GetSource()
 {
-	for (vector<OALSource*>::iterator i = mOALSources.begin(); i != mOALSources.end(); i++) {
+	for (std::vector<OALSource*>::iterator i = mOALSources.begin(); i != mOALSources.end(); i++) {
 		OALSource* s = *i;
 		if (!s->inUse) {
 			return s;

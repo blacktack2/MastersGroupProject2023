@@ -2,6 +2,8 @@
 #include "PlayerObject.h"
 
 #include "AssetLibrary.h"
+#include "PrefabLibrary.h"
+
 #include "PlayerBullet.h"
 #include "Bonus.h"
 #include "Constraint.h"
@@ -19,6 +21,7 @@
 #include "SoundSource.h"
 #include "Sound.h"
 #include "SoundSystem.h"
+#include "BulletInstanceManager.h"
 #include <iostream>
 
 using namespace NCL;
@@ -205,14 +208,15 @@ void PlayerObject::Shoot() {
 	if (projectileFireRateTimer > 0)
 		return;
 	projectileFireRateTimer = projectileFireRate;
-	PlayerBullet* ink = new PlayerBullet(*(PlayerBullet*)AssetLibrary::GetPrefab("bullet"));
+
+	PlayerBullet* ink = BulletInstanceManager::instance().GetPlayerBullet();
 	ink->SetLifespan(projectileLifespan);
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
 	ink->GetPhysicsObject()->SetInverseMass(2.0f);
 	ink->GetPhysicsObject()->SetLinearVelocity(this->physicsObject->GetLinearVelocity() * Vector3(1, 0, 1));
 	Quaternion dir = transform.GetGlobalOrientation() * Quaternion::EulerAnglesToQuaternion( (rand()%100-50)/20, (rand() % 100 - 50) / 20, (rand() % 100 - 50) / 20);
 	ink->GetPhysicsObject()->ApplyLinearImpulse(dir * Vector3(0, 0, -1) * projectileForce);
-	gameWorld.AddGameObject(ink);
+	ink->SetActive(true);
 	lastInstancedObjects.push_back(ink);
 }
 

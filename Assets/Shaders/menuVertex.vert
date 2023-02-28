@@ -1,26 +1,24 @@
 #version 460 core
+/**
+ * @file   menuVertex.vert
+ * @brief  
+ * 
+ * @author 
+ * @date   February 2023
+ */
 
-uniform mat4 modelMatrix ;
-uniform mat4 viewMatrix ;
-uniform mat4 projMatrix ;
-uniform mat4 textureMatrix ;
+uniform mat3 textureMatrix;
 
-layout(location = 0) in vec3 position ;
+layout(location = 0) in vec3 position;
 layout(location = 1) in vec4 colour;
-layout(location = 2) in vec2 texCoord ;
+layout(location = 2) in vec2 texCoord;
 
 out Vertex {
-	vec2 texCoord ;
-	vec4 colour;
-	vec3 normal;
-	vec3 tangent;
-	vec3 worldPos;
+	vec2 texCoord;
 } OUT;
 
-void main (void) {
-	mat4 mvp = projMatrix * viewMatrix * modelMatrix ;
-	gl_Position = mvp * vec4(position, 1.0);
+void main() {
+	gl_Position = vec4(textureMatrix * position, 1.0);
 
-	OUT.texCoord = (textureMatrix * vec4(texCoord, 0.0, 1.0)).xy;
-	OUT.colour = colour;
+	OUT.texCoord = texCoord;
 }

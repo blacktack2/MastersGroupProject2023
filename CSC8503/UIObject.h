@@ -6,7 +6,7 @@
  * @date   February 2023
  */
 #pragma once
-#include "RenderObject.h"
+#include "MenuRenderObject.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -18,17 +18,17 @@ namespace NCL {
 
 			virtual void Update(float dt){};
 
-			RenderObject* GetRenderObject() const {
+			MenuRenderObject* GetRenderObject() const {
 				return renderObject;
 			}
 
-			void SetRenderObject(RenderObject* newObject) {
+			void SetRenderObject(MenuRenderObject* newObject) {
 				renderObject = newObject;
 			}
 
 			virtual Vector4 GetDimension() { return Vector4(0.0f); };
 		protected:
-			RenderObject* renderObject;
+			MenuRenderObject* renderObject;
 		};
 	}
 }

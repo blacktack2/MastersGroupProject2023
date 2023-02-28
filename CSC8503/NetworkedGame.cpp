@@ -10,6 +10,7 @@
 
 #include "Bullet.h"
 #include "AssetLibrary.h"
+#include "PrefabLibrary.h"
 
 #include <bitset>
 #include <Maths.h>
@@ -495,7 +496,7 @@ PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, bo
 		.SetScale(Vector3(1, 1, 1))
 		.SetPosition(position);
 
-	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMesh, nullptr, nullptr));
+	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMesh, nullptr));
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 
 	character->GetRenderObject()->SetColour(Vector4(1, 0.9f, 0.8f, 1));

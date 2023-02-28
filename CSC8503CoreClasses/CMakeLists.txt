@@ -82,7 +82,7 @@ source_group("Networking" FILES ${Networking})
 
 set(Physics
     "constraint.h"  
-     "constraint.h"  
+    "constraint.h"  
     "PositionConstraint.cpp"
     "PositionConstraint.h"
     "OrientationConstraint.cpp"
@@ -95,24 +95,24 @@ set(Physics
 source_group("Physics" FILES ${Physics})
 
 set(Header_Files
-	"AssetLibrary.h"
     "Debug.h"
     "GameObject.h"
     "GameWorld.h"
     "InputKeyMap.h"
     "Light.h"
+    "PrefabLibrary.h"
     "RenderObject.h"
     "Transform.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
-	"AssetLibrary.cpp"
     "Debug.cpp"
     "GameObject.cpp"
     "GameWorld.cpp"
     "InputKeyMap.cpp"
     "Light.cpp"
+    "PrefabLibrary.cpp"
     "RenderObject.cpp"
     "Transform.cpp"
 )

@@ -5,40 +5,42 @@ set(PROJECT_NAME CSC8503)
 ################################################################################
 
 set(Header_Files
+    "AnimatedRenderObject.h"
 	"Bonus.h"
-	"EnemyObject.h"
-	"Maze.h"
-    "NetworkedGame.h"
-    "NetworkPlayer.h"
-	"NPCObject.h"
-    "StateGameObject.h"
-    "TutorialGame.h"
     "DebugViewPoint.h"
+	"EnemyObject.h"
+    "GameLevel.h"
     "GameGrid.h"
     "GameGridManager.h"
     "GameStateManager.h"
+	"Maze.h"
+    "MenuRenderObject.h"
+    "NetworkedGame.h"
+    "NetworkPlayer.h"
+	"NPCObject.h"
     "Obstacle.h"
-    "GameLevel.h"
-    "AnimatedRenderObject.h"
-    "AnimatedRenderObject.cpp"
+    "StateGameObject.h"
+    "TutorialGame.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
+    "AnimatedRenderObject.cpp"
 	"Bonus.cpp"
+    "DebugViewPoint.cpp"
 	"EnemyObject.cpp"
+    "GameLevel.cpp"
+    "GameGrid.cpp"
+    "GameGridManager.cpp"
+    "GameStateManager.cpp"
     "Main.cpp"
 	"Maze.cpp"
+    "MenuRenderObject.cpp"
     "NetworkedGame.cpp"
     "NetworkPlayer.cpp"
 	"NPCObject.cpp"
     "StateGameObject.cpp"
     "TutorialGame.cpp"
-    "DebugViewPoint.cpp"
-    "GameGrid.cpp"
-    "GameGridManager.cpp"
-    "GameStateManager.cpp"
-    "GameLevel.cpp"
 )
 
 set(Render_Files
@@ -124,6 +126,8 @@ set(Bullet_Files
 	"BossBullet.cpp"
     "PlayerBullet.h"
     "PlayerBullet.cpp"
+    "BulletInstanceManager.h"
+    "BulletInstanceManager.cpp"
 	
 )
 source_group("Bullet Files" FILES ${Bullet_Files})

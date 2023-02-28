@@ -1,70 +1,41 @@
+/**
+ * @file   AnimatedRenderObject.h
+ * @brief  
+ * 
+ * @author Xiaoyang Liu
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
 #pragma once
 #include "RenderObject.h"
+
 #include "OGLTexture.h"
-#include <vector>
 #include "MeshAnimation.h"
 #include "MeshGeometry.h"
 #include "MeshMaterial.h"
 
+#include <vector>
+
 namespace NCL::CSC8503 {
 	class AnimatedRenderObject : public RenderObject {
 	public:
-		AnimatedRenderObject(MeshMaterial* mater, MeshAnimation* ani, MeshGeometry* msh, std::vector<OGLTexture*>  matTex, Transform* parentTransform);
+		AnimatedRenderObject(Transform* parentTransform, MeshGeometry* mesh, MeshMaterial* material, MeshAnimation* animation);
 		~AnimatedRenderObject();
 
-		void ConfigerShaderExtras(OGLShader* shaderOGL) const override;
-
-		MeshAnimation* GetAnimation() const {
+		inline const MeshAnimation* GetAnimation() const {
 			return anim;
 		}
-
-		void SetAnimation(MeshAnimation* ani) {
+		inline void SetAnimation(MeshAnimation* animation) {
+			anim = animation;
 			currentFrame = 0;
-			anim = ani;
+			nextFrame = 0;
 		}
-
-		MeshGeometry* GetAnimatedMesh() const {
-			return animMesh;
-		}
-
-		int GetCurrentFrame() const {
-			return currentFrame;
-		}
-
-		void SetCurrentFrame(int frame) {
-			currentFrame = frame;
-		}
-
-		float GetFrameTime() {
-			return frameTime;
-		}
-
-		void SetFrameTime(float t) {
-			frameTime = t;
-		}
-
-		void SetNextFrame(int frame) {
-			nextFrame = frame;
-		}
-
-		std::vector<OGLTexture*> GetMatTextures() {
-			return matTextures;
-		}
-
-		float GetAnimSpeed() {
-			return animSpeed;
-		}
-
-		void SetAnimSpeed(float s) {
-			animSpeed = s;
-		}
-
 	protected:
-		MeshMaterial* material = nullptr;
-		MeshAnimation* anim = nullptr;
-		MeshGeometry* animMesh = nullptr;
+		void PreDraw(int sublayer, ShaderBase* shader) override;
 
-		std::vector<OGLTexture*>  matTextures;
+		ShaderBase* GetDefaultShader() override;
+
+		MeshAnimation* anim = nullptr;
 
 		int		currentFrame;
 		int		nextFrame;

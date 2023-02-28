@@ -7,7 +7,9 @@
  */
 #pragma once
 #include "ScreenPause.h"
+
 #include "AssetLibrary.h"
+#include "MenuRenderObject.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -19,7 +21,7 @@ void ScreenPause::initMenu() {
 
 	MeshGeometry* quad = (MeshGeometry*)AssetLibrary::GetMesh("quad");
 	Menu* menu = new Menu(Vector2(0, 0), Vector2(0.3, 0.7));
-	menu->SetRenderObject(new RenderObject(nullptr, quad, texture, shader));
+	menu->SetRenderObject(new MenuRenderObject(texture));
 	menuManager.AddMenu(name, menu);
 
 	//Load button
@@ -32,7 +34,7 @@ void ScreenPause::initMenu() {
 		Button* btn = new Button(0, 0.45f + i * -0.3f, 0.16f, 0.08f, Vector4(0, 0, 0, 1));
 		TextureBase* tex = AssetLibrary::GetTexture(name);
 
-		btn->SetRenderObject(new RenderObject(nullptr, quad, tex, shader));
+		btn->SetRenderObject(new MenuRenderObject(tex));
 		menu->AddButton(btn);
 		buttons.push_back(btn);
 	}

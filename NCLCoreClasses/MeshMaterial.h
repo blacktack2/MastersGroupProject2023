@@ -1,59 +1,46 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   MeshMaterial.h
+ * @brief  
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
 #pragma once
 #include <string>
 #include <vector>
 #include <map>
 
-using std::string;
-using std::vector;
-using std::map;
-
+namespace NCL::Rendering {
+	class ShaderBase;
+	class TextureBase;
+}
+using namespace NCL::Rendering;
 namespace NCL {
-	namespace Rendering {
-		class TextureBase;
-	}
 	class MeshMaterialEntry {
 		friend class MeshMaterial;
 	public:
-		bool GetEntry(const string& name, const string** output) const {
-			auto i = entries.find(name);
-			if (i == entries.end()) {
-				return false;
-			}
-			*output = &i->second.first;
-			return true;
+		inline TextureBase* GetTexture(const std::string& name) const {
+			auto i = textures.find(name);
+			return i == textures.end() ? nullptr : i->second;
 		}
-		Rendering::TextureBase* GetEntry(const string& name) const {
-			auto i = entries.find(name);
-			if (i == entries.end()) {
-				return nullptr;
-			}
-			return i->second.second;
+		inline ShaderBase* GetShader() const {
+			return shader;
 		}
-		void LoadTextures();
-
 	protected:
-		std::map<string, std::pair<string, Rendering::TextureBase*>> entries;
+		std::map<std::string, TextureBase*> textures;
+		ShaderBase* shader;
 	};
 
-	class MeshMaterial	{
-	public:		// testing animation
+	class MeshMaterial {
+	public:
 		MeshMaterial(const std::string& filename);
+		MeshMaterial(const std::vector<std::pair<std::string, TextureBase*>>& textures, ShaderBase* shader);
 		~MeshMaterial() {}
+
 		const MeshMaterialEntry* GetMaterialForLayer(int i) const;
-
-		void LoadTextures();
-
 	protected:
-		std::vector<MeshMaterialEntry>	materialLayers;
+		std::vector<MeshMaterialEntry>  materialLayers;
 		std::vector<MeshMaterialEntry*> meshLayers;
 	};
-
 }

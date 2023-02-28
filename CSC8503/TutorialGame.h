@@ -153,7 +153,7 @@ namespace NCL {
 			GameLevel* gameLevel = nullptr;	/////////
 			float interval = 0.0f;			/////////
 			GameGrid* gameGrid = nullptr;	/////////
-			GameObject* floor = nullptr;	/////////
+			//GameObject* floor = nullptr;	/////////
 			Boss* testingBoss = nullptr;   /////////
 			BossBehaviorTree* testingBossBehaviorTree = nullptr;   /////////
 
