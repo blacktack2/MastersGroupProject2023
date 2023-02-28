@@ -18,7 +18,9 @@ void NetworkPlayer::Update(float dt) {
 	PlayerObject::Update(dt);
 }
 
+void NetworkPlayer::ChangeLoseState() {
 
+}
 
 void NetworkPlayer::OnCollisionBegin(GameObject* otherObject) {
 	if (game) {

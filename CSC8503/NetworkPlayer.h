@@ -19,6 +19,8 @@ namespace NCL {
 			~NetworkPlayer();
 
 			void Update(float dt);
+			void ChangeLoseState() override;
+
 			void OnCollisionBegin(GameObject* otherObject) override;
 
 			void RotateYaw(float yaw) {

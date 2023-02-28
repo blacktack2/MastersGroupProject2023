@@ -105,6 +105,11 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	thisServer->UpdateServer();
 	packetsToSnapshot--;
 
+	//update Game state
+	for (auto const& player : serverPlayers) {
+		static_cast<NetworkPlayer*>(player.second);
+	}
+
 	//send important information to each player
 	std::vector<int> connectedClients = thisServer->GetClientIDs();
 	///*
@@ -125,7 +130,6 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	ServerGetInstantiatedObject((NetworkPlayer*)localPlayer);
 	localPlayer->GetNetworkObject()->SnapRenderToSelf();
 	std::vector<NetworkObject*> networkObjects = world->GetNetworkObjects();
-
 	bool processed = false;
 	for (auto networkObj : networkObjects) {
 		networkObj->SnapRenderToSelf();

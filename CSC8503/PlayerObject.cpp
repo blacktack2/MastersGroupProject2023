@@ -45,7 +45,7 @@ PlayerObject::~PlayerObject() {
 void PlayerObject::Update(float dt) {
 	//Change game state
 	if (health.GetHealth() <= 0) {
-		gameStateManager->SetGameState(GameState::Lose);
+		ChangeLoseState();
 		return;
 	}
 		
@@ -72,6 +72,11 @@ void PlayerObject::Update(float dt) {
 		InkEffectManager::instance().ApplyInkEffect(node->inkType, &health, 0);
 	}
 	
+}
+
+void PlayerObject::ChangeLoseState()
+{
+	gameStateManager->SetGameState(GameState::Lose);
 }
 
 void PlayerObject::MoveTo(Vector3 position) {
