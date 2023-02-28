@@ -27,12 +27,6 @@ OGLMainRenderPass(renderer), gameWorld(gameWorld) {
 	AddScreenTexture(normalOutTex);
 	AddScreenTexture(depthOutTex);
 
-	defaultDiffuse = (OGLTexture*)OGLTexture::RGBATextureFromFilename("GoatBody.png");
-	defaultBump = (OGLTexture*)OGLTexture::RGBATextureFromFilename("DefaultBump.png");
-	defaultBump->Bind();
-	defaultBump->SetFilters(GL_LINEAR, GL_LINEAR);
-	defaultBump->Unbind();
-
 	frameBuffer = new OGLFrameBuffer();
 	frameBuffer->Bind();
 	frameBuffer->AddTexture(diffuseOutTex);
@@ -41,8 +35,7 @@ OGLMainRenderPass(renderer), gameWorld(gameWorld) {
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
-	defaultModelShader = new OGLShader("modelDefault.vert", "modelDefault.frag");
-	AddModelShader(defaultModelShader);
+	AddModelShader((OGLShader*)AssetLibrary::GetShader("defaultModel"));
 }
 
 ModelRPass::~ModelRPass() {
@@ -51,8 +44,6 @@ ModelRPass::~ModelRPass() {
 	delete diffuseOutTex;
 	delete normalOutTex;
 	delete depthOutTex;
-
-	delete defaultModelShader;
 }
 
 void ModelRPass::Render() {

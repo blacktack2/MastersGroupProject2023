@@ -46,9 +46,11 @@ namespace NCL::CSC8503 {
 			return INSTANCE;
 		}
 
-		MeshGeometry* LoadMesh(const std::string& name);
-		TextureBase*  LoadTexture(const std::string& name);
-		ShaderBase*   LoadShader(const std::string& vertex, const std::string& fragment);
+		void InitPipeline();
+
+		static MeshGeometry* LoadMesh(const std::string& name);
+		static TextureBase*  LoadTexture(const std::string& name);
+		static ShaderBase*   LoadShader(const std::string& vertex, const std::string& fragment);
 
 		inline SkyboxRPass& GetSkyboxPass() {
 			return *skyboxPass;

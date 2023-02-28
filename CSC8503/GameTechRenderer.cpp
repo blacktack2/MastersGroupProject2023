@@ -22,7 +22,21 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()), gameWo
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
+}
 
+GameTechRenderer::~GameTechRenderer() {
+	delete skyboxPass;
+	delete modelPass;
+	delete lightingPass;
+	delete combinePass;
+	delete presentPass;
+	delete bloomPass;
+	delete hdrPass;
+	delete debugPass;
+	delete menuPass;
+}
+
+void GameTechRenderer::InitPipeline() {
 	paintingRPass = new PaintingRPass(*this);
 	AddMainPass(paintingRPass);
 
@@ -66,19 +80,6 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()), gameWo
 	AddOverlayPass(debugPass, "Debug");
 
 	UpdatePipeline();
-
-}
-
-GameTechRenderer::~GameTechRenderer() {
-	delete skyboxPass;
-	delete modelPass;
-	delete lightingPass;
-	delete combinePass;
-	delete presentPass;
-	delete bloomPass;
-	delete hdrPass;
-	delete debugPass;
-	delete menuPass;
 }
 
 void GameTechRenderer::BuildObjectList() {

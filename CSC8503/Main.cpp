@@ -1,4 +1,11 @@
 #pragma once
+/**
+ * @file   Main.cpp
+ * @brief  
+ * 
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
 #include "Window.h"
 
 #include "Debug.h"
@@ -26,32 +33,16 @@
 
 #include "AssetLibrary.h"
 
-using namespace NCL;
-using namespace CSC8503;
-
 #include <chrono>
 #include <thread>
 #include <sstream>
 
-
-/*
-
-The main function should look pretty familar to you!
-We make a window, and then go into a while loop that repeatedly
-runs our 'game' until we press escape. Instead of making a 'renderer'
-and updating it, we instead make a whole game, and repeatedly update that,
-instead. 
-
-This time, we've added some extra functionality to the window class - we can
-hide or show the 
-
-*/
+using namespace NCL;
+using namespace CSC8503;
 
 //a temperory place to initial asset before we can make a asset factory class
 void LoadGlobalAssets() {
-	GameTechRenderer* renderer = &GameTechRenderer::instance();
-
-	//basic assets
+	std::cout << "Loading global assets\n";
 	{
 		OGLMesh* quad = new OGLMesh();
 		quad->SetVertexPositions({
@@ -76,55 +67,53 @@ void LoadGlobalAssets() {
 		quad->UploadToGPU();
 		AssetLibrary::AddMesh("quad", quad);
 	}
-	AssetLibrary::AddMesh("cube", renderer -> LoadMesh("cube.msh"));
-	AssetLibrary::AddMesh("sphere", renderer -> LoadMesh("sphere.msh"));
-	AssetLibrary::AddMesh("goat", renderer -> LoadMesh("Goat.msh"));
-	AssetLibrary::AddMesh("capsule", renderer -> LoadMesh("capsule.msh"));
+	AssetLibrary::AddMesh("cube", GameTechRenderer::LoadMesh("cube.msh"));
+	AssetLibrary::AddMesh("sphere", GameTechRenderer::LoadMesh("sphere.msh"));
+	AssetLibrary::AddMesh("goat", GameTechRenderer::LoadMesh("Goat.msh"));
+	AssetLibrary::AddMesh("capsule", GameTechRenderer::LoadMesh("capsule.msh"));
 
-	AssetLibrary::AddMesh("fenceX", renderer -> LoadMesh("fenceXCube.msh"));
-	AssetLibrary::AddMesh("fenceY", renderer -> LoadMesh("fenceYCube.msh"));
-	AssetLibrary::AddMesh("wall", renderer -> LoadMesh("cube.msh"));
-	AssetLibrary::AddMesh("shelter", renderer -> LoadMesh("shelterCube.msh"));
-	AssetLibrary::AddMesh("pillar", renderer->LoadMesh("pillarMsh.msh"));
+	AssetLibrary::AddMesh("fenceX", GameTechRenderer::LoadMesh("fenceXCube.msh"));
+	AssetLibrary::AddMesh("fenceY", GameTechRenderer::LoadMesh("fenceYCube.msh"));
+	AssetLibrary::AddMesh("wall", GameTechRenderer::LoadMesh("cube.msh"));
+	AssetLibrary::AddMesh("shelter", GameTechRenderer::LoadMesh("shelterCube.msh"));
+	AssetLibrary::AddMesh("pillar", GameTechRenderer::LoadMesh("pillarMsh.msh"));
 
-	AssetLibrary::AddTexture("defaultDiffuse", renderer->LoadTexture("DefaultDiffuse.png"));
-	AssetLibrary::AddTexture("defaultBump", renderer->LoadTexture("DefaultBump.png"));
-	AssetLibrary::AddTexture("defaultSpec", renderer->LoadTexture("DefaultSpec.png"));
-	AssetLibrary::AddTexture("basic", renderer->LoadTexture("checkerboard.png"));
-	AssetLibrary::AddTexture("healingKitTex", renderer->LoadTexture("shelterTex.jpg"));
-	AssetLibrary::AddTexture("pillarTex", renderer->LoadTexture("pillarTex.jpg"));
+	AssetLibrary::AddTexture("defaultDiffuse", GameTechRenderer::LoadTexture("DefaultDiffuse.png"));
+	AssetLibrary::AddTexture("defaultBump", GameTechRenderer::LoadTexture("DefaultBump.png"));
+	AssetLibrary::AddTexture("defaultSpec", GameTechRenderer::LoadTexture("DefaultSpec.png"));
+	AssetLibrary::AddTexture("basic", GameTechRenderer::LoadTexture("checkerboard.png"));
+	AssetLibrary::AddTexture("healingKitTex", GameTechRenderer::LoadTexture("shelterTex.jpg"));
+	AssetLibrary::AddTexture("pillarTex", GameTechRenderer::LoadTexture("pillarTex.jpg"));
 
 	AssetLibrary::AddMaterial("default", new MeshMaterial("Default.mat"));
 	AssetLibrary::AddMaterial("pillar", new MeshMaterial("pillar.mat"));
 
-	AssetLibrary::AddShader("defaultModel", renderer->LoadShader("modelDefault.vert", "modelDefault.frag"));
-	AssetLibrary::AddShader("paint", renderer->LoadShader("modelDefault.vert", "modelPaintTexture.frag"));
-
+	AssetLibrary::AddShader("defaultModel", GameTechRenderer::LoadShader("modelDefault.vert", "modelDefault.frag"));
+	AssetLibrary::AddShader("paint", GameTechRenderer::LoadShader("modelDefault.vert", "modelPaintTexture.frag"));
 }
 
 void LoadMenuAsset() {
-	GameTechRenderer* renderer = &GameTechRenderer::instance();
+	std::cout << "Loading menu assets\n";
+	AssetLibrary::AddTexture("menuMain", GameTechRenderer::LoadTexture("defaultMain.jpg"));
+	AssetLibrary::AddTexture("menuPause", GameTechRenderer::LoadTexture("defaultpause.jpg"));
+	AssetLibrary::AddTexture("menuOption", GameTechRenderer::LoadTexture("defaultMain.jpg"));
 
-	AssetLibrary::AddTexture("menuMain", renderer->LoadTexture("defaultMain.jpg"));
-	AssetLibrary::AddTexture("menuPause", renderer->LoadTexture("defaultpause.jpg"));
-	AssetLibrary::AddTexture("menuOption", renderer->LoadTexture("defaultMain.jpg"));
+	AssetLibrary::AddTexture("button1", GameTechRenderer::LoadTexture("button1.jpg"));
+	AssetLibrary::AddTexture("button2", GameTechRenderer::LoadTexture("button2.jpg"));
+	AssetLibrary::AddTexture("button3", GameTechRenderer::LoadTexture("button3.jpg"));
+	AssetLibrary::AddTexture("button4", GameTechRenderer::LoadTexture("button4.jpg"));
+	AssetLibrary::AddTexture("button5", GameTechRenderer::LoadTexture("button5.jpg"));
+	AssetLibrary::AddTexture("button6", GameTechRenderer::LoadTexture("button6.jpg"));
+	AssetLibrary::AddTexture("button7", GameTechRenderer::LoadTexture("button7.jpg"));
 
-	AssetLibrary::AddTexture("button1", renderer->LoadTexture("button1.jpg"));
-	AssetLibrary::AddTexture("button2", renderer->LoadTexture("button2.jpg"));
-	AssetLibrary::AddTexture("button3", renderer->LoadTexture("button3.jpg"));
-	AssetLibrary::AddTexture("button4", renderer->LoadTexture("button4.jpg"));
-	AssetLibrary::AddTexture("button5", renderer->LoadTexture("button5.jpg"));
-	AssetLibrary::AddTexture("button6", renderer->LoadTexture("button6.jpg"));
-	AssetLibrary::AddTexture("button7", renderer->LoadTexture("button7.jpg"));
-
-	AssetLibrary::AddShader("menu", renderer->LoadShader("menuVertex.vert", "menuFragment.frag"));
+	AssetLibrary::AddShader("menu", GameTechRenderer::LoadShader("menuVertex.vert", "menuFragment.frag"));
 }
 
 void LoadAnimationAsset() {
-	GameTechRenderer* renderer = &GameTechRenderer::instance();
-	AssetLibrary::AddShader("animation", renderer->LoadShader("SkinningVertex.glsl", "TexturedFragment.glsl"));
+	std::cout << "Loading animation assets";
+	AssetLibrary::AddShader("animation", GameTechRenderer::LoadShader("SkinningVertex.glsl", "TexturedFragment.glsl"));
 
-	AssetLibrary::AddMesh("boss", renderer->LoadMesh("Boss/Boss.msh"));
+	AssetLibrary::AddMesh("boss", GameTechRenderer::LoadMesh("Boss/Boss.msh"));
 
 	AssetLibrary::AddMaterial("boss", new MeshMaterial("Boss/Boss.mat"));
 
@@ -150,8 +139,8 @@ void StartPushdownAutomata(Window* w) {
 	while (w->UpdateWindow()) {
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
-			std::cout << "Skipping large time delta" << std::endl;
-			continue; //must have hit a breakpoint or something to have a 1 second frame time!
+			std::cout << "Skipping large time delta\n";
+			continue;
 		}
 		if (!machine.Update(dt)) {
 			return;
@@ -160,11 +149,12 @@ void StartPushdownAutomata(Window* w) {
 }
 
 int main() {
-
 	Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
 
-	std::cout << "loading" << std::endl;
+	std::cout << "loading\n";
+	GameTechRenderer& renderer = GameTechRenderer::instance();
 	LoadAsset();
+	renderer.InitPipeline();
 	
 	if (!w->HasInitialised()) {
 		return -1;
@@ -172,37 +162,5 @@ int main() {
 
 	StartPushdownAutomata(w);
 
-
-	/*
-	w->ShowOSPointer(false);
-	w->LockMouseToWindow(true);
-
-	NetworkedGame* g = new NetworkedGame();
-	//g->InitWorld(NCL::CSC8503::TutorialGame::InitMode::AUDIO_TEST);
-	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
-	while (w->UpdateWindow() && !g->IsQuit()) {
-		float dt = w->GetTimer()->GetTimeDeltaSeconds();
-		if (dt > 0.1f) {
-			std::cout << "Skipping large time delta" << std::endl;
-			continue; //must have hit a breakpoint or something to have a 1 second frame time!
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::PRIOR)) {
-			w->ShowConsole(true);
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NEXT)) {
-			w->ShowConsole(false);
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::T)) {
-			w->SetWindowPosition(0, 0);
-		}
-
-		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
-
-		g->UpdateGame(dt);
-		//DisplayPathfinding();
-	}
-	delete g;
-	*/
 	Window::DestroyGameWindow();
 }
