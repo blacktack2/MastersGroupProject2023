@@ -20,3 +20,7 @@ void PrefabLibrary::AddPrefab(std::string name, GameObject* prefab) {
 GameObject* PrefabLibrary::GetPrefab(std::string name) {
 	return prefabs.find(name)->second;
 }
+
+bool PrefabLibrary::HasPrefab(std::string name) {
+	return prefabs.find(name) != prefabs.end();
+}

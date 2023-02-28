@@ -17,7 +17,8 @@ namespace NCL {
 	public:
 		static void AddPrefab(std::string name, GameObject* prefab);
 		static GameObject* GetPrefab(std::string name);
+		static bool HasPrefab(std::string name);
 	private:
-		static std::map<std::string, GameObject*>    prefabs;
+		static std::map<std::string, GameObject*> prefabs;
 	};
 }

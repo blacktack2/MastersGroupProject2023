@@ -49,7 +49,7 @@ MeshMaterial::MeshMaterial(const std::string& filename) {
 		file >> shader;
 		file >> count;
 
-		materialLayers[i].shader = AssetLibrary::GetShader(shader);
+		materialLayers[i].shader = AssetLibrary::HasShader(shader) ? AssetLibrary::GetShader(shader) : nullptr;
 		for (int j = 0; j < count; ++j) {
 			std::string entryData;
 			file >> entryData;
@@ -59,9 +59,11 @@ MeshMaterial::MeshMaterial(const std::string& filename) {
 			channel = entryData.substr(0, split);
 			texture = entryData.substr(split + 1);
 
-			materialLayers[i].textures.insert(
-				std::make_pair(channel, AssetLibrary::GetTexture(texture))
-			);
+			if (AssetLibrary::HasTexture(texture)) {
+				materialLayers[i].textures.insert(
+					std::make_pair(channel, AssetLibrary::GetTexture(texture))
+				);
+			}
 		}
 	}
 
