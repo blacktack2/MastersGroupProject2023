@@ -59,7 +59,16 @@ MeshMaterial::MeshMaterial(const std::string& filename) {
 			channel = entryData.substr(0, split);
 			texture = entryData.substr(split + 1);
 
-			if (AssetLibrary::HasTexture(texture)) {
+			if (!AssetLibrary::HasTexture(texture)) {
+				TextureBase* tex = TextureLoader::LoadAPITexture(texture);
+				if (tex) {
+					AssetLibrary::AddTexture(texture, tex);
+
+					materialLayers[i].textures.insert(
+						std::make_pair(channel, AssetLibrary::GetTexture(texture))
+					);
+				}
+			} else {
 				materialLayers[i].textures.insert(
 					std::make_pair(channel, AssetLibrary::GetTexture(texture))
 				);

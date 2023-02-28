@@ -51,6 +51,8 @@ namespace NCL {
 			virtual void PreDraw(int sublayer);
 			virtual void PreDraw(int sublayer, ShaderBase* shader) {}
 
+			virtual ShaderBase* GetDefaultShader();
+
 			Transform*    transform;
 			MeshGeometry* mesh;
 			MeshMaterial* material;

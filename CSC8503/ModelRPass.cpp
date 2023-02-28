@@ -35,7 +35,9 @@ OGLMainRenderPass(renderer), gameWorld(gameWorld) {
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
-	AddModelShader((OGLShader*)AssetLibrary::GetShader("defaultModel"));
+	AddModelShader((OGLShader*)AssetLibrary::GetShader("modelDefault"));
+	AddModelShader((OGLShader*)AssetLibrary::GetShader("paintDefault"));
+	AddModelShader((OGLShader*)AssetLibrary::GetShader("animationDefault"));
 }
 
 ModelRPass::~ModelRPass() {

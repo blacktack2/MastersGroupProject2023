@@ -51,7 +51,7 @@ void RenderObject::PreDraw(int sublayer) {
 	entry = entry ? entry : mat->GetMaterialForLayer(0);
 
 	ShaderBase* shader = entry->GetShader();
-	shader = shader ? shader : AssetLibrary::GetShader("defaultModel");
+	shader = shader ? shader : GetDefaultShader();
 
 	shader->Bind();
 
@@ -73,4 +73,8 @@ void RenderObject::PreDraw(int sublayer) {
 	spec->Bind(2);
 
 	PreDraw(sublayer, shader);
+}
+
+ShaderBase* RenderObject::GetDefaultShader() {
+	return AssetLibrary::GetShader("modelDefault");
 }

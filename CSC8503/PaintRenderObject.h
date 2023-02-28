@@ -8,7 +8,10 @@
  */
 #pragma once
 #include "RenderObject.h"
+
 #include "OGLTexture.h"
+#include "ShaderBase.h"
+
 #include <vector>
 
 namespace NCL::CSC8503 {
@@ -56,6 +59,8 @@ namespace NCL::CSC8503 {
 		}
 	protected:
 		void PreDraw(int sublayer, ShaderBase* shader) override;
+
+		ShaderBase* GetDefaultShader() override;
 	private:
 		OGLTexture* paintTexture;
 		std::vector<PaintCollision> paintCollisions;

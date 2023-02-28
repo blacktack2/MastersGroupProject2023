@@ -31,6 +31,8 @@ namespace NCL::CSC8503 {
 	protected:
 		void PreDraw(int sublayer, ShaderBase* shader) override;
 
+		ShaderBase* GetDefaultShader() override;
+
 		MeshAnimation* anim = nullptr;
 
 		int		currentFrame;

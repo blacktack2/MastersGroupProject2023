@@ -88,8 +88,9 @@ void LoadGlobalAssets() {
 	AssetLibrary::AddMaterial("default", new MeshMaterial("Default.mat"));
 	AssetLibrary::AddMaterial("pillar", new MeshMaterial("pillar.mat"));
 
-	AssetLibrary::AddShader("defaultModel", GameTechRenderer::LoadShader("modelDefault.vert", "modelDefault.frag"));
-	AssetLibrary::AddShader("paint", GameTechRenderer::LoadShader("modelDefault.vert", "modelPaintTexture.frag"));
+	AssetLibrary::AddShader("modelDefault", GameTechRenderer::LoadShader("modelDefault.vert", "modelDefault.frag"));
+	AssetLibrary::AddShader("paintDefault", GameTechRenderer::LoadShader("modelDefault.vert", "modelPaintTexture.frag"));
+	AssetLibrary::AddShader("animationDefault", GameTechRenderer::LoadShader("modelAnimated.vert", "modelAnimated.frag"));
 }
 
 void LoadMenuAsset() {
@@ -111,8 +112,6 @@ void LoadMenuAsset() {
 
 void LoadAnimationAsset() {
 	std::cout << "Loading animation assets";
-	AssetLibrary::AddShader("animation", GameTechRenderer::LoadShader("SkinningVertex.glsl", "TexturedFragment.glsl"));
-
 	AssetLibrary::AddMesh("boss", GameTechRenderer::LoadMesh("Boss/Boss.msh"));
 
 	AssetLibrary::AddMaterial("boss", new MeshMaterial("Boss/Boss.mat"));

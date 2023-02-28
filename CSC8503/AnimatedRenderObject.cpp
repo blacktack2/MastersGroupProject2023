@@ -20,6 +20,7 @@ RenderObject(parentTransform, mesh, material) {
 	anim = animation;
 
 	currentFrame = 0;
+	nextFrame = 0;
 	frameTime = 0.0f;
 }
 
@@ -45,4 +46,8 @@ void AnimatedRenderObject::PreDraw(int sublayer, ShaderBase* shader) {
 		frameMatrices.emplace_back(frameData[i] * invBindPose[i]);
 	}
 	shader->SetUniformMatrix("joints", frameMatrices.size(), frameMatrices.data());
+}
+
+ShaderBase* AnimatedRenderObject::GetDefaultShader() {
+	return AssetLibrary::GetShader("animationDefault");
 }

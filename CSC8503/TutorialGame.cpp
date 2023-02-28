@@ -338,10 +338,6 @@ void TutorialGame::InitialiseAssets() {
 	healingKitTex = AssetLibrary::GetTexture("healingKitTex");
 	pillarTex = AssetLibrary::GetTexture("pillarTex");
 
-
-	OGLShader* shader = (OGLShader*)AssetLibrary::GetShader("paint");
-	renderer->GetModelPass().AddModelShader(shader);
-
 	InitaliseAnimationAssets();
 
 	//old stuff
@@ -353,12 +349,6 @@ void TutorialGame::InitialiseAssets() {
 }
 
 void TutorialGame::InitaliseAnimationAssets() {
-	OGLShader* animationShader = (OGLShader*)AssetLibrary::GetShader("animation");
-	if (!animationShader->LoadSuccess()) {
-		return;
-	}
-	renderer->GetModelPass().AddModelShader(animationShader);
-
 	maleguardMaterial = AssetLibrary::GetMaterial("boss");
 	maleguardMesh = AssetLibrary::GetMesh("boss");
 	maleguardAnim = AssetLibrary::GetAnimation("WalkForward");
@@ -827,8 +817,7 @@ EnemyObject* TutorialGame::AddEnemyToWorld(const Vector3& position, NavigationMa
 	return enemy;
 }
 
-Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass)
-{
+Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
 	Boss* boss = new Boss(*gameGrid);
 
 	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
