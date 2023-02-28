@@ -19,6 +19,7 @@
 
 #include "obstacle.h"
 #include "PaintRenderObject.h"
+#include "BulletInstanceManager.h"
 
 // testing animation
 #include "AnimatedRenderObject.h"
@@ -65,6 +66,7 @@ TutorialGame::TutorialGame() {
 
 TutorialGame::~TutorialGame() {
 	world->ClearAndErase();
+	BulletInstanceManager::instance().NullifyArray();
 	gridManager->Clear();
 
 	delete physics;
@@ -79,6 +81,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 	delete[] mazes;
 	mazes = nullptr;
 	world->ClearAndErase();
+	BulletInstanceManager::instance().ObjectIntiation();
 	physics->Clear();
 	gridManager->Clear();
 	delete testingBossBehaviorTree;

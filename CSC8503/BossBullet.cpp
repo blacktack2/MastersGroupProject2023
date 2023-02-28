@@ -28,10 +28,6 @@ BossBullet::BossBullet(BossBullet& other) : Bullet(other) {
 BossBullet::~BossBullet() {
 }
 
-void BossBullet::Update(float dt) {
-	Bullet::Update(dt);
-}
-
 void BossBullet::OnTriggerBegin(GameObject* other) {
 	//delete if colliding with boss
 	if (!dynamic_cast<Boss*>(other)) {

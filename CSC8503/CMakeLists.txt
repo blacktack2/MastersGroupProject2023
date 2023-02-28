@@ -124,6 +124,8 @@ set(Bullet_Files
 	"BossBullet.cpp"
     "PlayerBullet.h"
     "PlayerBullet.cpp"
+    "BulletInstanceManager.h"
+    "BulletInstanceManager.cpp"
 	
 )
 source_group("Bullet Files" FILES ${Bullet_Files})

@@ -133,7 +133,10 @@ void GameWorld::UpdateWorld(float dt) {
 	}
 
 	for (int i = 0; i < gameObjects.size(); i++) {
-		gameObjects[i]->Update(dt);
+		if (gameObjects[i]->IsActive())
+		{
+			gameObjects[i]->Update(dt);
+		}
 	}
 
 	//dynamicQuadTree.DebugDraw();
@@ -167,7 +170,7 @@ void GameWorld::UpdateDynamicTree() {
 	dynamicQuadTree.Clear();
 
 	for (auto i = gameObjects.begin(); i != gameObjects.end(); i++) {
-		if ((*i)->GetPhysicsObject() && !(*i)->GetPhysicsObject()->IsStatic()) {
+		if ((*i)->GetPhysicsObject() && !(*i)->GetPhysicsObject()->IsStatic() && (*i)->IsActive()) {
 			Vector3 halfSizes;
 			if (!(*i)->GetBroadphaseAABB(halfSizes)) {
 				continue;
