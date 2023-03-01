@@ -29,9 +29,9 @@ void PaintingRPass::Render() {
 	frameBuffer->Bind();
 	shader->Bind();
 	glDisable(GL_CULL_FACE);
+	renderer.GetConfig().SetBlend(true, BlendFuncSrc::SrcAlpha, BlendFuncDst::OneMinusSrcAlpha);
 
 	GameWorld& world = GameWorld::instance();
-
 
 	world.OperateOnContents([&](GameObject* gameObject) {
 		const CollisionVolume* volume = gameObject->GetBoundingVolume();
@@ -60,6 +60,7 @@ void PaintingRPass::Render() {
 
 	renderer.GetConfig().ResetViewport();
 
+	renderer.GetConfig().ResetBlend();
 	glEnable(GL_CULL_FACE);
 	shader->Unbind();
 	frameBuffer->Unbind();

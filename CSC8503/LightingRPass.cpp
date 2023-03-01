@@ -98,7 +98,7 @@ void LightingRPass::DrawLight(const Light& light) {
 	frameBuffer->Bind();
 	shader->Bind();
 
-	glBlendFunc(GL_ONE, GL_ONE);
+	renderer.GetConfig().SetBlend(true, BlendFuncSrc::One, BlendFuncDst::One);
 	glDepthFunc(GL_ALWAYS);
 	glDepthMask(GL_FALSE);
 
@@ -134,7 +134,7 @@ void LightingRPass::DrawLight(const Light& light) {
 
 	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LEQUAL);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	renderer.GetConfig().ResetBlend();
 
 	shader->Unbind();
 	frameBuffer->Unbind();

@@ -20,6 +20,42 @@ namespace NCL::Rendering {
 	};
 	constexpr float ALPHA_TEST_REF_DEFAULT = 0.0f;
 
+	enum class BlendFuncSrc {
+		Zero,
+		One,
+		SrcColour,
+		OnMinusSrcColour,
+		DstColour,
+		OneMinusDstColour,
+		SrcAlpha,
+		OneMinusSrcAlpha,
+		DstAlpha,
+		OneMinusDstAlpha,
+		ConstantColour,
+		OneMinusConstantColour,
+		ConstantAlpha,
+		OneMinusConstantAlpha,
+		SrcAlphaSaturate,
+		Default = One,
+	};
+	enum class BlendFuncDst {
+		Zero,
+		One,
+		SrcColour,
+		OnMinusSrcColour,
+		DstColour,
+		OneMinusDstColour,
+		SrcAlpha,
+		OneMinusSrcAlpha,
+		DstAlpha,
+		OneMinusDstAlpha,
+		ConstantColour,
+		OneMinusConstantColour,
+		ConstantAlpha,
+		OneMinusConstantAlpha,
+		Default = Zero
+	};
+
 	class RendererConfigBase {
 	public:
 		RendererConfigBase(RendererBase& renderer);
@@ -33,7 +69,12 @@ namespace NCL::Rendering {
 
 		virtual void SetAlphaTest(bool enabled, AlphaTestFunc func = AlphaTestFunc::Default, float ref = ALPHA_TEST_REF_DEFAULT) = 0;
 		inline void ResetAlphaTest() {
-			SetAlphaTest(false, AlphaTestFunc::Default, ALPHA_TEST_REF_DEFAULT);
+			SetAlphaTest(false);
+		}
+
+		virtual void SetBlend(bool enabled, BlendFuncSrc srcFactor = BlendFuncSrc::Default, BlendFuncDst dstFactor = BlendFuncDst::Default) = 0;
+		inline void ResetBlend() {
+			SetBlend(false);
 		}
 	private:
 		RendererBase& renderer;

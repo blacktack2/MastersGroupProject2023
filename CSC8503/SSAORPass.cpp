@@ -95,10 +95,8 @@ void SSAORPass::OnWindowResize(int width, int height) {
 }
 
 void SSAORPass::Render() {
-	glDisable(GL_BLEND);
 	DrawSSAO();
 	BlurSSAO();
-	glEnable(GL_BLEND);
 }
 
 void SSAORPass::SetRadius(float radius) {

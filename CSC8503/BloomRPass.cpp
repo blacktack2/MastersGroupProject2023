@@ -156,7 +156,7 @@ void BloomRPass::Downsample() {
 void BloomRPass::Upsample() {
 	upsampleShader->Bind();
 
-	glBlendFunc(GL_ONE, GL_ONE);
+	renderer.GetConfig().SetBlend(true, BlendFuncSrc::One, BlendFuncDst::One);
 
 	for (auto mip = mipChain.rbegin(); mip != std::prev(mipChain.rend()); mip++) {
 		auto nextMip = std::next(mip);
@@ -169,7 +169,7 @@ void BloomRPass::Upsample() {
 		quad->Draw();
 	}
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	renderer.GetConfig().ResetBlend();
 
 	upsampleShader->Unbind();
 }
