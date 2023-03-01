@@ -34,46 +34,46 @@ GameTechRenderer::~GameTechRenderer() {
 
 void GameTechRenderer::InitPipeline() {
 	paintingRPass = new PaintingRPass(*this);
-	AddMainPass(paintingRPass);
+	AddMainPass(*paintingRPass);
 
 	skyboxPass = new SkyboxRPass(*this, gameWorld);
-	AddMainPass(skyboxPass);
+	AddMainPass(*skyboxPass);
 
 	modelPass = new ModelRPass(*this, gameWorld);
-	AddMainPass(modelPass);
+	AddMainPass(*modelPass);
 
 	lightingPass = new LightingRPass(*this, gameWorld,
 		modelPass->GetDepthOutTex(), modelPass->GetNormalOutTex());
-	AddMainPass(lightingPass);
+	AddMainPass(*lightingPass);
 
 	ssaoPass = new SSAORPass(*this,
 		modelPass->GetDepthOutTex(), modelPass->GetNormalOutTex());
-	AddMainPass(ssaoPass);
+	AddMainPass(*ssaoPass);
 
 	combinePass = new CombineRPass(*this,
 		skyboxPass->GetOutTex(), modelPass->GetDiffuseOutTex(),
 		lightingPass->GetDiffuseOutTex(), lightingPass->GetSpecularOutTex(), ssaoPass->GetOutTex(),
 		modelPass->GetNormalOutTex(), modelPass->GetDepthOutTex());
-	SetCombinePass(combinePass);
+	SetCombinePass(*combinePass);
 
 	bloomPass = new BloomRPass(*this);
 	SetBloomAmount(bloomAmount);
 	SetBloomBias(bloomBias);
-	AddPostPass(bloomPass, "Bloom");
+	AddPostPass(*bloomPass, "Bloom");
 
 	hdrPass = new HDRRPass(*this);
 	SetHDRExposure(hdrExposure);
-	AddPostPass(hdrPass, "HDR");
+	AddPostPass(*hdrPass, "HDR");
 
 	presentPass = new PresentRPass(*this);
 	SetGamma(gamma);
-	SetPresentPass(presentPass);
+	SetPresentPass(*presentPass);
 
 	menuPass = new MenuRPass(*this, gameWorld);
-	AddOverlayPass(menuPass, "Menu");
+	AddOverlayPass(*menuPass, "Menu");
 
 	debugPass = new DebugRPass(*this, gameWorld);
-	AddOverlayPass(debugPass, "Debug");
+	AddOverlayPass(*debugPass, "Debug");
 
 	UpdatePipeline();
 }
