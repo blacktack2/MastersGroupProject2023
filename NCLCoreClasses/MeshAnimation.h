@@ -1,21 +1,24 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   MeshAnimation.h
+ * @brief  
+ * 
+ * @author 
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #pragma once
+#include <optional>
 #include <vector>
 #include <string>
 
-namespace NCL {
-	namespace Maths {
-		class Matrix4;
-	}
+namespace NCL::Maths {
+	class Matrix4;
+}
 
-	class MeshAnimation	{
+using namespace NCL::Maths;
+
+namespace NCL {
+	class MeshAnimation {
 	public:
 		MeshAnimation();
 
@@ -36,14 +39,20 @@ namespace NCL {
 			return frameRate;
 		}
 
-		const Maths::Matrix4* GetJointData(unsigned int frame) const;
-
+		/**
+		 * @brief .
+		 * @brief Will result in undefined behaviour if frame.
+		 * 
+		 * @param frame
+		 * @return 
+		 */
+		const std::vector<Matrix4> GetJointData(unsigned int frame) const;
 	protected:
-		unsigned int	jointCount;
-		unsigned int	frameCount;
-		float			frameRate;
+		unsigned int jointCount;
+		unsigned int frameCount;
+		float frameRate;
 
-		std::vector<Maths::Matrix4>		allJoints;
+		std::vector<Matrix4> allJoints;
 	};
 }
 

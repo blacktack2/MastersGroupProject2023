@@ -38,7 +38,7 @@ void AnimatedRenderObject::PreDraw(int sublayer, ShaderBase* shader) {
 
 	const Matrix4* bindPose = mesh->GetBindPose().data();
 	const Matrix4* invBindPose = mesh->GetInverseBindPose().data();
-	const Matrix4* frameData = anim->GetJointData(currentFrame);
+	const std::vector<Matrix4> frameData = anim->GetJointData(currentFrame);
 	const int* bindPoseIndices = mesh->GetBindPoseIndices();
 
 	std::vector<Matrix4> frameMatrices;
