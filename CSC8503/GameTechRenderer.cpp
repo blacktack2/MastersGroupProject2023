@@ -20,7 +20,6 @@ Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::
 GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()), gameWorld(GameWorld::instance()) {
 	glClearColor(0, 0, 0, 0);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
 }
 
 GameTechRenderer::~GameTechRenderer() {

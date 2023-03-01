@@ -127,9 +127,9 @@ void LightingRPass::DrawLight(const Light& light) {
 	if (light.position.w == 0.0f) {
 		quad->Draw();
 	} else {
-		glCullFace(GL_FRONT);
+		renderer.GetConfig().SetCullFace(true, CullFace::Back);
 		sphere->Draw();
-		glCullFace(GL_BACK);
+		renderer.GetConfig().ResetCullFace();
 	}
 
 	glDepthMask(GL_TRUE);

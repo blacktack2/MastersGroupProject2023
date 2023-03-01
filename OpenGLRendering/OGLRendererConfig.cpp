@@ -83,3 +83,19 @@ void OGLRendererConfig::SetBlend(bool enabled, BlendFuncSrc srcFactor, BlendFunc
 		glDisable(GL_BLEND);
 	}
 }
+
+void OGLRendererConfig::SetCullFace(bool enabled, CullFace mode) {
+	if (enabled) {
+		GLenum glmode;
+		switch (mode) {
+			case CullFace::Front        : glmode = GL_FRONT         ; break;
+			default:
+			case CullFace::Back         : glmode = GL_BACK          ; break;
+			case CullFace::FrontAndBack : glmode = GL_FRONT_AND_BACK; break;
+		}
+		glEnable(GL_CULL_FACE);
+		glCullFace(glmode);
+	} else {
+		glDisable(GL_CULL_FACE);
+	}
+}

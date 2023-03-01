@@ -28,7 +28,8 @@ void PaintingRPass::Render() {
 
 	frameBuffer->Bind();
 	shader->Bind();
-	glDisable(GL_CULL_FACE);
+
+	renderer.GetConfig().SetCullFace(false);
 	renderer.GetConfig().SetBlend(true, BlendFuncSrc::SrcAlpha, BlendFuncDst::OneMinusSrcAlpha);
 
 	GameWorld& world = GameWorld::instance();
@@ -61,7 +62,8 @@ void PaintingRPass::Render() {
 	renderer.GetConfig().ResetViewport();
 
 	renderer.GetConfig().ResetBlend();
-	glEnable(GL_CULL_FACE);
+	renderer.GetConfig().ResetCullFace();
+
 	shader->Unbind();
 	frameBuffer->Unbind();
 

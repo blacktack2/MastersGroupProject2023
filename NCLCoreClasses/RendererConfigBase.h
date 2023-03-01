@@ -56,6 +56,13 @@ namespace NCL::Rendering {
 		Default = Zero
 	};
 
+	enum class CullFace {
+		Front,
+		Back,
+		FrontAndBack,
+		Default = Back
+	};
+
 	class RendererConfigBase {
 	public:
 		RendererConfigBase(RendererBase& renderer);
@@ -75,6 +82,11 @@ namespace NCL::Rendering {
 		virtual void SetBlend(bool enabled, BlendFuncSrc srcFactor = BlendFuncSrc::Default, BlendFuncDst dstFactor = BlendFuncDst::Default) = 0;
 		inline void ResetBlend() {
 			SetBlend(false);
+		}
+
+		virtual void SetCullFace(bool enabled, CullFace mode = CullFace::Default) = 0;
+		inline void ResetCullFace() {
+			SetCullFace(true);
 		}
 	private:
 		RendererBase& renderer;

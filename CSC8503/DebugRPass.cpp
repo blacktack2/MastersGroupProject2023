@@ -53,10 +53,12 @@ DebugRPass::~DebugRPass() {
 
 void DebugRPass::Render() {
 	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
+	renderer.GetConfig().SetCullFace(false);
+
 	RenderLines();
 	RenderText();
-	glEnable(GL_CULL_FACE);
+
+	renderer.GetConfig().ResetCullFace();
 	glEnable(GL_DEPTH_TEST);
 }
 
