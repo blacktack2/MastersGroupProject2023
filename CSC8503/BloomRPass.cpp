@@ -97,7 +97,7 @@ void BloomRPass::Render() {
 	Upsample();
 	bloomFrameBuffer->Unbind();
 
-	glViewport(0, 0, (GLsizei)renderer.GetWidth(), (GLsizei)renderer.GetHeight());
+	renderer.GetConfig().ResetViewport();
 	Combine();
 }
 
@@ -141,7 +141,7 @@ void BloomRPass::Downsample() {
 	sceneTexIn->Bind(0);
 
 	for (auto mip = mipChain.begin(); mip != mipChain.end(); mip++) {
-		glViewport(0, 0, mip->width, mip->height);
+		renderer.GetConfig().SetViewport(0, 0, mip->width, mip->height);
 		bloomFrameBuffer->AddTexture(mip->texture, 0);
 
 		quad->Draw();
@@ -163,7 +163,7 @@ void BloomRPass::Upsample() {
 
 		mip->texture->Bind(0);
 
-		glViewport(0, 0, nextMip->width, nextMip->height);
+		renderer.GetConfig().SetViewport(0, 0, nextMip->width, nextMip->height);
 		bloomFrameBuffer->AddTexture(nextMip->texture, 0);
 
 		quad->Draw();

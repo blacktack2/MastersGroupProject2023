@@ -7,9 +7,15 @@
  */
 #include "RendererConfigBase.h"
 
+#include "RendererBase.h"
+
 using namespace NCL;
 using namespace Rendering;
 
-RendererConfigBase::RendererConfigBase() {
+RendererConfigBase::RendererConfigBase(RendererBase& renderer) : renderer(renderer) {
+}
+
+void RendererConfigBase::ResetAll() {
+	ResetViewport();
 	ResetAlphaTest();
 }

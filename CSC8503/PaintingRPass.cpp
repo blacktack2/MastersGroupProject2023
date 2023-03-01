@@ -45,7 +45,7 @@ void PaintingRPass::Render() {
 		Matrix4 modelMatrix = renderObj->GetTransform()->GetGlobalMatrix();
 		shader->SetUniformMatrix("modelMatrix", modelMatrix);
 
-		glViewport(0, 0, renderObj->GetWidth(), renderObj->GetHeight());
+		renderer.GetConfig().SetViewport(0, 0, renderObj->GetWidth(), renderObj->GetHeight());
 
 		for (const PaintCollision& paint : renderObj->GetPaintCollisions()) {
 			shader->SetUniformFloat("paintPos", paint.center);
@@ -58,7 +58,7 @@ void PaintingRPass::Render() {
 		
 	});
 
-	glViewport(0, 0, renderer.GetWidth(), renderer.GetHeight());
+	renderer.GetConfig().ResetViewport();
 
 	glEnable(GL_CULL_FACE);
 	shader->Unbind();

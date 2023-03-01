@@ -11,6 +11,9 @@
 namespace NCL::Rendering {
 	class OGLRendererConfig : public RendererConfigBase {
 	public:
-		void SetAlphaTest(bool enabled, AlphaTestFunc func = AlphaTestFunc::Default, float ref = ALPHA_TEST_REF_DEFAULT) override;
+		OGLRendererConfig(RendererBase& renderer);
+
+		void SetViewport(int x, int y, unsigned int width, unsigned int height) override;
+		void SetAlphaTest(bool enabled, AlphaTestFunc func, float ref) override;
 	};
 }

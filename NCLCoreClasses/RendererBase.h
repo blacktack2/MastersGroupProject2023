@@ -17,8 +17,6 @@
 #include "IOverlayRenderPass.h"
 #include "RenderPassBase.h"
 
-#include "RendererConfigBase.h"
-
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -29,6 +27,8 @@ namespace NCL::Rendering {
 		Off,
 		Adaptive
 	};
+
+	class RendererConfigBase;
 
 	/**
 	 * @brief Base rendering class for handling general updates and pipeline

@@ -79,7 +79,7 @@ namespace NCL::Rendering {
 		HGLRC renderContext;
 #endif
 	private:
-		OGLRendererConfig config{};
+		OGLRendererConfig config;
 
 		bool initState;
 		bool forceValidDebugState;

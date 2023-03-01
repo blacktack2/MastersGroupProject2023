@@ -9,10 +9,15 @@
 
 #include "glad\gl.h"
 
-#include <unordered_map>
-
 using namespace NCL;
 using namespace Rendering;
+
+OGLRendererConfig::OGLRendererConfig(RendererBase& renderer) : RendererConfigBase(renderer) {
+}
+
+void OGLRendererConfig::SetViewport(int x, int y, unsigned int width, unsigned int height) {
+	glViewport(0, 0, width, height);
+}
 
 void OGLRendererConfig::SetAlphaTest(bool enabled, AlphaTestFunc func, float ref) {
 	if (enabled) {

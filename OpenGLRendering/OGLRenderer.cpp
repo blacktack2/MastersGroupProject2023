@@ -39,7 +39,7 @@ using namespace NCL::Rendering;
 static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
 #endif;
 
-OGLRenderer::OGLRenderer(Window& w) : RendererBase(w) {
+OGLRenderer::OGLRenderer(Window& w) : RendererBase(w), config(*this) {
 	initState = false;
 #ifdef _WIN32
 	InitWithWin32(w);
@@ -52,6 +52,8 @@ OGLRenderer::OGLRenderer(Window& w) : RendererBase(w) {
 	}
 
 	forceValidDebugState = false;
+
+	GetConfig().ResetAll();
 }
 
 OGLRenderer::~OGLRenderer() {
@@ -65,7 +67,7 @@ void OGLRenderer::OnWindowResize(int width, int height) {
 	windowWidth  = width;
 	windowHeight = height;
 
-	glViewport(0, 0, windowWidth, windowHeight);
+	GetConfig().ResetViewport();
 }
 
 void OGLRenderer::BeginFrame() {
