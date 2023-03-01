@@ -16,6 +16,7 @@ namespace NCL::Rendering {
 		void SetViewport(int x, int y, unsigned int width, unsigned int height) override;
 		void SetAlphaTest(bool enabled, AlphaTestFunc func, float ref) override;
 		void SetBlend(bool enabled, BlendFuncSrc srcFactor, BlendFuncDst dstFactor) override;
-		void SetCullFace(bool enabled, CullFace mode = CullFace::Default) override;
+		void SetCullFace(bool enabled, CullFace mode) override;
+		void SetDepthTest(bool enabled, DepthTestFunc func, float nearVal, float farVal) override;
 	};
 }

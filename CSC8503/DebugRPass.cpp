@@ -52,14 +52,12 @@ DebugRPass::~DebugRPass() {
 }
 
 void DebugRPass::Render() {
-	glDisable(GL_DEPTH_TEST);
 	renderer.GetConfig().SetCullFace(false);
 
 	RenderLines();
 	RenderText();
 
 	renderer.GetConfig().ResetCullFace();
-	glEnable(GL_DEPTH_TEST);
 }
 
 void DebugRPass::SetDebugStringBufferSizes(size_t newVertCount) {

@@ -18,4 +18,7 @@ RendererConfigBase::RendererConfigBase(RendererBase& renderer) : renderer(render
 void RendererConfigBase::ResetAll() {
 	ResetViewport();
 	ResetAlphaTest();
+	ResetBlend();
+	ResetCullFace();
+	ResetDepthTest();
 }

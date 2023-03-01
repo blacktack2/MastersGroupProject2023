@@ -99,3 +99,25 @@ void OGLRendererConfig::SetCullFace(bool enabled, CullFace mode) {
 		glDisable(GL_CULL_FACE);
 	}
 }
+
+void OGLRendererConfig::SetDepthTest(bool enabled, DepthTestFunc func, float nearVal, float farVal) {
+	if (enabled) {
+		GLenum glfunc;
+		switch (func) {
+			case DepthTestFunc::Never        : glfunc = GL_NEVER; break;
+			default:
+			case DepthTestFunc::Less         : glfunc = GL_LESS; break;
+			case DepthTestFunc::Equal        : glfunc = GL_EQUAL; break;
+			case DepthTestFunc::LessEqual    : glfunc = GL_LEQUAL; break;
+			case DepthTestFunc::Greater      : glfunc = GL_GREATER; break;
+			case DepthTestFunc::NotEqual     : glfunc = GL_NOTEQUAL; break;
+			case DepthTestFunc::GreaterEqual : glfunc = GL_GEQUAL; break;
+			case DepthTestFunc::Always       : glfunc = GL_ALWAYS; break;
+		}
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(glfunc);
+		glDepthRange(nearVal, farVal);
+	} else {
+		glDisable(GL_DEPTH_TEST);
+	}
+}

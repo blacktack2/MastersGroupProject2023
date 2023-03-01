@@ -63,6 +63,18 @@ namespace NCL::Rendering {
 		Default = Back
 	};
 
+	enum class DepthTestFunc {
+		Never,
+		Less,
+		Equal,
+		LessEqual,
+		Greater,
+		NotEqual,
+		GreaterEqual,
+		Always,
+		Default = Less
+	};
+
 	class RendererConfigBase {
 	public:
 		RendererConfigBase(RendererBase& renderer);
@@ -87,6 +99,11 @@ namespace NCL::Rendering {
 		virtual void SetCullFace(bool enabled, CullFace mode = CullFace::Default) = 0;
 		inline void ResetCullFace() {
 			SetCullFace(true);
+		}
+
+		virtual void SetDepthTest(bool enabled, DepthTestFunc func = DepthTestFunc::Default, float nearVal = 0, float farVal = 1) = 0;
+		inline void ResetDepthTest() {
+			SetDepthTest(false);
 		}
 	private:
 		RendererBase& renderer;

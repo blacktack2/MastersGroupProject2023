@@ -35,14 +35,12 @@ MenuRPass::~MenuRPass() {
 };
 
 void MenuRPass::Render() {
-	glDisable(GL_DEPTH_TEST);
 	renderer.GetConfig().SetCullFace(false);
 
 	DrawMenu();
 	DrawButtons();
 
 	renderer.GetConfig().ResetCullFace();
-	glEnable(GL_DEPTH_TEST);
 }
 
 void MenuRPass::DrawMenu(){

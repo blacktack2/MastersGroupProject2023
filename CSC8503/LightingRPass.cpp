@@ -99,7 +99,7 @@ void LightingRPass::DrawLight(const Light& light) {
 	shader->Bind();
 
 	renderer.GetConfig().SetBlend(true, BlendFuncSrc::One, BlendFuncDst::One);
-	glDepthFunc(GL_ALWAYS);
+	renderer.GetConfig().SetDepthTest(true, DepthTestFunc::Always);
 	glDepthMask(GL_FALSE);
 
 	depthTexIn->Bind(0);
@@ -133,7 +133,7 @@ void LightingRPass::DrawLight(const Light& light) {
 	}
 
 	glDepthMask(GL_TRUE);
-	glDepthFunc(GL_LEQUAL);
+	renderer.GetConfig().SetDepthTest(false);
 	renderer.GetConfig().ResetBlend();
 
 	shader->Unbind();
