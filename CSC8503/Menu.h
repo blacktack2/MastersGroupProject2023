@@ -14,7 +14,6 @@
 namespace NCL {
 	namespace CSC8503 {
 		using namespace Maths;
-		using namespace std;
 		class Menu : public UIObject 
 		{
 		public:

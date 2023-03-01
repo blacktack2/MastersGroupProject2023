@@ -34,8 +34,6 @@ namespace NCL::CSC8503 {
 
         void Update(float dt) override;
 
-        void Render();
-
         void Draw(Vector4 colour);
 
         Button* CheckMousePosition(Vector2 mousePos);

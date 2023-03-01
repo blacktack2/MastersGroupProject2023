@@ -34,14 +34,6 @@ void Button::Update(float dt){
         }
     }
     
-} 
-
-void Button::Render(){
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    glOrtho(0, 20, 0, 20, 0, 100);
-    glColor4f(0, 1, 0, 1);
 }
 
 void Button::Draw(Vector4 colour) {
