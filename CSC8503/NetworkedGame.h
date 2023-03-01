@@ -61,6 +61,7 @@ namespace NCL {
 			void HandlePlayerDisconnectedPacket(GamePacket* payload, int source);
 			void HandleHandshakePacket(GamePacket* payload, int source);
 			void HandleItemInitPacket(GamePacket* payload, int source);
+			void HandleBossActionPacket(GamePacket* payload, int source);
 
 
 			PlayerObject* AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID);

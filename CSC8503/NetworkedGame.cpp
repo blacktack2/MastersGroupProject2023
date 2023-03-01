@@ -82,6 +82,7 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(Player_Disconnected, this);
 	thisClient->RegisterPacketHandler(Handshake_Message, this);
 	thisClient->RegisterPacketHandler(Item_Init_Message, this);
+	thisClient->RegisterPacketHandler(BossAction_Message, this);
 
 	StartLevel();
 }
@@ -233,6 +234,9 @@ void NetworkedGame::SendSnapshot(bool deltaFrame, int playerID) {
 			delete newPacket;
 		}
 	}
+	BossActionPacket newPacket;
+	newPacket.bossAction = static_cast<short int> (testingBossBehaviorTree->GetBossAction());
+	thisServer->SendPacket(static_cast <GamePacket*> (&newPacket), playerID);
 }
 
 void NetworkedGame::UpdateMinimumState() {
@@ -285,14 +289,14 @@ GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 
 void NetworkedGame::StartLevel() {
 	InitWorld();
+	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
+	testingBossBehaviorTree = new BossBehaviorTree(testingBoss);
+	testingBoss->SetNetworkObject(new NetworkObject(*testingBoss, 10));
+	world->AddNetworkObject(testingBoss->GetNetworkObject());
 	if (thisServer) {
 		localPlayer = SpawnPlayer(0, true);
 		player = static_cast<PlayerObject*>(localPlayer);
-		testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
-		testingBossBehaviorTree = new BossBehaviorTree(testingBoss);
 		testingBossBehaviorTree->ChangeTarget(static_cast<PlayerObject*>(localPlayer));
-		testingBoss->SetNetworkObject(new NetworkObject(*testingBoss, 10));
-		world->AddNetworkObject(testingBoss->GetNetworkObject());
 	}
 }
 
@@ -446,6 +450,13 @@ void NetworkedGame::HandleItemInitPacket(GamePacket* payload, int source) {
 	world->AddGameObject(obj);
 }
 
+void NetworkedGame::HandleBossActionPacket(GamePacket* payload, int source)
+{
+	std::cout << "receiving boss action" << std::endl;
+	BossBehaviorTree::BossAction action = static_cast<BossBehaviorTree::BossAction>(static_cast<BossActionPacket*>(payload)->bossAction);
+	testingBossBehaviorTree->SetBossAction(action);
+}
+
 void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 
 	switch (type)
@@ -476,6 +487,9 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	case Item_Init_Message:
 		HandleItemInitPacket(payload, source);
 		break;
+	case BossAction_Message:
+		HandleBossActionPacket(payload, source);
+		break;
 	default:
 		break;
 	}
@@ -484,7 +498,7 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 void NetworkedGame::PlayerJoinedServer(int playerID) {
 	PlayerObject* temp = static_cast<PlayerObject*>(SpawnPlayer(playerID));
 	if (testingBossBehaviorTree) {
-		testingBossBehaviorTree->ChangeTarget(static_cast<PlayerObject*>(localPlayer));
+		testingBossBehaviorTree->ChangeTarget(static_cast<PlayerObject*>(temp));
 	}
 
 }

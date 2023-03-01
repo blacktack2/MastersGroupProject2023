@@ -73,7 +73,7 @@ bool NetworkObject::ReadDeltaPacket(DeltaPacket &p, float dt) {
 	lastDeltaState.position = fullPos;
 	lastDeltaState.orientation = fullOrientation;
 
-	Debug::DrawLine(lastDeltaState.position, lastDeltaState.position + Vector3(0, 0.1, 0), Debug::YELLOW, 2.0f);
+	//Debug::DrawLine(lastDeltaState.position, lastDeltaState.position + Vector3(0, 0.1, 0), Debug::YELLOW, 2.0f);
 
 	object.GetTransform().SetPosition(fullPos);
 	object.GetTransform().SetOrientation(fullOrientation);
@@ -89,7 +89,7 @@ bool NetworkObject::ReadFullPacket(FullPacket &p, float dt) {
 
 	lastDeltaState = p.fullState;
 
-	Debug::DrawLine(p.fullState.position, p.fullState.position + Vector3(0,0.1,0), Debug::BLUE, 2.0f);
+	//Debug::DrawLine(p.fullState.position, p.fullState.position + Vector3(0,0.1,0), Debug::BLUE, 2.0f);
 
 	stateHistory.emplace_back(lastFullState);
 
@@ -174,7 +174,7 @@ void NetworkObject::UpdateStateHistory(int minID) {
 void NetworkObject::UpdateDelta(float dt) {
 	float posT = std::clamp(dt * 10, 0.1f, 1.0f);
 	
-	Debug::DrawLine(object.GetTransform().GetGlobalPosition(), object.GetTransform().GetGlobalPosition() + Vector3(0, 0.5, 0), Debug::RED, 0.01f);
+	//Debug::DrawLine(object.GetTransform().GetGlobalPosition(), object.GetTransform().GetGlobalPosition() + Vector3(0, 0.5, 0), Debug::RED, 0.01f);
 
 	renderTransform.SetPosition(Vector3::Lerp(renderTransform.GetGlobalPosition(), lastDeltaState.position, posT));
 	renderTransform.SetOrientation(Quaternion::Lerp(renderTransform.GetGlobalOrientation(), lastDeltaState.orientation, 0.2));

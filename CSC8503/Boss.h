@@ -283,7 +283,7 @@ namespace NCL::CSC8503 {
         }
 
         void update() {
-            Debug::DrawLine(boss->GetTransform().GetGlobalPosition(), target->GetTransform().GetGlobalPosition(), Debug::BLUE, 0.01f);
+            //Debug::DrawLine(boss->GetTransform().GetGlobalPosition(), target->GetTransform().GetGlobalPosition(), Debug::BLUE, 0.01f);
             if (behaviorLock->isLocked()) {
                 behaviorLock->BossAct();
             } else {
@@ -487,12 +487,12 @@ namespace NCL::CSC8503 {
                 lowerLimit = l;
                 upperLimit = u;
                 boss = b;
-                this->target = *target;
+                this->target = target;
             }
             virtual bool execute(BehaviorLock* lock) {
                 float d;
-                if(target)
-                    d = (boss->GetTransform().GetGlobalPosition() - target->GetTransform().GetGlobalPosition()).Length();
+                if(*target)
+                    d = (boss->GetTransform().GetGlobalPosition() - (* target)->GetTransform().GetGlobalPosition()).Length();
                 else {
                     d = 100;
                 }
@@ -505,7 +505,7 @@ namespace NCL::CSC8503 {
             float lowerLimit;
             float upperLimit;
             Boss* boss;
-            PlayerObject* target;
+            PlayerObject** target;
         };
 
         class StabPlayerNode : public Node {
