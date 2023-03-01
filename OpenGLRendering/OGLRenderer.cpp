@@ -39,7 +39,7 @@ using namespace NCL::Rendering;
 static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
 #endif;
 
-OGLRenderer::OGLRenderer(Window& w) : RendererBase(w) {
+OGLRenderer::OGLRenderer(Window& w) : RendererBase(w), config(*this) {
 	initState = false;
 #ifdef _WIN32
 	InitWithWin32(w);
@@ -52,6 +52,8 @@ OGLRenderer::OGLRenderer(Window& w) : RendererBase(w) {
 	}
 
 	forceValidDebugState = false;
+
+	GetConfig().ResetAll();
 }
 
 OGLRenderer::~OGLRenderer() {
@@ -65,7 +67,22 @@ void OGLRenderer::OnWindowResize(int width, int height) {
 	windowWidth  = width;
 	windowHeight = height;
 
-	glViewport(0, 0, windowWidth, windowHeight);
+	GetConfig().SetViewport();
+}
+
+void OGLRenderer::ClearBuffers(ClearBit mask) {
+	GLbitfield glmask;
+	switch (mask) {
+		default:
+		case ClearBit::Color   : glmask = GL_COLOR_BUFFER_BIT  ; break;
+		case ClearBit::Depth   : glmask = GL_DEPTH_BUFFER_BIT  ; break;
+		case ClearBit::Stencil : glmask = GL_STENCIL_BUFFER_BIT; break;
+		case ClearBit::ColorDepth   : glmask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT  ; break;
+		case ClearBit::ColorStencil : glmask = GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT; break;
+		case ClearBit::DepthStencil : glmask = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT; break;
+		case ClearBit::ColorDepthStencil: glmask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT; break;
+	}
+	glClear(glmask);
 }
 
 void OGLRenderer::BeginFrame() {
@@ -202,9 +219,9 @@ bool OGLRenderer::SetVerticalSync(VerticalSyncState s) {
 	GLuint state;
 
 	switch (s) {
-		case VerticalSyncState::VSync_OFF      : state =  0; break;
-		case VerticalSyncState::VSync_ON       : state =  1; break;
-		case VerticalSyncState::VSync_ADAPTIVE : state = -1; break;
+		case VerticalSyncState::Off      : state =  0; break;
+		case VerticalSyncState::On       : state =  1; break;
+		case VerticalSyncState::Adaptive : state = -1; break;
 	}
 
 	return wglSwapIntervalEXT(state);

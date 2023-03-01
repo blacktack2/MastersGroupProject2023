@@ -97,7 +97,7 @@ void BloomRPass::Render() {
 	Upsample();
 	bloomFrameBuffer->Unbind();
 
-	glViewport(0, 0, (GLsizei)renderer.GetWidth(), (GLsizei)renderer.GetHeight());
+	renderer.GetConfig().SetViewport();
 	Combine();
 }
 
@@ -141,7 +141,7 @@ void BloomRPass::Downsample() {
 	sceneTexIn->Bind(0);
 
 	for (auto mip = mipChain.begin(); mip != mipChain.end(); mip++) {
-		glViewport(0, 0, mip->width, mip->height);
+		renderer.GetConfig().SetViewport(0, 0, mip->width, mip->height);
 		bloomFrameBuffer->AddTexture(mip->texture, 0);
 
 		quad->Draw();
@@ -156,20 +156,20 @@ void BloomRPass::Downsample() {
 void BloomRPass::Upsample() {
 	upsampleShader->Bind();
 
-	glBlendFunc(GL_ONE, GL_ONE);
+	renderer.GetConfig().SetBlend(true, BlendFuncSrc::One, BlendFuncDst::One);
 
 	for (auto mip = mipChain.rbegin(); mip != std::prev(mipChain.rend()); mip++) {
 		auto nextMip = std::next(mip);
 
 		mip->texture->Bind(0);
 
-		glViewport(0, 0, nextMip->width, nextMip->height);
+		renderer.GetConfig().SetViewport(0, 0, nextMip->width, nextMip->height);
 		bloomFrameBuffer->AddTexture(nextMip->texture, 0);
 
 		quad->Draw();
 	}
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	renderer.GetConfig().SetBlend();
 
 	upsampleShader->Unbind();
 }

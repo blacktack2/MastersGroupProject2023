@@ -9,6 +9,7 @@
 #include "PaintRenderObject.h"
 
 #include "AssetLibrary.h"
+#include "GameTechRenderer.h"
 #include "OGLFrameBuffer.h"
 
 using namespace NCL;
@@ -24,11 +25,10 @@ PaintRenderObject::PaintRenderObject(Transform* parentTransform, MeshGeometry* m
 	paintTexture->SetFilters(GL_LINEAR, GL_LINEAR);
 	paintTexture->Unbind();
 
-
 	OGLFrameBuffer tempFramebuffer;
 	tempFramebuffer.Bind();
 	tempFramebuffer.AddTexture(paintTexture, 0);
-	glClear(GL_COLOR_BUFFER_BIT);
+	GameTechRenderer::instance().ClearBuffers(ClearBit::Color);
 	tempFramebuffer.Unbind();
 }
 

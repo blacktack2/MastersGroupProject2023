@@ -75,7 +75,7 @@ private:
 	};
 	ChangeState menuState = ChangeState::None;
 
-	string name = "main";
+	std::string name = "main";
 };
 
 

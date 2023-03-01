@@ -75,5 +75,5 @@ private:
 
 	ChangeState menuState = ChangeState::None;
 
-	string name = "pause";
+	std::string name = "pause";
 };
