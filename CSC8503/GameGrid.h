@@ -105,25 +105,25 @@ namespace NCL
 				DrawDebugGameGrid();
 			}
 
-			void UpdateHealingKits(GameObject* obj, Vector3 dimension)
-			{
-				float rx = dimension.x;
-				float ry = dimension.y;
-				float rz = dimension.z;
+			//void UpdateHealingKits(GameObject* obj, Vector3 dimension)
+			//{
+			//	float rx = dimension.x;
+			//	float ry = dimension.y;
+			//	float rz = dimension.z;
 
-				for (int i = 0; i < healingKits.size(); i++)
-				{
-					Vector3 radius = obj->GetTransform().GetScale() / 2;
-					if ((healingKits[i]->GetTransform().GetGlobalPosition() - obj->GetTransform().GetGlobalPosition()).Length() < radius.x + rx ||
-						(healingKits[i]->GetTransform().GetGlobalPosition() - obj->GetTransform().GetGlobalPosition()).Length() < radius.y + ry ||
-						(healingKits[i]->GetTransform().GetGlobalPosition() - obj->GetTransform().GetGlobalPosition()).Length() < radius.z + rz)
-					{
-						healingKits[i]->Delete();
-						healingKits.erase(healingKits.begin() + i);
-						// TODO: update obj's health
-					}
-				}
-			}
+			//	for (int i = 0; i < healingKits.size(); i++)
+			//	{
+			//		Vector3 radius = obj->GetTransform().GetScale() / 2;
+			//		if ((healingKits[i]->GetTransform().GetGlobalPosition() - obj->GetTransform().GetGlobalPosition()).Length() < radius.x + rx ||
+			//			(healingKits[i]->GetTransform().GetGlobalPosition() - obj->GetTransform().GetGlobalPosition()).Length() < radius.y + ry ||
+			//			(healingKits[i]->GetTransform().GetGlobalPosition() - obj->GetTransform().GetGlobalPosition()).Length() < radius.z + rz)
+			//		{
+			//			healingKits[i]->Delete();
+			//			healingKits.erase(healingKits.begin() + i);
+			//			// TODO: update obj's health
+			//		}
+			//	}
+			//}
 
 			void UpdateGrid(float dt = 0.0f);
 
@@ -144,24 +144,24 @@ namespace NCL
 			//healing stuff (shouldn't be here)
 			float GetHealingKitTimer();
 
-			Vector3 GetRandomLocationToAddHealingKit(HealingKit* obj)
-			{
-				healingKitTimer = 0.0f;
+			//Vector3 GetRandomLocationToAddHealingKit(HealingKit* obj)
+			//{
+			//	healingKitTimer = 0.0f;
 
-				healingKits.push_back(obj);
+			//	healingKits.push_back(obj);
 
-				GameNode* node = GetRandomNode();
-				while (node->type == Impassable)	// this algorithm would cause a longer time if most nodes are Impassable
-				{
-					node = GetRandomNode();
-				}
-				return node->worldPosition;
-			}
+			//	GameNode* node = GetRandomNode();
+			//	while (node->type == Impassable)	// this algorithm would cause a longer time if most nodes are Impassable
+			//	{
+			//		node = GetRandomNode();
+			//	}
+			//	return node->worldPosition;
+			//}
 
-			std::vector<HealingKit*> GetHealingKits()
+			/*std::vector<HealingKit*> GetHealingKits()
 			{
 				return healingKits;
-			}
+			}*/
 
 			std::vector<std::vector<GameNode>> GetAllNodes()
 			{
@@ -178,7 +178,7 @@ namespace NCL
 			Vector3 gameGridOrigin;
 
 			float healingKitTimer = 0.0f;
-			std::vector<HealingKit*> healingKits;
+			//std::vector<HealingKit*> healingKits;
 
 			// For leaving a trace of ink on the floor:
 			std::vector<GameNode> TraceNodes;

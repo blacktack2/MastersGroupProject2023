@@ -80,7 +80,7 @@ namespace NCL {
 			EnemyObject* AddEnemyToWorld(const Vector3& position, NavigationMap& navMap);
 
 			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
-			HealingKit* UpdateHealingKit();
+			//HealingKit* UpdateHealingKit();
 			void BuildLevel();
 			void UpdateLevel();
 			NPCObject* AddNPCToWorld(const Vector3& position);
@@ -153,7 +153,7 @@ namespace NCL {
 			GameLevel* gameLevel = nullptr;	/////////
 			float interval = 0.0f;			/////////
 			GameGrid* gameGrid = nullptr;	/////////
-			GameObject* floor = nullptr;	/////////
+			//GameObject* floor = nullptr;	/////////
 			Boss* testingBoss = nullptr;   /////////
 			BossBehaviorTree* testingBossBehaviorTree = nullptr;   /////////
 

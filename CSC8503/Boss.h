@@ -252,6 +252,11 @@ namespace NCL::CSC8503 {
             bulletsStorm->addChild(useBulletsStorm);
         }
 
+        ~BossBehaviorTree() {
+            delete behaviorLock;
+            delete root;
+        }
+
         void update() {
             if (behaviorLock->isLocked()) {
                 behaviorLock->BossAct();
@@ -372,6 +377,14 @@ namespace NCL::CSC8503 {
 
         class SelectorNode : public Node {
         public:
+
+            ~SelectorNode() {
+                for (Node* node : children)
+                {
+                    delete node;
+                }
+            }
+
             void addChild(Node* child) {
                 children.push_back(child);
             }
@@ -407,6 +420,14 @@ namespace NCL::CSC8503 {
 
         class SequenceNode : public Node {
         public:
+
+            ~SequenceNode() {
+                for (Node* node : children)
+                {
+                    delete node;
+                }
+            }
+
             void addChild(Node* child) {
                 children.push_back(child);
             }

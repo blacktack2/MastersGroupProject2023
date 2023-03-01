@@ -19,6 +19,7 @@ using namespace Rendering;
 PaintRenderObject::PaintRenderObject(Transform* parentTransform, MeshGeometry* mesh, MeshMaterial* material) : RenderObject(parentTransform, mesh, material) {
 	width = 1024;
 	height = 1024;
+
 	paintTexture = new OGLTexture(width, height, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 	paintTexture->Bind();
 	paintTexture->SetFilters(GL_LINEAR, GL_LINEAR);
