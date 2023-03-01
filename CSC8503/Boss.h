@@ -94,12 +94,13 @@ namespace NCL::CSC8503 {
 
     class BossBehaviorTree {
     public:
-        BossBehaviorTree(Boss* boss, PlayerObject* player) {
+        BossBehaviorTree(Boss* boss) {
+            this->boss = boss;
             float offensiveHealthLowerBound = 50;
             float bossVision = 80;
             float distanceToHaveCloseCombat = 40;
 
-            behaviorLock = new BehaviorLock(boss, player);
+            behaviorLock = new BehaviorLock(boss, &target);
 
             root = new SelectorNode();
 
@@ -115,7 +116,7 @@ namespace NCL::CSC8503 {
             SequenceNode* offensiveWhilePlayerAway = new SequenceNode();
             offensiveMoves->addChild(offensiveWhilePlayerAway);
 
-            CheckPlayerDistanceToBossNode* checkPlayerDistanceToWander = new CheckPlayerDistanceToBossNode(boss, player, bossVision, 9999);
+            CheckPlayerDistanceToBossNode* checkPlayerDistanceToWander = new CheckPlayerDistanceToBossNode(boss, &target, bossVision, 9999);
             offensiveWhilePlayerAway->addChild(checkPlayerDistanceToWander);
 
             WanderNode* randomWalk = new WanderNode();
@@ -124,7 +125,7 @@ namespace NCL::CSC8503 {
             SequenceNode* offensiveWhilePlayerNear = new SequenceNode();
             offensiveMoves->addChild(offensiveWhilePlayerNear);
 
-            CheckPlayerDistanceToBossNode* checkPlayerDistanceToAttack = new CheckPlayerDistanceToBossNode(boss, player, -1, bossVision);
+            CheckPlayerDistanceToBossNode* checkPlayerDistanceToAttack = new CheckPlayerDistanceToBossNode(boss, &target, -1, bossVision);
             offensiveWhilePlayerNear->addChild(checkPlayerDistanceToAttack);
 
             SelectorNode* offensiveCloseOrRemote = new SelectorNode();
@@ -133,7 +134,7 @@ namespace NCL::CSC8503 {
             SequenceNode* offensiveCloseCombat = new SequenceNode();
             offensiveCloseOrRemote->addChild(offensiveCloseCombat);
 
-            CheckPlayerDistanceToBossNode* checkPlayerDistanceForCloseCombat = new CheckPlayerDistanceToBossNode(boss, player, -1, distanceToHaveCloseCombat);
+            CheckPlayerDistanceToBossNode* checkPlayerDistanceForCloseCombat = new CheckPlayerDistanceToBossNode(boss, &target, -1, distanceToHaveCloseCombat);
             offensiveCloseCombat->addChild(checkPlayerDistanceForCloseCombat);
 
             SelectorNode* chooseOffensiveCloseCombat = new SelectorNode();
@@ -159,7 +160,7 @@ namespace NCL::CSC8503 {
             SequenceNode* offensiveRemoteCombat = new SequenceNode();
             offensiveCloseOrRemote->addChild(offensiveRemoteCombat);
 
-            CheckPlayerDistanceToBossNode* checkPlayerDistanceForRemoteCombat = new CheckPlayerDistanceToBossNode(boss, player, distanceToHaveCloseCombat, bossVision);
+            CheckPlayerDistanceToBossNode* checkPlayerDistanceForRemoteCombat = new CheckPlayerDistanceToBossNode(boss, &target, distanceToHaveCloseCombat, bossVision);
             offensiveRemoteCombat->addChild(checkPlayerDistanceForRemoteCombat);
 
             SelectorNode* chooseOffensiveRemoteCombat = new SelectorNode();
@@ -194,7 +195,7 @@ namespace NCL::CSC8503 {
             SequenceNode* defensiveWhilePlayerAway = new SequenceNode();
             defensiveMoves->addChild(defensiveWhilePlayerAway);
 
-            CheckPlayerDistanceToBossNode* checkPlayerIsAway = new CheckPlayerDistanceToBossNode(boss, player, bossVision, 9999);
+            CheckPlayerDistanceToBossNode* checkPlayerIsAway = new CheckPlayerDistanceToBossNode(boss, &target, bossVision, 9999);
             defensiveWhilePlayerAway->addChild(checkPlayerIsAway);
 
             SelectorNode* defensiveHealOrWalk = new SelectorNode();
@@ -210,7 +211,7 @@ namespace NCL::CSC8503 {
             SequenceNode* defensiveWhilePlayerNear = new SequenceNode();
             defensiveMoves->addChild(defensiveWhilePlayerNear);
 
-            CheckPlayerDistanceToBossNode* checkPlayerIsNear = new CheckPlayerDistanceToBossNode(boss, player, -1, bossVision);
+            CheckPlayerDistanceToBossNode* checkPlayerIsNear = new CheckPlayerDistanceToBossNode(boss, &target, -1, bossVision);
             defensiveWhilePlayerNear->addChild(checkPlayerIsNear);
 
             SelectorNode* defensiveCloseOrRemote = new SelectorNode();
@@ -219,7 +220,7 @@ namespace NCL::CSC8503 {
             SequenceNode* defensiveCloseCombat = new SequenceNode();
             defensiveCloseOrRemote->addChild(defensiveCloseCombat);
 
-            CheckPlayerDistanceToBossNode* checkPlayerDistanceForDanger = new CheckPlayerDistanceToBossNode(boss, player, -1, distanceToHaveCloseCombat);
+            CheckPlayerDistanceToBossNode* checkPlayerDistanceForDanger = new CheckPlayerDistanceToBossNode(boss, &target, -1, distanceToHaveCloseCombat);
             defensiveCloseCombat->addChild(checkPlayerDistanceForDanger);
 
             JumpAwayFromPlayerNode* jumpAwayFromPlayer = new JumpAwayFromPlayerNode();
@@ -228,7 +229,7 @@ namespace NCL::CSC8503 {
             SequenceNode* defensiveRemoteCombat = new SequenceNode();
             defensiveCloseOrRemote->addChild(defensiveRemoteCombat);
 
-            CheckPlayerDistanceToBossNode* checkPlayerDistanceForKillingMoves = new CheckPlayerDistanceToBossNode(boss, player, distanceToHaveCloseCombat, bossVision);
+            CheckPlayerDistanceToBossNode* checkPlayerDistanceForKillingMoves = new CheckPlayerDistanceToBossNode(boss, &target, distanceToHaveCloseCombat, bossVision);
             defensiveRemoteCombat->addChild(checkPlayerDistanceForKillingMoves);
 
             SelectorNode* chooseDefensiveRemoteCombat = new SelectorNode();
@@ -256,15 +257,6 @@ namespace NCL::CSC8503 {
             delete behaviorLock;
             delete root;
         }
-
-        void update() {
-            if (behaviorLock->isLocked()) {
-                behaviorLock->BossAct();
-            } else {
-                root->execute(behaviorLock);
-            }
-        }
-    private:
         enum BossAction {
             NoAction,
             Dead,
@@ -279,13 +271,37 @@ namespace NCL::CSC8503 {
             BulletsStorm
         };
 
+        void ChangeTarget(PlayerObject* target) {
+            this->target = target;
+        }
+
+        BossAction GetBossAction() {
+            return behaviorLock->GetBossAction();
+        }
+        void SetBossAction(BossAction action) {
+            behaviorLock->SetBossAction(action);
+        }
+
+        void update() {
+            Debug::DrawLine(boss->GetTransform().GetGlobalPosition(), target->GetTransform().GetGlobalPosition(), Debug::BLUE, 0.01f);
+            if (behaviorLock->isLocked()) {
+                behaviorLock->BossAct();
+            } else {
+                root->execute(behaviorLock);
+            }
+        }
+    private:
+
         class BehaviorLock {
         public:
-            BehaviorLock(Boss* b, PlayerObject* p) {
+            BehaviorLock(Boss* b, PlayerObject** p) {
                 boss = b;
                 player = p;
             }
 
+            BossAction GetBossAction() {
+                return bossAction;
+            }
             void SetBossAction(BossAction b) {
                 bossAction = b;
             }
@@ -310,23 +326,23 @@ namespace NCL::CSC8503 {
                     break;
                 case Stab:
                     //std::cout << "Boss stabs the player.\n";
-                    finish = boss->StabPlayer(player);
+                    finish = boss->StabPlayer(*player);
                     break;
                 case Spin:
                     //std::cout << "Boss is spining.\n";
-                    finish = boss->Spin(player);
+                    finish = boss->Spin(*player);
                     break;
                 case Laser:
                     //std::cout << "Boss use laser.\n";
-                    finish = boss->UseLaserOnPlayer(player);
+                    finish = boss->UseLaserOnPlayer(*player);
                     break;
                 case JumpTo:
                     //std::cout << "Boss jumps towards the player.\n";
-                    finish = boss->JumpTo(player);
+                    finish = boss->JumpTo(*player);
                     break;
                 case JumpAway:
                     //std::cout << "Boss jumps away from the player.\n";
-                    finish = boss->JumpAway(player);
+                    finish = boss->JumpAway(*player);
                     break;
                 case SeekHeal:
                     //std::cout << "Boss is seeking for healing kit.\n";
@@ -337,7 +353,7 @@ namespace NCL::CSC8503 {
                     break;
                 case InkRain:
                     //std::cout << "Boss perfroms Ink Rain.\n";
-                    finish = boss->InkRain(player);
+                    finish = boss->InkRain(*player);
                     break;
                 case BulletsStorm:
                     //std::cout << "Boss perfroms Bullets Storm.\n";
@@ -363,7 +379,7 @@ namespace NCL::CSC8503 {
         private:
             BossAction bossAction = NoAction;
             Boss* boss;
-            PlayerObject* player;
+            PlayerObject** player;
         };
 
 
@@ -467,14 +483,19 @@ namespace NCL::CSC8503 {
 
         class CheckPlayerDistanceToBossNode : public Node {
         public:
-            CheckPlayerDistanceToBossNode(Boss* b, PlayerObject* p, float l, float u) {
+            CheckPlayerDistanceToBossNode(Boss* b, PlayerObject** target, float l, float u) {
                 lowerLimit = l;
                 upperLimit = u;
                 boss = b;
-                player = p;
+                this->target = *target;
             }
             virtual bool execute(BehaviorLock* lock) {
-                float d = (boss->GetTransform().GetGlobalPosition() - player->GetTransform().GetGlobalPosition()).Length();
+                float d;
+                if(target)
+                    d = (boss->GetTransform().GetGlobalPosition() - target->GetTransform().GetGlobalPosition()).Length();
+                else {
+                    d = 100;
+                }
                 if ((lowerLimit < d) && (d <= upperLimit)) {
                     return true;
                 }
@@ -484,7 +505,7 @@ namespace NCL::CSC8503 {
             float lowerLimit;
             float upperLimit;
             Boss* boss;
-            PlayerObject* player;
+            PlayerObject* target;
         };
 
         class StabPlayerNode : public Node {
@@ -561,5 +582,8 @@ namespace NCL::CSC8503 {
 
         BehaviorLock* behaviorLock = nullptr;
         SelectorNode* root = nullptr;
+
+        PlayerObject* target;
+        Boss* boss;
     };
 }

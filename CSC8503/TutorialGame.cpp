@@ -84,7 +84,8 @@ void TutorialGame::StartLevel() {
 	player = AddPlayerToWorld(Vector3(0, 5, 90),true);
 
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
-	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
+	testingBossBehaviorTree = new BossBehaviorTree(testingBoss);
+	testingBossBehaviorTree->ChangeTarget(player);
 }
 
 void TutorialGame::InitWorld() {
@@ -148,9 +149,9 @@ void TutorialGame::UpdateGame(float dt) {
 void TutorialGame::UpdateGameCore(float dt) {
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 
-	if(player)
+	if(player){
 		Debug::Print(std::string("health: ").append(std::to_string((int)player->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
-
+	}
 	if (!inSelectionMode) {
 		world->GetMainCamera()->UpdateCamera(dt);
 	}

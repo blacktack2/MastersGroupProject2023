@@ -34,7 +34,7 @@ namespace NCL {
 				MoveCamera();
 			}
 
-			void Test() {
+			void ServerSideMovement() {
 				RotateToCamera();
 				Vector3 dir = Vector3(0, 0, 0);
 				lastKey = keyMap.GetButtonState();
@@ -47,7 +47,7 @@ namespace NCL {
 			int GetPlayerNum() const {
 				return playerID;
 			}
-
+			bool isFrozen;
 		protected:
 			NetworkedGame* game;
 			int playerID;

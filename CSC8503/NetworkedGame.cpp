@@ -52,6 +52,8 @@ NetworkedGame::NetworkedGame(bool isServer)	{
 NetworkedGame::~NetworkedGame()	{
 	delete thisServer;
 	delete thisClient;
+	localPlayer = nullptr;
+	serverPlayers.clear();
 	/*
 	for (auto i = serverPlayers.begin(); i != serverPlayers.end(); i++) {
 		delete i->second;
@@ -102,6 +104,16 @@ void NetworkedGame::UpdateGame(float dt) {
 	world->GetMainCamera()->UpdateCamera(dt);
 }
 
+void NetworkedGame::FreezeSelf()
+{
+	static_cast<NetworkPlayer*>(localPlayer)->isFrozen = true;
+}
+
+void NetworkedGame::UnfreezeSelf()
+{
+	static_cast<NetworkPlayer*>(localPlayer)->isFrozen = false;
+}
+
 void NetworkedGame::UpdateAsServer(float dt) {
 	thisServer->UpdateServer();
 	packetsToSnapshot--;
@@ -127,8 +139,11 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	}
 
 	//move main player
-	((NetworkPlayer*)localPlayer)->Test();
-	ServerGetInstantiatedObject((NetworkPlayer*)localPlayer);
+	NetworkPlayer* player = static_cast<NetworkPlayer*>(localPlayer);
+	if (!player->isFrozen) {
+		player->ServerSideMovement();
+	}
+	ServerGetInstantiatedObject(player);
 	localPlayer->GetNetworkObject()->SnapRenderToSelf();
 	std::vector<NetworkObject*> networkObjects = world->GetNetworkObjects();
 	bool processed = false;
@@ -155,14 +170,20 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	newPacket.lastID = stateID;
 	keyMap.Update();
 	newPacket.buttonstates = keyMap.GetButtonState();
-	//std::cout << "client: " << std::bitset<16>(newPacket.buttonstates) << std::endl;
-	//std::cout << "client yaw: " << world->GetMainCamera()->GetYaw() << std::endl;
 	if (!Window::GetKeyboard()->KeyDown(KeyboardKeys::C)) {
 		newPacket.yaw = (int) world->GetMainCamera()->GetYaw() * 1000;
 	}
 	else {
 		newPacket.yaw = NULL;
 	}
+	if (localPlayer) {
+		NetworkPlayer* player = static_cast<NetworkPlayer*>(localPlayer);
+		if (player->isFrozen) {
+			newPacket.buttonstates = 0;
+			newPacket.yaw = NULL;
+		}
+	}
+	
 	thisClient->SendPacket(&newPacket);
 }
 
@@ -268,14 +289,15 @@ void NetworkedGame::StartLevel() {
 		localPlayer = SpawnPlayer(0, true);
 		player = static_cast<PlayerObject*>(localPlayer);
 		testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
-		testingBossBehaviorTree = new BossBehaviorTree(testingBoss, static_cast<PlayerObject*>(localPlayer));
+		testingBossBehaviorTree = new BossBehaviorTree(testingBoss);
+		testingBossBehaviorTree->ChangeTarget(static_cast<PlayerObject*>(localPlayer));
+		testingBoss->SetNetworkObject(new NetworkObject(*testingBoss, 10));
+		world->AddNetworkObject(testingBoss->GetNetworkObject());
 	}
 }
 
 void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID) {
 	//rotation
-	//std::cout << "Server: " << std::bitset<16>(((ClientPacket*)payload)->buttonstates) << std::endl;
-	//std::cout << "Server yaw : " << ((ClientPacket*)payload)->yaw * 0.001 << std::endl;
 	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(((ClientPacket*)payload)->buttonstates);
 
 	if (((ClientPacket*)payload)->yaw != NULL) {
@@ -343,7 +365,7 @@ void NetworkedGame::HandleFullPacket(GamePacket* payload, int source){
 void NetworkedGame::HandlePlayerConnectedPacket(GamePacket* payload, int source) {
 
 	int playerID = ((PlayerConnectionPacket*)payload)->playerID;
-	NetworkedGame::PlayerJoined(playerID);
+	NetworkedGame::PlayerJoinedServer(playerID);
 
 	//if server: send to clients
 	if (thisServer) {
@@ -383,7 +405,7 @@ void NetworkedGame::HandlePlayerConnectedPacket(GamePacket* payload, int source)
 void NetworkedGame::HandlePlayerDisconnectedPacket(GamePacket* payload, int source) {
 	//player disconnected
 	int playerID = ((PlayerConnectionPacket*)payload)->playerID;
-	NetworkedGame::PlayerLeft(playerID);
+	NetworkedGame::PlayerLeftServer(playerID);
 	//server tell everyone to delete this
 	if (thisServer) {
 		PlayerConnectionPacket newPacket = PlayerConnectionPacket();
@@ -459,11 +481,15 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	}
 }
 
-void NetworkedGame::PlayerJoined(int playerID) {
-	SpawnPlayer(playerID);
+void NetworkedGame::PlayerJoinedServer(int playerID) {
+	PlayerObject* temp = static_cast<PlayerObject*>(SpawnPlayer(playerID));
+	if (testingBossBehaviorTree) {
+		testingBossBehaviorTree->ChangeTarget(static_cast<PlayerObject*>(localPlayer));
+	}
+
 }
 
-void NetworkedGame::PlayerLeft(int playerID) {
+void NetworkedGame::PlayerLeftServer(int playerID) {
 	//std::cout << name << " " << selfID << " deleting player " << playerID << std::endl;
 	if (serverPlayers[playerID] != nullptr) {
 		world->RemoveGameObject(serverPlayers[playerID], false);

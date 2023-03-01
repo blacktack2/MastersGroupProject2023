@@ -10,13 +10,15 @@
 #include "Window.h"
 #include "MenuManager.h"
 #include "GameStateManager.h"
+#include "NetworkedGame.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
 class ScreenPause : public PushdownState {
 public:
-	ScreenPause() {
+	ScreenPause(TutorialGame* game = nullptr) {
+		this->game = game;
 		initMenu();
 	}
 	~ScreenPause() {}
@@ -24,13 +26,25 @@ public:
 		menuManager.Update(dt);
 		keyMap.Update();
 		renderer.Render();
-		if (menuState == ChangeState::Resume) {
-			return PushdownResult::Pop;
+		if (game) {
+			if (static_cast<NetworkedGame*> (game)) {
+				static_cast<NetworkedGame*> (game)->FreezeSelf();
+			}
+			game->UpdateGame(dt);
 		}
-		if (menuState == ChangeState::Quit) {
+		switch (menuState)
+		{
+		case ChangeState::Resume:
+		case ChangeState::Quit:
+			if (game) {
+				if (static_cast<NetworkedGame*> (game)) {
+					static_cast<NetworkedGame*> (game)->UnfreezeSelf();
+				}
+			}
 			return PushdownResult::Pop;
+		default:
+			return PushdownResult::NoChange;
 		}
-		return PushdownResult::NoChange;
 	}
 	void OnAwake() override {
 		menuState = ChangeState::None;
@@ -52,6 +66,7 @@ private:
 		Option,
 		Quit
 	};
+	TutorialGame* game;
 
 	GameStateManager* gameStateManager = &GameStateManager::instance();
 	GameTechRenderer& renderer = GameTechRenderer::instance();

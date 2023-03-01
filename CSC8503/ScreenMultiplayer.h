@@ -30,7 +30,7 @@ public:
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
 		keyMap.Update();
 		if (keyMap.GetButton(InputType::Pause)) {
-			*newState = new ScreenPause();
+			*newState = new ScreenPause(game);
 			return PushdownResult::Push;
 		}
 		if (game->IsQuit()) {

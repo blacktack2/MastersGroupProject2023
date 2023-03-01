@@ -45,21 +45,21 @@ void ScreenMain::initMenu() {
 	};
 
 	//button 3
-	TextureBase* optionTex = AssetLibrary::GetTexture("button2");
-	Button* optionBtn = new Button(0.5f, -0.3f, 0.2f, 0.1f);
-	optionBtn->SetRenderObject(new MenuRenderObject(tex));
-	menu->AddButton(optionBtn);
-	optionBtn->OnClickCallback = [&]() {
+	tex = AssetLibrary::GetTexture("button2");
+	btn = new Button(0.5f, -0.3f, 0.2f, 0.1f);
+	btn->SetRenderObject(new MenuRenderObject(tex));
+	menu->AddButton(btn);
+	btn->OnClickCallback = [&]() {
 		std::cout << "Option btn clicked" << std::endl;
 		menuState = ChangeState::Option;
 	};
 
 	//button 4
-	TextureBase* quitTex = AssetLibrary::GetTexture("button3");
-	Button* quitBtn = new Button(0.5f, 2 * -0.3f, 0.2f, 0.1f);
-	quitBtn->SetRenderObject(new MenuRenderObject(quitTex));
-	menu->AddButton(quitBtn);
-	quitBtn->OnClickCallback = [&]() {
+	tex = AssetLibrary::GetTexture("button3");
+	btn = new Button(0.5f, 2 * -0.3f, 0.2f, 0.1f);
+	btn->SetRenderObject(new MenuRenderObject(tex));
+	menu->AddButton(btn);
+	btn->OnClickCallback = [&]() {
 		std::cout << "Quit btn clicked" << std::endl;
 		menuState = ChangeState::Quit;
 	};

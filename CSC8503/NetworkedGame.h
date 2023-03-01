@@ -34,6 +34,9 @@ namespace NCL {
 				return this->name;
 			}
 
+			void FreezeSelf();
+			void UnfreezeSelf();
+
 		protected:
 			void UpdateAsServer(float dt);
 			void UpdateAsClient(float dt);
@@ -45,8 +48,8 @@ namespace NCL {
 			void ClientProcessNetworkObject(GamePacket* payload, int objID);
 			void ServerProcessNetworkObject(GamePacket* payload, int playerID);
 
-			void PlayerJoined(int playerID);
-			void PlayerLeft(int playerID);
+			void PlayerJoinedServer(int playerID);
+			void PlayerLeftServer(int playerID);
 
 			void ServerGetInstantiatedObject(NetworkPlayer* player);
 			void SendInitItemPacket(GameObject* obj);

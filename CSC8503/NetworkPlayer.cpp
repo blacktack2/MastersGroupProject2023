@@ -8,6 +8,7 @@ NetworkPlayer::NetworkPlayer(NetworkedGame* game, int playerID):PlayerObject(pla
 	this->game = game;
 	this->playerID = playerID;
 	this->isNetwork = true;
+	isFrozen = false;
 }
 
 NetworkPlayer::~NetworkPlayer() {
