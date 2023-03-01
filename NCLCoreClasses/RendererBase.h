@@ -10,12 +10,14 @@
 #pragma once
 #include "Window.h"
 
-#include "RenderPassBase.h"
 #include "IMainRenderPass.h"
 #include "ICombineRenderPass.h"
 #include "IPostRenderPass.h"
 #include "IPresentRenderPass.h"
 #include "IOverlayRenderPass.h"
+#include "RenderPassBase.h"
+
+#include "RendererConfigBase.h"
 
 #include <string>
 #include <unordered_map>
@@ -104,6 +106,8 @@ namespace NCL::Rendering {
 		inline int GetHeight() const {
 			return windowHeight;
 		}
+
+		virtual RendererConfigBase& GetConfig() = 0;
 	protected:
 		/**
 		 * @brief Add main render pass. Meant to add to, or modify, the GBuffer
