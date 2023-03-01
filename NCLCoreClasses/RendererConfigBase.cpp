@@ -17,6 +17,7 @@ RendererConfigBase::RendererConfigBase(RendererBase& renderer) : renderer(render
 
 void RendererConfigBase::ResetAll() {
 	SetViewport();
+	SetClearColour();
 	SetAlphaTest();
 	SetBlend();
 	SetCullFace();

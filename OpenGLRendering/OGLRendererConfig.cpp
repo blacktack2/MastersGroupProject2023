@@ -19,6 +19,10 @@ void OGLRendererConfig::SetViewport(int x, int y, unsigned int width, unsigned i
 	glViewport(0, 0, width, height);
 }
 
+void OGLRendererConfig::SetClearColour(float r, float g, float b, float a) {
+	glClearColor(r, g, b, a);
+}
+
 void OGLRendererConfig::SetAlphaTest(bool enabled, AlphaTestFunc func, float ref) {
 	if (enabled) {
 		GLenum glFunc;

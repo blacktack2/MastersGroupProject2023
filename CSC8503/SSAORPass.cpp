@@ -122,9 +122,9 @@ void SSAORPass::SetNumKernels(size_t num) {
 
 void SSAORPass::DrawSSAO() {
 	ssaoFrameBuffer->Bind();
-	glClearColor(0, 0, 0, 1);
+	//renderer.GetConfig().SetClearColour(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
-	glClearColor(0, 0, 0, 0);
+	renderer.GetConfig().SetClearColour();
 	ssaoShader->Bind();
 
 	depthTexIn->Bind(0);

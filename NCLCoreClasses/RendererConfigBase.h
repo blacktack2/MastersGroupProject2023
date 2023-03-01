@@ -85,6 +85,7 @@ namespace NCL::Rendering {
 		inline void SetViewport() {
 			SetViewport(0, 0, renderer.GetWidth(), renderer.GetHeight());
 		}
+		virtual void SetClearColour(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 0.0f) = 0;
 		virtual void SetAlphaTest(bool enabled = false, AlphaTestFunc func = AlphaTestFunc::Default, float ref = ALPHA_TEST_REF_DEFAULT) = 0;
 		virtual void SetBlend(bool enabled = false, BlendFuncSrc srcFactor = BlendFuncSrc::Default, BlendFuncDst dstFactor = BlendFuncDst::Default) = 0;
 		virtual void SetCullFace(bool enabled = true, CullFace mode = CullFace::Default) = 0;
