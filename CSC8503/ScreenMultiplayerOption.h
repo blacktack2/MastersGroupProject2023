@@ -65,5 +65,5 @@ private:
 	};
 	ChangeState menuState = ChangeState::None;
 
-	string name = "ScreenMultiplayerOption";
+	std::string name = "ScreenMultiplayerOption";
 };
