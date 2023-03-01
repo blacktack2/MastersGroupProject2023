@@ -51,11 +51,6 @@ namespace NCL::CSC8503 {
 		OGLTexture* normalOutTex;
 		OGLTexture* depthOutTex;
 
-		OGLTexture* defaultDiffuse;
-		OGLTexture* defaultBump;
-
-		OGLShader* defaultShader;
-
 		float gamma = 2.2f;
 
 		std::vector<OGLShader*> modelShaders{};

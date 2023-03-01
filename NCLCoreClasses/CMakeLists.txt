@@ -4,6 +4,8 @@ set(PROJECT_NAME NCLCoreClasses)
 # Source groups
 ################################################################################
 set(Asset_Handling
+    "AssetLibrary.cpp"
+    "AssetLibrary.h"
     "Assets.cpp"
     "Assets.h"
     "SimpleFont.cpp"
@@ -65,6 +67,8 @@ set(Rendering
     "MeshMaterial.h"
     "RendererBase.cpp"
     "RendererBase.h"
+    "RendererConfigBase.cpp"
+    "RendererConfigBase.h"
     "RenderPassBase.cpp"
     "RenderPassBase.h"
     "ShaderBase.cpp"

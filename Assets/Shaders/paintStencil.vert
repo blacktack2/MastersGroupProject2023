@@ -1,5 +1,13 @@
 #version 460 core
 
+/**
+ * @file paintStencil.frag
+ * @breif Vertex shader for painting the paintStencil
+ * 
+ * @author Harry Brettell
+ * @date   February 2023February 2023
+ */
+
 uniform mat4 modelMatrix;
 
 layout(location = 0) in vec3 position;

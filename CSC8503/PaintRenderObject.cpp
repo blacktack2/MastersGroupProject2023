@@ -1,30 +1,54 @@
+/**
+ * @file   PaintRenderObject.cpp
+ * @brief  See PaintRenderObject.h.
+ * 
+ * @author Harry Brettell
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
 #include "PaintRenderObject.h"
+
 #include "AssetLibrary.h"
-#include "OGLShader.h"
+#include "GameTechRenderer.h"
+#include "OGLFrameBuffer.h"
 
-using namespace NCL::CSC8503;
+using namespace NCL;
+using namespace CSC8503;
+using namespace Rendering;
 
-PaintRenderObject::PaintRenderObject(Transform* parentTransform, MeshGeometry* mesh, TextureBase* tex) : RenderObject(parentTransform, mesh, tex, AssetLibrary::GetShader("paint")) {
-	paintTexture = new OGLTexture(1000, 1000, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
+PaintRenderObject::PaintRenderObject(Transform* parentTransform, MeshGeometry* mesh, MeshMaterial* material) : RenderObject(parentTransform, mesh, material) {
+	width = 1024;
+	height = 1024;
+
+	paintTexture = new OGLTexture(width, height, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
 	paintTexture->Bind();
 	paintTexture->SetFilters(GL_LINEAR, GL_LINEAR);
 	paintTexture->Unbind();
-	paintCollisions.push_back(PaintCollision(Vector3(0, 0, 0), 1));
-	width = 1000;
-	height = 1000;
+
+	OGLFrameBuffer tempFramebuffer;
+	tempFramebuffer.Bind();
+	tempFramebuffer.AddTexture(paintTexture, 0);
+	GameTechRenderer::instance().ClearBuffers(ClearBit::Color);
+	tempFramebuffer.Unbind();
 }
 
 PaintRenderObject::PaintRenderObject(RenderObject& other, Transform* parentTransform) : RenderObject(other, parentTransform) {
-	paintTexture = new OGLTexture(1000, 1000, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
-	width = 1000;
-	height = 1000;
+	width = 1024;
+	height = 1024;
+	paintTexture = new OGLTexture(width, height, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
+	paintTexture->Bind();
+	paintTexture->SetFilters(GL_LINEAR, GL_LINEAR);
+	paintTexture->Unbind();
 }
 
 PaintRenderObject::~PaintRenderObject() {
 	delete paintTexture;
 }
 
-void PaintRenderObject::ConfigerShaderExtras(OGLShader* shaderOGL) const {
-	glUniform1i(glGetUniformLocation(shaderOGL->GetProgramID(), "paintTex"), 2);
-	paintTexture->Bind(2);
+void PaintRenderObject::PreDraw(int sublayer, ShaderBase* shader) {
+	paintTexture->Bind(3, shader->GetUniformLocation("paintTex"));
+}
+
+ShaderBase* PaintRenderObject::GetDefaultShader() {
+	return AssetLibrary::GetShader("paintDefault");
 }

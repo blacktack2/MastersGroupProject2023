@@ -18,6 +18,7 @@ GameWorld::GameWorld() : staticQuadTree(Vector2(1024, 1024), 7, 6), dynamicQuadT
 }
 
 GameWorld::~GameWorld()	{
+	delete mainCamera;
 }
 
 void GameWorld::Clear() {
@@ -86,7 +87,10 @@ void GameWorld::GetLightIterators(LightIterator& first, LightIterator& last) con
 
 void GameWorld::OperateOnContents(GameObjectFunc f) {
 	for (GameObject* g : gameObjects) {
-		f(g);
+		if (g->IsActive())
+		{
+			f(g);
+		}
 	}
 }
 
@@ -116,6 +120,7 @@ void GameWorld::PreUpdateWorld() {
 }
 
 void GameWorld::UpdateWorld(float dt) {
+	deltaTime = dt;
 	runTime += dt;
 
 	auto rng = std::default_random_engine{};
@@ -132,7 +137,10 @@ void GameWorld::UpdateWorld(float dt) {
 	}
 
 	for (int i = 0; i < gameObjects.size(); i++) {
-		gameObjects[i]->Update(dt);
+		if (gameObjects[i]->IsActive())
+		{
+			gameObjects[i]->Update(dt);
+		}
 	}
 
 	//dynamicQuadTree.DebugDraw();
@@ -166,7 +174,7 @@ void GameWorld::UpdateDynamicTree() {
 	dynamicQuadTree.Clear();
 
 	for (auto i = gameObjects.begin(); i != gameObjects.end(); i++) {
-		if ((*i)->GetPhysicsObject() && !(*i)->GetPhysicsObject()->IsStatic()) {
+		if ((*i)->GetPhysicsObject() && !(*i)->GetPhysicsObject()->IsStatic() && (*i)->IsActive()) {
 			Vector3 halfSizes;
 			if (!(*i)->GetBroadphaseAABB(halfSizes)) {
 				continue;

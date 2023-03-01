@@ -20,44 +20,48 @@ uniform mat4 projMatrix;
 uniform vec2 noiseScale;
 
 uniform float radius = 0.5;
-uniform float bias = 0.0;
+uniform float bias = 0.025;
 
 in Vertex {
 	vec2 texCoord;
 } IN;
 
-out vec4 fragColour;
+out float fragColour;
 
 void main() {
-	mat4 projView = projMatrix * viewMatrix;
+	mat4 inverseProj = inverse(projMatrix);
 
 	float depth = texture(depthTex, IN.texCoord).r;
 	vec3 ndcPos = vec3(IN.texCoord, depth) * 2.0 - 1.0;
-	vec4 invClipPos = inverse(projView) * vec4(ndcPos, 1.0);
-	vec3 worldPos   = invClipPos.xyz / invClipPos.w;
+	vec4 viewUnscaled = inverseProj * vec4(ndcPos, 1.0);
+	vec3 viewPos      = viewUnscaled.xyz / viewUnscaled.w;
 
 	vec3 random = normalize(texture(noiseTex, IN.texCoord * noiseScale).xyz) * 2.0 - 1.0;
-	vec3 normal = normalize(texture(normalTex, IN.texCoord).xyz) * 2.0 - 1.0;
-	vec3 tangent  = normalize(random - normal * dot(random, normal));
-	vec3 binormal = cross(tangent, normal);
-	mat3 TBN = mat3(tangent, binormal, normal);
+
+	vec3 worldNormal = normalize(texture(normalTex, IN.texCoord).xyz) * 2.0 - 1.0;
+	vec3 viewNormal = mat3(viewMatrix) * worldNormal;
+	viewNormal = normalize(viewNormal);
+
+	vec3 tangent  = normalize(random - viewNormal * dot(random, viewNormal));
+	vec3 binormal = cross(tangent, viewNormal);
+
+	mat3 TBN = mat3(tangent, binormal, viewNormal);
 
 	float occlusion = 0.0;
-	for (uint i = 0; i < 1; i++) {
+	for (uint i = 0; i < kernels.length(); i++) {
 		vec3 samplePos = TBN * kernels[i];
-		samplePos = worldPos + samplePos * radius;
+		samplePos = viewPos + samplePos * radius;
 
-		vec4 offset = projView * vec4(samplePos, 1.0);
+		vec4 offset = projMatrix * vec4(samplePos, 1.0);
 		offset.xyz /= offset.w;
 		offset.xy = offset.xy * 0.5 + 0.5;
 
 		float sampleDepth = texture(depthTex, offset.xy).r;
+		vec4 depthPos = inverseProj * vec4(samplePos.xy, sampleDepth * 2.0 - 1.0, 1.0);
+		depthPos.xyz /= depthPos.w;
 
-		float rangeCheck = smoothstep(0.0, 1.0, radius / abs(offset.z - sampleDepth));
-		occlusion += ((depth >= samplePos.z + bias) ? 1.0 : 0.0) * rangeCheck;
-		
-		fragColour = vec4(vec3(sampleDepth), 1.0);
+		float rangeCheck = smoothstep(0.0, 1.0, radius / abs(viewPos.z - depthPos.z));
+		occlusion += ((depthPos.z >= samplePos.z + bias) ? 1.0 : 0.0) * rangeCheck;
 	}
-	//fragColour = vec4(vec3(1.0 - (occlusion / kernels.length())), 1.0);
-	//fragColour = vec4(tangent, 1.0);
+	fragColour = 1.0 - (occlusion / kernels.length());
 }

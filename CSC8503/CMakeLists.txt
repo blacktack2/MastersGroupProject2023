@@ -3,39 +3,44 @@ set(PROJECT_NAME CSC8503)
 ################################################################################
 # Source groups
 ################################################################################
+
 set(Header_Files
+    "AnimatedRenderObject.h"
 	"Bonus.h"
-	"EnemyObject.h"
-	"Maze.h"
-    "NetworkedGame.h"
-    "NetworkPlayer.h"
-	"NPCObject.h"
-    "StateGameObject.h"
-    "TutorialGame.h"
     "DebugViewPoint.h"
+	"EnemyObject.h"
+    "GameLevel.h"
     "GameGrid.h"
     "GameGridManager.h"
     "GameStateManager.h"
+	"Maze.h"
+    "MenuRenderObject.h"
+    "NetworkedGame.h"
+    "NetworkPlayer.h"
+	"NPCObject.h"
     "Obstacle.h"
-    "GameLevel.h"
+    "StateGameObject.h"
+    "TutorialGame.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
+    "AnimatedRenderObject.cpp"
 	"Bonus.cpp"
+    "DebugViewPoint.cpp"
 	"EnemyObject.cpp"
+    "GameLevel.cpp"
+    "GameGrid.cpp"
+    "GameGridManager.cpp"
+    "GameStateManager.cpp"
     "Main.cpp"
 	"Maze.cpp"
+    "MenuRenderObject.cpp"
     "NetworkedGame.cpp"
     "NetworkPlayer.cpp"
 	"NPCObject.cpp"
     "StateGameObject.cpp"
     "TutorialGame.cpp"
-    "DebugViewPoint.cpp"
-    "GameGrid.cpp"
-    "GameGridManager.cpp"
-    "GameStateManager.cpp"
-    "GameLevel.cpp"
 )
 
 set(Render_Files
@@ -67,6 +72,10 @@ set(Render_Files
     "PaintingRPass.h"
     "ModelRPass.h"
     "ModelRPass.cpp"
+    "MenuRPass.h"
+    "MenuRPass.cpp"
+    "Billboard.h"
+    "Billboard.cpp"
 )
 
 if(USE_VULKAN)
@@ -117,6 +126,8 @@ set(Bullet_Files
 	"BossBullet.cpp"
     "PlayerBullet.h"
     "PlayerBullet.cpp"
+    "BulletInstanceManager.h"
+    "BulletInstanceManager.cpp"
 	
 )
 source_group("Bullet Files" FILES ${Bullet_Files})
@@ -136,6 +147,27 @@ set(Enemy_Files
 )
 source_group("Enemy Files" FILES ${Enemy_Files})
 
+set(Menu_Files 
+    "MenuManager.h"
+    "MenuManager.cpp"
+    "UIObject.h"
+    "UIObject.cpp"
+    "Menu.h"
+    "Menu.cpp"
+    "Button.h"
+    "Button.cpp"
+    "ScreenMain.h"
+    "ScreenGame.h"
+    "ScreenPause.h"
+    "ScreenMain.cpp"
+    "ScreenGame.cpp"
+    "ScreenPause.cpp"
+    "ScreenOption.h"
+    "ScreenOption.cpp"
+
+)
+source_group("Menu Files" FILES ${Menu_Files})
+
 set(ALL_FILES
     ${Header_Files}
     ${Source_Files}
@@ -145,6 +177,7 @@ set(ALL_FILES
     ${Bullet_Files}
 	${Player_Files}
     ${Enemy_Files}
+    ${Menu_Files}
 )
 
 if(USE_VULKAN)
@@ -157,6 +190,7 @@ if(USE_VULKAN)
         ${Bullet_Files}
 	    ${Player_Files}
         ${Enemy_Files}
+        ${Menu_Files}
     )
 
 foreach (file ${SHADER_FILES})

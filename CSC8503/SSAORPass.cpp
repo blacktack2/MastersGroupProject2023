@@ -55,23 +55,15 @@ OGLMainRenderPass(renderer), depthTexIn(depthTexIn), normalTexIn(normalTexIn) {
 
 	ssaoShader->Bind();
 
-	viewMatrixUniform = glGetUniformLocation(ssaoShader->GetProgramID(), "viewMatrix");
-	projMatrixUniform = glGetUniformLocation(ssaoShader->GetProgramID(), "projMatrix");
-	noiseScaleUniform = glGetUniformLocation(ssaoShader->GetProgramID(), "noiseScale");
+	ssaoShader->SetUniformInt("depthTex" , 0);
+	ssaoShader->SetUniformInt("normalTex", 1);
+	ssaoShader->SetUniformInt("noiseTex" , 2);
 
-	radiusUniform = glGetUniformLocation(ssaoShader->GetProgramID(), "radius");
-	biasUniform   = glGetUniformLocation(ssaoShader->GetProgramID(), "bias");
+	ssaoShader->SetUniformFloat("noiseScale", (float)renderer.GetWidth() / (float)noiseTexSize, (float)renderer.GetHeight() / (float)noiseTexSize);
 
-	glUniform1i(glGetUniformLocation(ssaoShader->GetProgramID(), "depthTex"), 0);
-	glUniform1i(glGetUniformLocation(ssaoShader->GetProgramID(), "normalTex"), 1);
-	glUniform1i(glGetUniformLocation(ssaoShader->GetProgramID(), "noiseTex"), 2);
-
-	glUniform2f(noiseScaleUniform, (float)renderer.GetWidth() / (float)noiseTexSize, (float)renderer.GetHeight() / (float)noiseTexSize);
-
-	ssaoShader->Unbind();
 	blurShader->Bind();
 
-	glUniform1i(glGetUniformLocation(blurShader->GetProgramID(), "ssaoTex"), 0);
+	blurShader->SetUniformInt("ssaoTex", 0);
 
 	blurShader->Unbind();
 
@@ -97,22 +89,20 @@ SSAORPass::~SSAORPass() {
 void SSAORPass::OnWindowResize(int width, int height) {
 	ssaoShader->Bind();
 
-	glUniform2f(noiseScaleUniform, (float)width / (float)noiseTexSize, (float)height / (float)noiseTexSize);
+	ssaoShader->SetUniformFloat("noiseScale", (float)width / (float)noiseTexSize, (float)height / (float)noiseTexSize);
 
 	ssaoShader->Unbind();
 }
 
 void SSAORPass::Render() {
-	/*glDisable(GL_BLEND);
 	DrawSSAO();
 	BlurSSAO();
-	glEnable(GL_BLEND);*/
 }
 
 void SSAORPass::SetRadius(float radius) {
 	ssaoShader->Bind();
 
-	glUniform1f(radiusUniform, radius);
+	ssaoShader->SetUniformFloat("radius", radius);
 
 	ssaoShader->Unbind();
 }
@@ -120,7 +110,7 @@ void SSAORPass::SetRadius(float radius) {
 void SSAORPass::SetBias(float bias) {
 	ssaoShader->Bind();
 
-	glUniform1f(biasUniform, bias);
+	ssaoShader->SetUniformFloat("bias", bias);
 
 	ssaoShader->Unbind();
 }
@@ -132,9 +122,7 @@ void SSAORPass::SetNumKernels(size_t num) {
 
 void SSAORPass::DrawSSAO() {
 	ssaoFrameBuffer->Bind();
-	glClearColor(0, 0, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glClearColor(0, 0, 0, 0);
+	renderer.ClearBuffers(ClearBit::Color);
 	ssaoShader->Bind();
 
 	depthTexIn->Bind(0);
@@ -142,9 +130,10 @@ void SSAORPass::DrawSSAO() {
 	noiseTex->Bind(2);
 
 	Matrix4 viewMatrix = GameWorld::instance().GetMainCamera()->BuildViewMatrix();
-	glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, (GLfloat*)viewMatrix.array);
-	Matrix4 projMatrix = GameWorld::instance().GetMainCamera()->BuildProjectionMatrix();
-	glUniformMatrix4fv(projMatrixUniform, 1, GL_FALSE, (GLfloat*)projMatrix.array);
+	ssaoShader->SetUniformMatrix("viewMatrix", viewMatrix);
+	float aspect = (float)renderer.GetWidth() / (float)renderer.GetHeight();
+	Matrix4 projMatrix = GameWorld::instance().GetMainCamera()->BuildProjectionMatrix(aspect);
+	ssaoShader->SetUniformMatrix("projMatrix", projMatrix);
 
 	quad->Draw();
 
@@ -154,7 +143,7 @@ void SSAORPass::DrawSSAO() {
 
 void SSAORPass::BlurSSAO() {
 	blurFrameBuffer->Bind();
-	glClear(GL_COLOR_BUFFER_BIT);
+	renderer.ClearBuffers(ClearBit::Color);
 	blurShader->Bind();
 
 	ssaoTex->Bind(0);

@@ -21,7 +21,7 @@ MeshAnimation::MeshAnimation(unsigned int jointCount, unsigned int frameCount, f
 	this->allJoints  = frames;
 }
 
-MeshAnimation::MeshAnimation(const std::string& filename) : MeshAnimation() {
+MeshAnimation::MeshAnimation(const std::string& filename) : MeshAnimation() {		// Anim
 	std::ifstream file(Assets::MESHDIR + filename);
 
 	std::string filetype;

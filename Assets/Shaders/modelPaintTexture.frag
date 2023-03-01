@@ -1,9 +1,10 @@
 #version 460 core
 /**
  * @file   modelPaintTexture.frag
- * @brief  fragment shader for rendering model data with a paint map to the GBuffer.
+ * @brief  Fragment shader for rendering model data with a paint map to the GBuffer.
  * 
  * @author Harry Brettell
+ * @author Stuart Lewis
  * @date   February 2023
  */
 

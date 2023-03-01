@@ -17,6 +17,9 @@
 #include "GameLevel.h"
 
 #include "GameStateManager.h"
+#include "MenuManager.h"
+
+#include "MeshAnimation.h";
 
 namespace NCL {
 	namespace CSC8503 {
@@ -76,13 +79,19 @@ namespace NCL {
 			PlayerObject* AddPlayerToWorld(const Vector3& position, bool cameraFollow = true);
 			EnemyObject* AddEnemyToWorld(const Vector3& position, NavigationMap& navMap);
 
-			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);		/////////
-			HealingKit* UpdateHealingKit();																/////////
-			void BuildLevel();																			/////////
-			void UpdateLevel();																			/////////
+			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
+			//HealingKit* UpdateHealingKit();
+			void BuildLevel();
+			void UpdateLevel();
 			NPCObject* AddNPCToWorld(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
 			GameObject* AddTriggerToWorld(const Vector3& position, float size);
+
+			void InitaliseAnimationAssets();
+			MeshMaterial* maleguardMaterial = nullptr;
+			MeshAnimation* maleguardAnim = nullptr;
+			MeshGeometry* maleguardMesh = nullptr;
+			std::vector<OGLTexture*>  maleguardMatTextures;
 
 			bool SelectObject();
 			void MoveSelectedObject();
@@ -102,6 +111,7 @@ namespace NCL {
 			Light* sunLight;
 
 			GameStateManager* gameStateManager;
+			MenuManager* menuManager;
 
 			bool inSelectionMode;
 
@@ -116,11 +126,8 @@ namespace NCL {
 			MeshGeometry* sphereMesh = nullptr;
 
 			TextureBase*	basicTex    = nullptr;
-			TextureBase* healingKitTex = nullptr;		/////////
-			TextureBase* inkableTex = nullptr;		/////////
-			TextureBase* noiseTex = nullptr;		/////////
-			//ShaderBase* inkableShader = nullptr;		/////////
-			//ShaderBase* basicShader = nullptr;
+			TextureBase*	pillarTex    = nullptr;
+			TextureBase*	healingKitTex = nullptr;
 
 			//Coursework Meshes
 			MeshGeometry*	charMesh = nullptr;
@@ -146,13 +153,16 @@ namespace NCL {
 			GameLevel* gameLevel = nullptr;	/////////
 			float interval = 0.0f;			/////////
 			GameGrid* gameGrid = nullptr;	/////////
-			GameObject* floor = nullptr;	/////////
+			//GameObject* floor = nullptr;	/////////
 			Boss* testingBoss = nullptr;   /////////
 			BossBehaviorTree* testingBossBehaviorTree = nullptr;   /////////
 
 			//GameGrid stuff
 			GameGridManager* gridManager;
 			float wallTimer = 0.0f;
+
+			//menu
+			bool isclicked = false;
 		};
 	}
 }

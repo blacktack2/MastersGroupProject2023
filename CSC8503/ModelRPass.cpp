@@ -12,6 +12,9 @@
 #include "OGLShader.h"
 #include "OGLTexture.h"
 #include "RenderObject.h"
+#include "AnimatedRenderObject.h"
+#include "AssetLibrary.h"
+#include "Assets.h"
 
 using namespace NCL::CSC8503;
 
@@ -24,12 +27,6 @@ OGLMainRenderPass(renderer), gameWorld(gameWorld) {
 	AddScreenTexture(normalOutTex);
 	AddScreenTexture(depthOutTex);
 
-	defaultDiffuse = (OGLTexture*)OGLTexture::RGBATextureFromFilename("GoatBody.png");
-	defaultBump = (OGLTexture*)OGLTexture::RGBATextureFromFilename("DefaultBump.png");
-	defaultBump->Bind();
-	defaultBump->SetFilters(GL_LINEAR, GL_LINEAR);
-	defaultBump->Unbind();
-
 	frameBuffer = new OGLFrameBuffer();
 	frameBuffer->Bind();
 	frameBuffer->AddTexture(diffuseOutTex);
@@ -38,8 +35,9 @@ OGLMainRenderPass(renderer), gameWorld(gameWorld) {
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
-	defaultShader = new OGLShader("modelDefault.vert", "modelDefault.frag");
-	AddModelShader(defaultShader);
+	AddModelShader((OGLShader*)AssetLibrary::GetShader("modelDefault"));
+	AddModelShader((OGLShader*)AssetLibrary::GetShader("paintDefault"));
+	AddModelShader((OGLShader*)AssetLibrary::GetShader("animationDefault"));
 }
 
 ModelRPass::~ModelRPass() {
@@ -48,13 +46,14 @@ ModelRPass::~ModelRPass() {
 	delete diffuseOutTex;
 	delete normalOutTex;
 	delete depthOutTex;
-
-	delete defaultShader;
 }
 
 void ModelRPass::Render() {
 	frameBuffer->Bind();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	renderer.GetConfig().SetDepthMask(true);
+	renderer.GetConfig().SetDepthTest(true);
+
+	renderer.ClearBuffers(ClearBit::ColorDepth);
 
 	for (OGLShader* shader : modelShaders) {
 		shader->Bind();
@@ -62,59 +61,29 @@ void ModelRPass::Render() {
 		Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
 		float screenAspect = (float)renderer.GetWidth() / (float)renderer.GetHeight();
 		Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
-		// TODO - Replace with call to the shader class
-		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "viewMatrix"), 1, GL_FALSE, (GLfloat*)&viewMatrix);
-		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "projMatrix"), 1, GL_FALSE, (GLfloat*)&projMatrix);
-		glUniform1f(glGetUniformLocation(shader->GetProgramID(), "gamma"), gamma);
+
+		shader->SetUniformMatrix("viewMatrix", viewMatrix);
+		shader->SetUniformMatrix("projMatrix", projMatrix);
+		shader->SetUniformFloat("gamma", gamma);
 
 		shader->Unbind();
 	}
 	
 	gameWorld.OperateOnContents([&](GameObject* gameObject) {
-		const RenderObject* renderObject = gameObject->GetRenderObject();
+		RenderObject* renderObject = gameObject->GetRenderObject();
 		if (!renderObject) {
 			return;
 		}
-		OGLMesh* mesh;
-		if (!(mesh = dynamic_cast<OGLMesh*>(renderObject->GetMesh()))) {
+
+		if (!dynamic_cast<OGLMesh*>(renderObject->GetMesh())) {
 			return;
 		}
-		OGLShader* shader;
-		if (!(shader = dynamic_cast<OGLShader*>(renderObject->GetShader()))) {
-			shader = defaultShader;
-		}
 
-		OGLTexture* diffuseTex;
-		if (!(diffuseTex = dynamic_cast<OGLTexture*>(renderObject->GetDefaultTexture()))) {
-			diffuseTex = defaultDiffuse;
-		}
-		OGLTexture* bumpTex;
-		if (true) {
-			bumpTex = defaultBump;
-		}
-
-		Vector4 colour = renderObject->GetColour();
-
-		shader->Bind();
-
-		diffuseTex->Bind(0);
-		bumpTex->Bind(1);
-
-		Matrix4 modelMatrix = renderObject->GetTransform()->GetGlobalMatrix();
-		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "modelMatrix"), 1, GL_FALSE, (GLfloat*)&modelMatrix);
-		glUniform4fv(glGetUniformLocation(shader->GetProgramID(), "modelColour"), 1, (GLfloat*)colour.array);
-
-		renderObject->ConfigerShaderExtras(shader);
-
-		//mesh->Draw();
-		int layerCount = mesh->GetSubMeshCount();
-		for (int i = 0; i < layerCount; i++)
-		{
-			mesh->Draw(i);
-		}
-		shader->Unbind();
+		renderObject->Draw();
 	});
 
+	renderer.GetConfig().SetDepthTest();
+	renderer.GetConfig().SetDepthMask();
 	frameBuffer->Unbind();
 }
 
@@ -122,8 +91,8 @@ void ModelRPass::AddModelShader(OGLShader* shader) {
 	modelShaders.push_back(shader);
 	shader->Bind();
 
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "diffuseTex"), 0);
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "bumpTex"), 1);
+	shader->SetUniformInt("diffuseTex", 0);
+	shader->SetUniformInt("bumpTex"   , 1);
 
 	shader->Unbind();
 }

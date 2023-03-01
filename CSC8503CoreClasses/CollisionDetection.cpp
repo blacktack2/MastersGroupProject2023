@@ -7,6 +7,9 @@
 #include "Maths.h"
 #include "Debug.h"
 
+#include <cmath>
+#include <iostream>
+
 using namespace NCL;
 
 bool CollisionDetection::RayPlaneIntersection(const Ray&r, const Plane&p, RayCollision& collisions) {
@@ -230,7 +233,7 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
 	}
 
 	if (pairType == ((int)VolumeType::AABB | (int)VolumeType::OBB)) {
-		if (volB->type == VolumeType::AABB) {
+		if ((int)volB->type & (int)VolumeType::AABB) {
 			collisionInfo.a = b;
 			collisionInfo.b = a;
 			return AABBOBBIntersection((AABBVolume&)*volB, transformB, (OBBVolume&)*volA, transformA, collisionInfo);
@@ -239,7 +242,7 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
 		}
 	}
 	if (pairType == ((int)VolumeType::AABB | (int)VolumeType::Sphere)) {
-		if (volB->type == VolumeType::AABB) {
+		if ((int)volB->type & (int)VolumeType::AABB) {
 			collisionInfo.a = b;
 			collisionInfo.b = a;
 			return AABBSphereIntersection((AABBVolume&)*volB, transformB, (SphereVolume&)*volA, transformA, collisionInfo);
@@ -248,7 +251,7 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
 		}
 	}
 	if (pairType == ((int)VolumeType::AABB | (int)VolumeType::Capsule)) {
-		if (volB->type == VolumeType::AABB) {
+		if ((int)volB->type & (int)VolumeType::AABB) {
 			collisionInfo.a = b;
 			collisionInfo.b = a;
 			return AABBCapsuleIntersection((AABBVolume&)*volB, transformB, (CapsuleVolume&)*volA, transformA, collisionInfo);
@@ -258,7 +261,7 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
 	}
 
 	if (pairType == ((int)VolumeType::OBB | (int)VolumeType::Sphere)) {
-		if (volB->type == VolumeType::OBB) {
+		if ((int)volB->type & (int)VolumeType::OBB) {
 			collisionInfo.a = b;
 			collisionInfo.b = a;
 			return OBBSphereIntersection((OBBVolume&)*volB, transformB, (SphereVolume&)*volA, transformA, collisionInfo);
@@ -267,7 +270,7 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
 		}
 	}
 	if (pairType == ((int)VolumeType::OBB | (int)VolumeType::Capsule)) {
-		if (volB->type == VolumeType::OBB) {
+		if ((int)volB->type & (int)VolumeType::OBB) {
 			collisionInfo.a = b;
 			collisionInfo.b = a;
 			return OBBCapsuleIntersection((OBBVolume&)*volB, transformB, (CapsuleVolume&)*volA, transformA, collisionInfo);
@@ -277,7 +280,7 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
 	}
 
 	if (pairType == ((int)VolumeType::Sphere | (int)VolumeType::Capsule)) {
-		if (volB->type == VolumeType::Sphere) {
+		if ((int)volB->type & (int)VolumeType::Sphere) {
 			collisionInfo.a = b;
 			collisionInfo.b = a;
 			return SphereCapsuleIntersection((SphereVolume&)*volB, transformB, (CapsuleVolume&)*volA, transformA, collisionInfo);
@@ -500,6 +503,16 @@ bool NCL::CollisionDetection::SeparatingPlane(const Vector3& delta, const Vector
 	return t > v;
 }
 
+Vector3 OBBSupport(const Transform& worldTransform, Vector3 worldDir) {
+	Vector3 localDir = worldTransform.GetGlobalOrientation().Conjugate() * worldDir;
+	Vector3 vertex;
+	vertex.x = localDir.x < 0 ? -0.5f : 0.5f;
+	vertex.y = localDir.y < 0 ? -0.5f : 0.5f;
+	vertex.z = localDir.z < 0 ? -0.5f : 0.5f;
+
+	return worldTransform.GetGlobalMatrix() * vertex;
+}
+
 bool NCL::CollisionDetection::AABBOBBIntersection(const AABBVolume& volumeA, const Transform& worldTransformA,
 	const OBBVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
 	Vector3 posA = worldTransformA.GetGlobalPosition();
@@ -571,7 +584,7 @@ bool NCL::CollisionDetection::AABBCapsuleIntersection(const AABBVolume& volumeA,
 
 	Vector3 capsulePos = worldTransformB.GetGlobalPosition();
 	Vector3 capsuleDir = worldTransformB.GetGlobalOrientation() * Vector3(0, 1, 0);
-	float capsuleRadius = volumeB.GetRadius() * 0.5f;
+	float capsuleRadius = volumeB.GetRadius();
 	float capsuleHalfHeight = volumeB.GetHalfHeight();
 
 	float capsuleOffset = capsuleHalfHeight - capsuleRadius;
@@ -601,98 +614,12 @@ bool NCL::CollisionDetection::AABBCapsuleIntersection(const AABBVolume& volumeA,
 	float penetration = capsuleRadius - std::sqrt(distanceSquared);
 	Vector3 normal = (capsulePoint - boxPoint).Normalised();
 	
-	Vector3 localA = Vector3();// boxPoint - boxPos;
-	Vector3 localB = Vector3();// capsulePoint + normal * capsuleRadius - capsulePos;
+	Vector3 localA = boxPoint + normal * boxSize;
+	Vector3 localB = capsulePoint - normal * capsuleRadius - capsulePos;
 
 	collisionInfo.AddContactPoint(normal, penetration, localA, localB);
 	return true;
 }
-
-/*bool NCL::CollisionDetection::AABBCapsuleIntersection(const AABBVolume& volumeA, const Transform& worldTransformA,
-	const CapsuleVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
-	Vector3 boxPos = worldTransformA.GetGlobalPosition();
-	Vector3 boxSize = volumeA.GetHalfDimensions();
-
-	Vector3 capsulePos = worldTransformB.GetGlobalPosition();
-	Quaternion capsuleOrientation = worldTransformB.GetGlobalOrientation();
-	Vector3 capsuleDir = capsuleOrientation * Vector3(0, 1, 0);
-
-	float capsuleHeight = volumeB.GetHalfHeight();
-	float capsuleRadius = volumeB.GetRadius() * 0.5f;
-
-	float capsuleOffset = capsuleHeight - capsuleRadius;
-	Vector3 a = capsulePos + capsuleDir * capsuleOffset;
-	Vector3 b = capsulePos - capsuleDir * capsuleOffset;
-	Vector3 ab = b - a;
-
-	Vector3 boxMin = boxPos - boxSize;
-	Vector3 boxMax = boxPos + boxSize;
-
-	Vector3 rayPos = a;
-	Vector3 rayDir = ab.Normalised();
-
-	Vector3 tVals(-1, -1, -1);
-
-	const Vector3 dirs[] = { {1,0,0}, {0,1,0},{0,0,1} };
-
-	for (int i = 0; i < 3; i++)
-	{
-		if (rayDir[i] > 0) {
-			tVals[i] = (boxMin[i] - rayPos[i]) / rayDir[i];
-		}
-		else if (rayDir[i] < 0) {
-			tVals[i] = (boxMax[i] - rayPos[i]) / rayDir[i];
-		}
-	}
-
-	float bestT = tVals.GetMaxElement();
-	if (bestT < 0)
-	{
-		rayDir = -rayDir;
-		rayPos = b;
-		b = a;
-		a = rayPos;
-		for (int i = 0; i < 3; i++)
-		{
-			if (rayDir[i] > 0) {
-				tVals[i] = (boxMin[i] - rayPos[i]) / rayDir[i];
-			}
-			else if (rayDir[i] < 0) {
-				tVals[i] = (boxMax[i] - rayPos[i]) / rayDir[i];
-			}
-		}
-		bestT = tVals.GetMaxElement();
-
-	}
-	Vector3 tempBoxBest;
-	if (bestT < 0) {
-		tempBoxBest = Maths::Clamp(capsulePos, boxMin, boxMax);
-	}
-	else {
-		Vector3 bestReference = rayPos + rayDir * bestT;
-		tempBoxBest = Maths::Clamp(bestReference, boxMin, boxMax);
-	}
-
-	float tt = Vector3::Dot(tempBoxBest - a, ab) / Vector3::Dot(ab, ab);
-	Vector3 bestCapsule = a + ab * Clamp(tt, 0.0f, 1.0f);
-
-	//Vector3 bestCapsule = ClosestPointOnLineSegment(a, b, tempBoxBest);
-	Vector3 bestBox = Maths::Clamp(bestCapsule, boxMin, boxMax);
-	float dist = (bestCapsule - bestBox).Length();
-	if (dist < capsuleRadius)
-	{
-		float penetration = capsuleRadius - dist;
-		Vector3 normal = (bestBox - bestCapsule).Normalised();
-
-		Vector3 localA = bestBox - boxPos;
-		Vector3 localB = bestCapsule + normal * capsuleRadius - capsulePos;
-
-		collisionInfo.AddContactPoint(normal, penetration, localA, localB);
-		return true;
-	}
-	return false;
-
-}*/
 
 bool  CollisionDetection::OBBSphereIntersection(const OBBVolume& volumeA, const Transform& worldTransformA,
 	const SphereVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
@@ -782,8 +709,8 @@ bool NCL::CollisionDetection::SphereCapsuleIntersection(const SphereVolume& volu
 	float penetration = radii - std::sqrt(distanceSquared);
 	Vector3 normal = (capsulePos - sphereCenter).Normalised();
 
-	Vector3 localA = Vector3(); //normal * volumeA.GetRadius();
-	Vector3 localB = Vector3(); //capsulePos + normal * capsuleRadius - capsuleCenter;
+	Vector3 localA = normal * volumeA.GetRadius();
+	Vector3 localB = capsulePos + normal * capsuleRadius - capsuleCenter;
 
 	collisionInfo.AddContactPoint(normal, penetration, localA, localB);
 	return true;

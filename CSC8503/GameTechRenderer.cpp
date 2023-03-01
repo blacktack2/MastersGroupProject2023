@@ -18,11 +18,21 @@ using namespace CSC8503;
 Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(Vector3(0.5f, 0.5f, 0.5f));
 
 GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()), gameWorld(GameWorld::instance()) {
-	glClearColor(0, 0, 0, 0);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
+}
 
+GameTechRenderer::~GameTechRenderer() {
+	delete skyboxPass;
+	delete modelPass;
+	delete lightingPass;
+	delete combinePass;
+	delete presentPass;
+	delete bloomPass;
+	delete hdrPass;
+	delete debugPass;
+	delete menuPass;
+}
+
+void GameTechRenderer::InitPipeline() {
 	paintingRPass = new PaintingRPass(*this);
 	AddMainPass(paintingRPass);
 
@@ -59,21 +69,13 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()), gameWo
 	SetGamma(gamma);
 	SetPresentPass(presentPass);
 
+	menuPass = new MenuRPass(*this, gameWorld);
+	AddOverlayPass(menuPass, "Menu");
+
 	debugPass = new DebugRPass(*this, gameWorld);
 	AddOverlayPass(debugPass, "Debug");
 
 	UpdatePipeline();
-}
-
-GameTechRenderer::~GameTechRenderer() {
-	delete skyboxPass;
-	delete modelPass;
-	delete lightingPass;
-	delete combinePass;
-	delete presentPass;
-	delete bloomPass;
-	delete hdrPass;
-	delete debugPass;
 }
 
 void GameTechRenderer::BuildObjectList() {

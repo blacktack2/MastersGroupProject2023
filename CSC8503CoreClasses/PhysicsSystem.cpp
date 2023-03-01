@@ -38,7 +38,7 @@ any collisions they are in.
 void PhysicsSystem::Clear() {
 	allCollisions.clear();
 	allTriggers.clear();
-	std::cout << "Clear\n";
+	//std::cout << "Clear\n";
 }
 
 /*
@@ -152,7 +152,15 @@ void PhysicsSystem::UpdateCollisionList() {
 			info.isEntered = false;
 		}
 
+		if (info.framesLeft > 0 && !info.isEntered) {
+			info.a->OnCollisionStay(info.b);
+			info.b->OnCollisionStay(info.a);
+			CollisionDetection::ObjectIntersection(info.a, info.b, info);
+		}
+
 		info.framesLeft--;
+
+		
 
 		if (info.framesLeft < 0 || info.a->IsMarkedDelete() || info.b->IsMarkedDelete()) {
 			info.a->OnCollisionEnd(info.b);
@@ -214,7 +222,9 @@ void PhysicsSystem::BasicCollisionDetection() {
 			}
 			CollisionDetection::CollisionInfo info;
 			if (CollisionDetection::ObjectIntersection(*i, *j, info)) {
-				ImpulseResolveCollision(*info.a, *info.b, info.point);
+				for (auto k = 0; k < info.point.size(); k++) {
+					ImpulseResolveCollision(*info.a, *info.b, info.point[k]);
+				}
 				info.framesLeft = numCollisionFrames;
 				allCollisions.insert(info);
 			}
@@ -295,9 +305,11 @@ void PhysicsSystem::BroadPhase() {
 		[&](std::list<QuadTreeEntry>& data, const Vector2& subsetPos, const Vector2& subsetSize) {
 			CollisionDetection::CollisionInfo collisionInfo{};
 			for (auto i = data.begin(); i != data.end(); i++) {
+				auto a = i->object;
+				if (!a->IsActive()) continue;
 				for (auto j = std::next(i); j != data.end(); j++) {
-					auto a = i->object;
 					auto b = j->object;
+					if (!b->IsActive()) continue;
 					collisionInfo.a = std::min(a, b);
 					collisionInfo.b = std::max(a, b);
 					if (a->GetPhysicsObject()->IsTrigger() || b->GetPhysicsObject()->IsTrigger()) {
@@ -341,10 +353,14 @@ void PhysicsSystem::NarrowPhase() {
 			auto exists = allCollisions.find(info);
 			if (exists != allCollisions.end()) {
 				auto& eInfo = const_cast<CollisionDetection::CollisionInfo&>(*exists);
-				ImpulseResolveCollision(*eInfo.a, *eInfo.b, eInfo.point);
+				for (int j = 0; j < eInfo.point.size(); j++) {
+					ImpulseResolveCollision(*eInfo.a, *eInfo.b, eInfo.point[j]);
+				}
 				eInfo.framesLeft = numCollisionFrames;
 			} else {
-				ImpulseResolveCollision(*info.a, *info.b, info.point);
+				for (int j = 0; j < info.point.size(); j++) {
+					ImpulseResolveCollision(*info.a, *info.b, info.point[j]);
+				}
 				info.framesLeft = numCollisionFrames;
 				info.isEntered = !allCollisions.contains(info);
 				allCollisions.insert(info);
@@ -381,6 +397,7 @@ void PhysicsSystem::IntegrateAccel(float dt) {
 	gameWorld.GetObjectIterators(first, last);
 
 	for (auto i = first; i != last; i++) {
+		if (!(*i)->IsActive()) continue;
 		PhysicsObject* object = (*i)->GetPhysicsObject();
 		if (object == nullptr) {
 			continue;
@@ -425,6 +442,7 @@ void PhysicsSystem::IntegrateVelocity(float dt) {
 	float frameLinearDamping = 1.0f - (globalDamping * dt);
 
 	for (auto i = first; i != last; i++) {
+		if (!(*i)->IsActive()) continue;
 		PhysicsObject* object = (*i)->GetPhysicsObject();
 		if (object == nullptr || object->IsStatic()) {
 			continue;

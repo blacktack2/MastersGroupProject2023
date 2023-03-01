@@ -22,7 +22,7 @@ Bullet::~Bullet() {
 void Bullet::Update(float dt) {
 	lifespan -= dt;
 	if (lifespan <= 0) {
-		Delete();
+		isActive = false;
 		return;
 	}
 

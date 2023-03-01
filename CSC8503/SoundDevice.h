@@ -9,7 +9,7 @@ class SoundDevice
 {
 public:
 	static SoundDevice* Get();
-	static void Destroy() { if(instance) delete instance; }
+	static void Destroy() { if (instance) delete instance; instance = nullptr; }
 private:
 	SoundDevice();
 	~SoundDevice();

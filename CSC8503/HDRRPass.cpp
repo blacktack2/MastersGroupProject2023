@@ -45,9 +45,7 @@ OGLPostRenderPass(renderer) {
 
 	shader->Bind();
 
-	exposureUniform = glGetUniformLocation(shader->GetProgramID(), "exposure");
-
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "sceneTex"), 0);
+	shader->SetUniformInt("sceneTex", 0);
 
 	shader->Unbind();
 }
@@ -64,7 +62,7 @@ HDRRPass::~HDRRPass() {
 
 void HDRRPass::Render() {
 	frameBuffer->Bind();
-	glClear(GL_COLOR_BUFFER_BIT);
+	renderer.ClearBuffers(ClearBit::Color);
 	shader->Bind();
 
 	sceneTexIn->Bind(0);
@@ -78,7 +76,7 @@ void HDRRPass::Render() {
 void HDRRPass::SetExposure(float exposure) {
 	shader->Bind();
 
-	glUniform1f(exposureUniform, exposure);
+	shader->SetUniformFloat("exposure", exposure);
 
 	shader->Unbind();
 }

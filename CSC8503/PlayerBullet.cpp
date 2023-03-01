@@ -26,10 +26,6 @@ PlayerBullet::PlayerBullet(PlayerBullet& other) : Bullet(other) {
 PlayerBullet::~PlayerBullet() {
 }
 
-void PlayerBullet::Update(float dt) {
-	Bullet::Update(dt);
-}
-
 void PlayerBullet::OnTriggerBegin(GameObject* other) {
 	Bullet::OnTriggerBegin(other);
 	//not work as it is not colliding with boss

@@ -11,26 +11,28 @@ using namespace NCL::Rendering;
 using namespace paintHell::debug;
 
 PaintingRPass::PaintingRPass(OGLRenderer& renderer) : OGLMainRenderPass(renderer) {
-	shader = new OGLShader("paintStencil.vert", "paintStencil.frag");
 	frameBuffer = new OGLFrameBuffer();
+
+	shader = new OGLShader("paintStencil.vert", "paintStencil.frag");
 }
+
 PaintingRPass::~PaintingRPass() {
 	delete shader;
+
 	delete frameBuffer;
 }
 
 void PaintingRPass::Render() {
 	DebugViewPoint& debugView = DebugViewPoint::Instance();
 	debugView.MarkTime("Paint Objects");
+
 	frameBuffer->Bind();
 	shader->Bind();
-	glDisable(GL_CULL_FACE);
+
+	renderer.GetConfig().SetCullFace(false);
+	renderer.GetConfig().SetBlend(true, BlendFuncSrc::SrcAlpha, BlendFuncDst::OneMinusSrcAlpha);
 
 	GameWorld& world = GameWorld::instance();
-
-	GLint paintPos = glGetUniformLocation(shader->GetProgramID(), "paintPos");
-	GLint paintSize = glGetUniformLocation(shader->GetProgramID(), "paintSize");
-	GLint paintColour = glGetUniformLocation(shader->GetProgramID(), "paintColour");
 
 	world.OperateOnContents([&](GameObject* gameObject) {
 		const CollisionVolume* volume = gameObject->GetBoundingVolume();
@@ -42,15 +44,14 @@ void PaintingRPass::Render() {
 		frameBuffer->AddTexture(renderObj->GetPaintTexture(), 0);
 
 		Matrix4 modelMatrix = renderObj->GetTransform()->GetGlobalMatrix();
-		glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "modelMatrix"), 1, GL_FALSE, (GLfloat*)&modelMatrix);
+		shader->SetUniformMatrix("modelMatrix", modelMatrix);
 
-		glViewport(0, 0, renderObj->GetWidth(), renderObj->GetHeight());
+		renderer.GetConfig().SetViewport(0, 0, renderObj->GetWidth(), renderObj->GetHeight());
 
-		for (PaintCollision const paint : renderObj->GetPaintCollisions())
-		{
-			glUniform3fv(paintPos, 1, (GLfloat*)&paint.center);
-			glUniform3fv(paintColour, 1, (GLfloat*)&paint.colour);
-			glUniform1f(paintSize, paint.radius);
+		for (const PaintCollision& paint : renderObj->GetPaintCollisions()) {
+			shader->SetUniformFloat("paintPos", paint.center);
+			shader->SetUniformFloat("paintColour", paint.colour);
+			shader->SetUniformFloat("paintSize", paint.radius);
 			renderObj->GetMesh()->Draw();
 		}
 
@@ -58,10 +59,13 @@ void PaintingRPass::Render() {
 		
 	});
 
-	glViewport(0, 0, renderer.GetWidth(), renderer.GetHeight());
+	renderer.GetConfig().SetViewport();
 
-	glEnable(GL_CULL_FACE);
+	renderer.GetConfig().SetBlend();
+	renderer.GetConfig().SetCullFace();
+
 	shader->Unbind();
 	frameBuffer->Unbind();
+
 	debugView.FinishTime("Paint Objects");
 }
