@@ -89,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ExampleRenderer.h" />
+    <ClInclude Include="InputKeyMap.h" />
     <ClInclude Include="PS4Renderer.h" />
     <ClInclude Include="RenderObject.h" />
     <ClInclude Include="TutorialGame.h" />

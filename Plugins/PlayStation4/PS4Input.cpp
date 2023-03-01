@@ -8,7 +8,7 @@
 using namespace NCL::PS4;
 
 PS4Input::PS4Input()	{
-	SceUserServiceInitializeParams params;
+	/*SceUserServiceInitializeParams params;
 	memset((void*)&params, 0, sizeof(params));
 	params.priority = SCE_KERNEL_PRIO_FIFO_DEFAULT;
 	if (sceUserServiceInitialize(&params) != SCE_OK) {
@@ -16,14 +16,34 @@ PS4Input::PS4Input()	{
 	};
 
 	scePadInit();
-	InitController();
+	InitController();*/
 }
 
-PS4Input::~PS4Input()	{
+NCL::PS4::PS4Input::PS4Input(SceUserServiceUserId& s)
+{
+	padHandle = scePadOpen(s, SCE_PAD_PORT_TYPE_STANDARD, 0, NULL);
+	int ret = scePadGetControllerInformation(padHandle, &padInfo);
+	if (ret == SCE_OK) {
+		//can get deadzone information etc through here
+		initialized = true;
+
+		deadzoneLeft = padInfo.stickInfo.deadZoneLeft;
+		deadzoneRight = padInfo.stickInfo.deadZoneRight;
+		std::cout << "Dead Zone Left:" << (int)padInfo.stickInfo.deadZoneLeft << std::endl;
+		std::cout << "Dead Zone Right:" << (int)padInfo.stickInfo.deadZoneRight << std::endl;
+	}
+}
+
+void PS4Input::DestroyController()	{
 	scePadClose(padHandle);
 
-	sceUserServiceTerminate();
+	/*sceUserServiceTerminate();*/
 }
+//PS4Input::~PS4Input()	{
+//	scePadClose(padHandle);
+//
+//	/*sceUserServiceTerminate();*/
+//}
 
 void PS4Input::InitController() {
 	//Get the currently logged in player

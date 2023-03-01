@@ -4,7 +4,8 @@ size_t       sceLibcHeapSize = 256 * 1024 * 1024;	/* Set up heap area upper limi
 
 #include "../Plugins/PlayStation4/PS4Window.h"
 #include "../Plugins/PlayStation4/Ps4AudioSystem.h"
-#include "../Plugins/PlayStation4/PS4Input.h"
+//#include "../Plugins/PlayStation4/PS4Input.h"
+#include "../Plugins/PlayStation4/PS4InputManager.h"
 #include "TutorialGame.h"
 
 #include <iostream>
@@ -19,7 +20,9 @@ int main(void) {
 
 	/*ExampleRenderer renderer(w);*/
 	//
-	PS4Input		input		= PS4Input();
+	//PS4Input		input		= PS4Input();
+	
+	PS4::PS4InputManager::Initialize();
 	
 	/*renderer.CreateCamera(&input);*/
 
@@ -32,23 +35,44 @@ int main(void) {
 	while (w->UpdateWindow()) {
 		float time = w->GetTimer()->GetTimeDeltaSeconds();
 
-		input.Poll();
-
+		//input.Poll();
+		
+		PS4InputManager::Update();
+		
 		game->UpdateGame(time);
+
 		/*renderer.Update(time);
 		renderer.Render();*/
-	
-		if (input.GetButton(0)) {
-			std::cout << "LOL BUTTON" << std::endl;
+		//Player1
+		if (PS4InputManager::GetButtons(0, 0)) {
+			std::cout << "Player 1:Triangle button pressed" << std::endl;
 		}
-	
-		if (input.GetButton(1)) {
+		if (PS4InputManager::GetButtons(0, 1)) {
+			std::cout << "Player 1: Circle button pressed" << std::endl;
 			return 1;
 		}
+
+		//Player2
+		if (PS4InputManager::GetButtons(1, 0)) {
+			std::cout << "Player 2:Triangle button pressed" << std::endl;
+		}
+		if (PS4InputManager::GetButtons(1, 1)) {
+			std::cout << "Player 2:Circle button pressed" << std::endl;
+			return 1;
+		}
+
+
+		//if (input.GetButton(0)) {
+		//	std::cout << "LOL BUTTON" << std::endl;
+		//}
+	
+		//if (input.GetButton(1)) {
+		//	return 1;
+		//}
 	}
 
 	delete audioSystem;
-	
+	PS4InputManager::Destroy();
 	return 1;
 }
 
