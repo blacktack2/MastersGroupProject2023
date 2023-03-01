@@ -125,3 +125,7 @@ void OGLRendererConfig::SetDepthTest(bool enabled, DepthTestFunc func, float nea
 		glDisable(GL_DEPTH_TEST);
 	}
 }
+
+void OGLRendererConfig::SetDepthMask(bool enabled) {
+	glDepthMask(enabled);
+}

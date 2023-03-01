@@ -22,4 +22,5 @@ void RendererConfigBase::ResetAll() {
 	SetBlend();
 	SetCullFace();
 	SetDepthTest();
+	SetDepthMask();
 }

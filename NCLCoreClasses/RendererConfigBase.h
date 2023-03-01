@@ -90,6 +90,7 @@ namespace NCL::Rendering {
 		virtual void SetBlend(bool enabled = false, BlendFuncSrc srcFactor = BlendFuncSrc::Default, BlendFuncDst dstFactor = BlendFuncDst::Default) = 0;
 		virtual void SetCullFace(bool enabled = true, CullFace mode = CullFace::Default) = 0;
 		virtual void SetDepthTest(bool enabled = false, DepthTestFunc func = DepthTestFunc::Default, float nearVal = 0, float farVal = 1) = 0;
+		virtual void SetDepthMask(bool enabled = false) = 0;
 	private:
 		RendererBase& renderer;
 	};

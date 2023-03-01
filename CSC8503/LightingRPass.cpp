@@ -100,7 +100,6 @@ void LightingRPass::DrawLight(const Light& light) {
 
 	renderer.GetConfig().SetBlend(true, BlendFuncSrc::One, BlendFuncDst::One);
 	renderer.GetConfig().SetDepthTest(true, DepthTestFunc::Always);
-	glDepthMask(GL_FALSE);
 
 	depthTexIn->Bind(0);
 	normalTexIn->Bind(1);
@@ -132,7 +131,6 @@ void LightingRPass::DrawLight(const Light& light) {
 		renderer.GetConfig().SetCullFace();
 	}
 
-	glDepthMask(GL_TRUE);
 	renderer.GetConfig().SetDepthTest();
 	renderer.GetConfig().SetBlend();
 

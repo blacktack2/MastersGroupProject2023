@@ -50,9 +50,10 @@ ModelRPass::~ModelRPass() {
 
 void ModelRPass::Render() {
 	frameBuffer->Bind();
-	renderer.ClearBuffers(ClearBit::ColorDepth);
-
+	renderer.GetConfig().SetDepthMask(true);
 	renderer.GetConfig().SetDepthTest(true);
+
+	renderer.ClearBuffers(ClearBit::ColorDepth);
 
 	for (OGLShader* shader : modelShaders) {
 		shader->Bind();
@@ -80,8 +81,9 @@ void ModelRPass::Render() {
 
 		renderObject->Draw();
 	});
-	renderer.GetConfig().SetDepthTest();
 
+	renderer.GetConfig().SetDepthTest();
+	renderer.GetConfig().SetDepthMask();
 	frameBuffer->Unbind();
 }
 
