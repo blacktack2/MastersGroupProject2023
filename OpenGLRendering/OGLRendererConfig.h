@@ -1,6 +1,7 @@
 /**
  * @file   OGLRendererConfig.h
- * @brief  
+ * @brief  OpenGL implementation for the global renderer settings wrapper
+ * class.
  * 
  * @author Stuart Lewis
  * @date   February 2023
@@ -9,6 +10,10 @@
 #include "RendererConfigBase.h"
 
 namespace NCL::Rendering {
+	/**
+	 * @brief OpenGL implementation for the global renderer settings wrapper
+	 * class.
+	 */
 	class OGLRendererConfig : public RendererConfigBase {
 	public:
 		OGLRendererConfig(RendererBase& renderer);

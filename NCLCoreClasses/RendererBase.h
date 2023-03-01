@@ -117,6 +117,11 @@ namespace NCL::Rendering {
 			return windowHeight;
 		}
 
+		/**
+		 * @brief Clear the backbuffer, or the current framebuffer.
+		 * 
+		 * @param mask Which buffers to clear.
+		 */
 		virtual void ClearBuffers(ClearBit mask) = 0;
 		virtual RendererConfigBase& GetConfig() = 0;
 	protected:
