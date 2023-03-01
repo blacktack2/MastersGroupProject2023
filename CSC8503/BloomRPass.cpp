@@ -97,7 +97,7 @@ void BloomRPass::Render() {
 	Upsample();
 	bloomFrameBuffer->Unbind();
 
-	renderer.GetConfig().ResetViewport();
+	renderer.GetConfig().SetViewport();
 	Combine();
 }
 
@@ -169,7 +169,7 @@ void BloomRPass::Upsample() {
 		quad->Draw();
 	}
 
-	renderer.GetConfig().ResetBlend();
+	renderer.GetConfig().SetBlend();
 
 	upsampleShader->Unbind();
 }

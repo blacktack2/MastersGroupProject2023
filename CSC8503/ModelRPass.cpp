@@ -80,7 +80,7 @@ void ModelRPass::Render() {
 
 		renderObject->Draw();
 	});
-	renderer.GetConfig().ResetDepthTest();
+	renderer.GetConfig().SetDepthTest();
 
 	frameBuffer->Unbind();
 }

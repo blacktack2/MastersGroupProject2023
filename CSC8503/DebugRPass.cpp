@@ -57,7 +57,7 @@ void DebugRPass::Render() {
 	RenderLines();
 	RenderText();
 
-	renderer.GetConfig().ResetCullFace();
+	renderer.GetConfig().SetCullFace();
 }
 
 void DebugRPass::SetDebugStringBufferSizes(size_t newVertCount) {

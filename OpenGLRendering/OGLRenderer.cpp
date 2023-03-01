@@ -67,7 +67,7 @@ void OGLRenderer::OnWindowResize(int width, int height) {
 	windowWidth  = width;
 	windowHeight = height;
 
-	GetConfig().ResetViewport();
+	GetConfig().SetViewport();
 }
 
 void OGLRenderer::BeginFrame() {

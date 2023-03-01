@@ -40,7 +40,7 @@ void MenuRPass::Render() {
 	DrawMenu();
 	DrawButtons();
 
-	renderer.GetConfig().ResetCullFace();
+	renderer.GetConfig().SetCullFace();
 }
 
 void MenuRPass::DrawMenu(){

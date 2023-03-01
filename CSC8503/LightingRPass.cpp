@@ -129,12 +129,12 @@ void LightingRPass::DrawLight(const Light& light) {
 	} else {
 		renderer.GetConfig().SetCullFace(true, CullFace::Back);
 		sphere->Draw();
-		renderer.GetConfig().ResetCullFace();
+		renderer.GetConfig().SetCullFace();
 	}
 
 	glDepthMask(GL_TRUE);
-	renderer.GetConfig().SetDepthTest(false);
-	renderer.GetConfig().ResetBlend();
+	renderer.GetConfig().SetDepthTest();
+	renderer.GetConfig().SetBlend();
 
 	shader->Unbind();
 	frameBuffer->Unbind();

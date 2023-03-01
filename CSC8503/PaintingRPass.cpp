@@ -59,10 +59,10 @@ void PaintingRPass::Render() {
 		
 	});
 
-	renderer.GetConfig().ResetViewport();
+	renderer.GetConfig().SetViewport();
 
-	renderer.GetConfig().ResetBlend();
-	renderer.GetConfig().ResetCullFace();
+	renderer.GetConfig().SetBlend();
+	renderer.GetConfig().SetCullFace();
 
 	shader->Unbind();
 	frameBuffer->Unbind();
