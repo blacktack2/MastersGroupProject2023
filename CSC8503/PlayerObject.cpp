@@ -204,21 +204,26 @@ void PlayerObject::CollisionWith(GameObject* other) {
 }
 
 
-void PlayerObject::Shoot() {
-	if (projectileFireRateTimer > 0)
-		return;
-	projectileFireRateTimer = projectileFireRate;
-
+PlayerBullet* PlayerObject::PrepareBullet()
+{
 	PlayerBullet* ink = BulletInstanceManager::instance().GetPlayerBullet();
 	ink->SetLifespan(projectileLifespan);
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
 	ink->GetPhysicsObject()->SetInverseMass(2.0f);
 	ink->GetPhysicsObject()->SetLinearVelocity(this->physicsObject->GetLinearVelocity() * Vector3(1, 0, 1));
-	Quaternion dir = transform.GetGlobalOrientation() * Quaternion::EulerAnglesToQuaternion( (rand()%100-50)/20, (rand() % 100 - 50) / 20, (rand() % 100 - 50) / 20);
+	Quaternion dir = transform.GetGlobalOrientation() * Quaternion::EulerAnglesToQuaternion((rand() % 100 - 50) / 20, (rand() % 100 - 50) / 20, (rand() % 100 - 50) / 20);
 	ink->GetPhysicsObject()->ApplyLinearImpulse(dir * Vector3(0, 0, -1) * projectileForce);
 	ink->SetActive(true);
-	lastInstancedObjects.push_back(ink);
+	return ink;
 }
+
+void PlayerObject::Shoot() {
+	if (projectileFireRateTimer > 0)
+		return;
+	projectileFireRateTimer = projectileFireRate;
+	PlayerBullet* bullet = PrepareBullet();
+}
+
 
 void NCL::CSC8503::PlayerObject::SetupAudio()
 {

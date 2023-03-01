@@ -37,6 +37,8 @@ namespace NCL {
 			void FreezeSelf();
 			void UnfreezeSelf();
 
+			GameServer* GetServer();
+
 		protected:
 			void UpdateAsServer(float dt);
 			void UpdateAsClient(float dt);

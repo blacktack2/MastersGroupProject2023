@@ -4,6 +4,7 @@
 #include "PrefabLibrary.h"
 #include "GameWorld.h"
 #include "CollisionVolume.h"
+#include "NetworkObject.h"
 
 
 using namespace NCL::CSC8503;
@@ -38,5 +39,18 @@ void BulletInstanceManager::ObjectIntiation() {
 	for (size_t i = 0; i < BULLETTYPECOUNT; i++)
 	{
 		indexs[i] = 0;
+	}
+}
+
+void BulletInstanceManager::AddNetworkObject() {
+	GameWorld& world = GameWorld::instance();
+	for (size_t i = 0; i < BULLETTYPECOUNT; i++)
+	{
+		for (auto bullet : bullets[i])
+		{
+			std::cout << bullet->GetWorldID() << std::endl;
+			bullet->SetNetworkObject(new NetworkObject(static_cast<GameObject&>(*bullet), bullet->GetWorldID()));
+			world.AddNetworkObject(bullet->GetNetworkObject());
+		}
 	}
 }

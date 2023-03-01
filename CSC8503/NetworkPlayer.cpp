@@ -1,5 +1,7 @@
 #include "NetworkPlayer.h"
 #include "NetworkedGame.h"
+#include "NetworkObject.h"
+#include "GameServer.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -30,4 +32,23 @@ void NetworkPlayer::OnCollisionBegin(GameObject* otherObject) {
 			game->OnPlayerCollision(this, (NetworkPlayer*)otherObject);
 		}
 	}
+}
+
+void NetworkPlayer::Shoot()
+{
+	if (projectileFireRateTimer > 0)
+		return;
+	projectileFireRateTimer = projectileFireRate;
+	PlayerBullet* bullet = PrepareBullet();
+
+	ItemInitPacket newObj;
+	Transform objTransform = bullet->GetTransform();
+	newObj.position = objTransform.GetGlobalPosition();
+	newObj.orientation = objTransform.GetGlobalOrientation();
+	newObj.scale = objTransform.GetScale();
+	newObj.velocity = bullet->GetPhysicsObject()->GetLinearVelocity();
+	newObj.objectID = bullet->GetNetworkObject()->GetNetworkID();
+
+	newObj.itemType = NetworkInstanceType::Projectile;
+	game->GetServer()->SendGlobalPacket(&newObj);
 }

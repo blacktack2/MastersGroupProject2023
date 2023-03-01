@@ -47,10 +47,14 @@ namespace NCL {
 			int GetPlayerNum() const {
 				return playerID;
 			}
+
+			void Shoot();
+
 			bool isFrozen;
 		protected:
 			NetworkedGame* game;
 			int playerID;
+		
 		};
 	}
 }

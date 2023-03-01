@@ -11,6 +11,7 @@
 #include "Bullet.h"
 #include "AssetLibrary.h"
 #include "PrefabLibrary.h"
+#include "BulletInstanceManager.h"
 
 #include <bitset>
 #include <Maths.h>
@@ -113,6 +114,11 @@ void NetworkedGame::FreezeSelf()
 void NetworkedGame::UnfreezeSelf()
 {
 	static_cast<NetworkPlayer*>(localPlayer)->isFrozen = false;
+}
+
+GameServer* NetworkedGame::GetServer()
+{
+	return thisServer;
 }
 
 void NetworkedGame::UpdateAsServer(float dt) {
@@ -222,6 +228,9 @@ void NetworkedGame::SendSnapshot(bool deltaFrame, int playerID) {
 	world->GetObjectIterators(first, last);
 
 	for (auto i = first; i != last; ++i) {
+		if ( !(* i)->IsActive() ) {
+			continue;
+		}
 		NetworkObject* o = (*i)->GetNetworkObject();
 		if (!o) {
 			continue;
@@ -289,6 +298,7 @@ GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 
 void NetworkedGame::StartLevel() {
 	InitWorld();
+	BulletInstanceManager::instance().AddNetworkObject();
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss);
 	testingBoss->SetNetworkObject(new NetworkObject(*testingBoss, 10));
@@ -330,6 +340,7 @@ void NetworkedGame::ClientProcessNetworkObject(GamePacket* payload, int objID) {
 }
 
 void NetworkedGame::ServerGetInstantiatedObject(NetworkPlayer* player) {
+	/*
 	vector<GameObject*> newObjList = player->GetLastInstancedObjects();
 	for (auto newObj : newObjList) {
 		if (newObj->GetNetworkObject() == nullptr) {
@@ -339,6 +350,7 @@ void NetworkedGame::ServerGetInstantiatedObject(NetworkPlayer* player) {
 		}
 
 	}
+	*/
 }
 
 void NetworkedGame::SendInitItemPacket(GameObject* obj) {
