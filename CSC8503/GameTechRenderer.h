@@ -8,7 +8,6 @@
  * @date   February 2023
  */
 #pragma once
-#include "OGLFrameBuffer.h"
 #include "OGLMesh.h"
 #include "OGLRenderer.h"
 #include "OGLShader.h"

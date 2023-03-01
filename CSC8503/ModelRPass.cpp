@@ -50,7 +50,7 @@ ModelRPass::~ModelRPass() {
 
 void ModelRPass::Render() {
 	frameBuffer->Bind();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	renderer.ClearBuffers(ClearBit::ColorDepth);
 
 	renderer.GetConfig().SetDepthTest(true);
 

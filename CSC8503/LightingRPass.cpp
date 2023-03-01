@@ -85,7 +85,7 @@ void LightingRPass::OnWindowResize(int width, int height) {
 void LightingRPass::Render() {
 	frameBuffer->Bind();
 
-	glClear(GL_COLOR_BUFFER_BIT);
+	renderer.ClearBuffers(ClearBit::Color);
 
 	frameBuffer->Unbind();
 

@@ -28,6 +28,16 @@ namespace NCL::Rendering {
 		Adaptive
 	};
 
+	enum class ClearBit {
+		Color,
+		Depth,
+		Stencil,
+		ColorDepth,
+		ColorStencil,
+		DepthStencil,
+		ColorDepthStencil,
+	};
+
 	class RendererConfigBase;
 
 	/**
@@ -107,6 +117,7 @@ namespace NCL::Rendering {
 			return windowHeight;
 		}
 
+		virtual void ClearBuffers(ClearBit mask) = 0;
 		virtual RendererConfigBase& GetConfig() = 0;
 	protected:
 		/**

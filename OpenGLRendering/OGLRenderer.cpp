@@ -70,6 +70,21 @@ void OGLRenderer::OnWindowResize(int width, int height) {
 	GetConfig().SetViewport();
 }
 
+void OGLRenderer::ClearBuffers(ClearBit mask) {
+	GLbitfield glmask;
+	switch (mask) {
+		default:
+		case ClearBit::Color   : glmask = GL_COLOR_BUFFER_BIT  ; break;
+		case ClearBit::Depth   : glmask = GL_DEPTH_BUFFER_BIT  ; break;
+		case ClearBit::Stencil : glmask = GL_STENCIL_BUFFER_BIT; break;
+		case ClearBit::ColorDepth   : glmask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT  ; break;
+		case ClearBit::ColorStencil : glmask = GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT; break;
+		case ClearBit::DepthStencil : glmask = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT; break;
+		case ClearBit::ColorDepthStencil: glmask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT; break;
+	}
+	glClear(glmask);
+}
+
 void OGLRenderer::BeginFrame() {
 }
 

@@ -122,7 +122,7 @@ void SSAORPass::SetNumKernels(size_t num) {
 
 void SSAORPass::DrawSSAO() {
 	ssaoFrameBuffer->Bind();
-	glClear(GL_COLOR_BUFFER_BIT);
+	renderer.ClearBuffers(ClearBit::Color);
 	ssaoShader->Bind();
 
 	depthTexIn->Bind(0);
@@ -143,7 +143,7 @@ void SSAORPass::DrawSSAO() {
 
 void SSAORPass::BlurSSAO() {
 	blurFrameBuffer->Bind();
-	glClear(GL_COLOR_BUFFER_BIT);
+	renderer.ClearBuffers(ClearBit::Color);
 	blurShader->Bind();
 
 	ssaoTex->Bind(0);

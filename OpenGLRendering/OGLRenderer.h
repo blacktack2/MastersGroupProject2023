@@ -64,6 +64,8 @@ namespace NCL::Rendering {
 		RendererConfigBase& GetConfig() override {
 			return config;
 		}
+
+		void ClearBuffers(ClearBit mask) override;
 	protected:
 		void BeginFrame() override;
 		void EndFrame() override;
