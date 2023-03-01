@@ -60,6 +60,7 @@ void NCL::CSC8503::TutorialGame::InitWorld(InitMode mode)
 
 void NCL::CSC8503::TutorialGame::UpdateGame(float dt)
 {
+	world->GetMainCamera()->UpdateCamera(dt);
 	renderer->UpdateViewProjectionMatrix((PS4::PS4Camera*)world->GetMainCamera());
 	renderer->BuildObjectList();
 	renderer->Render();

@@ -1,8 +1,8 @@
 #pragma once
+#ifdef x64
 #include "../Common/Window.h"
-
-#ifdef _ORBIS
-#include "../Plugins/PlayStation4/PS4Input.h"
+#elif _ORBIS
+#include "../Plugins/PlayStation4/PS4InputManager.h"
 #endif // _ORBIS
 
 
@@ -16,7 +16,7 @@ enum InputType :unsigned int {
 	Action1 = (1u << 5),
 	Action2 = (1u << 6),
 	FreeLook = (1u << 7),
-	All = 256
+	All = -1
 };
 using namespace NCL;
 

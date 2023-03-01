@@ -104,7 +104,7 @@ void NCL::PS4::PS4Renderer::RenderFrame()
 
 void NCL::PS4::PS4Renderer::UpdateViewProjectionMatrix(PS4Camera* camera)
 {
-	*viewProjMat = Matrix4();
+	/**viewProjMat = Matrix4();*/
 	//*viewProjMat = Matrix4::Perspective(1.0f, 1000.0f, (float)currentWidth / (float)currentHeight, 45.0f) *Matrix4::Translation(Vector3(0,0,-2));
 	*viewProjMat = Matrix4::Perspective(0.1f, 1000.0f, (float)currentWidth / (float)currentHeight, 45.0f) * camera->BuildViewMatrix();
 }

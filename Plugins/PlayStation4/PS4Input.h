@@ -6,6 +6,23 @@
 
 namespace NCL {
 	namespace PS4 {
+		enum Buttons {
+			TRIANGLE =0,
+			CIRCLE,
+			CROSS,
+			SQUARE,
+			L2,
+			R2,
+			L1,
+			R1,
+			L3,
+			R3
+		};
+		enum Axes {
+			LEFTSTICK=0,
+			RIGHTSTICK,
+			KEYPAD
+		};
 		class PS4Input : public InputBase
 		{
 		public:

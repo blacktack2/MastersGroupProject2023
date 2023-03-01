@@ -1,4 +1,6 @@
 #include "PS4Camera.h"
+#include "PS4InputManager.h"
+#include "../../Common/Vector2.h"
 
 NCL::PS4::PS4Camera::PS4Camera()
 {
@@ -19,50 +21,50 @@ NCL::PS4::PS4Camera::PS4Camera(PS4Input* input):Camera()
 
 void NCL::PS4::PS4Camera::UpdateCamera(float dt)
 {
-	if (mInput) { // remove once identified
-		mInput->Poll();
+	Maths::Vector2 leftAnalog= PS4InputManager::GetAxis(Player1, LEFTSTICK);
+	Maths::Vector2 rightAnalog = PS4InputManager::GetAxis(Player1, RIGHTSTICK);
+	Maths::Vector2 directionKeys = PS4InputManager::GetAxis(Player1, KEYPAD);
+	//Update based on right analog stick
+	pitch -= (rightAnalog.y);
+	yaw -= (rightAnalog.x);
 
-		//Update based on right analog stick
-		pitch -= (mInput->GetAxis(1).y);
-		yaw -= (mInput->GetAxis(1).x);
+	pitch = std::min(pitch, 90.0f);
+	pitch = std::max(pitch, -90.0f);
 
-		pitch = std::min(pitch, 90.0f);
-		pitch = std::max(pitch, -90.0f);
+	if (yaw < 0) {
+		yaw += 360.0f;
+	}
+	if (yaw > 360.0f) {
+		yaw -= 360.0f;
+	}
 
-		if (yaw < 0) {
-			yaw += 360.0f;
-		}
-		if (yaw > 360.0f) {
-			yaw -= 360.0f;
-		}
+	float frameSpeed = 32 * dt;
 
-		float frameSpeed = 32 * dt;
+	//left analog stick
+	float right = leftAnalog.x;
+	float forward = leftAnalog.y;
 
-		float right = mInput->GetAxis(0).x;
-		float forward = mInput->GetAxis(0).y;
+	//right = std::min(right, 1.0f);
+	//right = std::max(right, -1.0f);
 
-		//right = std::min(right, 1.0f);
-		//right = std::max(right, -1.0f);
+	//forward = std::min(forward, 1.0f);
+	//forward = std::max(forward, -1.0f);
 
-		//forward = std::min(forward, 1.0f);
-		//forward = std::max(forward, -1.0f);
+	//std::cout << "Forward: " << forward << std::endl;
+	//std::cout << "Right: " << right<< std::endl;
 
-		//std::cout << "Forward: " << forward << std::endl;
-		//std::cout << "Right: " << right<< std::endl;
+	if (directionKeys.y > 0 || forward < 0) {
+		position += Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
+	}
+	if (directionKeys.x > 0 || right > 0) {
+		position += Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(1, 0, 0) * frameSpeed;
+	}
 
-		if (mInput->GetAxis(2).y > 0 || forward < 0) {
-			position += Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
-		}
-		if (mInput->GetAxis(2).x > 0 || right > 0) {
-			position += Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(1, 0, 0) * frameSpeed;
-		}
-
-		if (mInput->GetAxis(2).y < 0 || forward>0) {
-			position -= Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
-		}
-		if (mInput->GetAxis(2).x < 0 || right < 0) {
-			position -= Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(1, 0, 0) * frameSpeed;
-		}
+	if (directionKeys.y < 0 || forward>0) {
+		position -= Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
+	}
+	if (directionKeys.x < 0 || right < 0) {
+		position -= Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(1, 0, 0) * frameSpeed;
 	}
 	
 

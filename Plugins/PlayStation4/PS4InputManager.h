@@ -5,6 +5,12 @@
 namespace NCL{
 	namespace Maths { class Vector2; }
 	namespace PS4 {
+		enum Players {
+			Player1=0,
+			Player2,
+			Player3,
+			Player4
+		};
 
 		class PS4InputManager {
 		private:

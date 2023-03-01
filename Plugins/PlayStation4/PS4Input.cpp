@@ -61,8 +61,8 @@ void PS4Input::InitController() {
 			
 			deadzoneLeft= padInfo.stickInfo.deadZoneLeft;
 			deadzoneRight=padInfo.stickInfo.deadZoneRight;
-			std::cout << "Dead Zone Left:" << (int)padInfo.stickInfo.deadZoneLeft <<std::endl;
-			std::cout << "Dead Zone Right:" << (int)padInfo.stickInfo.deadZoneRight <<std::endl;
+			/*std::cout << "Dead Zone Left:" << (int)padInfo.stickInfo.deadZoneLeft <<std::endl;
+			std::cout << "Dead Zone Right:" << (int)padInfo.stickInfo.deadZoneRight <<std::endl;*/
 		}
 	}
 }
