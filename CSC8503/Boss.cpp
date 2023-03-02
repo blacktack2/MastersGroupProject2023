@@ -20,7 +20,7 @@ void Boss::Update(float dt) {
     InkEffectManager::instance().ApplyInkEffect(node->inkType, GetHealth(), 1);
     //}
     //check boss health
-    if (GetHealth()->GetHealth() <= 0) {
+    if (health.GetHealth() <= 0) {
         gameStateManager->SetGameState(GameState::Win);
     }
 }
