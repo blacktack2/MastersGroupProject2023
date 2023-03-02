@@ -110,6 +110,8 @@ void PlayerObject::GetInput(Vector3& dir, unsigned int keyPress) {
 	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
 	
 	Vector3 fwdAxis = this->GetTransform().GetGlobalOrientation() * Vector3(0, 0, -1);
+	//Vector3 fwdAxis = this->GetTransform().GetGlobalPosition() - gameWorld.GetMainCamera()->GetPosition();
+	//fwdAxis.y = 0;
 
 	Vector3 leftAxis = this->GetTransform().GetGlobalOrientation() * Vector3(-1, 0, 0);
 
@@ -120,6 +122,7 @@ void PlayerObject::GetInput(Vector3& dir, unsigned int keyPress) {
 	if (keyMap.CheckButtonPressed(keyPress, InputType::Foward))
 	{
 		dir += fwdAxis;
+		RotateYaw(gameWorld.GetMainCamera()->GetYaw());
 		playerSource->Play(Sound::AddSound("footstep06.wav"));
 	}
 	if (keyMap.CheckButtonPressed(keyPress, InputType::Backward) )

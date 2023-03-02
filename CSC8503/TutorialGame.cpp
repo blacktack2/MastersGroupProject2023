@@ -37,6 +37,7 @@
 
 #include <string>
 
+#include "XboxController.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -123,6 +124,12 @@ void TutorialGame::UpdateGame(float dt) {
 	GameState gameState = gameStateManager->GetGameState();
 	menuManager->Update(dt);
 	keyMap.Update();
+
+	XboxController c;
+	float v;
+	bool b = c.GetRightTrigger(1, v);
+	if (b) std::cout << v << "\n";
+	else std::cout << "No displacement\n";
 
 	debugViewPoint->BeginFrame();
 	debugViewPoint->MarkTime("Update");
