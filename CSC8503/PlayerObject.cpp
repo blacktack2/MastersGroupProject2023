@@ -32,22 +32,22 @@ PlayerObject::PlayerObject(int id) : GameObject(), id(id), keyMap(paintHell::Inp
 		CollisionWith(other);
 	};
 	SetupAudio();
-	
+
 }
 
 PlayerObject::~PlayerObject() {
-	alDeleteSources(1, &(*playerSource->GetSource()).source);
-	alDeleteSources(1, &(*attackSource->GetSource()).source);
+	/*alDeleteSources(1, &(*playerSource->GetSource()).source);
+	alDeleteSources(1, &(*attackSource->GetSource()).source);*/
 	SoundSystem::GetSoundSystem()->SetListener(nullptr);
 	delete playerSource;
 	delete attackSource;
-		
-		
+
+
 }
 
 void PlayerObject::Update(float dt) {
 	health.Update(dt);
-	
+
 
 	lastInstancedObjects.clear();
 	jumpTimer -= dt;
@@ -73,28 +73,28 @@ void PlayerObject::Update(float dt) {
 	if (health.GetHealth() <= 0) {
 		gameStateManager->SetGameState(GameState::Lose);
 	}
-	
+
 }
 
 void PlayerObject::MoveTo(Vector3 position) {
 	Vector3 diff = position - this->GetTransform().GetGlobalPosition();
-	
+
 	if (diff.Length() > 0.1f) {
 		Vector3 dir = (position - this->GetTransform().GetGlobalPosition()).Normalised();
 		this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
 	}
-		
+
 }
 
 void PlayerObject::Move(Vector3 dir) {
 	this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
-	
+
 	if (lastDir != Vector3(0, 0, 0)) {
 		//Vector3 stopDir = dir - lastDir;
 		if (paintHell::InputKeyMap::instance().GetButtonState() != lastKey) {
 			this->GetPhysicsObject()->ApplyLinearImpulse(-lastDir * moveSpeed);
 		}
-		
+
 	}
 	lastDir = dir;
 }
@@ -108,10 +108,8 @@ void PlayerObject::MoveCamera() {
 void PlayerObject::GetInput(Vector3& dir, unsigned int keyPress) {
 	GameObject* proj;
 	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
-	
+
 	Vector3 fwdAxis = this->GetTransform().GetGlobalOrientation() * Vector3(0, 0, -1);
-	//Vector3 fwdAxis = this->GetTransform().GetGlobalPosition() - gameWorld.GetMainCamera()->GetPosition();
-	//fwdAxis.y = 0;
 
 	Vector3 leftAxis = this->GetTransform().GetGlobalOrientation() * Vector3(-1, 0, 0);
 
@@ -122,10 +120,9 @@ void PlayerObject::GetInput(Vector3& dir, unsigned int keyPress) {
 	if (keyMap.CheckButtonPressed(keyPress, InputType::Foward))
 	{
 		dir += fwdAxis;
-		RotateYaw(gameWorld.GetMainCamera()->GetYaw());
 		playerSource->Play(Sound::AddSound("footstep06.wav"));
 	}
-	if (keyMap.CheckButtonPressed(keyPress, InputType::Backward) )
+	if (keyMap.CheckButtonPressed(keyPress, InputType::Backward))
 	{
 		dir -= fwdAxis;
 		playerSource->Play(Sound::AddSound("footstep06.wav"));
@@ -140,18 +137,18 @@ void PlayerObject::GetInput(Vector3& dir, unsigned int keyPress) {
 		dir -= leftAxis;
 		playerSource->Play(Sound::AddSound("footstep06.wav"));
 	}
-	if (keyMap.CheckButtonPressed(keyPress,InputType::Jump) && onGround && jumpTimer <= 0.0f ) 
+	if (keyMap.CheckButtonPressed(keyPress, InputType::Jump) && onGround && jumpTimer <= 0.0f)
 	{
 		jumpTimer = jumpCooldown;
 		this->GetPhysicsObject()->ApplyLinearImpulse(upAxis * jumpSpeed);
 		//playerSource->Play(Sound::AddSound("swing3.wav"));
 	}
-	if (keyMap.CheckButtonPressed(keyPress,InputType::Action1)) 
+	if (keyMap.CheckButtonPressed(keyPress, InputType::Action1))
 	{
 		Shoot();
 		attackSource->Play(Sound::AddSound("magic1.wav"));
 	}
-	if (keyMap.CheckButtonPressed(keyPress,InputType::FreeLook))
+	if (keyMap.CheckButtonPressed(keyPress, InputType::FreeLook))
 	{
 		isFreeLook = true;
 	}
@@ -159,11 +156,11 @@ void PlayerObject::GetInput(Vector3& dir, unsigned int keyPress) {
 }
 
 void PlayerObject::CheckGround() {
-	Ray r = Ray(this->GetTransform().GetGlobalPosition(), Vector3(0,-1,0));
+	Ray r = Ray(this->GetTransform().GetGlobalPosition(), Vector3(0, -1, 0));
 	RayCollision closestCollision;
 	GameObject* objClosest;
 	onGround = false;
-	if (gameWorld.Raycast(r, closestCollision, true, this)) 
+	if (gameWorld.Raycast(r, closestCollision, true, this))
 	{
 		objClosest = (GameObject*)closestCollision.node;
 		float groundDist = (closestCollision.collidedAt - this->GetTransform().GetGlobalPosition()).Length();
@@ -171,7 +168,7 @@ void PlayerObject::CheckGround() {
 		if (groundDist < jumpTriggerDist)
 		{
 			onGround = true;
-		}	
+		}
 	}
 }
 
@@ -183,7 +180,7 @@ void PlayerObject::RotateToCamera() {
 	if (hasCamera && !isFreeLook) {
 		RotateYaw(gameWorld.GetMainCamera()->GetYaw());
 	}
-	
+
 }
 
 void PlayerObject::CollisionWith(GameObject* other) {
@@ -211,7 +208,7 @@ void PlayerObject::Shoot() {
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
 	ink->GetPhysicsObject()->SetInverseMass(2.0f);
 	ink->GetPhysicsObject()->SetLinearVelocity(this->physicsObject->GetLinearVelocity() * Vector3(1, 0, 1));
-	Quaternion dir = transform.GetGlobalOrientation() * Quaternion::EulerAnglesToQuaternion( (rand()%100-50)/20, (rand() % 100 - 50) / 20, (rand() % 100 - 50) / 20);
+	Quaternion dir = transform.GetGlobalOrientation() * Quaternion::EulerAnglesToQuaternion((rand() % 100 - 50) / 20, (rand() % 100 - 50) / 20, (rand() % 100 - 50) / 20);
 	ink->GetPhysicsObject()->ApplyLinearImpulse(dir * Vector3(0, 0, -1) * projectileForce);
 	ink->SetActive(true);
 	lastInstancedObjects.push_back(ink);
