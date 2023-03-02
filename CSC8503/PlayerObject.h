@@ -47,7 +47,7 @@ namespace NCL {
 			void CheckGround();
 
 			PlayerBullet* PrepareBullet();
-			void Shoot();
+			virtual void Shoot();
 			void BulletModification(PlayerBullet* bullet){};
 
 			int id;

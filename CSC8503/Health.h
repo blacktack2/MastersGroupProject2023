@@ -29,6 +29,10 @@ namespace NCL {
 					overTimeTimer = time;
 				}
 			}
+
+			void SetHealth(float health) {
+				this->health = health;
+			}
 		protected:
 			float health;
 			float overTimeTimer = 0;

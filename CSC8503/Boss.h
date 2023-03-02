@@ -26,19 +26,22 @@
 namespace NCL::CSC8503 {
     class Boss : public GameObject {
     public:
-        Boss(GameGrid& gg)
+        Boss()
             : GameObject()
         {
-            gameGrid = &gg;
         }
 
-        //~Boss(){}
+        ~Boss(){}
 
         virtual void Update(float dt) override;
 
-        void Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt);
+        virtual void ChangeLoseState();
+
+        void Chase(float speed, Vector3 destination,GameGrid* grid, float dt);
 
         BossBullet* releaseBossBullet(Vector3 v, Vector3 s, Vector3 p = Vector3{ 99999,99999,99999 });
+
+        virtual void BulletModification(BossBullet* bullet) {};
 
         bool RandomWalk();
 
@@ -63,7 +66,6 @@ namespace NCL::CSC8503 {
             return &health;
         }
     protected:
-        GameGrid* gameGrid = nullptr;
         float deltaTime = 0.0f;
 
         Health health = Health(100);

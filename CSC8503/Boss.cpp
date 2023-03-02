@@ -21,8 +21,13 @@ void Boss::Update(float dt) {
     //}
     //check boss health
     if (GetHealth()->GetHealth() <= 0) {
-        gameStateManager->SetGameState(GameState::Win);
+        ChangeLoseState();
     }
+}
+
+void Boss::ChangeLoseState()
+{
+    gameStateManager->SetGameState(GameState::Win);
 }
 
 void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt) {
@@ -93,7 +98,7 @@ BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p) {
         //ink->SetDamage(10);
     }
     ink->SetActive(true);
-
+    BulletModification(ink);
     return ink;
 
 }

@@ -48,7 +48,7 @@ void NetworkPlayer::Shoot()
 	newObj.scale = objTransform.GetScale();
 	newObj.velocity = bullet->GetPhysicsObject()->GetLinearVelocity();
 	newObj.objectID = bullet->GetNetworkObject()->GetNetworkID();
-
-	newObj.itemType = NetworkInstanceType::Projectile;
-	game->GetServer()->SendGlobalPacket(&newObj);
+	
+	if(game->GetServer())
+		game->GetServer()->SendGlobalPacket(&newObj);
 }

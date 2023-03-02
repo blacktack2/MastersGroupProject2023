@@ -19,6 +19,7 @@ enum BasicNetworkMessages {
 	Handshake_Message,
 	Handshake_Ack,
 	BossAction_Message,
+	GameState_Message,
 };
 
 struct GamePacket {

@@ -19,6 +19,7 @@
 
 #define COLLISION_MSG 30
 #define OBJECTID_START 10; //reserve 0-4 for playerID
+#define BOSSID 5; //reserve 0-4 for playerID
 
 struct MessagePacket : public GamePacket {
 	short playerID;
@@ -55,11 +56,6 @@ NetworkedGame::~NetworkedGame()	{
 	delete thisClient;
 	localPlayer = nullptr;
 	serverPlayers.clear();
-	/*
-	for (auto i = serverPlayers.begin(); i != serverPlayers.end(); i++) {
-		delete i->second;
-	}
-	*/
 }
 
 void NetworkedGame::StartAsServer() {
@@ -84,6 +80,7 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(Handshake_Message, this);
 	thisClient->RegisterPacketHandler(Item_Init_Message, this);
 	thisClient->RegisterPacketHandler(BossAction_Message, this);
+	thisClient->RegisterPacketHandler(GameState_Message, this);
 
 	StartLevel();
 }
@@ -126,8 +123,15 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	packetsToSnapshot--;
 
 	//update Game state
+	int health = 0;
 	for (auto const& player : serverPlayers) {
-		static_cast<NetworkPlayer*>(player.second);
+		health += static_cast<NetworkPlayer*>(player.second)->GetHealth()->GetHealth();
+	}
+	if (health <= 0) {
+		std::cout << "all die" << std::endl;
+		GameStatePacket packet;
+		packet.state = GameState::Win;
+		thisServer->SendGlobalPacket(static_cast<GamePacket*>(&packet));
 	}
 
 	//send important information to each player
@@ -150,7 +154,6 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	if (!player->isFrozen) {
 		player->ServerSideMovement();
 	}
-	ServerGetInstantiatedObject(player);
 	localPlayer->GetNetworkObject()->SnapRenderToSelf();
 	std::vector<NetworkObject*> networkObjects = world->GetNetworkObjects();
 	bool processed = false;
@@ -168,7 +171,8 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	
 	bool processed = false;
 	for (auto networkObj: networkObjects) {
-		networkObj->UpdateDelta(dt);
+		if(networkObj->isActive())
+			networkObj->UpdateDelta(dt);
 	}
 	
 	//*/
@@ -298,11 +302,10 @@ GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 
 void NetworkedGame::StartLevel() {
 	InitWorld();
-	BulletInstanceManager::instance().AddNetworkObject();
-	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
+	int id = OBJECTID_START;
+	BulletInstanceManager::instance().AddNetworkObject(id);
+	testingBoss = AddNetworkBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss);
-	testingBoss->SetNetworkObject(new NetworkObject(*testingBoss, 10));
-	world->AddNetworkObject(testingBoss->GetNetworkObject());
 	if (thisServer) {
 		localPlayer = SpawnPlayer(0, true);
 		player = static_cast<PlayerObject*>(localPlayer);
@@ -321,8 +324,7 @@ void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID
 	if (((ClientPacket*)payload)->lastID > stateIDs[playerID]) {
 		stateIDs[playerID] = ((ClientPacket*)payload)->lastID;
 	}
-	
-	ServerGetInstantiatedObject((NetworkPlayer*)serverPlayers[playerID]);
+
 }
 
 void NetworkedGame::ClientProcessNetworkObject(GamePacket* payload, int objID) {
@@ -337,34 +339,6 @@ void NetworkedGame::ClientProcessNetworkObject(GamePacket* payload, int objID) {
 	if (!processed) {
 		//spawn?
 	}
-}
-
-void NetworkedGame::ServerGetInstantiatedObject(NetworkPlayer* player) {
-	/*
-	vector<GameObject*> newObjList = player->GetLastInstancedObjects();
-	for (auto newObj : newObjList) {
-		if (newObj->GetNetworkObject() == nullptr) {
-			newObj->SetNetworkObject(new NetworkObject(*newObj, newObj->GetWorldID()));
-			world->AddNetworkObject(newObj->GetNetworkObject());
-			SendInitItemPacket(newObj);
-		}
-
-	}
-	*/
-}
-
-void NetworkedGame::SendInitItemPacket(GameObject* obj) {
-	ItemInitPacket newObj; 
-	Transform objTransform = obj->GetTransform();
-	newObj.position = objTransform.GetGlobalPosition();
-	newObj.orientation = objTransform.GetGlobalOrientation();
-	newObj.scale = objTransform.GetScale();
-	newObj.velocity = obj->GetPhysicsObject()->GetLinearVelocity();
-	newObj.objectID = obj->GetNetworkObject()->GetNetworkID();
-
-	newObj.itemType = NetworkInstanceType::Projectile;
-
-	thisServer->SendGlobalPacket(&newObj);
 }
 
 void NetworkedGame::HandleDeltaPacket(GamePacket* payload, int source) {
@@ -442,31 +416,19 @@ void NetworkedGame::HandleHandshakePacket(GamePacket* payload, int source) {
 }
 
 void NetworkedGame::HandleItemInitPacket(GamePacket* payload, int source) {
-	GameObject* obj;
-	switch ( ((int)((ItemInitPacket*)payload)->itemType) )
-	{
-		//server
-	case NetworkInstanceType::Projectile:
-		obj = new PlayerBullet(*(PlayerBullet*)PrefabLibrary::GetPrefab("bullet"));
-		((PlayerBullet*)obj)->SetLifespan(5);
-		break;
-	default:
-		obj = new PlayerBullet(*(PlayerBullet*)PrefabLibrary::GetPrefab("bullet"));
-		break;
-	}
-	obj->GetTransform().SetPosition(((ItemInitPacket*)payload)->position);
-	obj->GetPhysicsObject()->SetInverseMass(2.0f);
-	obj->GetPhysicsObject()->ApplyLinearImpulse(((ItemInitPacket*)payload)->velocity);
-	obj->SetNetworkObject(new NetworkObject(*obj, ((int)((ItemInitPacket*)payload)->objectID)));
-	obj->GetNetworkObject()->SnapRenderToSelf();
-	world->AddGameObject(obj);
+
 }
 
 void NetworkedGame::HandleBossActionPacket(GamePacket* payload, int source)
 {
-	std::cout << "receiving boss action" << std::endl;
+	//std::cout << "receiving boss action" << std::endl;
 	BossBehaviorTree::BossAction action = static_cast<BossBehaviorTree::BossAction>(static_cast<BossActionPacket*>(payload)->bossAction);
 	testingBossBehaviorTree->SetBossAction(action);
+}
+
+void NetworkedGame::HandleGameStatePacket(GamePacket* payload, int source)
+{
+	gameStateManager->SetGameState(static_cast<GameState>(static_cast<GameStatePacket*>(payload)->state));
 }
 
 void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
@@ -497,10 +459,13 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		HandleHandshakePacket(payload, source);
 		break;
 	case Item_Init_Message:
-		HandleItemInitPacket(payload, source);
+		ClientProcessNetworkObject(payload, source);
 		break;
 	case BossAction_Message:
 		HandleBossActionPacket(payload, source);
+		break;
+	case GameState_Message:
+		HandleGameStatePacket(payload, source);
 		break;
 	default:
 		break;
@@ -564,4 +529,29 @@ PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, bo
 	}
 
 	return character;
+}
+NetworkBoss* NetworkedGame::AddNetworkBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
+	NetworkBoss* boss = new NetworkBoss(this);
+
+	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+
+	boss->GetTransform()
+		.SetPosition(position)
+		.SetScale(dimensions * 2);
+
+	boss->SetRenderObject(new AnimatedRenderObject(&boss->GetTransform(), AssetLibrary::GetMesh("boss"), AssetLibrary::GetMaterial("boss"), AssetLibrary::GetAnimation("WalkForward")));
+
+	boss->GetRenderObject()->SetColour({ 1,1,1,1 });
+	boss->SetPhysicsObject(new PhysicsObject(&boss->GetTransform(), boss->GetBoundingVolume()));
+
+	boss->GetPhysicsObject()->SetInverseMass(inverseMass);
+	boss->GetPhysicsObject()->InitCubeInertia();
+
+	int id = BOSSID;
+	boss->SetNetworkObject(new NetworkObject(*boss, id));
+	world->AddNetworkObject(boss->GetNetworkObject());
+
+	world->AddGameObject(boss);
+
+	return boss;
 }

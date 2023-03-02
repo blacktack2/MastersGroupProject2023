@@ -1,12 +1,6 @@
 #pragma once
 #include "GameObject.h"
-#include "GameClient.h"
 #include "PlayerObject.h"
-
-enum NetworkInstanceType {
-	Projectile,
-	AI
-};
 
 namespace NCL {
 	namespace CSC8503 {
@@ -49,6 +43,10 @@ namespace NCL {
 			}
 
 			void Shoot();
+
+			void SetHealth(float hp) {
+				health.SetHealth(hp);
+			}
 
 			bool isFrozen;
 		protected:

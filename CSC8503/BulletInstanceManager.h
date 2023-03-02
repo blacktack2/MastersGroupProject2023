@@ -15,7 +15,7 @@ namespace NCL::CSC8503 {
 		}
 
 		void ObjectIntiation();
-		void AddNetworkObject();
+		void AddNetworkObject(int startInt =0);
 
 		void NullifyArray() {
 			for (size_t i = 0; i < BULLETTYPECOUNT; i++)

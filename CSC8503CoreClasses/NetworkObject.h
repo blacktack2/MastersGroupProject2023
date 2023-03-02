@@ -26,7 +26,7 @@ namespace NCL::CSC8503 {
 
 	struct ItemInitPacket : public GamePacket {
 		int		objectID = -1;
-		char	itemType;
+		short int index = 0;
 		Vector3		position;
 		Vector3		scale;
 		Quaternion	orientation;
@@ -41,7 +41,7 @@ namespace NCL::CSC8503 {
 	struct FullPacket : public GamePacket {
 		int		objectID = -1;
 		NetworkState fullState;
-		int score = 0;
+		int health = 0;
 
 		FullPacket() {
 			type = Full_State;
@@ -101,6 +101,10 @@ namespace NCL::CSC8503 {
 			renderTransform = object.GetTransform();
 		}
 
+		bool isActive() {
+			return object.IsActive();
+		}
+
 	protected:
 		Transform renderTransform;
 
@@ -110,6 +114,7 @@ namespace NCL::CSC8503 {
 
 		virtual bool ReadDeltaPacket(DeltaPacket &p, float dt);
 		virtual bool ReadFullPacket(FullPacket &p, float dt);
+		virtual bool ReadItemInitPacket(ItemInitPacket &p, float dt);
 
 		virtual bool WriteDeltaPacket(GamePacket**p, int stateID);
 		virtual bool WriteFullPacket(GamePacket**p);
@@ -118,7 +123,7 @@ namespace NCL::CSC8503 {
 
 		NetworkState lastFullState;
 
-		NetworkState lastDeltaState;
+		NetworkState lastDeltaState = NetworkState();
 
 		std::vector<NetworkState> stateHistory;
 

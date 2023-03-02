@@ -58,7 +58,6 @@ public:
 	}
 
 private:
-	void initMenu();
 
 	enum class ChangeState {
 		None,

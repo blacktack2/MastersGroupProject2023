@@ -18,6 +18,7 @@ BulletInstanceManager::~BulletInstanceManager() {
 
 Bullet* BulletInstanceManager::GetBullet(int firstIndex) {
 	int index = indexs[firstIndex];
+	//std::cout << index << std::endl;
 	indexs[firstIndex] = (index + 1)% BULLETCOUNT;
 	return bullets[firstIndex][index];
 }
@@ -42,15 +43,15 @@ void BulletInstanceManager::ObjectIntiation() {
 	}
 }
 
-void BulletInstanceManager::AddNetworkObject() {
+void BulletInstanceManager::AddNetworkObject(int startInt) {
 	GameWorld& world = GameWorld::instance();
 	for (size_t i = 0; i < BULLETTYPECOUNT; i++)
 	{
 		for (auto bullet : bullets[i])
 		{
-			std::cout << bullet->GetWorldID() << std::endl;
-			bullet->SetNetworkObject(new NetworkObject(static_cast<GameObject&>(*bullet), bullet->GetWorldID()));
+			bullet->SetNetworkObject(new NetworkObject(static_cast<GameObject&>(*bullet), startInt));
 			world.AddNetworkObject(bullet->GetNetworkObject());
+			startInt++;
 		}
 	}
 }

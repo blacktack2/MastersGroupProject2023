@@ -2,12 +2,23 @@
 #include "TutorialGame.h"
 #include "NetworkBase.h"
 #include "InputKeyMap.h"
+#include "NetworkBoss.h"
 
 namespace NCL {
 	namespace CSC8503 {
 		class GameServer;
 		class GameClient;
 		class NetworkPlayer;
+
+		struct GameStatePacket : public GamePacket {
+			GameState state;
+
+			GameStatePacket() {
+				type = GameState_Message;
+				size = sizeof(GameStatePacket) - sizeof(GamePacket);
+			}
+			~GameStatePacket(){}
+		};
 
 		class NetworkedGame : public TutorialGame, public PacketReceiver {
 		public:
@@ -53,9 +64,6 @@ namespace NCL {
 			void PlayerJoinedServer(int playerID);
 			void PlayerLeftServer(int playerID);
 
-			void ServerGetInstantiatedObject(NetworkPlayer* player);
-			void SendInitItemPacket(GameObject* obj);
-
 			//packet handle
 			void HandleDeltaPacket(GamePacket* payload, int source);
 			void HandleFullPacket(GamePacket* payload, int source);
@@ -64,9 +72,11 @@ namespace NCL {
 			void HandleHandshakePacket(GamePacket* payload, int source);
 			void HandleItemInitPacket(GamePacket* payload, int source);
 			void HandleBossActionPacket(GamePacket* payload, int source);
+			void HandleGameStatePacket(GamePacket* payload, int source);
 
 
 			PlayerObject* AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID);
+			NetworkBoss* AddNetworkBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
 
 			std::map<int, int> stateIDs;
 

@@ -113,7 +113,6 @@ void TutorialGame::InitWorld() {
 
 void TutorialGame::UpdateGame(float dt) {
 	GameState gameState = gameStateManager->GetGameState();
-	menuManager->Update(dt);
 	keyMap.Update();
 
 	debugViewPoint->BeginFrame();
@@ -593,7 +592,7 @@ EnemyObject* TutorialGame::AddEnemyToWorld(const Vector3& position, NavigationMa
 }
 
 Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
-	Boss* boss = new Boss(*gameGrid);
+	Boss* boss = new Boss();
 
 	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
 
