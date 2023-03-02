@@ -297,7 +297,7 @@ void NetworkedGame::ClientProcessNetworkObject(GamePacket* payload, int objID) {
 }
 
 void NetworkedGame::ServerGetInstantiatedObject(NetworkPlayer* player) {
-	vector<GameObject*> newObjList = player->GetLastInstancedObjects();
+	std::vector<GameObject*> newObjList = player->GetLastInstancedObjects();
 	for (auto newObj : newObjList) {
 		if (newObj->GetNetworkObject() == nullptr) {
 			newObj->SetNetworkObject(new NetworkObject(*newObj, newObj->GetWorldID()));

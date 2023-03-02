@@ -29,7 +29,7 @@ namespace NCL {
 				buttons.push_back(btn);
 			}
 
-			vector<Button*>* GetButtons() {
+			std::vector<Button*>* GetButtons() {
 				return &buttons;
 			}
 
@@ -39,7 +39,7 @@ namespace NCL {
 			Vector2 screenPos;
 			Vector2 dimension;
 
-			vector<Button*> buttons;
+			std::vector<Button*> buttons;
 
 			int buttonSelect = 0;
 		};

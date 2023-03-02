@@ -69,7 +69,7 @@ void* ReadVertexData(GeometryChunkData dataType, GeometryChunkTypes chunkType, i
 	return data;
 }
 
-void ReadTextInts(std::ifstream& file, vector<Vector2i>& element, int numVertices) {
+void ReadTextInts(std::ifstream& file, std::vector<Vector2i>& element, int numVertices) {
 	for (int i = 0; i < numVertices; ++i) {
 		Vector2i temp;
 		file >> temp.array[0];
@@ -78,7 +78,7 @@ void ReadTextInts(std::ifstream& file, vector<Vector2i>& element, int numVertice
 	}
 }
 
-void ReadTeReadTextIntsxtFloats(std::ifstream& file, vector<Vector3i>& element, int numVertices) {
+void ReadTeReadTextIntsxtFloats(std::ifstream& file, std::vector<Vector3i>& element, int numVertices) {
 	for (int i = 0; i < numVertices; ++i) {
 		Vector3i temp;
 		file >> temp.array[0];
@@ -88,7 +88,7 @@ void ReadTeReadTextIntsxtFloats(std::ifstream& file, vector<Vector3i>& element, 
 	}
 }
 
-void ReadTextInts(std::ifstream& file, vector<Vector4i>& element, int numVertices) {
+void ReadTextInts(std::ifstream& file, std::vector<Vector4i>& element, int numVertices) {
 	for (int i = 0; i < numVertices; ++i) {
 		Vector4i temp;
 		file >> temp.array[0];
@@ -99,7 +99,7 @@ void ReadTextInts(std::ifstream& file, vector<Vector4i>& element, int numVertice
 	}
 }
 
-void ReadTextFloats(std::ifstream& file, vector<Vector2>& element, int numVertices) {
+void ReadTextFloats(std::ifstream& file, std::vector<Vector2>& element, int numVertices) {
 	for (int i = 0; i < numVertices; ++i) {
 		Vector2 temp;
 		file >> temp.x;
@@ -108,7 +108,7 @@ void ReadTextFloats(std::ifstream& file, vector<Vector2>& element, int numVertic
 	}
 }
 
-void ReadTextFloats(std::ifstream& file, vector<Vector3>& element, int numVertices) {
+void ReadTextFloats(std::ifstream& file, std::vector<Vector3>& element, int numVertices) {
 	for (int i = 0; i < numVertices; ++i) {
 		Vector3 temp;
 		file >> temp.x;
@@ -118,7 +118,7 @@ void ReadTextFloats(std::ifstream& file, vector<Vector3>& element, int numVertic
 	}
 }
 
-void ReadTextFloats(std::ifstream& file, vector<Vector4>& element, int numVertices) {
+void ReadTextFloats(std::ifstream& file, std::vector<Vector4>& element, int numVertices) {
 	for (int i = 0; i < numVertices; ++i) {
 		Vector4 temp;
 		file >> temp.x;
@@ -129,7 +129,7 @@ void ReadTextFloats(std::ifstream& file, vector<Vector4>& element, int numVertic
 	}
 }
 
-void ReadIndices(std::ifstream& file, vector<unsigned int>& elements, int numIndices) {
+void ReadIndices(std::ifstream& file, std::vector<unsigned int>& elements, int numIndices) {
 	for (int i = 0; i < numIndices; ++i) {
 		unsigned int temp;
 		file >> temp;
@@ -137,7 +137,7 @@ void ReadIndices(std::ifstream& file, vector<unsigned int>& elements, int numInd
 	}
 }
 
-void ReadIntegerArray(std::ifstream& file, vector<int>& into) {//New!
+void ReadIntegerArray(std::ifstream& file, std::vector<int>& into) {//New!
 	int count = 0;
 	file >> count;
 	for (int i = 0; i < count; ++i) {
@@ -147,7 +147,7 @@ void ReadIntegerArray(std::ifstream& file, vector<int>& into) {//New!
 	}
 }
 
-void ReadBindposes(std::ifstream& file, vector<SubMeshPoses>& bindPoses) {//New!
+void ReadBindposes(std::ifstream& file, std::vector<SubMeshPoses>& bindPoses) {//New!
 	int poseCount = 0;
 	file >> poseCount;
 
@@ -293,35 +293,35 @@ void	MeshGeometry::RecalculateTangents() {
 
 }
 
-void MeshGeometry::SetVertexPositions(const vector<Vector3>& newVerts) {
+void MeshGeometry::SetVertexPositions(const std::vector<Vector3>& newVerts) {
 	positions = newVerts;
 }
 
-void MeshGeometry::SetVertexTextureCoords(const vector<Vector2>& newTex) {
+void MeshGeometry::SetVertexTextureCoords(const std::vector<Vector2>& newTex) {
 	texCoords = newTex;
 }
 
-void MeshGeometry::SetVertexColours(const vector<Vector4>& newColours) {
+void MeshGeometry::SetVertexColours(const std::vector<Vector4>& newColours) {
 	colours = newColours;
 }
 
-void MeshGeometry::SetVertexNormals(const vector<Vector3>& newNorms) {
+void MeshGeometry::SetVertexNormals(const std::vector<Vector3>& newNorms) {
 	normals = newNorms;
 }
 
-void MeshGeometry::SetVertexTangents(const vector<Vector4>& newTans) {
+void MeshGeometry::SetVertexTangents(const std::vector<Vector4>& newTans) {
 	tangents = newTans;
 }
 
-void MeshGeometry::SetVertexIndices(const vector<unsigned int>& newIndices) {
+void MeshGeometry::SetVertexIndices(const std::vector<unsigned int>& newIndices) {
 	indices = newIndices;
 }
 
-void MeshGeometry::SetVertexSkinWeights(const vector<Vector4>& newSkinWeights) {
+void MeshGeometry::SetVertexSkinWeights(const std::vector<Vector4>& newSkinWeights) {
 	skinWeights = newSkinWeights;
 }
 
-void MeshGeometry::SetVertexSkinIndices(const vector<Vector4i>& newSkinIndices) {
+void MeshGeometry::SetVertexSkinIndices(const std::vector<Vector4i>& newSkinIndices) {
 	skinIndices = newSkinIndices;
 }
 
@@ -371,7 +371,7 @@ void MeshGeometry::CalculateInverseBindPose() {
 	}
 }
 
-void MeshGeometry::ReadRigPose(std::ifstream& file, vector<Matrix4>& into) {
+void MeshGeometry::ReadRigPose(std::ifstream& file, std::vector<Matrix4>& into) {
 	int matCount = 0;
 	file >> matCount;
 

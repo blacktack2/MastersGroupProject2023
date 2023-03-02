@@ -27,7 +27,7 @@ void ScreenOption::initMenu() {
 	menuManager.AddMenu(name, menu);
 
 	//Load button
-	vector<Button*> buttons;
+	std::vector<Button*> buttons;
 	int num = 4;
 	for (int i = 0; i < num; i++) {
 		char name[8] = { 0 };

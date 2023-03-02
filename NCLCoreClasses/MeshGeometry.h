@@ -12,8 +12,6 @@ https://research.ncl.ac.uk/game/
 
 #include "Vector3.h"
 
-using std::vector;
-
 namespace NCL {
 	namespace Maths {
 		class Vector2;
@@ -118,10 +116,10 @@ namespace NCL {
 
 		int GetIndexForJoint(const std::string &name) const;
 
-		const vector<Matrix4>& GetBindPose() const {
+		const std::vector<Matrix4>& GetBindPose() const {
 			return bindPose;
 		}
-		const vector<Matrix4>& GetInverseBindPose() const {
+		const std::vector<Matrix4>& GetInverseBindPose() const {
 			return inverseBindPose;
 		}
 
@@ -137,34 +135,34 @@ namespace NCL {
 		bool GetNormalForTri(unsigned int i, Vector3& n) const;
 		bool HasTriangle(unsigned int i) const;
 
-		const vector<Vector3>&		GetPositionData()		const { return positions;	}
-		const vector<Vector2>&		GetTextureCoordData()	const { return texCoords;	}
-		const vector<Vector4>&		GetColourData()			const { return colours;		}
-		const vector<Vector3>&		GetNormalData()			const { return normals;		}
-		const vector<Vector4>&		GetTangentData()		const { return tangents;	}
+		const std::vector<Vector3>&		GetPositionData()		const { return positions;	}
+		const std::vector<Vector2>&		GetTextureCoordData()	const { return texCoords;	}
+		const std::vector<Vector4>&		GetColourData()			const { return colours;		}
+		const std::vector<Vector3>&		GetNormalData()			const { return normals;		}
+		const std::vector<Vector4>&		GetTangentData()		const { return tangents;	}
 
 
-		const vector<Vector4>& GetSkinWeightData()		const { return skinWeights; }
-		const vector<Vector4i>& GetSkinIndexData()		const { return skinIndices; }
+		const std::vector<Vector4>& GetSkinWeightData()		const { return skinWeights; }
+		const std::vector<Vector4i>& GetSkinIndexData()		const { return skinIndices; }
 
-		const vector<int>& GetJointParents()	const {
+		const std::vector<int>& GetJointParents()	const {
 			return jointParents;
 		}
 
 
-		const vector<unsigned int>& GetIndexData()			const { return indices;		}
+		const std::vector<unsigned int>& GetIndexData()			const { return indices;		}
 
 
-		void SetVertexPositions(const vector<Vector3>& newVerts);
-		void SetVertexTextureCoords(const vector<Vector2>& newTex);
+		void SetVertexPositions(const std::vector<Vector3>& newVerts);
+		void SetVertexTextureCoords(const std::vector<Vector2>& newTex);
 
-		void SetVertexColours(const vector<Vector4>& newColours);
-		void SetVertexNormals(const vector<Vector3>& newNorms);
-		void SetVertexTangents(const vector<Vector4>& newTans);
-		void SetVertexIndices(const vector<unsigned int>& newIndices);
+		void SetVertexColours(const std::vector<Vector4>& newColours);
+		void SetVertexNormals(const std::vector<Vector3>& newNorms);
+		void SetVertexTangents(const std::vector<Vector4>& newTans);
+		void SetVertexIndices(const std::vector<unsigned int>& newIndices);
 
-		void SetVertexSkinWeights(const vector<Vector4>& newSkinWeights);
-		void SetVertexSkinIndices(const vector<Vector4i>& newSkinIndices);
+		void SetVertexSkinWeights(const std::vector<Vector4>& newSkinWeights);
+		void SetVertexSkinIndices(const std::vector<Vector4i>& newSkinIndices);
 
 
 		void	TransformVertices(const Matrix4& byMatrix);
@@ -195,7 +193,7 @@ namespace NCL {
 		MeshGeometry();
 		MeshGeometry(const std::string&filename);
 
-		void ReadRigPose(std::ifstream& file, vector<Matrix4>& into);
+		void ReadRigPose(std::ifstream& file, std::vector<Matrix4>& into);
 		void ReadJointParents(std::ifstream& file);
 		void ReadJointNames(std::ifstream& file);
 		void ReadSubMeshes(std::ifstream& file, int count);
@@ -207,22 +205,22 @@ namespace NCL {
 
 		std::string			debugName; //used when an API allows setting debug tags
 		GeometryPrimitive	primType;
-		vector<Vector3>		positions;
+		std::vector<Vector3>		positions;
 
-		vector<Vector2>			texCoords;
-		vector<Vector4>			colours;
-		vector<Vector3>			normals;
-		vector<Vector4>			tangents;
-		vector<unsigned int>	indices;
+		std::vector<Vector2>			texCoords;
+		std::vector<Vector4>			colours;
+		std::vector<Vector3>			normals;
+		std::vector<Vector4>			tangents;
+		std::vector<unsigned int>	indices;
 
-		vector<SubMesh>			subMeshes;
-		vector<std::string>		subMeshNames;
+		std::vector<SubMesh>			subMeshes;
+		std::vector<std::string>		subMeshNames;
 
 		//Allows us to have 4 weight skinning 
-		vector<Vector4>		skinWeights;
-		vector<Vector4i>	skinIndices;
-		vector<std::string>	jointNames;
-		vector<int>			jointParents;
+		std::vector<Vector4>		skinWeights;
+		std::vector<Vector4i>	skinIndices;
+		std::vector<std::string>	jointNames;
+		std::vector<int>			jointParents;
 
 		std::vector<Matrix4>		bindPose;
 		std::vector<Matrix4>		inverseBindPose;

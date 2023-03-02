@@ -138,8 +138,7 @@ namespace NCL::CSC8503 {
 		void BuildObjectList();
 		void SortObjectList();
 
-		vector<const RenderObject*> activeObjects;
-		//vector<const Billboard*> blood;
+		std::vector<const RenderObject*> activeObjects;
 
 		SkyboxRPass* skyboxPass;
 		ModelRPass* modelPass;
