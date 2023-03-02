@@ -109,13 +109,13 @@ void GameWorld::OperateOnLights(LightFunc f) {
 void GameWorld::PreUpdateWorld() {
 	std::vector<GameObject*> delObjs;
 
-	for (auto i = gameObjects.rbegin(); i != gameObjects.rend(); ++i) //iterate backwards
-	{
-		if ((*i)->IsMarkedDelete())
-		{
-			RemoveGameObject(*i, true);
+	gameObjects.erase(std::remove_if(gameObjects.begin(), gameObjects.end(), [](GameObject* g) {
+		if (g->IsMarkedDelete()) {
+			delete g;
+			return true;
 		}
-	}
+		return false;
+	}), gameObjects.end());
 	UpdateDynamicTree();
 }
 

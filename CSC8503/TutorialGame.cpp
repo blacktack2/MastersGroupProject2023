@@ -79,19 +79,14 @@ TutorialGame::~TutorialGame() {
 }
 
 void TutorialGame::InitWorld(InitMode mode) {
-	/*world->ClearAndErase();
-	BulletInstanceManager::instance().ObjectIntiation();
+	world->ClearAndErase();
 
 
-	for (int i = 0; i < 10000000; i++)
+	for (int i = 0; i < 100000; i++)
 	{
-		PlayerBullet* bul = BulletInstanceManager::instance().GetPlayerBullet();
-		bul->SetActive(true);
-		BossBullet* boosbul = BulletInstanceManager::instance().GetBossBullet();
-		boosbul->SetActive(true);
-		bul->SetActive(false);
-		boosbul->SetActive(false);
-	}*/
+		player = AddPlayerToWorld(Vector3(0, 5, 90));
+		world->ClearAndErase();
+	}
 
 	delete[] mazes;
 	mazes = nullptr;
