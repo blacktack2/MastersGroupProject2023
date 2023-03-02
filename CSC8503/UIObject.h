@@ -10,7 +10,6 @@
 
 namespace NCL {
 	namespace CSC8503 {
-		using namespace std;
 		class UIObject{
 		public:
 			UIObject();

@@ -35,13 +35,13 @@ Vector4 MenuManager::GetMenuDimension(){
 	return menus[currentMenu]->GetDimension();
 }
 
-void MenuManager::AddMenu(string name, Menu* menu)
+void MenuManager::AddMenu(std::string name, Menu* menu)
 {
 	RemoveMenu(name);
 	menus[name] = menu;
 }
 
-void MenuManager::RemoveMenu(string name)
+void MenuManager::RemoveMenu(std::string name)
 {
 	if (menus[name]) {
 		delete menus[name];

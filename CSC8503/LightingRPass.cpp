@@ -85,7 +85,7 @@ void LightingRPass::OnWindowResize(int width, int height) {
 void LightingRPass::Render() {
 	frameBuffer->Bind();
 
-	glClear(GL_COLOR_BUFFER_BIT);
+	renderer.ClearBuffers(ClearBit::Color);
 
 	frameBuffer->Unbind();
 
@@ -98,9 +98,8 @@ void LightingRPass::DrawLight(const Light& light) {
 	frameBuffer->Bind();
 	shader->Bind();
 
-	glBlendFunc(GL_ONE, GL_ONE);
-	glDepthFunc(GL_ALWAYS);
-	glDepthMask(GL_FALSE);
+	renderer.GetConfig().SetBlend(true, BlendFuncSrc::One, BlendFuncDst::One);
+	renderer.GetConfig().SetDepthTest(true, DepthTestFunc::Always);
 
 	depthTexIn->Bind(0);
 	normalTexIn->Bind(1);
@@ -127,14 +126,13 @@ void LightingRPass::DrawLight(const Light& light) {
 	if (light.position.w == 0.0f) {
 		quad->Draw();
 	} else {
-		glCullFace(GL_FRONT);
+		renderer.GetConfig().SetCullFace(true, CullFace::Back);
 		sphere->Draw();
-		glCullFace(GL_BACK);
+		renderer.GetConfig().SetCullFace();
 	}
 
-	glDepthMask(GL_TRUE);
-	glDepthFunc(GL_LEQUAL);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	renderer.GetConfig().SetDepthTest();
+	renderer.GetConfig().SetBlend();
 
 	shader->Unbind();
 	frameBuffer->Unbind();

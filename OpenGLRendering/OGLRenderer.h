@@ -9,6 +9,8 @@
 #pragma once
 #include "RendererBase.h"
 
+#include "OGLRendererConfig.h"
+
 #include "Vector3.h"
 #include "Vector4.h"
 
@@ -58,6 +60,12 @@ namespace NCL::Rendering {
 		}
 
 		virtual bool SetVerticalSync(VerticalSyncState s);
+
+		RendererConfigBase& GetConfig() override {
+			return config;
+		}
+
+		void ClearBuffers(ClearBit mask) override;
 	protected:
 		void BeginFrame() override;
 		void EndFrame() override;
@@ -73,6 +81,8 @@ namespace NCL::Rendering {
 		HGLRC renderContext;
 #endif
 	private:
+		OGLRendererConfig config;
+
 		bool initState;
 		bool forceValidDebugState;
 	};

@@ -76,7 +76,7 @@ CombineRPass::~CombineRPass() {
 
 void CombineRPass::Render() {
 	frameBuffer->Bind();
-	glClear(GL_COLOR_BUFFER_BIT);
+	renderer.ClearBuffers(ClearBit::Color);
 	shader->Bind();
 
 	skyboxTexIn->Bind(0);
