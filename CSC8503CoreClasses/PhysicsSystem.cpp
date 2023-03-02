@@ -213,11 +213,11 @@ void PhysicsSystem::BasicCollisionDetection() {
 	gameWorld.GetObjectIterators(first, last);
 
 	for (auto i = first; i != last; i++) {
-		if ((*i)->GetPhysicsObject() == nullptr) {
+		if (!(*i)->GetPhysicsObject()) {
 			continue;
 		}
 		for (auto j = i + 1; j != last; j++) {
-			if ((*j)->GetPhysicsObject() == nullptr) {
+			if (!(*j)->GetPhysicsObject()) {
 				continue;
 			}
 			CollisionDetection::CollisionInfo info;

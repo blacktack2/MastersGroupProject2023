@@ -4,7 +4,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-Health::Health() {
+Health::Health() : health(100) {
 }
 Health::Health(float health) {
 	this->health = health;
