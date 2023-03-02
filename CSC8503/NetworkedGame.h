@@ -82,7 +82,7 @@ namespace NCL {
 			PlayerObject* AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID);
 			NetworkBoss* AddNetworkBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
 
-			void ProcessState();
+			void ProcessState() override;
 
 			std::map<int, int> stateIDs;
 

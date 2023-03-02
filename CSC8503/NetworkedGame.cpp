@@ -67,7 +67,6 @@ void NetworkedGame::StartAsServer() {
 	thisServer->RegisterPacketHandler(Handshake_Ack, this);
 
 	LobbyLevel();
-	SpawnPlayers();
 }
 
 void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
@@ -88,6 +87,7 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 }
 
 void NetworkedGame::UpdateGame(float dt) {
+	std::cout << (int)gameStateManager->GetGameState() << "   " << (int)GameState::Lobby << std::endl;
 	game_dt = dt;
 	timeToNextPacket -= dt;
 	if (timeToNextPacket < 0) {
@@ -121,15 +121,6 @@ GameServer* NetworkedGame::GetServer()
 }
 
 void NetworkedGame::UpdateAsServer(float dt) {
-	thisServer->UpdateServer();
-	packetsToSnapshot--;
-
-	if (gameStateManager->GetGameState() == GameState::Lobby) {
-		if (keyMap.GetButton(Confirm)) {
-
-		}
-	}
-
 	//update Game state
 	int health = 0;
 	health += static_cast<NetworkPlayer*>(localPlayer)->GetHealth()->GetHealth();
@@ -168,6 +159,16 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	bool processed = false;
 	for (auto networkObj : networkObjects) {
 		networkObj->SnapRenderToSelf();
+	}
+
+	thisServer->UpdateServer();
+	packetsToSnapshot--;
+
+	if (gameStateManager->GetGameState() == GameState::Lobby) {
+		if (keyMap.GetButton(Confirm)) {
+			std::cout << "restart" << std::endl;
+			StartLevel();
+		}
 	}
 }
 
@@ -329,6 +330,7 @@ void NetworkedGame::LobbyLevel()
 	canJoin = true;
 	Clear();
 	InitWorld();
+	SpawnPlayers();
 	int id = OBJECTID_START;
 	BulletInstanceManager::instance().AddNetworkObject(id);
 	gameStateManager->SetGameState(GameState::Lobby);
@@ -337,6 +339,7 @@ void NetworkedGame::LobbyLevel()
 void NetworkedGame::StartLevel() {
 	canJoin = false;
 	InitWorld();
+	SpawnPlayers();
 	int id = OBJECTID_START;
 	BulletInstanceManager::instance().AddNetworkObject(id);
 	testingBoss = AddNetworkBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
@@ -590,7 +593,12 @@ NetworkBoss* NetworkedGame::AddNetworkBossToWorld(const Vector3& position, Vecto
 void NetworkedGame::ProcessState() {
 	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
 	if (thisServer) {
+		if (keyMap.GetButton(InputType::Confirm)) {
+			std::cout << "Starting" << std::endl;
+			this->StartLevel();
+		}
 		if (keyMap.GetButton(InputType::Restart)) {
+			std::cout << "return to lobby" << std::endl;
 			this->LobbyLevel();
 		}
 	}

@@ -80,6 +80,7 @@ void InputKeyMap::UpdateGameStateDependant() {
 		}
 		break;
 	case GameState::Lobby:
+		std::cout << "lobby" << std::endl;
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::R)) {
 			buttonstates |= InputType::Confirm;
 		}
