@@ -88,7 +88,7 @@ void TutorialGame::StartLevel() {
 	testingBossBehaviorTree->ChangeTarget(player);
 }
 
-void TutorialGame::InitWorld() {
+void TutorialGame::Clear() {
 	gameStateManager->SetGameState(GameState::OnGoing);
 	delete[] mazes;
 	mazes = nullptr;
@@ -98,6 +98,10 @@ void TutorialGame::InitWorld() {
 	gridManager->Clear();
 	delete testingBossBehaviorTree;
 	testingBossBehaviorTree = nullptr;
+}
+
+void TutorialGame::InitWorld() {
+	Clear();
 
 	gridManager->AddGameGrid(new GameGrid({ 0,0,0 }, 300, 300, 2));
 	BuildLevel();
@@ -619,7 +623,7 @@ void TutorialGame::BuildLevel()
 {
 	interval = 5.0f;
 	gameLevel = new GameLevel{};
-	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -100,0,-70 }, interval);
+	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -100, 0, -70 }, interval);
 	world->AddGameObject(gameLevel);
 	UpdateLevel();
 }

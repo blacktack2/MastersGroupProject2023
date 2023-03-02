@@ -44,6 +44,7 @@ namespace NCL {
 			TutorialGame();
 			~TutorialGame();
 
+			void Clear();
 			virtual void StartLevel();
 			void InitWorld();
 

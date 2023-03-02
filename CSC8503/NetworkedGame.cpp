@@ -66,7 +66,9 @@ void NetworkedGame::StartAsServer() {
 	thisServer->RegisterPacketHandler(Player_Disconnected, this);
 	thisServer->RegisterPacketHandler(Handshake_Ack, this);
 
-	StartLevel();
+	LobbyLevel();
+
+	localPlayer = AddNetworkPlayerToWorld(Vector3(0.0f, 3.0f, 0.0f), true, 0);
 }
 
 void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
@@ -82,7 +84,7 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(BossAction_Message, this);
 	thisClient->RegisterPacketHandler(GameState_Message, this);
 
-	StartLevel();
+	LobbyLevel();
 }
 
 void NetworkedGame::UpdateGame(float dt) {
@@ -124,6 +126,7 @@ void NetworkedGame::UpdateAsServer(float dt) {
 
 	//update Game state
 	int health = 0;
+	health += static_cast<NetworkPlayer*>(localPlayer)->GetHealth()->GetHealth();
 	for (auto const& player : serverPlayers) {
 		health += static_cast<NetworkPlayer*>(player.second)->GetHealth()->GetHealth();
 	}
@@ -300,17 +303,19 @@ GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 	return newPlayer;
 }
 
+void NetworkedGame::LobbyLevel()
+{
+	Clear();
+	InitDefaultFloor();
+
+}
+
 void NetworkedGame::StartLevel() {
 	InitWorld();
 	int id = OBJECTID_START;
 	BulletInstanceManager::instance().AddNetworkObject(id);
 	testingBoss = AddNetworkBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss);
-	if (thisServer) {
-		localPlayer = SpawnPlayer(0, true);
-		player = static_cast<PlayerObject*>(localPlayer);
-		testingBossBehaviorTree->ChangeTarget(static_cast<PlayerObject*>(localPlayer));
-	}
 }
 
 void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID) {
@@ -474,10 +479,6 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 
 void NetworkedGame::PlayerJoinedServer(int playerID) {
 	PlayerObject* temp = static_cast<PlayerObject*>(SpawnPlayer(playerID));
-	if (testingBossBehaviorTree) {
-		testingBossBehaviorTree->ChangeTarget(static_cast<PlayerObject*>(temp));
-	}
-
 }
 
 void NetworkedGame::PlayerLeftServer(int playerID) {

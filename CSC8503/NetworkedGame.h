@@ -32,6 +32,8 @@ namespace NCL {
 
 			GameObject* SpawnPlayer(int playerID, bool isSelf = false);
 
+			void LobbyLevel() ;
+
 			void StartLevel() override;
 
 			void ReceivePacket(int type, GamePacket* payload, int source) override;
