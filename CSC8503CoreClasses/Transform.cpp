@@ -10,15 +10,6 @@ Transform::Transform(GameObject* gameObject){
 	scale = Vector3(1, 1, 1);
 }
 
-Transform::Transform(GameObject* gameObject, Transform& transform) {
-	this->gameObject = gameObject;
-	this->parent = transform.parent;
-	scale = Vector3(transform.scale);
-	position = Vector3(transform.position);
-	orientation = Quaternion(transform.orientation);
-	UpdateLocalMatrix();
-}
-
 Transform::~Transform()	{
 	if (parent)
 	{
@@ -28,7 +19,6 @@ Transform::~Transform()	{
 	{
 		child->SetParent(nullptr);
 	}
-	children.clear();
 }
 
 void Transform::UpdateLocalMatrix() {

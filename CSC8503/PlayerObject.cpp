@@ -36,8 +36,8 @@ PlayerObject::PlayerObject(int id) : GameObject(), id(id), keyMap(paintHell::Inp
 }
 
 PlayerObject::~PlayerObject() {
-	/*alDeleteSources(1, &(*playerSource->GetSource()).source);
-	alDeleteSources(1, &(*attackSource->GetSource()).source);*/
+	alDeleteSources(1, &(*playerSource->GetSource()).source);
+	alDeleteSources(1, &(*attackSource->GetSource()).source);
 	SoundSystem::GetSoundSystem()->SetListener(nullptr);
 	delete playerSource;
 	delete attackSource;
