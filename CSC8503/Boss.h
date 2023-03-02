@@ -308,10 +308,10 @@ namespace NCL::CSC8503 {
                 bossAction = b;
             }
 
-            void BossAct() {
-                bool finish = false;
+                void BossAct() {
+                    bool finish = false;
 
-                bool hasHealKit = false;
+                    bool hasHealKit = false;
 
 
                 switch (bossAction) {
@@ -366,17 +366,17 @@ namespace NCL::CSC8503 {
                     break;
                 }
 
-                if (finish) {
-                    bossAction = NoAction;
+                    if (finish) {
+                        bossAction = NoAction;
+                    }
                 }
-            }
 
-            bool isLocked() {
-                if (bossAction == NoAction) {
-                    return false;
+                bool isLocked() {
+                    if (bossAction == NoAction) {
+                        return false;
+                    }
+                    return true;
                 }
-                return true;
-            }
 
         private:
             BossAction bossAction = NoAction;
@@ -384,104 +384,108 @@ namespace NCL::CSC8503 {
             PlayerObject** player;
         };
 
+            class Node {
+            public:
+                virtual ~Node() {}
+                virtual bool execute(BehaviorLock* lock) = 0;
+            protected:
 
-        class Node {
-        public:
-            virtual ~Node() {}
-            virtual bool execute(BehaviorLock* lock) = 0;
-        protected:
+            };
 
-        };
+            class SelectorNode : public Node {
+            public:
 
-        class SelectorNode : public Node {
-        public:
-
-            ~SelectorNode() {
-                for (Node* node : children)
-                {
-                    delete node;
+                ~SelectorNode() {
+                    for (Node* node : children)
+                    {
+                        delete node;
+                    }
                 }
-            }
 
-            void addChild(Node* child) {
-                children.push_back(child);
-            }
+                void addChild(Node* child) {
+                    children.push_back(child);
+                }
 
-            virtual bool execute(BehaviorLock* lock) {
-                for (Node* child : children) {
-                    if (child->execute(lock)) {
+                virtual bool execute(BehaviorLock* lock) {
+                    for (Node* child : children) {
+                        if (child->execute(lock)) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+            private:
+                std::vector<Node*> children;
+            };
+
+            class RandomBivalentSelectorNode : public Node {
+            public:
+                RandomBivalentSelectorNode(int f) {
+                    firstCasePercentage = f;
+                }
+
+                ~RandomBivalentSelectorNode() {}
+                virtual bool execute(BehaviorLock* lock) {
+                    int sample = std::rand() % 100;
+                    if (sample < firstCasePercentage) {
                         return true;
                     }
+                    return false;
                 }
+            protected:
+                int firstCasePercentage;
+            };
 
-                return false;
-            }
-        private:
-            std::vector<Node*> children;
-        };
+            class SequenceNode : public Node {
+            public:
 
-        class RandomBivalentSelectorNode : public Node {
-        public:
-            RandomBivalentSelectorNode(int f) {
-                firstCasePercentage = f;
-            }
-            virtual bool execute(BehaviorLock* lock) {
-                int sample = std::rand() % 100;
-                if (sample < firstCasePercentage) {
-                    return true;
-                }
-                return false;
-            }
-        protected:
-            int firstCasePercentage;
-        };
-
-        class SequenceNode : public Node {
-        public:
-
-            ~SequenceNode() {
-                for (Node* node : children)
-                {
-                    delete node;
-                }
-            }
-
-            void addChild(Node* child) {
-                children.push_back(child);
-            }
-
-            virtual bool execute(BehaviorLock* lock) {
-                for (Node* child : children) {
-                    if (!child->execute(lock)) {
-                        return false;
+                ~SequenceNode() {
+                    for (Node* node : children)
+                    {
+                        delete node;
                     }
                 }
 
-                return true;
-            }
+                void addChild(Node* child) {
+                    children.push_back(child);
+                }
 
-        private:
-            std::vector<Node*> children;
-        };
+                virtual bool execute(BehaviorLock* lock) {
+                    for (Node* child : children) {
+                        if (!child->execute(lock)) {
+                            return false;
+                        }
+                    }
 
-        class CheckBossHealthNode : public Node {
-        public:
-            CheckBossHealthNode(Boss* b, float l, float u) {
-                boss = b;
-                lowerLimit = l;
-                upperLimit = u;
-            }
-            virtual bool execute(BehaviorLock* lock) {
-                if ((lowerLimit < boss->GetHealth()->GetHealth()) && (boss->GetHealth()->GetHealth() <= upperLimit)) {
                     return true;
                 }
-                return false;
-            }
-        protected:
-            float lowerLimit;
-            float upperLimit;
-            Boss* boss = nullptr;
-        };
+
+            private:
+                std::vector<Node*> children;
+            };
+
+            class CheckBossHealthNode : public Node {
+            public:
+                CheckBossHealthNode(Boss* b, float l, float u) {
+                    boss = b;
+                    lowerLimit = l;
+                    upperLimit = u;
+                }
+
+                ~CheckBossHealthNode() {}
+
+                virtual bool execute(BehaviorLock* lock) {
+                    if ((lowerLimit < boss->GetHealth()->GetHealth()) && (boss->GetHealth()->GetHealth() <= upperLimit)) {
+                        return true;
+                    }
+                    return false;
+                }
+            protected:
+                float lowerLimit;
+                float upperLimit;
+                Boss* boss = nullptr;
+            };
 
         class CheckPlayerDistanceToBossNode : public Node {
         public:
@@ -510,77 +514,104 @@ namespace NCL::CSC8503 {
             PlayerObject** target;
         };
 
-        class StabPlayerNode : public Node {
-        public:
-            virtual bool execute(BehaviorLock* lock) {
-                lock->SetBossAction(Stab);
-                return true;
-            }
-        };
+            class StabPlayerNode : public Node {
+            public:
 
-        class SpinOnPlayerNode : public Node {
-        public:
-            virtual bool execute(BehaviorLock* lock) {
-                lock->SetBossAction(Spin);
-                return true;
-            }
-        };
+                StabPlayerNode() {}
+                ~StabPlayerNode() {}
 
-        class UseLaserOnPlayerNode : public Node {
-        public:
-            virtual bool execute(BehaviorLock* lock) {
-                lock->SetBossAction(Laser);
-                return true;
-            }
-        };
+                virtual bool execute(BehaviorLock* lock) {
+                    lock->SetBossAction(Stab);
+                    return true;
+                }
+            };
 
-        class JumpToPlayerNode : public Node {
-        public:
-            virtual bool execute(BehaviorLock* lock) {
-                lock->SetBossAction(JumpTo);
-                return true;
-            }
-        };
+            class SpinOnPlayerNode : public Node {
+            public:
+                SpinOnPlayerNode() {}
+                ~SpinOnPlayerNode() {}
 
-        class JumpAwayFromPlayerNode : public Node {
-        public:
-            virtual bool execute(BehaviorLock* lock) {
-                lock->SetBossAction(JumpAway);
-                return true;
-            }
-        };
+                virtual bool execute(BehaviorLock* lock) {
+                    lock->SetBossAction(Spin);
+                    return true;
+                }
+            };
 
-        class WanderNode : public Node {
-        public:
-            virtual bool execute(BehaviorLock* lock) {
-                lock->SetBossAction(RandomWalk);
-                return true;
-            }
-        };
+            class UseLaserOnPlayerNode : public Node {
+            public:
+                UseLaserOnPlayerNode() {}
+                ~UseLaserOnPlayerNode() {}
 
-        class SeekForHealingNode : public Node {
-        public:
-            virtual bool execute(BehaviorLock* lock) {
-                lock->SetBossAction(SeekHeal);
-                return true;
-            }
-        };
+                virtual bool execute(BehaviorLock* lock) {
+                    lock->SetBossAction(Laser);
+                    return true;
+                }
+            };
 
-        class UseBulletsStormNode : public Node {
-        public:
-            virtual bool execute(BehaviorLock* lock) {
-                lock->SetBossAction(BulletsStorm);
-                return true;
-            }
-        };
+            class JumpToPlayerNode : public Node {
+            public:
+                JumpToPlayerNode() {}
+                ~JumpToPlayerNode() {}
 
-        class UseInkRainNode : public Node {
-        public:
-            virtual bool execute(BehaviorLock* lock) {
-                lock->SetBossAction(InkRain);
-                return true;
-            }
-        };
+                virtual bool execute(BehaviorLock* lock) {
+                    lock->SetBossAction(JumpTo);
+                    return true;
+                }
+            };
+
+            class JumpAwayFromPlayerNode : public Node {
+            public:
+                JumpAwayFromPlayerNode() {}
+                ~JumpAwayFromPlayerNode() {}
+
+                virtual bool execute(BehaviorLock* lock) {
+                    lock->SetBossAction(JumpAway);
+                    return true;
+                }
+            };
+
+            class WanderNode : public Node {
+            public:
+                WanderNode() {}
+                ~WanderNode() {}
+
+                virtual bool execute(BehaviorLock* lock) {
+                    lock->SetBossAction(RandomWalk);
+                    return true;
+                }
+            };
+
+            class SeekForHealingNode : public Node {
+            public:
+                SeekForHealingNode() {}
+                ~SeekForHealingNode() {}
+
+                virtual bool execute(BehaviorLock* lock) {
+                    lock->SetBossAction(SeekHeal);
+                    return true;
+                }
+            };
+
+            class UseBulletsStormNode : public Node {
+            public:
+                UseBulletsStormNode() {}
+                ~UseBulletsStormNode() {}
+
+                virtual bool execute(BehaviorLock* lock) {
+                    lock->SetBossAction(BulletsStorm);
+                    return true;
+                }
+            };
+
+            class UseInkRainNode : public Node {
+            public:
+                UseInkRainNode() {}
+                ~UseInkRainNode() {}
+                virtual bool execute(BehaviorLock* lock) {
+                    lock->SetBossAction(InkRain);
+                    return true;
+                }
+            };
 
         BehaviorLock* behaviorLock = nullptr;
         SelectorNode* root = nullptr;

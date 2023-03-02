@@ -70,7 +70,7 @@ TutorialGame::~TutorialGame() {
 	world->ClearAndErase();
 	BulletInstanceManager::instance().NullifyArray();
 	gridManager->Clear();
-
+	delete testingBossBehaviorTree;
 	delete physics;
 
 	delete[] mazes;
@@ -99,10 +99,12 @@ void TutorialGame::InitWorld() {
 	delete testingBossBehaviorTree;
 	testingBossBehaviorTree = nullptr;
 
-	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 300, 300, 2 ) );
+	gridManager->AddGameGrid(new GameGrid({ 0,0,0 }, 300, 300, 2));
 	BuildLevel();
 
 	InitGameExamples();
+
+
 
 	world->UpdateStaticTree();
 

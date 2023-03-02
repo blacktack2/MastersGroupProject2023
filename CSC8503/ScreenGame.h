@@ -27,6 +27,13 @@ public:
 	}
 
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
+		/*time += dt;
+		if (time > 2)
+		{
+			time = 0;
+			count++;
+			game->InitWorld();
+		}*/
 		keyMap.Update();
 		if (keyMap.GetButton(InputType::ESC)) {
 			*newState = new ScreenPause();
@@ -45,6 +52,8 @@ public:
 			renderer.UpdatePipeline();
 			return PushdownResult::Pop;
 		}
+
+
 		return PushdownResult::NoChange;
 	}
 	void OnAwake() override {
@@ -58,6 +67,8 @@ public:
 	}
 
 private:
+	float time = 0;
+	int count = 0;
 
 	enum class ChangeState {
 		None,
