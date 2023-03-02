@@ -30,6 +30,8 @@ namespace NCL {
 
 			void UpdateGame(float dt) override;
 
+			void SpawnPlayers();
+
 			GameObject* SpawnPlayer(int playerID, bool isSelf = false);
 
 			void LobbyLevel() ;
@@ -80,6 +82,8 @@ namespace NCL {
 			PlayerObject* AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID);
 			NetworkBoss* AddNetworkBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
 
+			void ProcessState();
+
 			std::map<int, int> stateIDs;
 
 			GameServer* thisServer;
@@ -93,12 +97,16 @@ namespace NCL {
 
 			int objectID;
 
+			std::vector<int>connectedPlayerIDs;
+
 			std::map<int, GameObject*> serverPlayers;
 			GameObject* localPlayer;
 			std::string name;
 
 			float packetGap = 1.0f / 120.0f; //120hz server/client update
 			int fullPacketToDeltaRate = 30;
+
+			bool canJoin;
 		};
 	}
 }

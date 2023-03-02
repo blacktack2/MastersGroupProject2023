@@ -79,6 +79,11 @@ void InputKeyMap::UpdateGameStateDependant() {
 			buttonstates |= InputType::Restart;
 		}
 		break;
+	case GameState::Lobby:
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::R)) {
+			buttonstates |= InputType::Confirm;
+		}
+		break;
 	}
 
 }

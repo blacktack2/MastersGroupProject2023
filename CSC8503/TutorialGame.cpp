@@ -108,8 +108,6 @@ void TutorialGame::InitWorld() {
 
 	InitGameExamples();
 
-
-
 	world->UpdateStaticTree();
 
 	selectionObject = nullptr;

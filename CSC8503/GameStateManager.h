@@ -1,5 +1,7 @@
 #pragma once
 enum class GameState {
+	Lobby,
+	Start,
 	OnGoing,
 	Win,
 	Lose,

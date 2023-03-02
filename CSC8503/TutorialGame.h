@@ -56,7 +56,7 @@ namespace NCL {
 		protected:
 
 			void UpdateGameCore(float dt);
-			void ProcessState();
+			virtual void ProcessState();
 
 			void InitialiseAssets();
 			void InitialisePrefabs();
