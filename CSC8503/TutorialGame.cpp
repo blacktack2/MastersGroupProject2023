@@ -70,7 +70,7 @@ TutorialGame::~TutorialGame() {
 	world->ClearAndErase();
 	BulletInstanceManager::instance().NullifyArray();
 	gridManager->Clear();
-
+	delete testingBossBehaviorTree;
 	delete physics;
 
 	delete[] mazes;
@@ -79,6 +79,19 @@ TutorialGame::~TutorialGame() {
 }
 
 void TutorialGame::InitWorld(InitMode mode) {
+	/*world->ClearAndErase();
+	BulletInstanceManager::instance().ObjectIntiation();
+
+
+	for (int i = 0; i < 10000000; i++)
+	{
+		PlayerBullet* bul = BulletInstanceManager::instance().GetPlayerBullet();
+		bul->SetActive(true);
+		BossBullet* boosbul = BulletInstanceManager::instance().GetBossBullet();
+		boosbul->SetActive(true);
+		bul->SetActive(false);
+		boosbul->SetActive(false);
+	}*/
 
 	delete[] mazes;
 	mazes = nullptr;
@@ -88,7 +101,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 	gridManager->Clear();
 	delete testingBossBehaviorTree;
 
-	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 300, 300, 2 ) );
+	gridManager->AddGameGrid(new GameGrid({ 0,0,0 }, 300, 300, 2));
 	BuildLevel();
 	player = AddPlayerToWorld(Vector3(0, 5, 90));
 
@@ -110,7 +123,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 		case InitMode::AUDIO_TEST : InitGameExamples()                ; break;
 	}*/
 
-	
+
 
 	world->UpdateStaticTree();
 
