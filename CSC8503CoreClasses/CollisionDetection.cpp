@@ -552,7 +552,7 @@ bool NCL::CollisionDetection::AABBOBBIntersection(const AABBVolume& volumeA, con
 
 	Vector3 localB = matrixB * (posB + delta - matrixB * posB);
 
-	collisionInfo.AddContactPoint(Vector3(0, 1, 0), 0.1f, Vector3(), localB);
+	collisionInfo.AddContactPoint(Vector3(0, 1, 0), 0.1f, Vector3(), Vector3());
 	return true;
 }
 
@@ -688,7 +688,10 @@ bool NCL::CollisionDetection::OBBCapsuleIntersection(const OBBVolume& volumeA, c
 	float penetration = capsuleRadius - std::sqrt(distanceSquared);
 	Vector3 normal = (capsulePoint - boxPoint).Normalised();
 
-	collisionInfo.AddContactPoint(boxOrientation * normal, penetration);
+	Vector3 localA = worldTransformA.GetGlobalMatrix() * boxPoint - boxPos;
+	Vector3 localB = capsulePoint - normal * capsuleRadius - capsulePos;
+
+	collisionInfo.AddContactPoint(boxOrientation * normal, penetration, localA, localB);
 	return true;
 }
 
