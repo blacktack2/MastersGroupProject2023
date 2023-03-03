@@ -296,6 +296,13 @@ namespace NCL::CSC8503 {
 
                     bool hasHealKit = false;
 
+                // Orientation Correction:
+                if (bossAction != NoAction && bossAction != Dead && bossAction != RandomWalk && bossAction != SeekHeal)
+                {
+                    Quaternion orientation = Quaternion(Matrix4::BuildViewMatrix(player->GetTransform().GetGlobalPosition(), boss->GetTransform().GetGlobalPosition(), Vector3(0, 1, 0)).Inverse());
+                    boss->GetTransform().SetOrientation(orientation);
+                }
+
 
                     switch (bossAction) {
                     case NoAction:
