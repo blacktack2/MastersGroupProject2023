@@ -1,6 +1,6 @@
 /**
- * @file   ScreenGame.h
- * @brief  A Pushdown automata state for running the game.
+ * @file   ScreenMultiplayer.h
+ * @brief  A Pushdown automata state for running a multiplayer game.
  *
  * @author Felix Chiu
  * @date   February 2023
@@ -9,27 +9,27 @@
 #include "PushdownState.h"
 #include "Window.h"
 #include "MenuManager.h"
-#include "GameStateManager.h"
+#include "ScreenMultiplayer.h"
 #include "NetworkedGame.h"
 #include "ScreenPause.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
-class ScreenGame : public PushdownState {
+class ScreenMultiplayer : public PushdownState {
 public:
-	ScreenGame() {
-		game = new TutorialGame();
-		gameStateManager->SetGameState(GameState::OnGoing);
+
+	ScreenMultiplayer(bool isServer = true) {
+		game = new NetworkedGame(isServer);
 	}
-	~ScreenGame() {
+	~ScreenMultiplayer() {
 		delete game;
 	}
 
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
 		keyMap.Update();
-		if (keyMap.GetButton(InputType::ESC)) {
-			*newState = new ScreenPause();
+		if (keyMap.GetButton(InputType::Pause)) {
+			*newState = new ScreenPause(game);
 			return PushdownResult::Push;
 		}
 		if (game->IsQuit()) {
@@ -39,16 +39,12 @@ public:
 			game->UpdateGame(dt);
 		}
 		if (menuState == ChangeState::Quit) {
-			/*
 			Window::GetWindow()->ShowOSPointer(true);
 			Window::GetWindow()->LockMouseToWindow(false);
 			renderer.EnableOverlayPass("Menu", true);
 			renderer.UpdatePipeline();
-			*/
 			return PushdownResult::Pop;
 		}
-
-
 		return PushdownResult::NoChange;
 	}
 	void OnAwake() override {
@@ -62,9 +58,6 @@ public:
 	}
 
 private:
-	float time = 0;
-	int count = 0;
-
 	enum class ChangeState {
 		None,
 		OnGoing,
@@ -77,7 +70,7 @@ private:
 	GameTechRenderer& renderer = GameTechRenderer::instance();
 	MenuManager& menuManager = MenuManager::instance();
 	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
-	TutorialGame* game;
+	NetworkedGame* game;
 
 	ChangeState menuState = ChangeState::None;
 };

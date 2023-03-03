@@ -1,6 +1,6 @@
 /**
- * @file   ScreenOption.h
- * @brief  A Pushdown automata state for game options.
+ * @file   ScreenMultiplayerOption.h
+ * @brief  A Pushdown automata state for multiplayer game options.
  *
  * @author Felix Chiu
  * @date   February 2023
@@ -9,23 +9,28 @@
 #include "PushdownState.h"
 #include "Window.h"
 #include "MenuManager.h"
+#include "ScreenMultiplayer.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
-class ScreenOption : public PushdownState {
+class ScreenMultiplayerOption : public PushdownState {
 public:
-	ScreenOption() {
+	ScreenMultiplayerOption() {
 		initMenu();
-		OnAwake();
 	}
-	~ScreenOption() {}
+	~ScreenMultiplayerOption() {}
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
 		menuManager.Update(dt);
 		keyMap.Update();
 		renderer.Render();
-		if (menuState == ChangeState::Resume) {
-			return PushdownResult::Pop;
+		if (menuState == ChangeState::StartServer) {
+			*newState = new ScreenMultiplayer(true);
+			return PushdownResult::Push;
+		}
+		if (menuState == ChangeState::StartClient) {
+			*newState = new ScreenMultiplayer(false);
+			return PushdownResult::Push;
 		}
 		if (menuState == ChangeState::Quit) {
 			return PushdownResult::Pop;
@@ -37,6 +42,7 @@ public:
 		menuState = ChangeState::None;
 		menuManager.SetCurrentMenu(name);
 		renderer.EnableOverlayPass("Menu", true);
+		renderer.EnableOverlayPass("Debug", false);
 		renderer.EnableRenderScene(false);
 		renderer.UpdatePipeline();
 		Window::GetWindow()->ShowOSPointer(true);
@@ -53,11 +59,11 @@ private:
 	enum class ChangeState {
 		None,
 		OnGoing,
-		Resume,
-		Option,
+		StartServer,
+		StartClient,
 		Quit
 	};
 	ChangeState menuState = ChangeState::None;
 
-	std::string name = "option";
+	std::string name = "ScreenMultiplayerOption";
 };

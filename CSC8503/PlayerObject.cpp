@@ -46,6 +46,12 @@ PlayerObject::~PlayerObject() {
 }
 
 void PlayerObject::Update(float dt) {
+	//Change game state
+	if (health.GetHealth() <= 0) {
+		ChangeLoseState();
+		return;
+	}
+		
 	health.Update(dt);
 
 
@@ -73,12 +79,12 @@ void PlayerObject::Update(float dt) {
 		GameNode* node = GameGridManager::instance().NearestNode(this->GetTransform().GetGlobalPosition());
 		InkEffectManager::instance().ApplyInkEffect(node->inkType, &health, 0);
 	}
+	
+}
 
-	//Change game state
-	if (health.GetHealth() <= 0) {
-		gameStateManager->SetGameState(GameState::Lose);
-	}
-
+void PlayerObject::ChangeLoseState()
+{
+	gameStateManager->SetGameState(GameState::Lose);
 }
 
 void PlayerObject::MoveTo(Vector3 position) {
@@ -254,11 +260,8 @@ void PlayerObject::CollisionWith(GameObject* other) {
 }
 
 
-void PlayerObject::Shoot() {
-	if (projectileFireRateTimer > 0)
-		return;
-	projectileFireRateTimer = projectileFireRate;
-
+PlayerBullet* PlayerObject::PrepareBullet()
+{
 	PlayerBullet* ink = BulletInstanceManager::instance().GetPlayerBullet();
 	ink->SetLifespan(projectileLifespan);
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
@@ -267,8 +270,16 @@ void PlayerObject::Shoot() {
 	Quaternion dir = transform.GetGlobalOrientation() * Quaternion::EulerAnglesToQuaternion((rand() % 100 - 50) / 20, (rand() % 100 - 50) / 20, (rand() % 100 - 50) / 20);
 	ink->GetPhysicsObject()->ApplyLinearImpulse(dir * Vector3(0, 0, -1) * projectileForce);
 	ink->SetActive(true);
-	lastInstancedObjects.push_back(ink);
+	return ink;
 }
+
+void PlayerObject::Shoot() {
+	if (projectileFireRateTimer > 0)
+		return;
+	projectileFireRateTimer = projectileFireRate;
+	PlayerBullet* bullet = PrepareBullet();
+}
+
 
 void NCL::CSC8503::PlayerObject::SetupAudio()
 {

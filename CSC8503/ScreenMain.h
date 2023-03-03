@@ -11,6 +11,7 @@
 #include "MenuManager.h"
 #include "ScreenGame.h"
 #include "ScreenOption.h"
+#include "ScreenMultiplayerOption.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -19,6 +20,7 @@ class ScreenMain : public PushdownState {
 public:
 	ScreenMain(){
 		initMenu();
+		OnAwake();
 	}
 	~ScreenMain(){}
 
@@ -26,19 +28,23 @@ public:
 		menuManager.Update(dt);
 		keyMap.Update();
 		renderer.Render();
-		if (menuState == ChangeState::Start) {
+		switch (menuState)
+		{
+		case ChangeState::Start:
 			*newState = new ScreenGame();
 			return PushdownResult::Push;
-		}
-		if (menuState == ChangeState::Option) {
+		case ChangeState::Multiplayer:
+			*newState = new ScreenMultiplayerOption();
+			return PushdownResult::Push;
+		case ChangeState::Option:
 			*newState = new ScreenOption();
 			return PushdownResult::Push;
-		}
-		if (menuState == ChangeState::Quit) {
+		case ChangeState::Quit:
 			return PushdownResult::Pop;
+		default:
+			menuState = ChangeState::OnGoing;
+			return PushdownResult::NoChange;
 		}
-		menuState = ChangeState::OnGoing;
-		return PushdownResult::NoChange;
 	}
 	void OnAwake() override {
 		menuState = ChangeState::None;
@@ -64,6 +70,7 @@ private:
 		None,
 		OnGoing,
 		Start,
+		Multiplayer,
 		Option,
 		Quit
 	};

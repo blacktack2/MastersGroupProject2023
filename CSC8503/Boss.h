@@ -3,6 +3,7 @@
  * @brief  
  * 
  * @author Xiaoyang Liu
+ * @author Felix Chiu
  * @date   February 2023
  */
 #pragma once
@@ -26,19 +27,36 @@
 namespace NCL::CSC8503 {
     class Boss : public GameObject {
     public:
-        Boss(GameGrid& gg)
+        Boss()
             : GameObject()
         {
-            gameGrid = &gg;
         }
 
         ~Boss(){}
 
         virtual void Update(float dt) override;
 
-        void Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt);
+        virtual void ChangeLoseState();
+
+        void Chase(float speed, Vector3 destination,GameGrid* grid, float dt);
 
         BossBullet* releaseBossBullet(Vector3 v, Vector3 s, Vector3 p = Vector3{ 99999,99999,99999 });
+
+        /**
+         * @brief Allows further modification of the spawned bullet. Also provide a template for networked bullets.
+         *
+         * @param bullet The bullet being modified.
+         */
+        virtual void BulletModification(BossBullet* bullet) {};
+
+        /**
+          * @brief Allows Boss to aquire new target.
+          */
+        virtual void ChangeTarget();
+
+        PlayerObject* GetTarget() {
+            return target;
+        }
 
         bool RandomWalk();
 
@@ -63,7 +81,6 @@ namespace NCL::CSC8503 {
             return &health;
         }
     protected:
-        GameGrid* gameGrid = nullptr;
         float deltaTime = 0.0f;
 
         Health health = Health(100);
@@ -90,16 +107,19 @@ namespace NCL::CSC8503 {
         int currentRainBomb = 0;
         std::vector<BossBullet*> rain;
         std::vector<Vector3> rainBombPositions;
+
+        PlayerObject* target;
     };
 
     class BossBehaviorTree {
     public:
-        BossBehaviorTree(Boss* boss, PlayerObject* player) {
+        BossBehaviorTree(Boss* boss) {
+            this->boss = boss;
             float offensiveHealthLowerBound = 50;
             float bossVision = 80;
             float distanceToHaveCloseCombat = 40;
 
-            behaviorLock = new BehaviorLock(boss, player);
+            behaviorLock = new BehaviorLock(boss, &target);
 
             root = new SelectorNode();
 
@@ -115,7 +135,7 @@ namespace NCL::CSC8503 {
             SequenceNode* offensiveWhilePlayerAway = new SequenceNode();
             offensiveMoves->addChild(offensiveWhilePlayerAway);
 
-            CheckPlayerDistanceToBossNode* checkPlayerDistanceToWander = new CheckPlayerDistanceToBossNode(boss, player, bossVision, 9999);
+            CheckPlayerDistanceToBossNode* checkPlayerDistanceToWander = new CheckPlayerDistanceToBossNode(boss, &target, bossVision, 9999);
             offensiveWhilePlayerAway->addChild(checkPlayerDistanceToWander);
 
             WanderNode* randomWalk = new WanderNode();
@@ -124,7 +144,7 @@ namespace NCL::CSC8503 {
             SequenceNode* offensiveWhilePlayerNear = new SequenceNode();
             offensiveMoves->addChild(offensiveWhilePlayerNear);
 
-            CheckPlayerDistanceToBossNode* checkPlayerDistanceToAttack = new CheckPlayerDistanceToBossNode(boss, player, -1, bossVision);
+            CheckPlayerDistanceToBossNode* checkPlayerDistanceToAttack = new CheckPlayerDistanceToBossNode(boss, &target, -1, bossVision);
             offensiveWhilePlayerNear->addChild(checkPlayerDistanceToAttack);
 
             SelectorNode* offensiveCloseOrRemote = new SelectorNode();
@@ -133,7 +153,7 @@ namespace NCL::CSC8503 {
             SequenceNode* offensiveCloseCombat = new SequenceNode();
             offensiveCloseOrRemote->addChild(offensiveCloseCombat);
 
-            CheckPlayerDistanceToBossNode* checkPlayerDistanceForCloseCombat = new CheckPlayerDistanceToBossNode(boss, player, -1, distanceToHaveCloseCombat);
+            CheckPlayerDistanceToBossNode* checkPlayerDistanceForCloseCombat = new CheckPlayerDistanceToBossNode(boss, &target, -1, distanceToHaveCloseCombat);
             offensiveCloseCombat->addChild(checkPlayerDistanceForCloseCombat);
 
             SelectorNode* chooseOffensiveCloseCombat = new SelectorNode();
@@ -159,7 +179,7 @@ namespace NCL::CSC8503 {
             SequenceNode* offensiveRemoteCombat = new SequenceNode();
             offensiveCloseOrRemote->addChild(offensiveRemoteCombat);
 
-            CheckPlayerDistanceToBossNode* checkPlayerDistanceForRemoteCombat = new CheckPlayerDistanceToBossNode(boss, player, distanceToHaveCloseCombat, bossVision);
+            CheckPlayerDistanceToBossNode* checkPlayerDistanceForRemoteCombat = new CheckPlayerDistanceToBossNode(boss, &target, distanceToHaveCloseCombat, bossVision);
             offensiveRemoteCombat->addChild(checkPlayerDistanceForRemoteCombat);
 
             SelectorNode* chooseOffensiveRemoteCombat = new SelectorNode();
@@ -194,7 +214,7 @@ namespace NCL::CSC8503 {
             SequenceNode* defensiveWhilePlayerAway = new SequenceNode();
             defensiveMoves->addChild(defensiveWhilePlayerAway);
 
-            CheckPlayerDistanceToBossNode* checkPlayerIsAway = new CheckPlayerDistanceToBossNode(boss, player, bossVision, 9999);
+            CheckPlayerDistanceToBossNode* checkPlayerIsAway = new CheckPlayerDistanceToBossNode(boss, &target, bossVision, 9999);
             defensiveWhilePlayerAway->addChild(checkPlayerIsAway);
 
             SelectorNode* defensiveHealOrWalk = new SelectorNode();
@@ -210,7 +230,7 @@ namespace NCL::CSC8503 {
             SequenceNode* defensiveWhilePlayerNear = new SequenceNode();
             defensiveMoves->addChild(defensiveWhilePlayerNear);
 
-            CheckPlayerDistanceToBossNode* checkPlayerIsNear = new CheckPlayerDistanceToBossNode(boss, player, -1, bossVision);
+            CheckPlayerDistanceToBossNode* checkPlayerIsNear = new CheckPlayerDistanceToBossNode(boss, &target, -1, bossVision);
             defensiveWhilePlayerNear->addChild(checkPlayerIsNear);
 
             SelectorNode* defensiveCloseOrRemote = new SelectorNode();
@@ -219,7 +239,7 @@ namespace NCL::CSC8503 {
             SequenceNode* defensiveCloseCombat = new SequenceNode();
             defensiveCloseOrRemote->addChild(defensiveCloseCombat);
 
-            CheckPlayerDistanceToBossNode* checkPlayerDistanceForDanger = new CheckPlayerDistanceToBossNode(boss, player, -1, distanceToHaveCloseCombat);
+            CheckPlayerDistanceToBossNode* checkPlayerDistanceForDanger = new CheckPlayerDistanceToBossNode(boss, &target, -1, distanceToHaveCloseCombat);
             defensiveCloseCombat->addChild(checkPlayerDistanceForDanger);
 
             JumpAwayFromPlayerNode* jumpAwayFromPlayer = new JumpAwayFromPlayerNode();
@@ -228,7 +248,7 @@ namespace NCL::CSC8503 {
             SequenceNode* defensiveRemoteCombat = new SequenceNode();
             defensiveCloseOrRemote->addChild(defensiveRemoteCombat);
 
-            CheckPlayerDistanceToBossNode* checkPlayerDistanceForKillingMoves = new CheckPlayerDistanceToBossNode(boss, player, distanceToHaveCloseCombat, bossVision);
+            CheckPlayerDistanceToBossNode* checkPlayerDistanceForKillingMoves = new CheckPlayerDistanceToBossNode(boss, &target, distanceToHaveCloseCombat, bossVision);
             defensiveRemoteCombat->addChild(checkPlayerDistanceForKillingMoves);
 
             SelectorNode* chooseDefensiveRemoteCombat = new SelectorNode();
@@ -256,15 +276,6 @@ namespace NCL::CSC8503 {
             delete behaviorLock;
             delete root;
         }
-
-        void update() {
-            if (behaviorLock->isLocked()) {
-                behaviorLock->BossAct();
-            } else {
-                root->execute(behaviorLock);
-            }
-        }
-    private:
         enum BossAction {
             NoAction,
             Dead,
@@ -279,82 +290,105 @@ namespace NCL::CSC8503 {
             BulletsStorm
         };
 
-        
-            class BehaviorLock {
-            public:
-                BehaviorLock(Boss* b, PlayerObject* p) {
-                    boss = b;
-                    player = p;
-                }
+        void ChangeTarget(PlayerObject* target) {
+            this->target = target;
+        }
 
-                void SetBossAction(BossAction b) {
-                    bossAction = b;
-                }
+        BossAction GetBossAction() {
+            return behaviorLock->GetBossAction();
+        }
+        void SetBossAction(BossAction action) {
+            behaviorLock->SetBossAction(action);
+        }
 
-                void BossAct() {
-                    bool finish = false;
+        void update() {
+            //Debug::DrawLine(boss->GetTransform().GetGlobalPosition(), target->GetTransform().GetGlobalPosition(), Debug::BLUE, 0.01f);
+            if (behaviorLock->isLocked()) {
+                behaviorLock->BossAct();
+            } else {
+                root->execute(behaviorLock);
+            }
+        }
+    private:
 
-                    bool hasHealKit = false;
+        class BehaviorLock {
+        public:
+            BehaviorLock(Boss* b, PlayerObject** p) {
+                boss = b;
+                player = p;
+            }
+
+            BossAction GetBossAction() {
+                return bossAction;
+            }
+            void SetBossAction(BossAction b) {
+                bossAction = b;
+            }
+
+            void BossAct() {
+                bool finish = false;
+
+                bool hasHealKit = false;
 
                 // Orientation Correction:
-                if (bossAction != NoAction && bossAction != Dead && bossAction != RandomWalk && bossAction != SeekHeal)
+                if (bossAction != NoAction && bossAction != Dead && bossAction != RandomWalk && bossAction != SeekHeal && (*player))
                 {
-                    Quaternion orientation = Quaternion(Matrix4::BuildViewMatrix(player->GetTransform().GetGlobalPosition(), boss->GetTransform().GetGlobalPosition(), Vector3(0, 1, 0)).Inverse());
+                    Quaternion orientation = Quaternion(Matrix4::BuildViewMatrix((*player) ->GetTransform().GetGlobalPosition(), boss->GetTransform().GetGlobalPosition(), Vector3(0, 1, 0)).Inverse());
                     boss->GetTransform().SetOrientation(orientation);
                 }
 
 
-                    switch (bossAction) {
-                    case NoAction:
-                        //std::cout << "Error: Boss' behavior is locked while there is currently no action to perform!\n";
-                        break;
-                    case Dead:
-                        //std::cout << "The boss has dead, and it should do nothing.\n";
-                        //Note that, for current implementation, once the boss has dead, its action remain in Dead forever.
-                        break;
-                    case RandomWalk:
-                        //std::cout << "Boss is walking randomly.\n";
-                        finish = boss->RandomWalk();
-                        break;
-                    case Stab:
-                        //std::cout << "Boss stabs the player.\n";
-                        finish = boss->StabPlayer(player);
-                        break;
-                    case Spin:
-                        //std::cout << "Boss is spining.\n";
-                        finish = boss->Spin(player);
-                        break;
-                    case Laser:
-                        //std::cout << "Boss use laser.\n";
-                        finish = boss->UseLaserOnPlayer(player);
-                        break;
-                    case JumpTo:
-                        //std::cout << "Boss jumps towards the player.\n";
-                        finish = boss->JumpTo(player);
-                        break;
-                    case JumpAway:
-                        //std::cout << "Boss jumps away from the player.\n";
-                        finish = boss->JumpAway(player);
-                        break;
-                    case SeekHeal:
-                        //std::cout << "Boss is seeking for healing kit.\n";
-                        finish = boss->SeekHeal(hasHealKit);
-                        if (!hasHealKit) {
-                            bossAction = RandomWalk;
-                        }
-                        break;
-                    case InkRain:
-                        //std::cout << "Boss perfroms Ink Rain.\n";
-                        finish = boss->InkRain(player);
-                        break;
-                    case BulletsStorm:
-                        //std::cout << "Boss perfroms Bullets Storm.\n";
-                        finish = boss->BulletsStorm();
-                        break;
-                    default:
-                        //std::cout << "Error: Boss' action is not a valid enum!\n";
-                        break;
+                switch (bossAction) {
+                case NoAction:
+                    //std::cout << "Error: Boss' behavior is locked while there is currently no action to perform!\n";
+                    break;
+                case Dead:
+                    //std::cout << "The boss has dead, and it should do nothing.\n";
+                    //Note that, for current implementation, once the boss has dead, its action remain in Dead forever.
+                    break;
+                case RandomWalk:
+                    //std::cout << "Boss is walking randomly.\n";
+                    finish = boss->RandomWalk();
+                    break;
+                case Stab:
+                    //std::cout << "Boss stabs the player.\n";
+                    finish = boss->StabPlayer(*player);
+                    break;
+                case Spin:
+                    //std::cout << "Boss is spining.\n";
+                    finish = boss->Spin(*player);
+                    break;
+                case Laser:
+                    //std::cout << "Boss use laser.\n";
+                    finish = boss->UseLaserOnPlayer(*player);
+                    break;
+                case JumpTo:
+                    //std::cout << "Boss jumps towards the player.\n";
+                    finish = boss->JumpTo(*player);
+                    break;
+                case JumpAway:
+                    //std::cout << "Boss jumps away from the player.\n";
+                    finish = boss->JumpAway(*player);
+                    break;
+                case SeekHeal:
+                    //std::cout << "Boss is seeking for healing kit.\n";
+                    finish = boss->SeekHeal(hasHealKit);
+                    if (!hasHealKit) {
+                        bossAction = RandomWalk;
                     }
+                    break;
+                case InkRain:
+                    //std::cout << "Boss perfroms Ink Rain.\n";
+                    finish = boss->InkRain(*player);
+                    break;
+                case BulletsStorm:
+                    //std::cout << "Boss perfroms Bullets Storm.\n";
+                    finish = boss->BulletsStorm();
+                    break;
+                default:
+                    //std::cout << "Error: Boss' action is not a valid enum!\n";
+                    break;
+                }
 
                     if (finish) {
                         bossAction = NoAction;
@@ -368,11 +402,11 @@ namespace NCL::CSC8503 {
                     return true;
                 }
 
-            private:
-                BossAction bossAction = NoAction;
-                Boss* boss;
-                PlayerObject* player;
-            };
+        private:
+            BossAction bossAction = NoAction;
+            Boss* boss;
+            PlayerObject** player;
+        };
 
             class Node {
             public:
@@ -477,30 +511,32 @@ namespace NCL::CSC8503 {
                 Boss* boss = nullptr;
             };
 
-            class CheckPlayerDistanceToBossNode : public Node {
-            public:
-                CheckPlayerDistanceToBossNode(Boss* b, PlayerObject* p, float l, float u) {
-                    lowerLimit = l;
-                    upperLimit = u;
-                    boss = b;
-                    player = p;
+        class CheckPlayerDistanceToBossNode : public Node {
+        public:
+            CheckPlayerDistanceToBossNode(Boss* b, PlayerObject** target, float l, float u) {
+                lowerLimit = l;
+                upperLimit = u;
+                boss = b;
+                this->target = target;
+            }
+            virtual bool execute(BehaviorLock* lock) {
+                float d;
+                if(*target)
+                    d = (boss->GetTransform().GetGlobalPosition() - (* target)->GetTransform().GetGlobalPosition()).Length();
+                else {
+                    d = 100;
                 }
-
-                ~CheckPlayerDistanceToBossNode() {}
-
-                virtual bool execute(BehaviorLock* lock) {
-                    float d = (boss->GetTransform().GetGlobalPosition() - player->GetTransform().GetGlobalPosition()).Length();
-                    if ((lowerLimit < d) && (d <= upperLimit)) {
-                        return true;
-                    }
-                    return false;
+                if ((lowerLimit < d) && (d <= upperLimit)) {
+                    return true;
                 }
-            protected:
-                float lowerLimit;
-                float upperLimit;
-                Boss* boss;
-                PlayerObject* player;
-            };
+                return false;
+            }
+        protected:
+            float lowerLimit;
+            float upperLimit;
+            Boss* boss;
+            PlayerObject** target;
+        };
 
             class StabPlayerNode : public Node {
             public:
@@ -603,5 +639,8 @@ namespace NCL::CSC8503 {
 
         BehaviorLock* behaviorLock = nullptr;
         SelectorNode* root = nullptr;
+
+        PlayerObject* target;
+        Boss* boss;
     };
 }
