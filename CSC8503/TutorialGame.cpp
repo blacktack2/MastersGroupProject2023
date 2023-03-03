@@ -98,7 +98,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 	//AddCapsuleToWorld(Vector3(2, 2, 2), 2.0f, 1.0f, 10.0f, 0.0f);
 	//AddCapsuleToWorld(Vector3(5, 2, 5), 2.0f, 1.0f, 10.0f, 0.0f);
 
-	AddCubeToWorld(Vector3(0, 2, 0), Vector3(2, 2, 2), 10.0f, false);
+	AddCubeToWorld(Vector3(0, 5, 100), Vector3(2, 2, 2), 10.0f, false);
 
 	InitGameExamples();
 	/*

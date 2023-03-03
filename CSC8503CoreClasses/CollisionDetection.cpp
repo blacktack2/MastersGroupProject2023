@@ -521,6 +521,7 @@ bool NCL::CollisionDetection::AABBOBBIntersection(const AABBVolume& volumeA, con
 	Vector3 posB = worldTransformB.GetGlobalPosition();
 	Vector3 halfSizeB = volumeB.GetHalfDimensions();
 	Quaternion orientationB = worldTransformB.GetGlobalOrientation();
+	Matrix3 matrixB = worldTransformB.GetGlobalMatrix();
 
 	Matrix3 orientationMatB = Matrix3(orientationB);
 
@@ -549,7 +550,9 @@ bool NCL::CollisionDetection::AABBOBBIntersection(const AABBVolume& volumeA, con
 		}
 	}
 
-	collisionInfo.AddContactPoint(Vector3(0, 1, 0), 0.1f);
+	Vector3 localB = matrixB * (posB + delta - matrixB * posB);
+
+	collisionInfo.AddContactPoint(Vector3(0, 1, 0), 0.1f, Vector3(), localB);
 	return true;
 }
 
