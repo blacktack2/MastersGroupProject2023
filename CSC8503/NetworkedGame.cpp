@@ -121,6 +121,7 @@ void NetworkedGame::StartLevel() {
 	BulletInstanceManager::instance().AddNetworkObject(id);
 	testingBoss = AddNetworkBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss);
+	testingBossBehaviorTree->ChangeTarget(localPlayer);
 	gameStateManager->SetGameState(GameState::OnGoing);
 
 	BroadcastGameStateChange();
