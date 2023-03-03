@@ -27,6 +27,7 @@ namespace NCL
         bool GetThumbLeft(unsigned int controllerNum, Maths::Vector2& v);
         bool GetThumbRight(unsigned int controllerNum, Maths::Vector2& v);
         bool GetRightTrigger(unsigned int controllerNum, float& n);
+        bool GetLeftTrigger(unsigned int controllerNum, float& n);
 
     protected:
 

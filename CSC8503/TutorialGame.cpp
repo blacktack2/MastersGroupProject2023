@@ -125,11 +125,11 @@ void TutorialGame::UpdateGame(float dt) {
 	menuManager->Update(dt);
 	keyMap.Update();
 
-	XboxController c;
+	/*XboxController c;
 	float v;
 	bool b = c.GetRightTrigger(1, v);
 	if (b) std::cout << v << "\n";
-	else std::cout << "No displacement\n";
+	else std::cout << "No displacement\n";*/
 
 	debugViewPoint->BeginFrame();
 	debugViewPoint->MarkTime("Update");

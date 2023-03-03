@@ -126,3 +126,22 @@ bool XboxController::GetRightTrigger(unsigned int controllerNum, float& n)      
     }
     return true;
 }
+
+bool XboxController::GetLeftTrigger(unsigned int controllerNum, float& n)      // n normalized to 0 ~ 1
+{
+    if (!UpdateConnection(controllerNum))   // Controller is not connected OR controllerNum is out of range
+    {
+        return false;   // n is unchanged if connection fails
+    }
+    BYTE deadZone = 10;
+    BYTE keyDown = state.Gamepad.bLeftTrigger;
+    if (keyDown < deadZone)
+    {
+        n = 0;
+    }
+    else
+    {
+        n = (1.0f / 255) * keyDown;
+    }
+    return true;
+}

@@ -61,6 +61,11 @@ void PlayerObject::Update(float dt) {
 		GetInput(dir, keyMap.GetButtonState());
 		Move(dir);
 		MoveCamera();
+
+		// testing (Xbox) controller input:
+		Vector3 movingDir;
+		GetControllerInput(1, movingDir);
+		MoveByPosition(dt, movingDir);
 	}
 
 	//If on ink
@@ -86,6 +91,14 @@ void PlayerObject::MoveTo(Vector3 position) {
 
 }
 
+void PlayerObject::MoveByPosition(float dt, Vector3 dir)
+/*
+This is a temporary member function. Feel free to merge this into PlayerObject::Move when necessary.
+*/
+{
+	this->GetTransform().SetPosition(this->GetTransform().GetGlobalPosition() + dir * 20 * dt);
+}
+
 void PlayerObject::Move(Vector3 dir) {
 	this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
 
@@ -102,6 +115,49 @@ void PlayerObject::Move(Vector3 dir) {
 void PlayerObject::MoveCamera() {
 	if (hasCamera) {
 		//gameWorld.GetMainCamera()->SetPosition(transform.GetGlobalPosition() + cameraOffset);
+	}
+}
+
+void PlayerObject::GetControllerInput(unsigned int controllerNum, Vector3& movingDir3D)		// controllerNum == 1,2,3,4
+/*
+This is a temporary member function used for testing controller's input. Feel free to merge this into PlayerObject::GetInput when necessary.
+*/
+{
+	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	isFreeLook = false;
+	
+	// Thumb for movement:
+	Vector3 cameraForwardDirection = gameWorld.GetMainCamera()->GetPosition() - this->GetTransform().GetGlobalPosition();
+	Vector2 movementThumbData{ 0,0 };
+	float rightTriggerDepth = 0;
+	movingDir3D = Vector3{ 0,0,0 };
+	if (keyMap.GetAxisData(2, AxisInput::Axis1, movementThumbData.x) && keyMap.GetAxisData(2, AxisInput::Axis2, movementThumbData.y))
+	{
+		if (!(movementThumbData.x == 0 && movementThumbData.y == 0))
+		{
+			Vector2 unitForwardDir{ 0,1 };
+			float angle = atan2(unitForwardDir.x * movementThumbData.y - movementThumbData.x * unitForwardDir.y, unitForwardDir.x * movementThumbData.x + unitForwardDir.y * movementThumbData.y);
+			Vector2 movingDir2D;
+			movingDir2D.x = cameraForwardDirection.x * cos(angle) - (-cameraForwardDirection.z) * sin(angle);
+			movingDir2D.y = (-cameraForwardDirection.z) * cos(angle) + cameraForwardDirection.x * sin(angle);
+			movingDir3D = -(Vector3{ movingDir2D.x,0,-movingDir2D.y }).Normalised();
+		}
+	}
+	if (keyMap.GetAxisData(2, AxisInput::Axis5, rightTriggerDepth))
+	{
+		if (rightTriggerDepth > 0.5f)
+		{
+			Shoot();
+		}
+	}
+	if (keyMap.GetAxisData(2, AxisInput::Axis6, rightTriggerDepth))
+	{
+		if (rightTriggerDepth > 0.5f && onGround && jumpTimer <= 0.0f)
+		{
+			Vector3 upDir = this->GetTransform().GetGlobalOrientation() * Vector3(0, 1, 0);
+			jumpTimer = jumpCooldown;
+			this->GetPhysicsObject()->ApplyLinearImpulse(upDir * jumpSpeed);
+		}
 	}
 }
 
