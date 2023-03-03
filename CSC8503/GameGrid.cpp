@@ -35,16 +35,6 @@ GameGrid::GameGrid(Vector3 gridOrigin, float totalLength, float totalWidth, floa
 		width += unitLength;
 	}
 
-	/*
-	Debug::DrawLine(gameNodes[0][0].worldPosition, gridOrigin + Vector3{ 0, 10, 0 }, Debug::YELLOW, 100);
-
-	Debug::DrawLine(gameNodes[0][numOfRows - 1].worldPosition, gridOrigin + Vector3{ 0, 10, 0 }, Debug::YELLOW, 100);
-
-	Debug::DrawLine(gameNodes[numOfColumns - 1][0].worldPosition, gridOrigin + Vector3{ 0, 10, 0 }, Debug::YELLOW, 100);
-
-	Debug::DrawLine(gameNodes[numOfColumns - 1][numOfRows - 1].worldPosition, gridOrigin + Vector3{ 0, 10, 0 }, Debug::YELLOW, 100);
-	*/
-
 	UpdateGrid();
 }
 GameGrid::~GameGrid() {
@@ -52,8 +42,6 @@ GameGrid::~GameGrid() {
 }
 void GameGrid::UpdateGrid(float dt)
 {
-	//healingKitTimer += dt;
-
 	for (int y = 0; y < gameNodes.size(); y++)
 	{
 		for (int x = 0; x < gameNodes[y].size(); x++)
@@ -281,6 +269,10 @@ std::vector<GameNode*> GameGrid::AreaNode(Vector3 position, float radius)
 	int minCol = std::round((localPosition.z - radius) / unitLength);
 	int maxCol = std::round((localPosition.z + radius) / unitLength);
 	
+
+
+
+
 	std::vector<GameNode*> t;
 	return t;
 

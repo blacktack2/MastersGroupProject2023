@@ -18,6 +18,7 @@ GameWorld::GameWorld() : staticQuadTree(Vector2(1024, 1024), 7, 6), dynamicQuadT
 }
 
 GameWorld::~GameWorld()	{
+	delete mainCamera;
 }
 
 void GameWorld::Clear() {
@@ -107,14 +108,14 @@ void GameWorld::OperateOnLights(LightFunc f) {
 
 void GameWorld::PreUpdateWorld() {
 	std::vector<GameObject*> delObjs;
-	std::copy_if(gameObjects.begin(), gameObjects.end(), std::back_inserter(delObjs), [&](GameObject* obj) {
-			if (obj->IsMarkedDelete()) {
-				return obj;
-			}
-		});
-	for (auto delObj : delObjs) {
-		RemoveGameObject(delObj, true);
-	}
+
+	gameObjects.erase(std::remove_if(gameObjects.begin(), gameObjects.end(), [](GameObject* g) {
+		if (g->IsMarkedDelete()) {
+			delete g;
+			return true;
+		}
+		return false;
+	}), gameObjects.end());
 	UpdateDynamicTree();
 }
 
@@ -135,10 +136,10 @@ void GameWorld::UpdateWorld(float dt) {
 		std::shuffle(constraints.begin(), constraints.end(), e);
 	}
 
-	for (int i = 0; i < gameObjects.size(); i++) {
-		if (gameObjects[i]->IsActive())
+	for (GameObject* g : gameObjects) {
+		if (g->IsActive())
 		{
-			gameObjects[i]->Update(dt);
+			g->Update(dt);
 		}
 	}
 
@@ -157,14 +158,14 @@ void GameWorld::UpdateStaticTree() {
 		}
 	);
 
-	for (auto i = gameObjects.begin(); i != gameObjects.end(); i++) {
-		if ((*i)->GetPhysicsObject() && (*i)->GetPhysicsObject()->IsStatic()) {
+	for (GameObject* g : gameObjects) {
+		if (g->GetPhysicsObject() && g->GetPhysicsObject()->IsStatic()) {
 			Vector3 halfSizes;
-			if (!(*i)->GetBroadphaseAABB(halfSizes)) {
+			if (!g->GetBroadphaseAABB(halfSizes)) {
 				continue;
 			}
-			Vector3 pos = (*i)->GetTransform().GetGlobalPosition();
-			staticQuadTree.Insert(*i, Vector2(pos.x, pos.z), Vector2(halfSizes.x, halfSizes.z));
+			Vector3 pos = g->GetTransform().GetGlobalPosition();
+			staticQuadTree.Insert(g, Vector2(pos.x, pos.z), Vector2(halfSizes.x, halfSizes.z));
 		}
 	}
 }
@@ -172,14 +173,14 @@ void GameWorld::UpdateStaticTree() {
 void GameWorld::UpdateDynamicTree() {
 	dynamicQuadTree.Clear();
 
-	for (auto i = gameObjects.begin(); i != gameObjects.end(); i++) {
-		if ((*i)->GetPhysicsObject() && !(*i)->GetPhysicsObject()->IsStatic() && (*i)->IsActive()) {
+	for (GameObject* g : gameObjects) {
+		if (g->GetPhysicsObject() && !g->GetPhysicsObject()->IsStatic() && g->IsActive()) {
 			Vector3 halfSizes;
-			if (!(*i)->GetBroadphaseAABB(halfSizes)) {
+			if (!g->GetBroadphaseAABB(halfSizes)) {
 				continue;
 			}
-			Vector3 pos = (*i)->GetTransform().GetGlobalPosition();
-			dynamicQuadTree.Insert(*i, Vector2(pos.x, pos.z), Vector2(halfSizes.x, halfSizes.z));
+			Vector3 pos = g->GetTransform().GetGlobalPosition();
+			dynamicQuadTree.Insert(g, Vector2(pos.x, pos.z), Vector2(halfSizes.x, halfSizes.z));
 		}
 	}
 }

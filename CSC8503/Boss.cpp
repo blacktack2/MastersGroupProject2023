@@ -20,7 +20,7 @@ void Boss::Update(float dt) {
     InkEffectManager::instance().ApplyInkEffect(node->inkType, GetHealth(), 1);
     //}
     //check boss health
-    if (GetHealth()->GetHealth() <= 0) {
+    if (health.GetHealth() <= 0) {
         gameStateManager->SetGameState(GameState::Win);
     }
 }
@@ -102,6 +102,7 @@ bool Boss::RandomWalk() {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (anim->GetAnimation() != AssetLibrary::GetAnimation("WalkForward")) {
         anim->SetAnimation(AssetLibrary::GetAnimation("WalkForward"));
+        std::cout << "Boss Walk\n";
     }
     float speed = 20.0f;
     float period = 1.0f;    // change direction in period-seconds
@@ -125,6 +126,7 @@ bool Boss::StabPlayer(PlayerObject* player) {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack1")) {
         anim->SetAnimation(AssetLibrary::GetAnimation("Attack1"));
+        std::cout << "Boss Attack 1\n";
     }
 
     Vector3 bombScale{ 0.75,0.75,0.75 };
@@ -155,6 +157,7 @@ bool Boss::Spin(PlayerObject* player) {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack2")) {
         anim->SetAnimation(AssetLibrary::GetAnimation("Attack2"));
+        std::cout << "Boss Attack 2\n";
     }
     Vector3 bombScale{ 0.75,0.75,0.75 };
     float bombSpeed = 40.0f;
@@ -194,6 +197,7 @@ bool Boss::UseLaserOnPlayer(PlayerObject* player) {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack3")) {
         anim->SetAnimation(AssetLibrary::GetAnimation("Attack3"));
+        std::cout << "Boss Attack 3\n";
     }
     Vector3 bombScale{ 2,2,2 };
     float bombSpeed = 40.0f;
@@ -233,6 +237,7 @@ bool Boss::JumpTo(PlayerObject* player) {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (anim->GetAnimation() != AssetLibrary::GetAnimation("Jump")) {
         anim->SetAnimation(AssetLibrary::GetAnimation("Jump"));
+        std::cout << "Boss Jump To\n";
     }
     float hangTime = 5.0f;
     if (jumpToTimer == 0.0f) {
@@ -258,6 +263,7 @@ bool Boss::JumpAway(PlayerObject* player) {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (anim->GetAnimation() != AssetLibrary::GetAnimation("Jump")) {
         anim->SetAnimation(AssetLibrary::GetAnimation("Jump"));
+        std::cout << "Boss Jump Away\n";
     }
     float hangTime = 5.0f;
     if (jumpAwayTimer == 0.0f) {
@@ -310,6 +316,7 @@ bool Boss::InkRain(PlayerObject* player) {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack6")) {
         anim->SetAnimation(AssetLibrary::GetAnimation("Attack6"));
+        std::cout << "Boss Attack 6\n";
     }
     float rainPeriod = 0.1f;
     int rainRange = 30;
@@ -362,6 +369,7 @@ bool Boss::BulletsStorm() {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack5")) {
         anim->SetAnimation(AssetLibrary::GetAnimation("Attack5"));
+        std::cout << "Boss Attack 5\n";
     }
     float bulletsStormDuration = 5.0f;
     float bulletsStormPeriod = 0.1f;

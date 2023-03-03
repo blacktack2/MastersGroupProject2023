@@ -6,18 +6,16 @@
  * @date   February 2023
  */
 #pragma once
-
+#include "GameTechRenderer.h"
 #include "menu.h"
 #include "Vector2.h"
+
 #include <map>
 #include <string>
-
-#include "GameTechRenderer.h"
 
 namespace NCL {
 	namespace CSC8503 {
 		using namespace Maths;
-		using namespace std;
 		class MenuManager {
 		private:
 			MenuManager();
@@ -32,19 +30,19 @@ namespace NCL {
 
 			Vector4 GetMenuDimension();
 
-			void AddMenu(string name, Menu* menu);
+			void AddMenu(std::string name, Menu* menu);
 
-			void RemoveMenu(string name);
+			void RemoveMenu(std::string name);
 
 			Menu* GetCurrentMenu() {
 				return menus[currentMenu];
 			}
 
-			string GetCurrentMenuName() {
+			std::string GetCurrentMenuName() {
 				return currentMenu;
 			}
 
-			void SetCurrentMenu(string name) {
+			void SetCurrentMenu(std::string name) {
 				if (menus[name] != nullptr) {
 					currentMenu = name;
 				}
@@ -60,8 +58,8 @@ namespace NCL {
 
 		protected:
 
-			map<string, Menu*> menus;
-			string currentMenu = "main";
+			std::map<std::string, Menu*> menus;
+			std::string currentMenu = "main";
 			GameTechRenderer* renderer;
 			MeshGeometry* quad;
 		};

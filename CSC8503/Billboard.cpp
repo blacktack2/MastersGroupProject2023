@@ -32,9 +32,11 @@ Billboard::Billboard(Vector3 position) {
 
 	billboardShader = new OGLShader("menuVertex.vert", "menuFragment.frag");
 
-	billboardTexture->Bind();
-	glUniform1i(glGetUniformLocation(billboardShader->GetProgramID(), "diffuseTex"), 0);
-	billboardTexture->Unbind();
+	billboardShader->Bind();
+
+	billboardShader->SetUniformInt("difuseTex", 0);
+
+	billboardShader->Unbind();
 }
 
 void Billboard::update(Vector3 playerPosition) {
