@@ -190,9 +190,8 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	}
 	if (health <= 0) {
 		std::cout << "all die" << std::endl;
-		GameStatePacket packet;
-		packet.state = GameState::Win;
-		thisServer->SendGlobalPacket(static_cast<GamePacket*>(&packet));
+		gameStateManager->SetGameState(GameState::Lose);
+		BroadcastGameStateChange();
 	}
 
 	//send important information to each player
@@ -633,7 +632,7 @@ void NetworkedGame::ProcessState() {
 			this->StartLevel();
 		}
 		if (keyMap.GetButton(InputType::Restart)) {
-			std::cout << "return to lobby" << std::endl;
+			std::cout << "Return to lobby" << std::endl;
 			this->LobbyLevel();
 		}
 	}

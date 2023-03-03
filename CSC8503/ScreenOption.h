@@ -17,6 +17,7 @@ class ScreenOption : public PushdownState {
 public:
 	ScreenOption() {
 		initMenu();
+		OnAwake();
 	}
 	~ScreenOption() {}
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
@@ -24,7 +25,6 @@ public:
 		keyMap.Update();
 		renderer.Render();
 		if (menuState == ChangeState::Resume) {
-			std::cout << "pop" << std::endl;
 			return PushdownResult::Pop;
 		}
 		if (menuState == ChangeState::Quit) {

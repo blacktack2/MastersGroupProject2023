@@ -20,6 +20,7 @@ class ScreenMain : public PushdownState {
 public:
 	ScreenMain(){
 		initMenu();
+		OnAwake();
 	}
 	~ScreenMain(){}
 

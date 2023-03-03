@@ -20,6 +20,7 @@ public:
 	ScreenPause(TutorialGame* game = nullptr) {
 		this->game = game;
 		initMenu();
+		menuManager.SetCurrentMenu(name);
 	}
 	~ScreenPause() {}
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {

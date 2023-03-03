@@ -22,10 +22,13 @@ namespace NCL {
 			}
 
 			void MoveInput(unsigned int keyPress) {
-				Vector3 dir = Vector3(0, 0, 0);
-				GetInput(dir, keyPress);
-				Move(dir);
-				MoveCamera();
+				if (health.GetHealth() > 0) {
+					Vector3 dir = Vector3(0, 0, 0);
+					GetInput(dir, keyPress);
+					Move(dir);
+					MoveCamera();
+				}
+				
 			}
 
 			void ServerSideMovement() {
@@ -33,9 +36,11 @@ namespace NCL {
 				Vector3 dir = Vector3(0, 0, 0);
 				lastKey = keyMap.GetButtonState();
 				keyMap.Update();
-				GetInput(dir, keyMap.GetButtonState());
-				Move(dir);
-				MoveCamera();
+				if (health.GetHealth() > 0) {
+					GetInput(dir, keyMap.GetButtonState());
+					Move(dir);
+					MoveCamera();
+				}
 			}
 
 			int GetPlayerNum() const {

@@ -27,13 +27,6 @@ public:
 	}
 
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
-		/*time += dt;
-		if (time > 2)
-		{
-			time = 0;
-			count++;
-			game->InitWorld();
-		}*/
 		keyMap.Update();
 		if (keyMap.GetButton(InputType::ESC)) {
 			*newState = new ScreenPause();
@@ -46,10 +39,12 @@ public:
 			game->UpdateGame(dt);
 		}
 		if (menuState == ChangeState::Quit) {
+			/*
 			Window::GetWindow()->ShowOSPointer(true);
 			Window::GetWindow()->LockMouseToWindow(false);
 			renderer.EnableOverlayPass("Menu", true);
 			renderer.UpdatePipeline();
+			*/
 			return PushdownResult::Pop;
 		}
 
