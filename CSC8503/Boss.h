@@ -3,6 +3,7 @@
  * @brief  
  * 
  * @author Xiaoyang Liu
+ * @author Felix Chiu
  * @date   February 2023
  */
 #pragma once
@@ -41,7 +42,21 @@ namespace NCL::CSC8503 {
 
         BossBullet* releaseBossBullet(Vector3 v, Vector3 s, Vector3 p = Vector3{ 99999,99999,99999 });
 
+        /**
+         * @brief Allows further modification of the spawned bullet. Also provide a template for networked bullets.
+         *
+         * @param bullet The bullet being modified.
+         */
         virtual void BulletModification(BossBullet* bullet) {};
+
+        /**
+          * @brief Allows Boss to aquire new target.
+          */
+        virtual void ChangeTarget();
+
+        PlayerObject* GetTarget() {
+            return target;
+        }
 
         bool RandomWalk();
 
@@ -92,6 +107,8 @@ namespace NCL::CSC8503 {
         int currentRainBomb = 0;
         std::vector<BossBullet*> rain;
         std::vector<Vector3> rainBombPositions;
+
+        PlayerObject* target;
     };
 
     class BossBehaviorTree {

@@ -3,6 +3,7 @@
  * @brief  See Boss.h.
  *
  * @author Xiaoyang Liu
+ * @author Felix Chiu
  * @date   February 2023
  */
 #pragma once
@@ -12,15 +13,17 @@
 #include "PrefabLibrary.h"
 
 void Boss::Update(float dt) {
+    GetTarget();
     health.Update(dt);
     deltaTime = dt;
     // check if inked
-    //if (onGround) {
     GameNode* node = GameGridManager::instance().NearestNode(this->GetTransform().GetGlobalPosition());
     InkEffectManager::instance().ApplyInkEffect(node->inkType, GetHealth(), 1);
-    //}
     //check boss health
     if (GetHealth()->GetHealth() <= 0) {
+        ChangeLoseState();
+    }
+    if (this->transform.GetGlobalPosition().y < -10) {
         ChangeLoseState();
     }
 }
@@ -102,6 +105,8 @@ BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p) {
     return ink;
 
 }
+
+void Boss::ChangeTarget(){}
 
 bool Boss::RandomWalk() {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());

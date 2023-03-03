@@ -16,8 +16,7 @@ enum BasicNetworkMessages {
 	Player_Connected,
 	Player_Disconnected,
 	Shutdown,
-	Handshake_Message,
-	Handshake_Ack,
+	PlayerSync_Message,
 	BossAction_Message,
 	GameState_Message,
 };

@@ -20,6 +20,15 @@ NetworkBoss::~NetworkBoss()
 {
 }
 
+void NetworkBoss::ChangeLoseState()
+{
+	GameStatePacket packet;
+	packet.state = GameState::Win;
+
+	if (game->GetServer())
+		game->GetServer()->SendGlobalPacket(static_cast<GamePacket*>(&packet));
+}
+
 void NetworkBoss::BulletModification(BossBullet* bullet)
 {
 	ItemInitPacket newObj;
@@ -34,12 +43,8 @@ void NetworkBoss::BulletModification(BossBullet* bullet)
 		game->GetServer()->SendGlobalPacket(&newObj);
 }
 
-void NetworkBoss::ChangeLoseState()
+void NetworkBoss::ChangeTarget()
 {
-	GameStatePacket packet;
-	packet.state = GameState::Win;
-	
-
-	if (game->GetServer())
-		game->GetServer()->SendGlobalPacket(static_cast<GamePacket*>(&packet));
+	//game.
 }
+

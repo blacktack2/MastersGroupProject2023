@@ -7,23 +7,6 @@
 namespace NCL::CSC8503 {
 	class GameObject;
 
-	struct HandshakePacket : public GamePacket {
-		int		objectID = -1;
-
-		HandshakePacket() {
-			type = Handshake_Message;
-			size = sizeof(HandshakePacket) - sizeof(GamePacket);
-		}
-	};
-	struct HandshakeAckPacket : public GamePacket {
-		int		objectID = -1;
-
-		HandshakeAckPacket() {
-			type = Handshake_Ack;
-			size = sizeof(HandshakeAckPacket) - sizeof(GamePacket);
-		}
-	};
-
 	struct ItemInitPacket : public GamePacket {
 		int		objectID = -1;
 		short int index = 0;

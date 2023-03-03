@@ -21,7 +21,6 @@ public:
 
 	ScreenMultiplayer(bool isServer = true) {
 		game = new NetworkedGame(isServer);
-		gameStateManager->SetGameState(GameState::OnGoing);
 	}
 	~ScreenMultiplayer() {
 		delete game;

@@ -64,6 +64,10 @@ void InputKeyMap::UpdateGameStateDependant() {
 	GameStateManager* gameStateManager = &GameStateManager::instance();
 	GameState gameState = gameStateManager->GetGameState();
 	switch (gameState) {
+	case GameState::Lobby:
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::R)) {
+			buttonstates |= InputType::Start;
+		}
 	case GameState::OnGoing: default:
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
 			buttonstates |= InputType::Pause;
@@ -77,12 +81,6 @@ void InputKeyMap::UpdateGameStateDependant() {
 	case GameState::Lose:
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) {
 			buttonstates |= InputType::Restart;
-		}
-		break;
-	case GameState::Lobby:
-		std::cout << "lobby" << std::endl;
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::R)) {
-			buttonstates |= InputType::Confirm;
 		}
 		break;
 	}

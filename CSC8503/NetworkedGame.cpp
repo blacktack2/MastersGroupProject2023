@@ -1,3 +1,11 @@
+/**
+ * @file   NetworkGame.h
+ * @brief  See NetworkGame.cpp
+ *
+ * @author Rich Davidson
+ * @author Felix Chiu
+ * @date   Dec 2022
+ */
 #include "NetworkedGame.h"
 #include "NetworkPlayer.h"
 #include "NetworkObject.h"
@@ -42,6 +50,7 @@ NetworkedGame::NetworkedGame(bool isServer)	{
 	selfID = 0;
 	game_dt = 0;
 	objectID = OBJECTID_START;
+	gameStateManager->SetGameState(GameState::Lobby);
 	if (isServer) {
 		std::cout << "start as server" << std::endl;
 		StartAsServer();
@@ -64,7 +73,6 @@ void NetworkedGame::StartAsServer() {
 	thisServer->RegisterPacketHandler(Received_State, this);
 	thisServer->RegisterPacketHandler(Player_Connected, this);
 	thisServer->RegisterPacketHandler(Player_Disconnected, this);
-	thisServer->RegisterPacketHandler(Handshake_Ack, this);
 
 	LobbyLevel();
 }
@@ -77,17 +85,69 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(Full_State, this);
 	thisClient->RegisterPacketHandler(Player_Connected, this);
 	thisClient->RegisterPacketHandler(Player_Disconnected, this);
-	thisClient->RegisterPacketHandler(Handshake_Message, this);
+	thisClient->RegisterPacketHandler(PlayerSync_Message, this);
 	thisClient->RegisterPacketHandler(Item_Init_Message, this);
 	thisClient->RegisterPacketHandler(BossAction_Message, this);
 	thisClient->RegisterPacketHandler(GameState_Message, this);
 
 	LobbyLevel();
+}
+
+
+void NetworkedGame::Clear()
+{
+	TutorialGame::Clear();
+	player = NULL;
+}
+
+void NetworkedGame::LobbyLevel()
+{
+	canJoin = true;
+	Clear();
+	InitWorld();
 	SpawnPlayers();
+	int id = OBJECTID_START;
+	BulletInstanceManager::instance().AddNetworkObject(id);
+	gameStateManager->SetGameState(GameState::Lobby);
+	
+	BroadcastGameStateChange();
+}
+
+void NetworkedGame::StartLevel() {
+	canJoin = false;
+	InitWorld();
+	SpawnPlayers();
+	int id = OBJECTID_START;
+	BulletInstanceManager::instance().AddNetworkObject(id);
+	testingBoss = AddNetworkBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
+	testingBossBehaviorTree = new BossBehaviorTree(testingBoss);
+	gameStateManager->SetGameState(GameState::OnGoing);
+
+	BroadcastGameStateChange();
+}
+
+void NetworkedGame::SpawnPlayers() {
+	if (thisServer) {
+		localPlayer = SpawnPlayer(0, true);
+	}
+	if (thisClient && selfID != NULL) {
+		localPlayer = SpawnPlayer(selfID, true);
+	}
+	for (int id : connectedPlayerIDs) {
+		PlayerJoinedServer(id);
+	}
+}
+
+void NCL::CSC8503::NetworkedGame::BroadcastGameStateChange()
+{
+	if (thisServer) {
+		GameStatePacket packet;
+		packet.state = gameStateManager->GetGameState();
+		thisServer->SendGlobalPacket(static_cast<GamePacket*>(&packet));
+	}
 }
 
 void NetworkedGame::UpdateGame(float dt) {
-	std::cout << (int)gameStateManager->GetGameState() << "   " << (int)GameState::Lobby << std::endl;
 	game_dt = dt;
 	timeToNextPacket -= dt;
 	if (timeToNextPacket < 0) {
@@ -165,8 +225,8 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	packetsToSnapshot--;
 
 	if (gameStateManager->GetGameState() == GameState::Lobby) {
-		if (keyMap.GetButton(Confirm)) {
-			std::cout << "restart" << std::endl;
+		if (keyMap.GetButton(Start)) {
+			std::cout << "Start Level" << std::endl;
 			StartLevel();
 		}
 	}
@@ -289,19 +349,7 @@ void NetworkedGame::UpdateMinimumState() {
 	}
 }
 
-void NetworkedGame::SpawnPlayers() {
-	if (thisServer) {
-		localPlayer = AddNetworkPlayerToWorld(Vector3(0, 5, 90), true, 0);
-	}
-	if (thisClient) {
-		localPlayer = SpawnPlayer(selfID, true);
-	}
-	for (int id : connectedPlayerIDs) {
-		PlayerJoinedServer(id);
-	}
-}
-
-GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
+PlayerObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 	Vector4 colour;
 	colour = Vector4(1, 0, 1, 1);
 	if (playerID == 0) {
@@ -316,34 +364,14 @@ GameObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 	else if (playerID == 3) {
 		colour = Vector4(0, 1, 1, 1);
 	}
-	GameObject* newPlayer = AddNetworkPlayerToWorld(Vector3(0, 5, 90), isSelf, playerID);
+	PlayerObject* newPlayer = AddNetworkPlayerToWorld(Vector3(0, 5, 90), isSelf, playerID);
 	if (isSelf) {
 		world->GetMainCamera()->SetFollow(&(newPlayer->GetNetworkObject()->GetRenderTransform()));
+		player = newPlayer;
 	}
 	serverPlayers[playerID] = newPlayer;
 	stateIDs[playerID] = -1;
 	return newPlayer;
-}
-
-void NetworkedGame::LobbyLevel()
-{
-	canJoin = true;
-	Clear();
-	InitWorld();
-	SpawnPlayers();
-	int id = OBJECTID_START;
-	BulletInstanceManager::instance().AddNetworkObject(id);
-	gameStateManager->SetGameState(GameState::Lobby);
-}
-
-void NetworkedGame::StartLevel() {
-	canJoin = false;
-	InitWorld();
-	SpawnPlayers();
-	int id = OBJECTID_START;
-	BulletInstanceManager::instance().AddNetworkObject(id);
-	testingBoss = AddNetworkBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
-	testingBossBehaviorTree = new BossBehaviorTree(testingBoss);
 }
 
 void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID) {
@@ -408,7 +436,7 @@ void NetworkedGame::HandlePlayerConnectedPacket(GamePacket* payload, int source)
 			if (i == playerID) {
 				//send the id to the new player
 				//std::cout << playerID << " : " << i << std::endl;
-				HandshakePacket payload;
+				PlayerSyncPacket payload;
 				payload.objectID = playerID;
 				thisServer->SendPacket(&payload, i, true);
 			}
@@ -442,13 +470,14 @@ void NetworkedGame::HandlePlayerDisconnectedPacket(GamePacket* payload, int sour
 	}
 }
 
-void NetworkedGame::HandleHandshakePacket(GamePacket* payload, int source) {
-	std::cout << "Handshake_Message" << std::endl;
-	selfID = ((HandshakePacket*)payload)->objectID;
-	std::cout << name << " " << selfID << " recieved Handshake_Message" << std::endl;
+void NetworkedGame::HandlePlayerSyncPacket(GamePacket* payload, int source) {
+	std::cout << "PlayerSyncPacket" << std::endl;
+	selfID = ((PlayerSyncPacket*)payload)->objectID;
+	std::cout << name << " " << selfID << " recieved PlayerSyncPacket" << std::endl;
 	if (thisClient && localPlayer == nullptr) {
 		std::cout << name << " " << selfID << " Creating localhost player " << selfID << std::endl;
 		localPlayer = SpawnPlayer(selfID, true);
+		player = static_cast<PlayerObject*> (localPlayer);
 	}
 }
 
@@ -460,11 +489,19 @@ void NetworkedGame::HandleBossActionPacket(GamePacket* payload, int source)
 {
 	//std::cout << "receiving boss action" << std::endl;
 	BossBehaviorTree::BossAction action = static_cast<BossBehaviorTree::BossAction>(static_cast<BossActionPacket*>(payload)->bossAction);
-	testingBossBehaviorTree->SetBossAction(action);
+	if (testingBossBehaviorTree) {
+		testingBossBehaviorTree->SetBossAction(action);
+	}	
 }
 
 void NetworkedGame::HandleGameStatePacket(GamePacket* payload, int source)
 {
+	GameState currentState = gameStateManager->GetGameState();
+	GameState newState = static_cast<GameState>(static_cast<GameStatePacket*>(payload)->state);
+	if (currentState == GameState::Lobby && newState == GameState::OnGoing) {
+		StartLevel();
+	}
+	
 	gameStateManager->SetGameState(static_cast<GameState>(static_cast<GameStatePacket*>(payload)->state));
 }
 
@@ -475,9 +512,6 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		//server
 	case Received_State:
 		ServerProcessNetworkObject(payload, source);
-		break;
-	case Handshake_Ack:
-		thisServer->handshakeMap[source] = true;
 		break;
 		//clients
 	case Delta_State:
@@ -492,8 +526,8 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	case Player_Disconnected:
 		HandlePlayerDisconnectedPacket(payload, source);
 		break;
-	case Handshake_Message:
-		HandleHandshakePacket(payload, source);
+	case PlayerSync_Message:
+		HandlePlayerSyncPacket(payload, source);
 		break;
 	case Item_Init_Message:
 		ClientProcessNetworkObject(payload, source);
@@ -593,7 +627,7 @@ NetworkBoss* NetworkedGame::AddNetworkBossToWorld(const Vector3& position, Vecto
 void NetworkedGame::ProcessState() {
 	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
 	if (thisServer) {
-		if (keyMap.GetButton(InputType::Confirm)) {
+		if (keyMap.GetButton(InputType::Start)) {
 			std::cout << "Starting" << std::endl;
 			this->StartLevel();
 		}

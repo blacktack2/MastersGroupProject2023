@@ -96,6 +96,7 @@ void TutorialGame::Clear() {
 	BulletInstanceManager::instance().ObjectIntiation();
 	physics->Clear();
 	gridManager->Clear();
+	testingBoss = nullptr;
 	delete testingBossBehaviorTree;
 	testingBossBehaviorTree = nullptr;
 }

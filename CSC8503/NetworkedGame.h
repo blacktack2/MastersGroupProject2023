@@ -1,3 +1,11 @@
+/**
+ * @file   NetworkGame.cpp
+ * @brief  A class for networked multiplayer game
+ *
+ * @author Rich Davidson
+ * @author Felix Chiu
+ * @date   Dec 2022
+ */
 #pragma once
 #include "TutorialGame.h"
 #include "NetworkBase.h"
@@ -19,6 +27,14 @@ namespace NCL {
 			}
 			~GameStatePacket(){}
 		};
+		struct PlayerSyncPacket : public GamePacket {
+			int		objectID = -1;
+
+			PlayerSyncPacket() {
+				type = PlayerSync_Message;
+				size = sizeof(PlayerSyncPacket) - sizeof(GamePacket);
+			}
+		};
 
 		class NetworkedGame : public TutorialGame, public PacketReceiver {
 		public:
@@ -27,16 +43,16 @@ namespace NCL {
 
 			void StartAsServer();
 			void StartAsClient(char a, char b, char c, char d);
+			void Clear() override;
+			void LobbyLevel();
+			void StartLevel() override;
+			void SpawnPlayers();
+
+			void BroadcastGameStateChange();
 
 			void UpdateGame(float dt) override;
 
-			void SpawnPlayers();
-
-			GameObject* SpawnPlayer(int playerID, bool isSelf = false);
-
-			void LobbyLevel() ;
-
-			void StartLevel() override;
+			PlayerObject* SpawnPlayer(int playerID, bool isSelf = false);
 
 			void ReceivePacket(int type, GamePacket* payload, int source) override;
 
@@ -73,7 +89,7 @@ namespace NCL {
 			void HandleFullPacket(GamePacket* payload, int source);
 			void HandlePlayerConnectedPacket(GamePacket* payload, int source);
 			void HandlePlayerDisconnectedPacket(GamePacket* payload, int source);
-			void HandleHandshakePacket(GamePacket* payload, int source);
+			void HandlePlayerSyncPacket(GamePacket* payload, int source);
 			void HandleItemInitPacket(GamePacket* payload, int source);
 			void HandleBossActionPacket(GamePacket* payload, int source);
 			void HandleGameStatePacket(GamePacket* payload, int source);
@@ -100,7 +116,7 @@ namespace NCL {
 			std::vector<int>connectedPlayerIDs;
 
 			std::map<int, GameObject*> serverPlayers;
-			GameObject* localPlayer;
+			PlayerObject* localPlayer;
 			std::string name;
 
 			float packetGap = 1.0f / 120.0f; //120hz server/client update
