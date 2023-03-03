@@ -486,8 +486,8 @@ bool NCL::CollisionDetection::CapsuleIntersection(const CapsuleVolume& volumeA, 
 	float penetration = radii - std::sqrt(distanceSquared);
 	Vector3 normal = (pointB - pointA).Normalised();
 
-	Vector3 localA = Vector3();// (normal * volumeA.GetRadius()) + (worldTransformA.GetGlobalPosition() - pointA);
-	Vector3 localB = Vector3();// (normal * volumeB.GetRadius()) + (worldTransformB.GetGlobalPosition() - pointB);
+	Vector3 localA = (normal * volumeA.GetRadius()) + (worldTransformA.GetGlobalPosition() - pointA);
+	Vector3 localB = (normal * volumeB.GetRadius()) + (worldTransformB.GetGlobalPosition() - pointB);
 
 	collisionInfo.AddContactPoint(normal, penetration, localA, localB);
 	return true;
