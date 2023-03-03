@@ -433,6 +433,9 @@ bool CollisionDetection::OBBIntersection(const OBBVolume& volumeA, const Transfo
 		}
 	}
 
+	//Vector3 localA = Vector3();
+	//Vector3 localB = Vector3();
+
 	collisionInfo.AddContactPoint(Vector3(0, 1, 0), 0.1f);
 	return true;
 }
@@ -550,9 +553,10 @@ bool NCL::CollisionDetection::AABBOBBIntersection(const AABBVolume& volumeA, con
 		}
 	}
 
-	Vector3 localB = matrixB * (posB + delta - matrixB * posB);
+	//Vector3 localA = Vector3();
+	//Vector3 localB = matrixB * (posB + delta - matrixB * posB);
 
-	collisionInfo.AddContactPoint(Vector3(0, 1, 0), 0.1f, Vector3(), Vector3());
+	collisionInfo.AddContactPoint(Vector3(0, 1, 0), 0.1f);
 	return true;
 }
 
@@ -624,7 +628,7 @@ bool NCL::CollisionDetection::AABBCapsuleIntersection(const AABBVolume& volumeA,
 	return true;
 }
 
-bool  CollisionDetection::OBBSphereIntersection(const OBBVolume& volumeA, const Transform& worldTransformA,
+bool CollisionDetection::OBBSphereIntersection(const OBBVolume& volumeA, const Transform& worldTransformA,
 	const SphereVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
 	Vector3 boxSize = volumeA.GetHalfDimensions();
 	Quaternion orientation = worldTransformA.GetGlobalOrientation();
@@ -642,12 +646,13 @@ bool  CollisionDetection::OBBSphereIntersection(const OBBVolume& volumeA, const 
 		return false;
 	}
 
-	Vector3 localA = worldTransformA.GetGlobalMatrix() * closestPointOnBox - obbPos;
+	//Vector3 localA = worldTransformA.GetGlobalMatrix() * closestPointOnBox - obbPos;
+	//Vector3* localB = &localPoint;
 
 	Vector3 normal = distanceSquared == 0 ? spherePos.Normalised() : localPoint.Normalised();
 	float penetration = volumeB.GetRadius() - std::sqrt(distanceSquared);
 
-	collisionInfo.AddContactPoint(orientation * normal, penetration, localA, localPoint);
+	collisionInfo.AddContactPoint(orientation * normal, penetration);
 	return true;
 }
 
@@ -691,7 +696,7 @@ bool NCL::CollisionDetection::OBBCapsuleIntersection(const OBBVolume& volumeA, c
 	Vector3 localA = worldTransformA.GetGlobalMatrix() * boxPoint - boxPos;
 	Vector3 localB = capsulePoint - normal * capsuleRadius - capsulePos;
 
-	collisionInfo.AddContactPoint(boxOrientation * normal, penetration, localA, localB);
+	collisionInfo.AddContactPoint(boxOrientation * normal, penetration);
 	return true;
 }
 
