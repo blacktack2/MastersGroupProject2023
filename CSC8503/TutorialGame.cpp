@@ -37,6 +37,7 @@
 
 #include <string>
 
+#include "XboxController.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -70,7 +71,7 @@ TutorialGame::~TutorialGame() {
 	world->ClearAndErase();
 	BulletInstanceManager::instance().NullifyArray();
 	gridManager->Clear();
-
+	delete testingBossBehaviorTree;
 	delete physics;
 
 	delete[] mazes;
@@ -79,6 +80,14 @@ TutorialGame::~TutorialGame() {
 }
 
 void TutorialGame::InitWorld(InitMode mode) {
+	world->ClearAndErase();
+
+
+	for (int i = 0; i < 100000; i++)
+	{
+		player = AddPlayerToWorld(Vector3(0, 5, 90));
+		world->ClearAndErase();
+	}
 
 	delete[] mazes;
 	mazes = nullptr;
@@ -88,7 +97,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 	gridManager->Clear();
 	delete testingBossBehaviorTree;
 
-	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 300, 300, 2 ) );
+	gridManager->AddGameGrid(new GameGrid({ 0,0,0 }, 300, 300, 2));
 	BuildLevel();
 	player = AddPlayerToWorld(Vector3(0, 5, 90));
 
@@ -110,7 +119,7 @@ void TutorialGame::InitWorld(InitMode mode) {
 		case InitMode::AUDIO_TEST : InitGameExamples()                ; break;
 	}*/
 
-	
+
 
 	world->UpdateStaticTree();
 
@@ -123,6 +132,12 @@ void TutorialGame::UpdateGame(float dt) {
 	GameState gameState = gameStateManager->GetGameState();
 	menuManager->Update(dt);
 	keyMap.Update();
+
+	/*XboxController c;
+	float v;
+	bool b = c.GetRightTrigger(1, v);
+	if (b) std::cout << v << "\n";
+	else std::cout << "No displacement\n";*/
 
 	debugViewPoint->BeginFrame();
 	debugViewPoint->MarkTime("Update");

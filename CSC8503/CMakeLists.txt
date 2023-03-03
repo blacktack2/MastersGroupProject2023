@@ -96,8 +96,6 @@ set(Audio_Files
     "SoundSystem.cpp"
     "Sound.h"
     "Sound.cpp"
-    "SoundObject.h"
-    "SoundObject.cpp"
     "SoundManager.h"
     "SoundManager.cpp"
     "SoundSource.h"

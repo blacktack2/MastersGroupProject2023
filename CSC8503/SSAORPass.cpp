@@ -95,10 +95,8 @@ void SSAORPass::OnWindowResize(int width, int height) {
 }
 
 void SSAORPass::Render() {
-	glDisable(GL_BLEND);
 	DrawSSAO();
 	BlurSSAO();
-	glEnable(GL_BLEND);
 }
 
 void SSAORPass::SetRadius(float radius) {
@@ -124,9 +122,7 @@ void SSAORPass::SetNumKernels(size_t num) {
 
 void SSAORPass::DrawSSAO() {
 	ssaoFrameBuffer->Bind();
-	glClearColor(0, 0, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glClearColor(0, 0, 0, 0);
+	renderer.ClearBuffers(ClearBit::Color);
 	ssaoShader->Bind();
 
 	depthTexIn->Bind(0);
@@ -147,7 +143,7 @@ void SSAORPass::DrawSSAO() {
 
 void SSAORPass::BlurSSAO() {
 	blurFrameBuffer->Bind();
-	glClear(GL_COLOR_BUFFER_BIT);
+	renderer.ClearBuffers(ClearBit::Color);
 	blurShader->Bind();
 
 	ssaoTex->Bind(0);

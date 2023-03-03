@@ -103,6 +103,8 @@ set(Header_Files
     "PrefabLibrary.h"
     "RenderObject.h"
     "Transform.h"
+    "XboxController.h"
+    "XboxControllerManager.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -114,6 +116,7 @@ set(Source_Files
     "PrefabLibrary.cpp"
     "RenderObject.cpp"
     "Transform.cpp"
+    "XboxController.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 
@@ -220,4 +223,5 @@ include_directories("./")
 
 if(MSVC)
     target_link_libraries(${PROJECT_NAME} PRIVATE "ws2_32.lib")
+    target_link_libraries(${PROJECT_NAME} LINK_PUBLIC  "Xinput.lib")
 endif()

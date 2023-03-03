@@ -506,7 +506,7 @@ bool NCL::CollisionDetection::SeparatingPlane(const Vector3& delta, const Vector
 	return t > v;
 }
 
-Vector3 OBBSupport(const Transform& worldTransform, Vector3 worldDir) {
+Vector3 NCL::CollisionDetection::OBBSupport(const Transform& worldTransform, Vector3 worldDir) {
 	Vector3 localDir = worldTransform.GetGlobalOrientation().Conjugate() * worldDir;
 	Vector3 vertex;
 	vertex.x = localDir.x < 0 ? -0.5f : 0.5f;

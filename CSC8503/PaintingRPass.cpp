@@ -28,10 +28,11 @@ void PaintingRPass::Render() {
 
 	frameBuffer->Bind();
 	shader->Bind();
-	glDisable(GL_CULL_FACE);
+
+	renderer.GetConfig().SetCullFace(false);
+	renderer.GetConfig().SetBlend(true, BlendFuncSrc::SrcAlpha, BlendFuncDst::OneMinusSrcAlpha);
 
 	GameWorld& world = GameWorld::instance();
-
 
 	world.OperateOnContents([&](GameObject* gameObject) {
 		const CollisionVolume* volume = gameObject->GetBoundingVolume();
@@ -45,7 +46,7 @@ void PaintingRPass::Render() {
 		Matrix4 modelMatrix = renderObj->GetTransform()->GetGlobalMatrix();
 		shader->SetUniformMatrix("modelMatrix", modelMatrix);
 
-		glViewport(0, 0, renderObj->GetWidth(), renderObj->GetHeight());
+		renderer.GetConfig().SetViewport(0, 0, renderObj->GetWidth(), renderObj->GetHeight());
 
 		for (const PaintCollision& paint : renderObj->GetPaintCollisions()) {
 			shader->SetUniformFloat("paintPos", paint.center);
@@ -58,9 +59,11 @@ void PaintingRPass::Render() {
 		
 	});
 
-	glViewport(0, 0, renderer.GetWidth(), renderer.GetHeight());
+	renderer.GetConfig().SetViewport();
 
-	glEnable(GL_CULL_FACE);
+	renderer.GetConfig().SetBlend();
+	renderer.GetConfig().SetCullFace();
+
 	shader->Unbind();
 	frameBuffer->Unbind();
 

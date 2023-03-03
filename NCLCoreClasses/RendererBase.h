@@ -10,12 +10,12 @@
 #pragma once
 #include "Window.h"
 
-#include "RenderPassBase.h"
 #include "IMainRenderPass.h"
 #include "ICombineRenderPass.h"
 #include "IPostRenderPass.h"
 #include "IPresentRenderPass.h"
 #include "IOverlayRenderPass.h"
+#include "RenderPassBase.h"
 
 #include <string>
 #include <unordered_map>
@@ -23,10 +23,23 @@
 
 namespace NCL::Rendering {
 	enum class VerticalSyncState {
-		VSync_ON,
-		VSync_OFF,
-		VSync_ADAPTIVE
+		On,
+		Off,
+		Adaptive
 	};
+
+	enum class ClearBit {
+		Color,
+		Depth,
+		Stencil,
+		ColorDepth,
+		ColorStencil,
+		DepthStencil,
+		ColorDepthStencil,
+	};
+
+	class RendererConfigBase;
+
 	/**
 	 * @brief Base rendering class for handling general updates and pipeline
 	 * organisation.
@@ -103,6 +116,14 @@ namespace NCL::Rendering {
 		inline int GetHeight() const {
 			return windowHeight;
 		}
+
+		/**
+		 * @brief Clear the backbuffer, or the current framebuffer.
+		 * 
+		 * @param mask Which buffers to clear.
+		 */
+		virtual void ClearBuffers(ClearBit mask) = 0;
+		virtual RendererConfigBase& GetConfig() = 0;
 	protected:
 		/**
 		 * @brief Add main render pass. Meant to add to, or modify, the GBuffer
