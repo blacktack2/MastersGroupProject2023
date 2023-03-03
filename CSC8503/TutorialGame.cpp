@@ -95,8 +95,10 @@ void TutorialGame::InitWorld(InitMode mode) {
 	//testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	//testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
 
-	AddCapsuleToWorld(Vector3(2, 2, 2), 2.0f, 1.0f, 10.0f, 0.0f);
-	AddCapsuleToWorld(Vector3(5, 2, 5), 2.0f, 1.0f, 10.0f, 0.0f);
+	//AddCapsuleToWorld(Vector3(2, 2, 2), 2.0f, 1.0f, 10.0f, 0.0f);
+	//AddCapsuleToWorld(Vector3(5, 2, 5), 2.0f, 1.0f, 10.0f, 0.0f);
+
+	AddCubeToWorld(Vector3(0, 2, 0), Vector3(2, 2, 2), 10.0f, false);
 
 	InitGameExamples();
 	/*
@@ -674,7 +676,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 	return floor;
 }
 
-GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius, float inverseMass, float elasticity) {
+GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius, float inverseMass) {
 	static int id = 0;
 	GameObject* sphere = new GameObject( std::string("Sphere").append(std::to_string(id++)));
 
@@ -690,7 +692,6 @@ GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius
 	sphere->SetPhysicsObject(new PhysicsObject(&sphere->GetTransform(), sphere->GetBoundingVolume()));
 
 	sphere->GetPhysicsObject()->SetInverseMass(inverseMass);
-	sphere->GetPhysicsObject()->SetElasticity(elasticity);
 	sphere->GetPhysicsObject()->InitSphereInertia();
 
 	world->AddGameObject(sphere);
@@ -698,7 +699,7 @@ GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius
 	return sphere;
 }
 
-GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass, float elasticity, bool axisAligned) {
+GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass, bool axisAligned) {
 	static int id = 0;
 	GameObject* cube = new GameObject( std::string("Cube").append(std::to_string(id++)));
 
@@ -712,7 +713,6 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 	cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
 
 	cube->GetPhysicsObject()->SetInverseMass(inverseMass);
-	cube->GetPhysicsObject()->SetElasticity(elasticity);
 	if (axisAligned) {
 		cube->GetPhysicsObject()->InitAxisAlignedInertia();
 		cube->GetRenderObject()->SetColour(Vector4(0.8f, 0.8f, 1, 1));
@@ -729,7 +729,7 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 	return cube;
 }
 
-GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius, float inverseMass, float elasticity) {
+GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius, float inverseMass) {
 	static int id = 0;
 	GameObject* capsule = new GameObject( std::string("Capsule").append(std::to_string(id++)));
 
@@ -745,7 +745,6 @@ GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfH
 	capsule->SetPhysicsObject(new PhysicsObject(&capsule->GetTransform(), capsule->GetBoundingVolume()));
 
 	capsule->GetPhysicsObject()->SetInverseMass(inverseMass);
-	capsule->GetPhysicsObject()->SetElasticity(elasticity);
 	capsule->GetPhysicsObject()->InitCapsuleInertia();
 
 	world->AddGameObject(capsule);
