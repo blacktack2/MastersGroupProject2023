@@ -66,7 +66,7 @@ namespace NCL::CSC8503 {
         GameGrid* gameGrid = nullptr;
         float deltaTime = 0.0f;
 
-        Health health = Health(10);
+        Health health = Health(100);
 
         GameStateManager* gameStateManager = &GameStateManager::instance();
 
