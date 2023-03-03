@@ -112,6 +112,8 @@ bool Boss::RandomWalk() {
         float z = (std::rand() % 11) - 5;
         randomWalkDirection = Vector3{ x,0,z };
         randomWalkDirection = randomWalkDirection.Normalised();
+        Quaternion orientation = Quaternion(Matrix4::BuildViewMatrix(this->GetTransform().GetGlobalPosition() + randomWalkDirection * 10, this->GetTransform().GetGlobalPosition(), Vector3(0, 1, 0)).Inverse());
+        this->GetTransform().SetOrientation(orientation);
         return true;
     }
     Debug::DrawLine(GetTransform().GetGlobalPosition(), GetTransform().GetGlobalPosition() + randomWalkDirection * 15, Vector4{ 0,1,0,1 }, 0.0f);
