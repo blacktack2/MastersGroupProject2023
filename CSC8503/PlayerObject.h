@@ -37,7 +37,9 @@ namespace NCL {
 		protected:
 			void MoveTo(Vector3 position);
 			void Move(Vector3 dir);
+			void MoveByPosition(float dt, Vector3 dir);
 			void GetInput(Vector3& dir, unsigned int keyPress = InputType::Empty);
+			void GetControllerInput(unsigned int controllerNum, Vector3& movingDir3D);
 
 			void RotateYaw(float yaw);
 			void RotateToCamera();
