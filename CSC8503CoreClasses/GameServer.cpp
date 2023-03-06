@@ -101,8 +101,7 @@ void GameServer::DisconnectClient(int clientID)
 	for (auto i : clientIDs) {
 		std::cout << clientID << " " << i << std::endl;
 	}
-	//remove(clientIDs.begin(), clientIDs.end(), clientID);
-	remove_if(clientIDs.begin(), clientIDs.end(), [&](int i) {return i == clientID; });
+	clientIDs.erase(std::remove(clientIDs.begin(), clientIDs.end(), clientID), clientIDs.end());
 	clientIDToPeer.erase(clientID);
 
 
