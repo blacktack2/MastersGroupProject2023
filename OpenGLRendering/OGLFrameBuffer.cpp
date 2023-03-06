@@ -46,7 +46,10 @@ void OGLFrameBuffer::DrawBuffers() {
 }
 
 bool OGLFrameBuffer::InitSuccess() {
-	return false;
+	Bind();
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	Unbind();
+	return status == GL_FRAMEBUFFER_COMPLETE;
 }
 
 std::unique_ptr<FrameBuffer> OGLFrameBuffer::CreateFrameBuffer() {
