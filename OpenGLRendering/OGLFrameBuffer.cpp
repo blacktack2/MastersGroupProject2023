@@ -60,10 +60,11 @@ void OGLFrameBuffer::BindToTexture(TextureBase& texture, unsigned int attachment
 	GLenum attach;
 	switch (texture.GetBufferType()) {
 		default:
-		case BufferType::ColourAttachment   : attach = GL_COLOR_ATTACHMENT0 + numColourTexs++; break;
-		case BufferType::DepthAttachment   : attach = GL_DEPTH_ATTACHMENT                   ; break;
-		case BufferType::StencilAttachment : attach = GL_STENCIL_ATTACHMENT                 ; break;
+		case BufferType::ColourAttachment  : attach = GL_COLOR_ATTACHMENT0 + attachment; break;
+		case BufferType::DepthAttachment   : attach = GL_DEPTH_ATTACHMENT              ; break;
+		case BufferType::StencilAttachment : attach = GL_STENCIL_ATTACHMENT            ; break;
 	}
+	numColourTexs = std::max(attachment, (unsigned int)numColourTexs);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, attach, GL_TEXTURE_2D, static_cast<OGLTexture&>(texture).GetObjectID(), 0);
 }
 
