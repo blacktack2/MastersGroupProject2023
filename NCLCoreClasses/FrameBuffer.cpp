@@ -19,6 +19,7 @@ FrameBuffer::~FrameBuffer() {
 
 void FrameBuffer::AddTexture(TextureBase& texture) {
 	textures.emplace_back(texture);
+	BindToTexture(texture, textures.size() - 1);
 }
 
 void FrameBuffer::AddTexture(TextureBase& texture, unsigned int attachment) {
