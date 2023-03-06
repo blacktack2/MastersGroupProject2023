@@ -43,7 +43,7 @@ namespace NCL {
 			}
 
 			void SetCurrentMenu(std::string name) {
-				if (menus[name] != nullptr) {
+				if (menus.contains(name)) {
 					currentMenu = name;
 				}
 			}
@@ -61,7 +61,6 @@ namespace NCL {
 			std::map<std::string, Menu*> menus;
 			std::string currentMenu = "main";
 			GameTechRenderer* renderer;
-			MeshGeometry* quad;
 		};
 	}
 }

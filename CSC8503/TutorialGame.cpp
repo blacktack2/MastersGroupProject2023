@@ -863,17 +863,17 @@ void TutorialGame::UpdateLevel()
 {
 	for (auto& object : gameLevel->GetGameStuffs())
 	{
-		if (object.HasDestroyed())
+		if (object->HasDestroyed())
 		{
-			object.Destroy(false);
-			if (object.objectType == ObjectType::Pillar)
+			object->Destroy(false);
+			if (object->objectType == ObjectType::Pillar)
 			{
 				Vector3 dimensions{ interval / 2.0f, 10, interval / 2.0f };
-				Obstacle* pillar = new Obstacle{ &object, true };
+				Obstacle* pillar = new Obstacle{ object, true };
 				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3,2,1.3 }, CollisionLayer::PaintAble));
 
 				pillar->GetTransform()
-					.SetPosition(object.worldPos + Vector3{ 0,20,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,20,0 })
 					.SetScale(dimensions * 2);
 				//pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), AssetLibrary::GetMesh("pillar"), healingKitTex, nullptr));
 				
@@ -885,13 +885,13 @@ void TutorialGame::UpdateLevel()
 				pillar->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(pillar);
 			}
-			if (object.objectType == ObjectType::FenceX)
+			if (object->objectType == ObjectType::FenceX)
 			{
 				Vector3 dimensions{ interval / 4.0f, 0.5f, interval / 5.0f };
-				Obstacle* fenceX = new Obstacle{ &object, true };
+				Obstacle* fenceX = new Obstacle{ object, true };
 				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
 				fenceX->GetTransform()
-					.SetPosition(object.worldPos + Vector3{ 0,2,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,2,0 })
 					.SetScale(dimensions * 2);
 				//fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), AssetLibrary::GetMesh("fenceX"), basicTex, nullptr));		// TODO: change to the right Mesh
 				
@@ -903,13 +903,13 @@ void TutorialGame::UpdateLevel()
 				fenceX->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(fenceX);
 			}
-			if (object.objectType == ObjectType::FenceY)
+			if (object->objectType == ObjectType::FenceY)
 			{
 				Vector3 dimensions{ interval / 5.0f, 0.5f, interval / 4.0f };
-				Obstacle* fenceY = new Obstacle{ &object, true };
+				Obstacle* fenceY = new Obstacle{ object, true };
 				fenceY->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
 				fenceY->GetTransform()
-					.SetPosition(object.worldPos + Vector3{ 0,2,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,2,0 })
 					.SetScale(dimensions * 2);
 				//fenceY->SetRenderObject(new RenderObject(&fenceY->GetTransform(), AssetLibrary::GetMesh("fenceY"), basicTex, nullptr));		// TODO: change to the right Mesh
 				
@@ -921,13 +921,13 @@ void TutorialGame::UpdateLevel()
 				fenceY->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(fenceY);
 			}
-			if (object.objectType == ObjectType::Shelter)
+			if (object->objectType == ObjectType::Shelter)
 			{
 				Vector3 dimensions{ interval / 5.0f, 2.0f, interval / 2.0f };
-				Obstacle* shelter = new Obstacle{ &object, false };
+				Obstacle* shelter = new Obstacle{ object, false };
 				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
 				shelter->GetTransform()
-					.SetPosition(object.worldPos + Vector3{ 0,2.2,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,2.2,0 })
 					.SetScale(dimensions);
 				//shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary::GetMesh("shelter"), basicTex, nullptr));
 

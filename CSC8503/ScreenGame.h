@@ -56,6 +56,7 @@ public:
 
 		return PushdownResult::NoChange;
 	}
+
 	void OnAwake() override {
 		menuState = ChangeState::None;
 		Window::GetWindow()->ShowOSPointer(false);
