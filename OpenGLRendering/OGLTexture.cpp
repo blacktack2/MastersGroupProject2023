@@ -16,19 +16,32 @@ using namespace NCL::Rendering;
 OGLTexture::OGLTexture(TextureType type, unsigned int width, unsigned int height) : TextureBase(type) {
 	glGenTextures(1, &texID);
 	switch (type) {
-		case TextureType::ColourR8      : pixComponents = GL_R8               ; break;
-		case TextureType::ColourR16     : pixComponents = GL_R16              ; break;
-		case TextureType::ColourRGB8    : pixComponents = GL_RGB8             ; break;
-		case TextureType::ColourRGBA8   : pixComponents = GL_RGBA8            ; break;
-		case TextureType::ColourRGBF    : pixComponents = GL_R11F_G11F_B10F   ; break;
-		case TextureType::ColourRGB16   : pixComponents = GL_RGB16            ; break;
-		case TextureType::ColourRGB16F  : pixComponents = GL_RGB16F           ; break;
-		case TextureType::ColourRGBA16F : pixComponents = GL_RGBA16F          ; break;
-		case TextureType::ColourRGB32F  : pixComponents = GL_RGB32F           ; break;
-		case TextureType::ColourRGBA32F : pixComponents = GL_RGBA32F          ; break;
-		case TextureType::Depth        : pixComponents = GL_DEPTH_COMPONENT24; break;
-		case TextureType::Stencil      : pixComponents = GL_RGBA             ; break;
-		case TextureType::Shadow       : pixComponents = GL_DEPTH_COMPONENT  ; break;
+		case TextureType::ColourR8      :
+			pixComponents = GL_R8               ; dummyFormat = GL_RED            ; dummyType = GL_UNSIGNED_BYTE; break;
+		case TextureType::ColourR16     :
+			pixComponents = GL_R16              ; dummyFormat = GL_RED            ; dummyType = GL_UNSIGNED_BYTE; break;
+		case TextureType::ColourRGB8    :
+			pixComponents = GL_RGB8             ; dummyFormat = GL_RGB            ; dummyType = GL_UNSIGNED_BYTE; break;
+		case TextureType::ColourRGBA8   :
+			pixComponents = GL_RGBA8            ; dummyFormat = GL_RGBA           ; dummyType = GL_UNSIGNED_BYTE; break;
+		case TextureType::ColourRGBF    :
+			pixComponents = GL_R11F_G11F_B10F   ; dummyFormat = GL_RGB            ; dummyType = GL_FLOAT        ; break;
+		case TextureType::ColourRGB16   :
+			pixComponents = GL_RGB16            ; dummyFormat = GL_RGB            ; dummyType = GL_UNSIGNED_BYTE; break;
+		case TextureType::ColourRGB16F  :
+			pixComponents = GL_RGB16F           ; dummyFormat = GL_RGB            ; dummyType = GL_FLOAT        ; break;
+		case TextureType::ColourRGBA16F :
+			pixComponents = GL_RGBA16F          ; dummyFormat = GL_RGBA           ; dummyType = GL_FLOAT        ; break;
+		case TextureType::ColourRGB32F  :
+			pixComponents = GL_RGB32F           ; dummyFormat = GL_RGB            ; dummyType = GL_FLOAT        ; break;
+		case TextureType::ColourRGBA32F :
+			pixComponents = GL_RGBA32F          ; dummyFormat = GL_RGBA           ; dummyType = GL_FLOAT        ; break;
+		case TextureType::Depth         :
+			pixComponents = GL_DEPTH_COMPONENT24; dummyFormat = GL_DEPTH_COMPONENT; dummyType = GL_UNSIGNED_BYTE; break;
+		case TextureType::Stencil       :
+			pixComponents = GL_RGBA             ; dummyFormat = GL_STENCIL_INDEX  ; dummyType = GL_UNSIGNED_BYTE; break;
+		case TextureType::Shadow        :
+			pixComponents = GL_DEPTH_COMPONENT  ; dummyFormat = GL_DEPTH_COMPONENT; dummyType = GL_UNSIGNED_BYTE; break;
 	}
 	Bind();
 	if (type == TextureType::Shadow) {
@@ -49,28 +62,30 @@ OGLTexture::~OGLTexture() {
 void OGLTexture::Resize(unsigned int width, unsigned int height) {
 	this->width  = width;
 	this->height = height;
-	glTexImage2D(GL_TEXTURE_2D, 0, pixComponents, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+	glTexImage2D(GL_TEXTURE_2D, 0, pixComponents, width, height, 0, dummyFormat, dummyType, nullptr);
 }
 
 void OGLTexture::Upload(void* data, PixelDataFormat format, PixelDataType type) {
 	GLenum glformat, gltype;
 	switch (format) {
-		case PixelDataFormat::Red: glformat = GL_RED; break;
-		case PixelDataFormat::RG: glformat = GL_RG; break;
-		case PixelDataFormat::RGB: glformat = GL_RGB; break;
-		case PixelDataFormat::RGBA: glformat = GL_RGBA; break;
-		case PixelDataFormat::DepthComponent: glformat = GL_DEPTH_COMPONENT; break;
-		case PixelDataFormat::DepthStencil: glformat = GL_DEPTH_STENCIL; break;
+		case PixelDataFormat::Red            : glformat = GL_RED            ; break;
+		case PixelDataFormat::RG             : glformat = GL_RG             ; break;
+		case PixelDataFormat::RGB            : glformat = GL_RGB            ; break;
+		default:
+		case PixelDataFormat::RGBA           : glformat = GL_RGBA           ; break;
+		case PixelDataFormat::DepthComponent : glformat = GL_DEPTH_COMPONENT; break;
+		case PixelDataFormat::DepthStencil   : glformat = GL_DEPTH_STENCIL  ; break;
 	}
 	switch (type) {
-		case PixelDataType::UnsignedByte: gltype = GL_UNSIGNED_BYTE; break;
-		case PixelDataType::Byte: gltype = GL_BYTE; break;
-		case PixelDataType::UnsignedShort: gltype = GL_UNSIGNED_SHORT; break;
-		case PixelDataType::Short: gltype = GL_SHORT; break;
-		case PixelDataType::UnsignedInt: gltype = GL_UNSIGNED_INT; break;
-		case PixelDataType::Int: gltype = GL_INT; break;
-		case PixelDataType::HalfFloat: gltype = GL_HALF_FLOAT; break;
-		case PixelDataType::Float: gltype = GL_FLOAT; break;
+		default:
+		case PixelDataType::UnsignedByte  : gltype = GL_UNSIGNED_BYTE ; break;
+		case PixelDataType::Byte          : gltype = GL_BYTE          ; break;
+		case PixelDataType::UnsignedShort : gltype = GL_UNSIGNED_SHORT; break;
+		case PixelDataType::Short         : gltype = GL_SHORT         ; break;
+		case PixelDataType::UnsignedInt   : gltype = GL_UNSIGNED_INT  ; break;
+		case PixelDataType::Int           : gltype = GL_INT           ; break;
+		case PixelDataType::HalfFloat     : gltype = GL_HALF_FLOAT    ; break;
+		case PixelDataType::Float         : gltype = GL_FLOAT         ; break;
 	}
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, glformat, gltype, data);
 }

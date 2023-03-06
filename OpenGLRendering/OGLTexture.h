@@ -51,6 +51,7 @@ namespace NCL::Rendering {
 	private:
 		GLuint texID;
 		GLint pixComponents;
+		GLenum dummyFormat, dummyType;
 
 		unsigned int width, height;
 	};
