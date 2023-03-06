@@ -91,7 +91,7 @@ namespace paintHell {
 		void UpdateGameStateDependant();
 
 		unsigned int buttonstates;
-		float AxisDataArray[4][AxisInput::AxisInputDataMax];
+		float AxisDataArray[4][AxisInput::AxisInputDataMax] = { 0 };
 		Vector2 movementAxis;
 		Vector2 cameraAxis;
 		Vector2 mousePosition;

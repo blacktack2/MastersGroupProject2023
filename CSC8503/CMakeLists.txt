@@ -4,17 +4,16 @@ set(PROJECT_NAME CSC8503)
 # Source groups
 ################################################################################
 
-set(Header_File
+set(Header_Files
 	"Bonus.h"
     "DebugViewPoint.h"
-	"EnemyObject.h"
     "GameLevel.h"
     "GameGrid.h"
     "GameGridManager.h"
     "GameStateManager.h"
 	"Maze.h"
     "MenuRenderObject.h"
-	"NPCObject.h"
+
     "Obstacle.h"
     "StateGameObject.h"
     "TutorialGame.h"
@@ -24,7 +23,6 @@ source_group("Header Files" FILES ${Header_Files})
 set(Source_Files
 	"Bonus.cpp"
     "DebugViewPoint.cpp"
-	"EnemyObject.cpp"
     "GameLevel.cpp"
     "GameGrid.cpp"
     "GameGridManager.cpp"
@@ -32,7 +30,7 @@ set(Source_Files
     "Main.cpp"
 	"Maze.cpp"
     "MenuRenderObject.cpp"
-	"NPCObject.cpp"
+
     "StateGameObject.cpp"
     "TutorialGame.cpp"
 )

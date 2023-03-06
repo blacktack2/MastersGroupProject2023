@@ -84,6 +84,7 @@ SSAORPass::~SSAORPass() {
 
 	delete ssaoShader;
 	delete blurShader;
+	delete kernelSSBO;
 }
 
 void SSAORPass::OnWindowResize(int width, int height) {

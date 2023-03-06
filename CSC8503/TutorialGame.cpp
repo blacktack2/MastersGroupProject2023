@@ -333,36 +333,6 @@ void TutorialGame::InitGameExamples()/*for audio testing*/ {
 	SoundSystem::GetSoundSystem()->SetMasterVolume(1.0f);
 }
 
-void TutorialGame::InitMazeWorld(int numRows, int numCols, float size) {
-	mazes = new Maze[1]{ Maze(*world, size, 100.0f, numRows, numCols, Vector3(0, 0, 0)) };
-
-	NavigationGrid& nav = mazes[0].GetNavGrid();
-
-	Vector3 position;
-	while (!mazes[0].ValidPoint(position = Vector3(((rand() % 400) - 200), 5, (rand() % 400) - 200))) {}
-	//AddEnemyToWorld(position, nav);
-
-	for (int i = 0; i < 20; i++) {
-		while (!mazes[0].ValidPoint(position = Vector3(((rand() % 400) - 200), 4, (rand() % 400) - 200))) {}
-		AddBonusToWorld(position);
-	}
-
-	for (int i = 0; i < 50; i++) {
-		while (!mazes[0].ValidPoint(position = Vector3(((rand() % 400) - 200), 5, (rand() % 400) - 200))) {}
-		AddNPCToWorld(position);
-	}
-
-	for (int i = 0; i < 100; i++) {
-		while (!mazes[0].ValidPoint(position = Vector3(((rand() % 400) - 200), 1.5f + rand() % 30, (rand() % 400) - 200))) {}
-		switch (rand() % 5) {
-			case 0: AddCubeToWorld(position, Vector3(2), 20.0f, true); break;
-			case 1: AddCubeToWorld(position, Vector3(1), 10.0f, false); break;
-			case 2: AddSphereToWorld(position, 1.5f); break;
-			case 3: AddCapsuleToWorld(position, 1.0f, 1.0f); break;
-			case 4: AddCubeToWorld(position, Vector3(1.5f), 0.0f, true); break;
-		}
-	}
-}
 
 void TutorialGame::InitMixedGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing) {
 	float sphereRadius = 1.0f;
@@ -583,29 +553,6 @@ PlayerObject* TutorialGame::AddPlayerToWorld(const Vector3& position, bool camer
 	return character;
 }
 
-EnemyObject* TutorialGame::AddEnemyToWorld(const Vector3& position, NavigationMap& navMap) {
-	EnemyObject* enemy = new EnemyObject(*player, navMap);
-	SphereVolume* volume = new SphereVolume(1.0f, CollisionLayer::Enemy);
-
-	enemy->SetBoundingVolume((CollisionVolume*)volume);
-
-	enemy->GetTransform()
-		.SetScale(Vector3(1.0f))
-		.SetPosition(position);
-
-	enemy->SetRenderObject(new RenderObject(&enemy->GetTransform(), enemyMesh, nullptr));
-	enemy->SetPhysicsObject(new PhysicsObject(&enemy->GetTransform(), enemy->GetBoundingVolume()));
-
-	enemy->GetRenderObject()->SetColour(Vector4(1, 0.9f, 0.8f, 1));
-
-	enemy->GetPhysicsObject()->SetInverseMass(1);
-	enemy->GetPhysicsObject()->InitSphereInertia();
-
-	world->AddGameObject(enemy);
-
-	return enemy;
-}
-
 Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
 	Boss* boss = new Boss();
 
@@ -739,29 +686,6 @@ void TutorialGame::UpdateLevel()
 			*/
 		}
 	}
-}
-
-NPCObject* TutorialGame::AddNPCToWorld(const Vector3& position) {
-	NPCObject* npc = new NPCObject();
-	CapsuleVolume* volume = new CapsuleVolume(1.5f, 1.0f);
-
-	npc->SetBoundingVolume((CollisionVolume*)volume);
-
-	npc->GetTransform()
-		.SetScale(Vector3(2.0f))
-		.SetPosition(position);
-
-	npc->SetRenderObject(new RenderObject(&npc->GetTransform(), npcMesh, nullptr));
-	npc->SetPhysicsObject(new PhysicsObject(&npc->GetTransform(), npc->GetBoundingVolume()));
-
-	npc->GetRenderObject()->SetColour(Vector4(1, 1, 0.8f, 1));
-
-	npc->GetPhysicsObject()->SetInverseMass(1);
-	npc->GetPhysicsObject()->InitCapsuleInertia();
-
-	world->AddGameObject(npc);
-
-	return npc;
 }
 
 GameObject* TutorialGame::AddBonusToWorld(const Vector3& position) {
