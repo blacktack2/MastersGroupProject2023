@@ -1,19 +1,19 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   OGLMesh.cpp
+ * @brief  See OGLMesh.h.
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #include "OGLMesh.h"
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
 
 using namespace NCL;
-using namespace NCL::Rendering;
-using namespace NCL::Maths;
+using namespace Rendering;
+using namespace Maths;
 
 OGLMesh::OGLMesh() {
 	vao = 0;
@@ -62,9 +62,12 @@ void OGLMesh::Draw(unsigned int subLayer) {
 			count = GetVertexCount();
 		}
 	} else {
-		const SubMesh* m = GetSubMesh(subLayer);
-		offset = m->start;
-		count = m->count;
+		const std::optional<SubMesh> m = GetSubMesh(subLayer);
+		if (!m) {
+			return;
+		}
+		offset = m.value().start;
+		count = m.value().count;
 	}
 
 	switch (GetPrimitiveType()) {
@@ -100,7 +103,7 @@ void OGLMesh::BindVertexAttribute(int attribSlot, int buffer, int bindingID, int
 	glBindVertexBuffer(bindingID, buffer, elementOffset, elementSize);
 }
 
-void OGLMesh::UploadToGPU(Rendering::RendererBase* renderer) {
+void OGLMesh::UploadToGPU() {
 	if (!ValidateMeshData()) {
 		return;
 	}
@@ -179,6 +182,14 @@ void OGLMesh::UpdateGPUBuffers(unsigned int startVertex, unsigned int vertexCoun
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+std::unique_ptr<MeshGeometry> OGLMesh::LoadMesh(const std::string& filename) {
+	return std::make_unique<OGLMesh>(filename);
+}
+
+std::unique_ptr<MeshGeometry> OGLMesh::CreateMesh() {
+	return std::make_unique<OGLMesh>();
 }
 
 

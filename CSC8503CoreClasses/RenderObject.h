@@ -10,6 +10,9 @@
 #include "TextureBase.h"
 #include "ShaderBase.h"
 
+#include <functional>
+#include <optional>
+
 namespace NCL {
 	using namespace NCL::Rendering;
 
@@ -21,20 +24,19 @@ namespace NCL {
 
 		class RenderObject {
 		public:
-			RenderObject(Transform* parentTransform, MeshGeometry* mesh, MeshMaterial* material);
-			RenderObject(RenderObject& other, Transform* parentTransform);
+			RenderObject(Transform& parentTransform, std::shared_ptr<MeshGeometry> mesh, std::shared_ptr<MeshMaterial> material);
+			RenderObject(RenderObject& other, Transform& parentTransform);
 			virtual ~RenderObject();
 
-			MeshGeometry* GetMesh() const {
+			std::shared_ptr<MeshGeometry> GetMesh() const {
 				return mesh;
 			}
 
-
-			void SetTransform(Transform* transform){
+			void SetTransform(Transform& transform){
 				this->transform = transform;
 			}
 
-			Transform* GetTransform() const {
+			Transform& GetTransform() const {
 				return transform;
 			}
 
@@ -42,21 +44,21 @@ namespace NCL {
 				colour = c;
 			}
 
-			Vector4 GetColour() const {
+			const Vector4& GetColour() const {
 				return colour;
 			}
 			
 			void Draw();
 		protected:
 			virtual void PreDraw(int sublayer);
-			virtual void PreDraw(int sublayer, ShaderBase* shader) {}
+			virtual void PreDraw(int sublayer, ShaderBase& shader) {}
 
-			virtual ShaderBase* GetDefaultShader();
+			virtual ShaderBase& GetDefaultShader();
 
-			Transform*    transform;
-			MeshGeometry* mesh;
-			MeshMaterial* material;
-			Vector4       colour;
+			std::reference_wrapper<Transform> transform;
+			std::shared_ptr<MeshGeometry> mesh;
+			std::shared_ptr<MeshMaterial> material;
+			Vector4 colour;
 		};
 	}
 }

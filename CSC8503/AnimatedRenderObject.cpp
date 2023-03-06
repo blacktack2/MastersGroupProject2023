@@ -8,27 +8,29 @@
  */
 #include "AnimatedRenderObject.h"
 
-#include "AssetLibrary.h"
-#include "Assets.h"
 #include "GameWorld.h"
-#include "OGLShader.h"
 
-using namespace NCL::CSC8503;
+#include "AssetLibrary.h"
 
-AnimatedRenderObject::AnimatedRenderObject(Transform* parentTransform, MeshGeometry* mesh, MeshMaterial* material, MeshAnimation* animation) :
-RenderObject(parentTransform, mesh, material) {
-	anim = animation;
+#include "MeshAnimation.h"
+#include "MeshGeometry.h"
+#include "MeshMaterial.h"
+#include "ShaderBase.h"
 
+using namespace NCL;
+using namespace CSC8503;
+
+AnimatedRenderObject::AnimatedRenderObject(Transform& parentTransform, std::shared_ptr<MeshGeometry> mesh, std::shared_ptr<MeshMaterial> material, std::shared_ptr<MeshAnimation> animation) :
+RenderObject(parentTransform, mesh, material), anim(animation) {
 	currentFrame = 0;
 	nextFrame = 0;
 	frameTime = 0.0f;
 }
 
 AnimatedRenderObject::~AnimatedRenderObject() {
-	
 }
 
-void AnimatedRenderObject::PreDraw(int sublayer, ShaderBase* shader) {
+void AnimatedRenderObject::PreDraw(int sublayer, ShaderBase& shader) {
 	frameTime -= GameWorld::instance().GetDeltaTime() * animSpeed;
 	while (frameTime < 0.0f) {
 		currentFrame = nextFrame++;
@@ -36,18 +38,18 @@ void AnimatedRenderObject::PreDraw(int sublayer, ShaderBase* shader) {
 		frameTime += 1.0f / anim->GetFrameRate();
 	}
 
-	const Matrix4* bindPose = mesh->GetBindPose().data();
-	const Matrix4* invBindPose = mesh->GetInverseBindPose().data();
-	const std::vector<Matrix4> frameData = anim->GetJointData(currentFrame);
-	const int* bindPoseIndices = mesh->GetBindPoseIndices();
+	const std::vector<Matrix4>& bindPose    = mesh->GetBindPose();
+	const std::vector<Matrix4>& invBindPose = mesh->GetInverseBindPose();
+	const std::vector<Matrix4>  frameData   = anim->GetJointData(currentFrame);
+	const std::vector<int>& bindPoseIndices = mesh->GetBindPoseIndices();
 
 	std::vector<Matrix4> frameMatrices;
 	for (unsigned int i = 0; i < mesh->GetJointCount(); i++) {
 		frameMatrices.emplace_back(frameData[i] * invBindPose[i]);
 	}
-	shader->SetUniformMatrix("joints", frameMatrices.size(), frameMatrices.data());
+	shader.SetUniformMatrix("joints", frameMatrices);
 }
 
-ShaderBase* AnimatedRenderObject::GetDefaultShader() {
-	return AssetLibrary::GetShader("animationDefault");
+ShaderBase& AnimatedRenderObject::GetDefaultShader() {
+	return *AssetLibrary::instance().GetShader("animationDefault");
 }

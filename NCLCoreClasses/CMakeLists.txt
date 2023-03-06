@@ -6,12 +6,12 @@ set(PROJECT_NAME NCLCoreClasses)
 set(Asset_Handling
     "AssetLibrary.cpp"
     "AssetLibrary.h"
+    "AssetLoader.cpp"
+    "AssetLoader.h"
     "Assets.cpp"
     "Assets.h"
     "SimpleFont.cpp"
     "SimpleFont.h"
-    "TextureLoader.cpp"
-    "TextureLoader.h"
     "TextureWriter.cpp"
     "TextureWriter.h"
 )

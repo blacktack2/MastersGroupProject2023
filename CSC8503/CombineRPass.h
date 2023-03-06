@@ -8,16 +8,26 @@
 #pragma once
 #include "OGLCombineRenderPass.h"
 
-#include "OGLTexture.h"
+#include <functional>
+#include <memory>
+#include <optional>
 
-namespace NCL::Rendering {
-	class OGLFrameBuffer;
-	class OGLShader;
+namespace NCL {
+	class MeshGeometry;
 }
 
-using namespace NCL::Rendering;
+namespace NCL::Rendering {
+	class FrameBuffer;
+	class ShaderBase;
+	class TextureBase;
+}
+
+using namespace NCL;
+using namespace Rendering;
 
 namespace NCL::CSC8503 {
+	class GameTechRenderer;
+
 	enum class RenderMode {
 		Default = 0,
 		Normals,
@@ -29,34 +39,55 @@ namespace NCL::CSC8503 {
 	};
 	class CombineRPass : public OGLCombineRenderPass {
 	public:
-		CombineRPass(OGLRenderer& renderer,
-			OGLTexture* skyboxTexIn, OGLTexture* diffuseTexIn,
-			OGLTexture* diffuseLightTexIn, OGLTexture* specularLightTexIn, OGLTexture* ssaoTexIn,
-			OGLTexture* normalTexIn, OGLTexture* depthTexIn);
+		CombineRPass();
 		~CombineRPass();
 
 		virtual void Render() override;
 
 		void SetRenderMode(RenderMode mode);
 
-		inline OGLTexture* GetOutTex() const {
-			return sceneOutTex;
+		inline TextureBase& GetOutTex() const override {
+			return *sceneOutTex;
+		}
+
+		inline void SetSkyboxTexIn(TextureBase& tex) {
+			skyboxTexIn = tex;
+		}
+		inline void SetDiffuseTexIn(TextureBase& tex) {
+			diffuseTexIn = tex;
+		}
+		inline void SetDiffuseLightTexIn(TextureBase& tex) {
+			diffuseLightTexIn = tex;
+		}
+		inline void SetSpecularLightTexIn(TextureBase& tex) {
+			specularLightTexIn = tex;
+		}
+		inline void SetSSAOTexIn(TextureBase& tex) {
+			ssaoTexIn = tex;
+		}
+		inline void SetNormalTexIn(TextureBase& tex) {
+			normalTexIn = tex;
+		}
+		inline void SetDepthTexIn(TextureBase& tex) {
+			depthTexIn = tex;
 		}
 	private:
-		OGLFrameBuffer* frameBuffer;
+		GameTechRenderer& renderer;
 
-		OGLTexture* skyboxTexIn;
-		OGLTexture* diffuseTexIn;
-		OGLTexture* diffuseLightTexIn;
-		OGLTexture* specularLightTexIn;
-		OGLTexture* ssaoTexIn;
-		OGLTexture* normalTexIn;
-		OGLTexture* depthTexIn;
+		std::shared_ptr<MeshGeometry> quad;
 
-		OGLTexture* sceneOutTex;
+		std::unique_ptr<FrameBuffer> frameBuffer;
 
-		OGLMesh* quad;
+		std::optional<std::reference_wrapper<TextureBase>> skyboxTexIn;
+		std::optional<std::reference_wrapper<TextureBase>> diffuseTexIn;
+		std::optional<std::reference_wrapper<TextureBase>> diffuseLightTexIn;
+		std::optional<std::reference_wrapper<TextureBase>> specularLightTexIn;
+		std::optional<std::reference_wrapper<TextureBase>> ssaoTexIn;
+		std::optional<std::reference_wrapper<TextureBase>> normalTexIn;
+		std::optional<std::reference_wrapper<TextureBase>> depthTexIn;
 
-		OGLShader* shader;
+		std::unique_ptr<TextureBase> sceneOutTex;
+
+		std::unique_ptr<ShaderBase> shader;
 	};
 }

@@ -40,11 +40,9 @@ namespace NCL {
 		}
 
 		/**
-		 * @brief .
-		 * @brief Will result in undefined behaviour if frame.
-		 * 
-		 * @param frame
-		 * @return 
+		 * @brief Get joint matrices for a specific frame.
+		 * @brief Will result in undefined behaviour if frame is greater than
+		 * frameCount.
 		 */
 		const std::vector<Matrix4> GetJointData(unsigned int frame) const;
 	protected:

@@ -8,35 +8,41 @@
 #pragma once
 #include "OGLPresentRenderPass.h"
 
-#include "GameWorld.h"
+#include <functional>
+#include <memory>
+#include <optional>
 
-#include "OGLTexture.h"
-
-namespace NCL::Rendering {
-	class OGLFrameBuffer;
-	class OGLShader;
+namespace NCL {
+	class MeshGeometry;
 }
 
-using namespace NCL::Rendering;
+namespace NCL::Rendering {
+	class FrameBuffer;
+	class ShaderBase;
+	class TextureBase;
+}
+
+using namespace NCL;
+using namespace Rendering;
 
 namespace NCL::CSC8503 {
 	class PresentRPass : public OGLPresentRenderPass {
 	public:
-		PresentRPass(OGLRenderer& renderer);
+		PresentRPass();
 		~PresentRPass();
 
 		virtual void Render() override;
 
-		virtual void SetSceneTexIn(TextureBase* sceneTex) override {
-			sceneTexIn = static_cast<OGLTexture*>(sceneTex);
+		virtual void SetSceneTexIn(TextureBase& sceneTex) override {
+			sceneTexIn = sceneTex;
 		}
 
 		void SetGamma(float gamma);
 	private:
-		OGLTexture* sceneTexIn;
+		std::shared_ptr<MeshGeometry> quad;
 
-		OGLMesh* quad;
+		std::optional<std::reference_wrapper<TextureBase>> sceneTexIn;
 
-		OGLShader* shader;
+		std::unique_ptr<ShaderBase> shader;
 	};
 }

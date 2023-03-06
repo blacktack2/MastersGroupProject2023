@@ -7,41 +7,33 @@
  */
 #include "SkyboxRPass.h"
 
-#include "OGLFrameBuffer.h"
-#include "OGLMesh.h"
-#include "OGLShader.h"
-#include "OGLTexture.h"
+#include "GameTechRenderer.h"
 
-using namespace NCL::CSC8503;
+#include "AssetLibrary.h"
+#include "AssetLoader.h"
 
-SkyboxRPass::SkyboxRPass(OGLRenderer& renderer, GameWorld& gameWorld) :
-OGLMainRenderPass(renderer), gameWorld(gameWorld) {
-	colourOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
-	AddScreenTexture(colourOutTex);
+#include "FrameBuffer.h"
+#include "MeshGeometry.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
 
-	frameBuffer = new OGLFrameBuffer();
+using namespace NCL;
+using namespace CSC8503;
+
+SkyboxRPass::SkyboxRPass() : OGLMainRenderPass(),
+gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
+	quad = AssetLibrary::instance().GetMesh("quad");
+
+	colourOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetWidth(), renderer.GetHeight());
+	AddScreenTexture(*colourOutTex);
+
+	frameBuffer = AssetLoader::CreateFrameBuffer();
 	frameBuffer->Bind();
-	frameBuffer->AddTexture(colourOutTex);
+	frameBuffer->AddTexture(*colourOutTex);
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
-	quad = new OGLMesh();
-	quad->SetVertexPositions({
-		Vector3(-1,  1, -1),
-		Vector3(-1, -1, -1),
-		Vector3( 1, -1, -1),
-		Vector3( 1,  1, -1),
-		});
-	quad->SetVertexTextureCoords({
-		Vector2(0, 1),
-		Vector2(0, 0),
-		Vector2(1, 0),
-		Vector2(1, 1),
-		});
-	quad->SetVertexIndices({0, 1, 2, 2, 3, 0});
-	quad->UploadToGPU();
-
-	shader = new OGLShader("skybox.vert", "skybox.frag");
+	shader = AssetLoader::CreateShader("skybox.vert", "skybox.frag");
 
 	shader->Bind();
 
@@ -57,13 +49,6 @@ OGLMainRenderPass(renderer), gameWorld(gameWorld) {
 }
 
 SkyboxRPass::~SkyboxRPass() {
-	delete frameBuffer;
-
-	delete colourOutTex;
-
-	delete quad;
-
-	delete shader;
 }
 
 void SkyboxRPass::Render() {

@@ -9,18 +9,29 @@
  */
 #include "MenuRPass.h"
 
+#include "GameTechRenderer.h"
+#include "GameWorld.h"
+
+#include "AssetLibrary.h"
+#include "AssetLoader.h"
+
+#include "FrameBuffer.h"
+#include "MeshGeometry.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
+
 #include "Debug.h"
-
 #include "MenuManager.h"
+#include "UIObject.h"
 
-using namespace NCL::CSC8503;
+using namespace NCL;
+using namespace CSC8503;
 
-MenuRPass::MenuRPass(OGLRenderer& renderer, GameWorld& gameWorld) :
-	OGLOverlayRenderPass(renderer), gameWorld(gameWorld) {
+MenuRPass::MenuRPass() : OGLOverlayRenderPass(),
+gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
+	defaultTexture = AssetLoader::LoadTexture("defaultmain.jpg");
 
-	defaultTexture = (OGLTexture*)OGLTexture::RGBATextureFromFilename("defaultmain.jpg");
-
-	defaultShader = new OGLShader("menuVertex.vert", "menuFragment.frag");
+	defaultShader = AssetLoader::CreateShader("menuVertex.vert", "menuFragment.frag");
 
 	defaultShader->Bind();
 
@@ -30,8 +41,6 @@ MenuRPass::MenuRPass(OGLRenderer& renderer, GameWorld& gameWorld) :
 }
 
 MenuRPass::~MenuRPass() {
-	delete defaultShader;
-	delete defaultTexture;
 };
 
 void MenuRPass::Render() {

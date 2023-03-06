@@ -10,6 +10,8 @@
 
 #include "Debug.h"
 
+#include "PlayerBullet.h"
+
 #include "StateMachine.h"
 #include "StateTransition.h"
 #include "State.h"
@@ -32,6 +34,8 @@
 #include "ScreenMain.h"
 
 #include "AssetLibrary.h"
+#include "AssetLoader.h"
+#include "PrefabLibrary.h"
 
 #include <chrono>
 #include <thread>
@@ -40,11 +44,11 @@
 using namespace NCL;
 using namespace CSC8503;
 
-//a temperory place to initial asset before we can make a asset factory class
+// TODO Move asset loading functions to a specialised class
 void LoadGlobalAssets() {
 	std::cout << "Loading global assets\n";
 	{
-		OGLMesh* quad = new OGLMesh();
+		std::shared_ptr<MeshGeometry> quad = AssetLoader::CreateMesh();
 		quad->SetVertexPositions({
 			Vector3(-1, 1, -1),
 			Vector3(-1, -1, -1),
@@ -65,65 +69,101 @@ void LoadGlobalAssets() {
 			Vector4(1, 1, 1, 1),
 			});
 		quad->UploadToGPU();
-		AssetLibrary::AddMesh("quad", quad);
+		AssetLibrary::instance().AddMesh("quad", std::move(quad));
 	}
-	AssetLibrary::AddMesh("cube", GameTechRenderer::LoadMesh("cube.msh"));
-	AssetLibrary::AddMesh("sphere", GameTechRenderer::LoadMesh("sphere.msh"));
-	AssetLibrary::AddMesh("goat", GameTechRenderer::LoadMesh("Goat.msh"));
-	AssetLibrary::AddMesh("capsule", GameTechRenderer::LoadMesh("capsule.msh"));
+	AssetLibrary::instance().AddMesh("cube", AssetLoader::LoadMesh("cube.msh"));
+	AssetLibrary::instance().AddMesh("sphere", AssetLoader::LoadMesh("sphere.msh"));
+	AssetLibrary::instance().AddMesh("goat", AssetLoader::LoadMesh("Goat.msh"));
+	AssetLibrary::instance().AddMesh("capsule", AssetLoader::LoadMesh("capsule.msh"));
 
-	AssetLibrary::AddMesh("fenceX", GameTechRenderer::LoadMesh("fenceXCube.msh"));
-	AssetLibrary::AddMesh("fenceY", GameTechRenderer::LoadMesh("fenceYCube.msh"));
-	AssetLibrary::AddMesh("wall", GameTechRenderer::LoadMesh("cube.msh"));
-	AssetLibrary::AddMesh("shelter", GameTechRenderer::LoadMesh("shelterCube.msh"));
-	AssetLibrary::AddMesh("pillar", GameTechRenderer::LoadMesh("pillarMsh.msh"));
+	AssetLibrary::instance().AddMesh("fenceX", AssetLoader::LoadMesh("fenceXCube.msh"));
+	AssetLibrary::instance().AddMesh("fenceY", AssetLoader::LoadMesh("fenceYCube.msh"));
+	AssetLibrary::instance().AddMesh("wall", AssetLoader::LoadMesh("cube.msh"));
+	AssetLibrary::instance().AddMesh("shelter", AssetLoader::LoadMesh("shelterCube.msh"));
+	AssetLibrary::instance().AddMesh("pillar", AssetLoader::LoadMesh("pillarMsh.msh"));
 
-	AssetLibrary::AddTexture("defaultDiffuse", GameTechRenderer::LoadTexture("DefaultDiffuse.png"));
-	AssetLibrary::AddTexture("defaultBump", GameTechRenderer::LoadTexture("DefaultBump.png"));
-	AssetLibrary::AddTexture("defaultSpec", GameTechRenderer::LoadTexture("DefaultSpec.png"));
-	AssetLibrary::AddTexture("basic", GameTechRenderer::LoadTexture("checkerboard.png"));
-	AssetLibrary::AddTexture("healingKitTex", GameTechRenderer::LoadTexture("shelterTex.jpg"));
-	AssetLibrary::AddTexture("pillarTex", GameTechRenderer::LoadTexture("pillarTex.jpg"));
+	AssetLibrary::instance().AddTexture("defaultDiffuse", AssetLoader::LoadTexture("DefaultDiffuse.png"));
+	AssetLibrary::instance().AddTexture("defaultBump", AssetLoader::LoadTexture("DefaultBump.png"));
+	AssetLibrary::instance().AddTexture("defaultSpec", AssetLoader::LoadTexture("DefaultSpec.png"));
+	AssetLibrary::instance().AddTexture("basic", AssetLoader::LoadTexture("checkerboard.png"));
+	AssetLibrary::instance().AddTexture("healingKitTex", AssetLoader::LoadTexture("shelterTex.jpg"));
+	AssetLibrary::instance().AddTexture("pillarTex", AssetLoader::LoadTexture("pillarTex.jpg"));
 
-	AssetLibrary::AddMaterial("default", new MeshMaterial("Default.mat"));
-	AssetLibrary::AddMaterial("pillar", new MeshMaterial("pillar.mat"));
+	AssetLibrary::instance().AddMaterial("default", std::make_shared<MeshMaterial>("Default.mat"));
+	AssetLibrary::instance().AddMaterial("pillar", std::make_shared<MeshMaterial>("pillar.mat"));
 
-	AssetLibrary::AddShader("modelDefault", GameTechRenderer::LoadShader("modelDefault.vert", "modelDefault.frag"));
-	AssetLibrary::AddShader("paintDefault", GameTechRenderer::LoadShader("modelDefault.vert", "modelPaintTexture.frag"));
-	AssetLibrary::AddShader("animationDefault", GameTechRenderer::LoadShader("modelAnimated.vert", "modelAnimated.frag"));
+	AssetLibrary::instance().AddShader("modelDefault", std::move(AssetLoader::CreateShader("modelDefault.vert", "modelDefault.frag")));
+	AssetLibrary::instance().AddShader("paintDefault", std::move(AssetLoader::CreateShader("modelDefault.vert", "modelPaintTexture.frag")));
+	AssetLibrary::instance().AddShader("animationDefault", std::move(AssetLoader::CreateShader("modelAnimated.vert", "modelAnimated.frag")));
 }
 
 void LoadMenuAsset() {
 	std::cout << "Loading menu assets\n";
-	AssetLibrary::AddTexture("menuMain", GameTechRenderer::LoadTexture("defaultMain.jpg"));
-	AssetLibrary::AddTexture("menuPause", GameTechRenderer::LoadTexture("defaultpause.jpg"));
-	AssetLibrary::AddTexture("menuOption", GameTechRenderer::LoadTexture("defaultMain.jpg"));
+	AssetLibrary::instance().AddTexture("menuMain", AssetLoader::LoadTexture("defaultMain.jpg"));
+	AssetLibrary::instance().AddTexture("menuPause", AssetLoader::LoadTexture("defaultpause.jpg"));
+	AssetLibrary::instance().AddTexture("menuOption", AssetLoader::LoadTexture("defaultMain.jpg"));
 
-	AssetLibrary::AddTexture("button1", GameTechRenderer::LoadTexture("button1.jpg"));
-	AssetLibrary::AddTexture("button2", GameTechRenderer::LoadTexture("button2.jpg"));
-	AssetLibrary::AddTexture("button3", GameTechRenderer::LoadTexture("button3.jpg"));
-	AssetLibrary::AddTexture("button4", GameTechRenderer::LoadTexture("button4.jpg"));
-	AssetLibrary::AddTexture("button5", GameTechRenderer::LoadTexture("button5.jpg"));
-	AssetLibrary::AddTexture("button6", GameTechRenderer::LoadTexture("button6.jpg"));
-	AssetLibrary::AddTexture("button7", GameTechRenderer::LoadTexture("button7.jpg"));
+	AssetLibrary::instance().AddTexture("button1", AssetLoader::LoadTexture("button1.jpg"));
+	AssetLibrary::instance().AddTexture("button2", AssetLoader::LoadTexture("button2.jpg"));
+	AssetLibrary::instance().AddTexture("button3", AssetLoader::LoadTexture("button3.jpg"));
+	AssetLibrary::instance().AddTexture("button4", AssetLoader::LoadTexture("button4.jpg"));
+	AssetLibrary::instance().AddTexture("button5", AssetLoader::LoadTexture("button5.jpg"));
+	AssetLibrary::instance().AddTexture("button6", AssetLoader::LoadTexture("button6.jpg"));
+	AssetLibrary::instance().AddTexture("button7", AssetLoader::LoadTexture("button7.jpg"));
 
-	AssetLibrary::AddShader("menu", GameTechRenderer::LoadShader("menuVertex.vert", "menuFragment.frag"));
+	AssetLibrary::instance().AddShader("menu", std::move(AssetLoader::CreateShader("menuVertex.vert", "menuFragment.frag")));
 }
 
 void LoadAnimationAsset() {
 	std::cout << "Loading animation assets";
-	AssetLibrary::AddMesh("boss", GameTechRenderer::LoadMesh("Boss/Boss.msh"));
+	AssetLibrary::instance().AddMesh("boss", AssetLoader::LoadMesh("Boss/Boss.msh"));
 
-	AssetLibrary::AddMaterial("boss", new MeshMaterial("Boss/Boss.mat"));
+	AssetLibrary::instance().AddMaterial("boss", std::make_shared<MeshMaterial>("Boss/Boss.mat"));
 
-	AssetLibrary::AddAnimation("WalkForward", new MeshAnimation("Boss/walk.anm"));
-	AssetLibrary::AddAnimation("Jump",	  new MeshAnimation("Boss/Jump.anm"));
-	AssetLibrary::AddAnimation("Attack1", new MeshAnimation("Boss/SillyDancing.anm"));
-	AssetLibrary::AddAnimation("Attack2", new MeshAnimation("Boss/HipHopDancing.anm"));
-	AssetLibrary::AddAnimation("Attack3", new MeshAnimation("Boss/JoyfulJump.anm"));
-	AssetLibrary::AddAnimation("Attack4", new MeshAnimation("Boss/RumbaDancing.anm"));
-	AssetLibrary::AddAnimation("Attack5", new MeshAnimation("Boss/NorthernSoulSpin.anm"));
-	AssetLibrary::AddAnimation("Attack6", new MeshAnimation("Boss/SambaDancing.anm"));
+	AssetLibrary::instance().AddAnimation("WalkForward", std::make_shared<MeshAnimation>("Boss/walk.anm"));
+	AssetLibrary::instance().AddAnimation("Jump", std::make_shared<MeshAnimation>("Boss/Jump.anm"));
+	AssetLibrary::instance().AddAnimation("Attack1", std::make_shared<MeshAnimation>("Boss/SillyDancing.anm"));
+	AssetLibrary::instance().AddAnimation("Attack2", std::make_shared<MeshAnimation>("Boss/HipHopDancing.anm"));
+	AssetLibrary::instance().AddAnimation("Attack3", std::make_shared<MeshAnimation>("Boss/JoyfulJump.anm"));
+	AssetLibrary::instance().AddAnimation("Attack4", std::make_shared<MeshAnimation>("Boss/RumbaDancing.anm"));
+	AssetLibrary::instance().AddAnimation("Attack5", std::make_shared<MeshAnimation>("Boss/NorthernSoulSpin.anm"));
+	AssetLibrary::instance().AddAnimation("Attack6", std::make_shared<MeshAnimation>("Boss/SambaDancing.anm"));
+}
+
+void LoadPrefabs() {
+	float bulletRadius = 0.2f;
+	std::unique_ptr<GameObject> bulletPrefab = std::make_unique<PlayerBullet>();
+
+	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::PlayerProj));
+	bulletPrefab->GetTransform().SetScale(Vector3(bulletRadius));
+
+	bulletPrefab->SetRenderObject(new RenderObject(bulletPrefab->GetTransform(), AssetLibrary::instance().GetMesh("sphere"), nullptr));
+	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume(), true));
+	bulletPrefab->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.8f, 1.0f));
+
+	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
+	bulletPrefab->GetPhysicsObject()->SetGravWeight(1.0f);
+	bulletPrefab->GetPhysicsObject()->InitCapsuleInertia();
+
+	PrefabLibrary::AddPrefab("bullet", std::move(bulletPrefab));
+
+	bulletRadius = 0.75f;
+
+	bulletPrefab = std::make_unique<BossBullet>();
+
+	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::EnemyProj));
+	bulletPrefab->GetTransform().SetScale(Vector3(bulletRadius));
+
+	bulletPrefab->SetRenderObject(new RenderObject(bulletPrefab->GetTransform(), AssetLibrary::instance().GetMesh("sphere"), nullptr));
+	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume(), true));
+
+	bulletPrefab->GetRenderObject()->SetColour(Vector4(0.2f, 1.0f, 0.5f, 1.0f));
+
+	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
+	bulletPrefab->GetPhysicsObject()->SetGravWeight(1.0f);
+	bulletPrefab->GetPhysicsObject()->InitCapsuleInertia();
+
+	PrefabLibrary::AddPrefab("bossBullet", std::move(bulletPrefab));
 }
 
 void LoadAsset() {

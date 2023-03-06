@@ -7,51 +7,42 @@
  */
 #include "SSAORPass.h"
 
-#include "OGLBufferObject.h"
-#include "OGLFrameBuffer.h"
-#include "OGLMesh.h"
-#include "OGLShader.h"
-#include "OGLTexture.h"
+#include "GameTechRenderer.h"
 
-using namespace NCL::CSC8503;
+#include "AssetLibrary.h"
+#include "AssetLoader.h"
 
-SSAORPass::SSAORPass(OGLRenderer& renderer, OGLTexture* depthTexIn, OGLTexture* normalTexIn) :
-OGLMainRenderPass(renderer), depthTexIn(depthTexIn), normalTexIn(normalTexIn) {
-	ssaoTex    = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE);
-	ssaoOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE);
-	AddScreenTexture(ssaoTex);
-	AddScreenTexture(ssaoOutTex);
+#include "BufferObjectBase.h"
+#include "FrameBuffer.h"
+#include "MeshGeometry.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
 
-	ssaoFrameBuffer = new OGLFrameBuffer();
+using namespace NCL;
+using namespace CSC8503;
+
+SSAORPass::SSAORPass() : OGLMainRenderPass(), renderer(GameTechRenderer::instance()) {
+	quad = AssetLibrary::instance().GetMesh("quad");
+
+	ssaoTex    = AssetLoader::CreateTexture(TextureType::ColourRGB8, renderer.GetWidth(), renderer.GetHeight());
+	ssaoOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB8, renderer.GetWidth(), renderer.GetHeight());
+	AddScreenTexture(*ssaoTex);
+	AddScreenTexture(*ssaoOutTex);
+
+	ssaoFrameBuffer = AssetLoader::CreateFrameBuffer();
 	ssaoFrameBuffer->Bind();
-	ssaoFrameBuffer->AddTexture(ssaoTex);
+	ssaoFrameBuffer->AddTexture(*ssaoTex);
 	ssaoFrameBuffer->DrawBuffers();
 	ssaoFrameBuffer->Unbind();
 
-	blurFrameBuffer = new OGLFrameBuffer();
+	blurFrameBuffer = AssetLoader::CreateFrameBuffer();
 	blurFrameBuffer->Bind();
-	blurFrameBuffer->AddTexture(ssaoOutTex);
+	blurFrameBuffer->AddTexture(*ssaoOutTex);
 	blurFrameBuffer->DrawBuffers();
 	blurFrameBuffer->Unbind();
 
-	quad = new OGLMesh();
-	quad->SetVertexPositions({
-		Vector3(-1,  1, -1),
-		Vector3(-1, -1, -1),
-		Vector3( 1, -1, -1),
-		Vector3( 1,  1, -1),
-		});
-	quad->SetVertexTextureCoords({
-		Vector2(0, 1),
-		Vector2(0, 0),
-		Vector2(1, 0),
-		Vector2(1, 1),
-		});
-	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
-	quad->UploadToGPU();
-
-	ssaoShader = new OGLShader("ssao.vert", "ssao.frag");
-	blurShader = new OGLShader("ssaoBlur.vert", "ssaoBlur.frag");
+	ssaoShader = AssetLoader::CreateShader("ssao.vert", "ssao.frag");
+	blurShader = AssetLoader::CreateShader("ssaoBlur.vert", "ssaoBlur.frag");
 
 	ssaoShader->Bind();
 
@@ -67,23 +58,12 @@ OGLMainRenderPass(renderer), depthTexIn(depthTexIn), normalTexIn(normalTexIn) {
 
 	blurShader->Unbind();
 
-	kernelSSBO = new OGLBufferObject(numKernels, 1);
+	kernelSSBO = AssetLoader::CreateBufferObject(numKernels, 1);
 	GenerateKernels();
 	GenerateNoiseTex();
 }
 
 SSAORPass::~SSAORPass() {
-	delete ssaoFrameBuffer;
-	delete blurFrameBuffer;
-
-	delete ssaoTex;
-	delete noiseTex;
-	delete ssaoOutTex;
-
-	delete quad;
-
-	delete ssaoShader;
-	delete blurShader;
 }
 
 void SSAORPass::OnWindowResize(int width, int height) {
@@ -125,8 +105,8 @@ void SSAORPass::DrawSSAO() {
 	renderer.ClearBuffers(ClearBit::Color);
 	ssaoShader->Bind();
 
-	depthTexIn->Bind(0);
-	normalTexIn->Bind(1);
+	depthTexIn.value().get().Bind(0);
+	normalTexIn.value().get().Bind(1);
 	noiseTex->Bind(2);
 
 	Matrix4 viewMatrix = GameWorld::instance().GetMainCamera()->BuildViewMatrix();
@@ -185,9 +165,9 @@ void SSAORPass::GenerateKernels() {
 
 void SSAORPass::GenerateNoiseTex() {
 	std::vector<Vector3> noiseData;
-	noiseData.resize(noiseTexSize * noiseTexSize);
+	noiseData.resize((size_t)noiseTexSize * (size_t)noiseTexSize);
 
-	for (size_t i = 0; i < noiseTexSize * noiseTexSize; i++) {
+	for (size_t i = 0; i < (size_t)noiseTexSize * (size_t)noiseTexSize; i++) {
 		Vector3 noise = Vector3(
 			random(generator) * 2.0f - 1.0f,
 			random(generator) * 2.0f - 1.0f,
@@ -196,13 +176,11 @@ void SSAORPass::GenerateNoiseTex() {
 		noiseData[i] = noise;
 	}
 
-	if (noiseTex) {
-		delete noiseTex;
-	}
-	noiseTex = new OGLTexture(noiseTexSize, noiseTexSize, GL_RGB16F, GL_RGB, GL_FLOAT, noiseData.data());
+	noiseTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, noiseTexSize, noiseTexSize);
 	noiseTex->Bind();
 
-	noiseTex->SetEdgeRepeat();
+	noiseTex->Upload(noiseData.data(), PixelDataFormat::RGB, PixelDataType::Float);
+	noiseTex->SetEdgeWrap(EdgeWrap::Repeat);
 
 	noiseTex->Unbind();
 }

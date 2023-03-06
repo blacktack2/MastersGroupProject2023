@@ -40,6 +40,10 @@ void OGLBufferObject::Unbind() {
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
+std::unique_ptr<BufferObjectBase> OGLBufferObject::CreateBufferObject(size_t size, unsigned int binding) {
+	return std::make_unique<OGLBufferObject>(size, binding);
+}
+
 void OGLBufferObject::OnResize() {
 	glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_DYNAMIC_READ);
 }

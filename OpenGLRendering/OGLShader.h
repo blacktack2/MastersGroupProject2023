@@ -10,8 +10,9 @@
 #include "ShaderBase.h"
 #include "glad\gl.h"
 
-#include <unordered_map>
+#include <memory>
 #include <string>
+#include <unordered_map>
 
 namespace NCL::Rendering {
 	/**
@@ -33,9 +34,9 @@ namespace NCL::Rendering {
 		void SetUniformFloat(const std::string& uniform, const Vector2& v) override;
 		void SetUniformFloat(const std::string& uniform, const Vector3& v) override;
 		void SetUniformFloat(const std::string& uniform, const Vector4& v) override;
-		void SetUniformFloat(const std::string& uniform, unsigned int count, const Vector2* v) override;
-		void SetUniformFloat(const std::string& uniform, unsigned int count, const Vector3* v) override;
-		void SetUniformFloat(const std::string& uniform, unsigned int count, const Vector4* v) override;
+		void SetUniformFloat(const std::string& uniform, const std::vector<Vector2>& v) override;
+		void SetUniformFloat(const std::string& uniform, const std::vector<Vector3>& v) override;
+		void SetUniformFloat(const std::string& uniform, const std::vector<Vector4>& v) override;
 
 		void SetUniformInt(const std::string& uniform, int v1) override;
 		void SetUniformInt(const std::string& uniform, int v1, int v2) override;
@@ -45,9 +46,9 @@ namespace NCL::Rendering {
 		void SetUniformMatrix(const std::string& uniform, const Matrix2& m) override;
 		void SetUniformMatrix(const std::string& uniform, const Matrix3& m) override;
 		void SetUniformMatrix(const std::string& uniform, const Matrix4& m) override;
-		void SetUniformMatrix(const std::string& uniform, unsigned int count, const Matrix2* m) override;
-		void SetUniformMatrix(const std::string& uniform, unsigned int count, const Matrix3* m) override;
-		void SetUniformMatrix(const std::string& uniform, unsigned int count, const Matrix4* m) override;
+		void SetUniformMatrix(const std::string& uniform, const std::vector<Matrix2>& m) override;
+		void SetUniformMatrix(const std::string& uniform, const std::vector<Matrix3>& m) override;
+		void SetUniformMatrix(const std::string& uniform, const std::vector<Matrix4>& m) override;
 
 		int GetUniformLocation(const std::string& uniform) override;
 
@@ -58,6 +59,8 @@ namespace NCL::Rendering {
 		int GetProgramID() const {
 			return programID;
 		}
+
+		static std::unique_ptr<ShaderBase> CreateShader(const std::string& vertex, const std::string& fragment);
 
 		static void PrintCompileLog(GLuint object);
 		static void PrintLinkLog(GLuint program);

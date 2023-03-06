@@ -8,10 +8,7 @@
  * @date   February 2023
  */
 #pragma once
-#include "OGLMesh.h"
 #include "OGLRenderer.h"
-#include "OGLShader.h"
-#include "OGLTexture.h"
 
 #include "SkyboxRPass.h"
 #include "ModelRPass.h"
@@ -28,11 +25,18 @@
 #include "GameWorld.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 
-namespace NCL::Maths {
-	class Vector3;
-	class Vector4;
+namespace NCL {
+	class MeshAnimation;
+	class MeshGeometry;
+	class MeshMaterial;
+}
+
+namespace NCL::Rendering {
+	class ShaderBase;
+	class TextureBase;
 }
 namespace NCL::CSC8503 {
 	class RenderObject;
@@ -46,10 +50,6 @@ namespace NCL::CSC8503 {
 		}
 
 		void InitPipeline();
-
-		static MeshGeometry* LoadMesh(const std::string& name);
-		static TextureBase*  LoadTexture(const std::string& name);
-		static ShaderBase*   LoadShader(const std::string& vertex, const std::string& fragment);
 
 		inline SkyboxRPass& GetSkyboxPass() {
 			return *skyboxPass;
@@ -140,17 +140,17 @@ namespace NCL::CSC8503 {
 
 		std::vector<const RenderObject*> activeObjects;
 
-		SkyboxRPass* skyboxPass;
-		ModelRPass* modelPass;
-		LightingRPass* lightingPass;
-		SSAORPass* ssaoPass;
-		CombineRPass* combinePass;
-		BloomRPass* bloomPass;
-		HDRRPass* hdrPass;
-		PresentRPass* presentPass;
-		DebugRPass* debugPass;
-		MenuRPass* menuPass;
-		PaintingRPass* paintingRPass;
+		std::unique_ptr<SkyboxRPass>   skyboxPass;
+		std::unique_ptr<ModelRPass>    modelPass;
+		std::unique_ptr<LightingRPass> lightingPass;
+		std::unique_ptr<SSAORPass>     ssaoPass;
+		std::unique_ptr<CombineRPass>  combinePass;
+		std::unique_ptr<BloomRPass>    bloomPass;
+		std::unique_ptr<HDRRPass>      hdrPass;
+		std::unique_ptr<PresentRPass>  presentPass;
+		std::unique_ptr<DebugRPass>    debugPass;
+		std::unique_ptr<MenuRPass>     menuPass;
+		std::unique_ptr<PaintingRPass> paintingRPass;
 
 		float gamma = 2.2f;
 

@@ -9,8 +9,8 @@
 #include "MeshMaterial.h"
 
 #include "AssetLibrary.h"
+#include "AssetLoader.h"
 #include "Assets.h"
-#include "TextureLoader.h"
 
 #include <fstream>
 #include <iostream>
@@ -49,7 +49,7 @@ MeshMaterial::MeshMaterial(const std::string& filename) {
 		file >> shader;
 		file >> count;
 
-		materialLayers[i].shader = AssetLibrary::HasShader(shader) ? AssetLibrary::GetShader(shader) : nullptr;
+		materialLayers[i].shader = AssetLibrary::instance().HasShader(shader) ? AssetLibrary::instance().GetShader(shader) : nullptr;
 		for (int j = 0; j < count; ++j) {
 			std::string entryData;
 			file >> entryData;
@@ -59,18 +59,18 @@ MeshMaterial::MeshMaterial(const std::string& filename) {
 			channel = entryData.substr(0, split);
 			texture = entryData.substr(split + 1);
 
-			if (!AssetLibrary::HasTexture(texture)) {
-				TextureBase* tex = TextureLoader::LoadAPITexture(texture);
+			if (!AssetLibrary::instance().HasTexture(texture)) {
+				std::shared_ptr<TextureBase> tex = AssetLoader::LoadTexture(texture);
 				if (tex) {
-					AssetLibrary::AddTexture(texture, tex);
-
+					AssetLibrary::instance().AddTexture(texture, std::move(tex));
+					
 					materialLayers[i].textures.insert(
-						std::make_pair(channel, AssetLibrary::GetTexture(texture))
+						std::make_pair(channel, AssetLibrary::instance().GetTexture(texture))
 					);
 				}
 			} else {
 				materialLayers[i].textures.insert(
-					std::make_pair(channel, AssetLibrary::GetTexture(texture))
+					std::make_pair(channel, AssetLibrary::instance().GetTexture(texture))
 				);
 			}
 		}
@@ -83,7 +83,7 @@ MeshMaterial::MeshMaterial(const std::string& filename) {
 	}
 }
 
-MeshMaterial::MeshMaterial(const std::vector<std::pair<std::string, TextureBase*>>& textures, ShaderBase* shader) {
+MeshMaterial::MeshMaterial(const std::vector<std::pair<std::string, std::shared_ptr<TextureBase>>>& textures, std::shared_ptr<ShaderBase> shader) {
 	materialLayers.resize(1);
 	materialLayers[0].shader = shader;
 	for (const auto& texPair : textures) {
@@ -91,6 +91,6 @@ MeshMaterial::MeshMaterial(const std::vector<std::pair<std::string, TextureBase*
 	}
 }
 
-const MeshMaterialEntry* MeshMaterial::GetMaterialForLayer(int i) const {
-	return (i < 0 || i >= meshLayers.size()) ? nullptr : meshLayers[i];
+const std::optional<std::reference_wrapper<MeshMaterialEntry>> MeshMaterial::GetMaterialForLayer(int i) const {
+	return (i < 0 || i >= meshLayers.size()) ? std::optional<std::reference_wrapper<MeshMaterialEntry>>() : meshLayers[i];
 }

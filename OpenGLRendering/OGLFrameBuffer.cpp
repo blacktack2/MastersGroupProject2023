@@ -41,33 +41,30 @@ void OGLFrameBuffer::Unbind() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void OGLFrameBuffer::AddTexture(OGLTexture* texture) {
-	textures.emplace_back(texture);
-	GLenum attachment;
-	switch (texture->GetType()) {
-		default:
-		case TexType::Colour  : attachment = GL_COLOR_ATTACHMENT0 + numColourTexs++; break;
-		case TexType::Depth   :
-		case TexType::Shadow  : attachment = GL_DEPTH_ATTACHMENT  ; break;
-		case TexType::Stencil : attachment = GL_STENCIL_ATTACHMENT; break;
-	}
-	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture->GetObjectID(), 0);
-}
-
-void OGLFrameBuffer::AddTexture(OGLTexture* texture, GLsizei attachment) {
-	if (textures.size() > attachment) {
-		textures[attachment] = texture;
-	} else {
-		textures.emplace_back(texture);
-	}
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachment, GL_TEXTURE_2D, texture->GetObjectID(), 0);
-}
-
 void OGLFrameBuffer::DrawBuffers() {
 	DrawBuffers(numColourTexs);
 }
 
-void OGLFrameBuffer::DrawBuffers(GLsizei numBuffers) {
+bool OGLFrameBuffer::InitSuccess() {
+	return false;
+}
+
+std::unique_ptr<FrameBuffer> OGLFrameBuffer::CreateFrameBuffer() {
+	return std::make_unique<OGLFrameBuffer>();
+}
+
+void OGLFrameBuffer::BindToTexture(TextureBase& texture, unsigned int attachment) {
+	GLenum attach;
+	switch (texture.GetBufferType()) {
+		default:
+		case BufferType::ColourAttachment   : attach = GL_COLOR_ATTACHMENT0 + numColourTexs++; break;
+		case BufferType::DepthAttachment   : attach = GL_DEPTH_ATTACHMENT                   ; break;
+		case BufferType::StencilAttachment : attach = GL_STENCIL_ATTACHMENT                 ; break;
+	}
+	glFramebufferTexture2D(GL_FRAMEBUFFER, attach, GL_TEXTURE_2D, static_cast<OGLTexture&>(texture).GetObjectID(), 0);
+}
+
+void OGLFrameBuffer::DrawBuffers(unsigned int numBuffers) {
 	if (numBuffers == 0) {
 		glDrawBuffer(GL_NONE);
 	} else {

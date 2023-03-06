@@ -272,7 +272,7 @@ void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID
 	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(((ClientPacket*)payload)->buttonstates);
 
 	if (((ClientPacket*)payload)->yaw != NULL) {
-		((NetworkPlayer*)serverPlayers[playerID])->RotateYaw(((ClientPacket*)payload)->yaw*0.001);
+		((NetworkPlayer*)serverPlayers[playerID])->RotateYaw(((ClientPacket*)payload)->yaw * 0.001f);
 	}
 
 	if (((ClientPacket*)payload)->lastID > stateIDs[playerID]) {
@@ -402,11 +402,11 @@ void NetworkedGame::HandleItemInitPacket(GamePacket* payload, int source) {
 	{
 		//server
 	case NetworkInstanceType::Projectile:
-		obj = new Bullet(*(Bullet*)PrefabLibrary::GetPrefab("bullet"));
+		obj = new Bullet(*(Bullet*)&PrefabLibrary::GetPrefab("bullet"));
 		((Bullet*)obj)->SetLifespan(5);
 		break;
 	default:
-		obj = new Bullet(*(Bullet*)PrefabLibrary::GetPrefab("bullet"));
+		obj = new Bullet(*(Bullet*)&PrefabLibrary::GetPrefab("bullet"));
 		break;
 	}
 	obj->GetTransform().SetPosition(((ItemInitPacket*)payload)->position);
@@ -489,7 +489,7 @@ PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, bo
 		.SetScale(Vector3(1, 1, 1))
 		.SetPosition(position);
 
-	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMesh, nullptr));
+	character->SetRenderObject(new RenderObject(character->GetTransform(), AssetLibrary::instance().GetMesh("goat"), nullptr));
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 
 	character->GetRenderObject()->SetColour(Vector4(1, 0.9f, 0.8f, 1));

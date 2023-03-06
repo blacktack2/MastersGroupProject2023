@@ -1,6 +1,6 @@
 #include "TestAudio.h"
-#include<AL/al.h>
-#include<AL/alc.h>
+#include <AL/al.h>
+#include <AL/alc.h>
 #include <string>
 #include "Sound.h"
 #include "SoundDevice.h"
@@ -9,6 +9,7 @@
 #include "Assets.h"
 
 #include "AssetLibrary.h"
+#include "AssetLoader.h"
 #include "Bullet.h"
 #include "Bonus.h"
 #include "Debug.h"
@@ -20,7 +21,6 @@
 #include "PositionConstraint.h"
 #include "RenderObject.h"
 #include "StateGameObject.h"
-#include "TextureLoader.h"
 #include "TutorialGame.h"
 
 

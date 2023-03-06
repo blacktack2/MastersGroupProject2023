@@ -26,11 +26,11 @@ void BulletInstanceManager::ObjectIntiation() {
 	GameWorld& world = GameWorld::instance();
 	for (size_t i = 0; i < BULLETCOUNT; i++)
 	{
-		newBullet = new PlayerBullet(*(PlayerBullet*)PrefabLibrary::GetPrefab("bullet"));
+		newBullet = new PlayerBullet(*(PlayerBullet*)&PrefabLibrary::GetPrefab("bullet"));
 		newBullet->SetActive(false);
 		world.AddGameObject(newBullet);
 		bullets[0][i] = newBullet;
-		newBullet = new BossBullet(*(BossBullet*)PrefabLibrary::GetPrefab("bossBullet"));
+		newBullet = new BossBullet(*(BossBullet*)&PrefabLibrary::GetPrefab("bossBullet"));
 		newBullet->SetActive(false);
 		world.AddGameObject(newBullet);
 		bullets[1][i] = newBullet;

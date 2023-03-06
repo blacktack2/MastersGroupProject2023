@@ -7,16 +7,26 @@
  */
 #include "DebugRPass.h"
 
+#include "GameTechRenderer.h"
+#include "GameWorld.h"
+
+#include "AssetLibrary.h"
+#include "AssetLoader.h"
+
+#include "FrameBuffer.h"
+#include "MeshGeometry.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
+
 #include "Debug.h"
-#include "OGLShader.h"
-#include "OGLTexture.h"
 
-using namespace NCL::CSC8503;
+using namespace NCL;
+using namespace CSC8503;
 
-DebugRPass::DebugRPass(OGLRenderer& renderer, GameWorld& gameWorld) :
-OGLOverlayRenderPass(renderer), gameWorld(gameWorld) {
-	lineShader = new OGLShader("debugLines.vert", "debugLines.frag");
-	textShader = new OGLShader("debugText.vert" , "debugText.frag" );
+DebugRPass::DebugRPass() :
+OGLOverlayRenderPass(), gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
+	lineShader = AssetLoader::CreateShader("debugLines.vert", "debugLines.frag");
+	textShader = AssetLoader::CreateShader("debugText.vert" , "debugText.frag" );
 
 	textShader->Bind();
 
@@ -26,29 +36,26 @@ OGLOverlayRenderPass(renderer), gameWorld(gameWorld) {
 
 	textShader->Unbind();
 
-	glGenVertexArrays(1, &lineVAO);
-	glGenVertexArrays(1, &textVAO);
+	//glGenVertexArrays(1, &lineVAO);
+	//glGenVertexArrays(1, &textVAO);
 
-	glGenBuffers(1, &lineVertVBO);
-	glGenBuffers(1, &textVertVBO);
-	glGenBuffers(1, &textColourVBO);
-	glGenBuffers(1, &textTexVBO);
+	//glGenBuffers(1, &lineVertVBO);
+	//glGenBuffers(1, &textVertVBO);
+	//glGenBuffers(1, &textColourVBO);
+	//glGenBuffers(1, &textTexVBO);
 
 	SetDebugStringBufferSizes(10000);
 	SetDebugLineBufferSizes(1000);
 }
 
 DebugRPass::~DebugRPass() {
-	delete lineShader;
-	delete textShader;
+	//glDeleteBuffers(1, &lineVertVBO);
+	//glDeleteBuffers(1, &textVertVBO);
+	//glDeleteBuffers(1, &textColourVBO);
+	//glDeleteBuffers(1, &textTexVBO);
 
-	glDeleteBuffers(1, &lineVertVBO);
-	glDeleteBuffers(1, &textVertVBO);
-	glDeleteBuffers(1, &textColourVBO);
-	glDeleteBuffers(1, &textTexVBO);
-
-	glDeleteVertexArrays(1, &lineVAO);
-	glDeleteVertexArrays(1, &textVAO);
+	//glDeleteVertexArrays(1, &lineVAO);
+	//glDeleteVertexArrays(1, &textVAO);
 }
 
 void DebugRPass::Render() {
@@ -61,72 +68,72 @@ void DebugRPass::Render() {
 }
 
 void DebugRPass::SetDebugStringBufferSizes(size_t newVertCount) {
-	if (newVertCount <= textCount) {
-		return;
-	}
-	textCount = newVertCount;
+	//if (newVertCount <= textCount) {
+	//	return;
+	//}
+	//textCount = newVertCount;
 
-	glBindBuffer(GL_ARRAY_BUFFER, textVertVBO);
-	glBufferData(GL_ARRAY_BUFFER, textCount * sizeof(Vector3), nullptr, GL_DYNAMIC_DRAW);
+	//glBindBuffer(GL_ARRAY_BUFFER, textVertVBO);
+	//glBufferData(GL_ARRAY_BUFFER, textCount * sizeof(Vector3), nullptr, GL_DYNAMIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER, textColourVBO);
-	glBufferData(GL_ARRAY_BUFFER, textCount * sizeof(Vector4), nullptr, GL_DYNAMIC_DRAW);
+	//glBindBuffer(GL_ARRAY_BUFFER, textColourVBO);
+	//glBufferData(GL_ARRAY_BUFFER, textCount * sizeof(Vector4), nullptr, GL_DYNAMIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER, textTexVBO);
-	glBufferData(GL_ARRAY_BUFFER, textCount * sizeof(Vector2), nullptr, GL_DYNAMIC_DRAW);
+	//glBindBuffer(GL_ARRAY_BUFFER, textTexVBO);
+	//glBufferData(GL_ARRAY_BUFFER, textCount * sizeof(Vector2), nullptr, GL_DYNAMIC_DRAW);
 
-	debugTextPos.reserve(textCount);
-	debugTextColours.reserve(textCount);
-	debugTextUVs.reserve(textCount);
+	//debugTextPos.reserve(textCount);
+	//debugTextColours.reserve(textCount);
+	//debugTextUVs.reserve(textCount);
 
-	glBindVertexArray(textVAO);
+	//glBindVertexArray(textVAO);
 
-	glVertexAttribFormat(0, 3, GL_FLOAT, false, 0);
-	glVertexAttribBinding(0, 0);
-	glBindVertexBuffer(0, textVertVBO, 0, sizeof(Vector3));
+	//glVertexAttribFormat(0, 3, GL_FLOAT, false, 0);
+	//glVertexAttribBinding(0, 0);
+	//glBindVertexBuffer(0, textVertVBO, 0, sizeof(Vector3));
 
-	glVertexAttribFormat(1, 4, GL_FLOAT, false, 0);
-	glVertexAttribBinding(1, 1);
-	glBindVertexBuffer(1, textColourVBO, 0, sizeof(Vector4));
+	//glVertexAttribFormat(1, 4, GL_FLOAT, false, 0);
+	//glVertexAttribBinding(1, 1);
+	//glBindVertexBuffer(1, textColourVBO, 0, sizeof(Vector4));
 
-	glVertexAttribFormat(2, 2, GL_FLOAT, false, 0);
-	glVertexAttribBinding(2, 2);
-	glBindVertexBuffer(2, textTexVBO, 0, sizeof(Vector2));
+	//glVertexAttribFormat(2, 2, GL_FLOAT, false, 0);
+	//glVertexAttribBinding(2, 2);
+	//glBindVertexBuffer(2, textTexVBO, 0, sizeof(Vector2));
 
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
+	//glEnableVertexAttribArray(0);
+	//glEnableVertexAttribArray(1);
+	//glEnableVertexAttribArray(2);
 
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
 }
 
 void DebugRPass::SetDebugLineBufferSizes(size_t newVertCount) {
-	if (newVertCount <= lineCount) {
-		return;
-	}
-	lineCount = newVertCount;
+	//if (newVertCount <= lineCount) {
+	//	return;
+	//}
+	//lineCount = newVertCount;
 
-	glBindBuffer(GL_ARRAY_BUFFER, lineVertVBO);
-	glBufferData(GL_ARRAY_BUFFER, lineCount * sizeof(Debug::DebugLineEntry), nullptr, GL_DYNAMIC_DRAW);
+	//glBindBuffer(GL_ARRAY_BUFFER, lineVertVBO);
+	//glBufferData(GL_ARRAY_BUFFER, lineCount * sizeof(Debug::DebugLineEntry), nullptr, GL_DYNAMIC_DRAW);
 
-	debugLineData.reserve(lineCount);
+	//debugLineData.reserve(lineCount);
 
-	glBindVertexArray(lineVAO);
+	//glBindVertexArray(lineVAO);
 
-	int realStride = sizeof(Debug::DebugLineEntry) / 2;
+	//int realStride = sizeof(Debug::DebugLineEntry) / 2;
 
-	glVertexAttribFormat(0, 3, GL_FLOAT, false, offsetof(Debug::DebugLineEntry, start));
-	glVertexAttribBinding(0, 0);
-	glBindVertexBuffer(0, lineVertVBO, 0, realStride);
+	//glVertexAttribFormat(0, 3, GL_FLOAT, false, offsetof(Debug::DebugLineEntry, start));
+	//glVertexAttribBinding(0, 0);
+	//glBindVertexBuffer(0, lineVertVBO, 0, realStride);
 
-	glVertexAttribFormat(1, 4, GL_FLOAT, false, offsetof(Debug::DebugLineEntry, colourA));
-	glVertexAttribBinding(1, 0);
-	glBindVertexBuffer(1, lineVertVBO, sizeof(Vector4), realStride);
+	//glVertexAttribFormat(1, 4, GL_FLOAT, false, offsetof(Debug::DebugLineEntry, colourA));
+	//glVertexAttribBinding(1, 0);
+	//glBindVertexBuffer(1, lineVertVBO, sizeof(Vector4), realStride);
 
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
+	//glEnableVertexAttribArray(0);
+	//glEnableVertexAttribArray(1);
 
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
 }
 
 void DebugRPass::RenderLines() {
@@ -151,12 +158,12 @@ void DebugRPass::RenderLines() {
 
 	SetDebugLineBufferSizes(frameLineCount);
 
-	glBindBuffer(GL_ARRAY_BUFFER, lineVertVBO);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, lines.size() * sizeof(Debug::DebugLineEntry), lines.data());
+	//glBindBuffer(GL_ARRAY_BUFFER, lineVertVBO);
+	//glBufferSubData(GL_ARRAY_BUFFER, 0, lines.size() * sizeof(Debug::DebugLineEntry), lines.data());
 
-	glBindVertexArray(lineVAO);
-	glDrawArrays(GL_LINES, 0, frameLineCount);
-	glBindVertexArray(0);
+	//glBindVertexArray(lineVAO);
+	//glDrawArrays(GL_LINES, 0, frameLineCount);
+	//glBindVertexArray(0);
 
 	lineShader->Unbind();
 }
@@ -169,12 +176,9 @@ void DebugRPass::RenderText() {
 
 	textShader->Bind();
 
-	OGLTexture* texture = (OGLTexture*)Debug::GetDebugFont()->GetTexture();
+	const TextureBase& texture = Debug::GetDebugFont()->GetTexture();
 
-	if (!texture) {
-		return;
-	}
-	texture->Bind(0);
+	texture.Bind(0);
 
 	debugTextPos.clear();
 	debugTextColours.clear();
@@ -191,16 +195,16 @@ void DebugRPass::RenderText() {
 		Debug::GetDebugFont()->BuildVerticesForString(s.data, s.position, s.colour, size, debugTextPos, debugTextUVs, debugTextColours);
 	}
 
-	glBindBuffer(GL_ARRAY_BUFFER, textVertVBO);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, frameVertCount * sizeof(Vector3), debugTextPos.data());
-	glBindBuffer(GL_ARRAY_BUFFER, textColourVBO);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, frameVertCount * sizeof(Vector4), debugTextColours.data());
-	glBindBuffer(GL_ARRAY_BUFFER, textTexVBO);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, frameVertCount * sizeof(Vector2), debugTextUVs.data());
+	//glBindBuffer(GL_ARRAY_BUFFER, textVertVBO);
+	//glBufferSubData(GL_ARRAY_BUFFER, 0, frameVertCount * sizeof(Vector3), debugTextPos.data());
+	//glBindBuffer(GL_ARRAY_BUFFER, textColourVBO);
+	//glBufferSubData(GL_ARRAY_BUFFER, 0, frameVertCount * sizeof(Vector4), debugTextColours.data());
+	//glBindBuffer(GL_ARRAY_BUFFER, textTexVBO);
+	//glBufferSubData(GL_ARRAY_BUFFER, 0, frameVertCount * sizeof(Vector2), debugTextUVs.data());
 
-	glBindVertexArray(textVAO);
-	glDrawArrays(GL_TRIANGLES, 0, frameVertCount);
-	glBindVertexArray(0);
+	//glBindVertexArray(textVAO);
+	//glDrawArrays(GL_TRIANGLES, 0, frameVertCount);
+	//glBindVertexArray(0);
 
 	textShader->Unbind();
 }

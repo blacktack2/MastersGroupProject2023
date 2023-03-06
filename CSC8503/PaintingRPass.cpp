@@ -1,25 +1,32 @@
 #include "PaintingRPass.h"
-#include "OGLShader.h"
-#include "OGLFrameBuffer.h"
+
+#include "GameTechRenderer.h"
 #include "GameWorld.h"
+
+#include "AssetLibrary.h"
+#include "AssetLoader.h"
+
+#include "FrameBuffer.h"
+#include "MeshGeometry.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
+
+#include "DebugViewPoint.h"
 #include "CollisionVolume.h"
 #include "PaintRenderObject.h"
-#include "DebugViewPoint.h"
 
-using namespace NCL::CSC8503;
-using namespace NCL::Rendering;
+using namespace NCL;
+using namespace CSC8503;
 using namespace paintHell::debug;
 
-PaintingRPass::PaintingRPass(OGLRenderer& renderer) : OGLMainRenderPass(renderer) {
-	frameBuffer = new OGLFrameBuffer();
+PaintingRPass::PaintingRPass() : OGLMainRenderPass(),
+gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
+	frameBuffer = AssetLoader::CreateFrameBuffer();
 
-	shader = new OGLShader("paintStencil.vert", "paintStencil.frag");
+	shader = AssetLoader::CreateShader("paintStencil.vert", "paintStencil.frag");
 }
 
 PaintingRPass::~PaintingRPass() {
-	delete shader;
-
-	delete frameBuffer;
 }
 
 void PaintingRPass::Render() {
@@ -43,7 +50,7 @@ void PaintingRPass::Render() {
 
 		frameBuffer->AddTexture(renderObj->GetPaintTexture(), 0);
 
-		Matrix4 modelMatrix = renderObj->GetTransform()->GetGlobalMatrix();
+		Matrix4 modelMatrix = renderObj->GetTransform().GetGlobalMatrix();
 		shader->SetUniformMatrix("modelMatrix", modelMatrix);
 
 		renderer.GetConfig().SetViewport(0, 0, renderObj->GetWidth(), renderObj->GetHeight());

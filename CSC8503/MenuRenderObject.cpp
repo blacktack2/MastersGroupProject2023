@@ -21,7 +21,7 @@ MenuRenderObject::~MenuRenderObject() {
 }
 
 void MenuRenderObject::Draw(const Vector4& dimensions) {
-	ShaderBase* shader = AssetLibrary::GetShader("menu");
+	std::shared_ptr<ShaderBase> shader = AssetLibrary::instance().GetShader("menu");
 
 	shader->Bind();
 
@@ -38,7 +38,7 @@ void MenuRenderObject::Draw(const Vector4& dimensions) {
 	
 	texture->Bind(0);
 
-	MeshGeometry* quad = AssetLibrary::GetMesh("quad");
+	std::shared_ptr<MeshGeometry> quad = AssetLibrary::instance().GetMesh("quad");
 	quad->Draw();
 
 	shader->Unbind();

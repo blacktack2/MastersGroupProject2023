@@ -7,44 +7,34 @@
  */
 #include "PresentRPass.h"
 
-#include "OGLFrameBuffer.h"
-#include "OGLMesh.h"
-#include "OGLShader.h"
-#include "OGLTexture.h"
+#include "GameTechRenderer.h"
+
+#include "AssetLibrary.h"
+#include "AssetLoader.h"
+
+#include "FrameBuffer.h"
+#include "MeshGeometry.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
+
+using namespace NCL;
+using namespace CSC8503;
 
 using namespace NCL::CSC8503;
 
-PresentRPass::PresentRPass(OGLRenderer& renderer) :
-OGLPresentRenderPass(renderer) {
-	quad = new OGLMesh();
-	quad->SetVertexPositions({
-		Vector3(-1,  1, -1),
-		Vector3(-1, -1, -1),
-		Vector3( 1, -1, -1),
-		Vector3( 1,  1, -1),
-		});
-	quad->SetVertexTextureCoords({
-		Vector2(0, 1),
-		Vector2(0, 0),
-		Vector2(1, 0),
-		Vector2(1, 1),
-		});
-	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
-	quad->UploadToGPU();
+PresentRPass::PresentRPass() : OGLPresentRenderPass() {
+	quad = AssetLibrary::instance().GetMesh("quad");
 
-	shader = new OGLShader("present.vert", "present.frag");
+	shader = AssetLoader::CreateShader("present.vert", "present.frag");
 }
 
 PresentRPass::~PresentRPass() {
-	delete quad;
-
-	delete shader;
 }
 
 void PresentRPass::Render() {
 	shader->Bind();
 
-	sceneTexIn->Bind(0);
+	sceneTexIn.value().get().Bind(0);
 
 	quad->Draw();
 

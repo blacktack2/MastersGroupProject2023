@@ -1,32 +1,33 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   SimpleFont.cpp
+ * @brief  SimpleFont.h
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #include "SimpleFont.h"
-#include "TextureBase.h"
-#include "TextureLoader.h"
+
+#include "AssetLoader.h"
+#include "AssetLibrary.h"
 #include "Assets.h"
-#include <fstream>
+#include "TextureBase.h"
 
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
 
+#include <fstream>
+
 using namespace NCL;
 using namespace Rendering;
 using namespace Maths;
 
-SimpleFont::SimpleFont(const std::string&filename, const std::string&texName)
-{
-	startChar	= 0;
-	numChars	= 0;
-	allCharData	= nullptr;
-
-	texture		= TextureLoader::LoadAPITexture(texName);
+SimpleFont::SimpleFont(const std::string& filename, const std::string& texName) :
+texture(*AssetLibrary::instance().GetTexture(texName)) {
+	startChar   = 0;
+	numChars    = 0;
+	allCharData = nullptr;
 
 	std::ifstream fontFile(Assets::FONTSSDIR + filename);
 
@@ -47,14 +48,13 @@ SimpleFont::SimpleFont(const std::string&filename, const std::string&texName)
 		fontFile >> allCharData[i].yOff;
 		fontFile >> allCharData[i].xAdvance;
 	}
-	texWidthRecip	= 1.0f / texWidth;
-	texHeightRecip	= 1.0f / texHeight;
+	texWidthRecip  = 1.0f / texWidth;
+	texHeightRecip = 1.0f / texHeight;
 }
 
 SimpleFont::~SimpleFont()
 {
-	delete[]	allCharData;
-	delete		texture;
+	delete[] allCharData;
 }
 
 int SimpleFont::GetVertexCountForString(const std::string& text) {
@@ -87,10 +87,10 @@ void SimpleFont::BuildVerticesForString(const std::string& text, const Vector2& 
 		float charWidth  = (float)((charData.x1 - charData.x0)/ texWidth) * scale;
 		float charHeight = (float)(charData.y1 - charData.y0);
 
-		float xStart	= ((charData.xOff + currentX) * texWidthRecip) * scale;
-		float yStart	= startPos.y;
-		float yHeight	= (charHeight * texHeightRecip) * scale;
-		float yOff		= ((charHeight + charData.yOff) * texHeightRecip) * scale;
+		float xStart  = ((charData.xOff + currentX) * texWidthRecip) * scale;
+		float yStart  = startPos.y;
+		float yHeight = (charHeight * texHeightRecip) * scale;
+		float yOff    = ((charHeight + charData.yOff) * texHeightRecip) * scale;
 
 		positions.emplace_back(Vector3(startPos.x + xStart, yStart + yOff, 0));
 		positions.emplace_back(Vector3(startPos.x + xStart, yStart + yOff - yHeight, 0));

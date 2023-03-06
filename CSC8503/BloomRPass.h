@@ -8,31 +8,41 @@
 #pragma once
 #include "OGLPostRenderPass.h"
 
-#include "OGLTexture.h"
-
+#include <functional>
+#include <memory>
+#include <optional>
 #include <vector>
 
+namespace NCL {
+	class MeshGeometry;
+}
+
 namespace NCL::Rendering {
-	class OGLFrameBuffer;
-	class OGLShader;
+	class FrameBuffer;
+	class ShaderBase;
 	class TextureBase;
 }
 
+using namespace NCL;
+using namespace Rendering;
+
 namespace NCL::CSC8503 {
+	class GameTechRenderer;
+
 	class BloomRPass : public OGLPostRenderPass {
 	public:
-		BloomRPass(OGLRenderer& renderer);
+		BloomRPass();
 		~BloomRPass();
 
 		virtual void OnWindowResize(int width, int height) override;
 
 		virtual void Render() override;
 
-		OGLTexture* GetOutTex() const override {
-			return colourOutTex;
+		TextureBase& GetOutTex() const override {
+			return *colourOutTex;
 		}
-		void SetSceneTexIn(TextureBase* sceneTex) override {
-			sceneTexIn = static_cast<OGLTexture*>(sceneTex);
+		void SetSceneTexIn(TextureBase& sceneTex) override {
+			sceneTexIn = sceneTex;
 		}
 
 		void SetBloomDepth(size_t depth);
@@ -41,25 +51,27 @@ namespace NCL::CSC8503 {
 	private:
 		struct BloomMip {
 			float width, height;
-			OGLTexture* texture;
+			std::unique_ptr<TextureBase> texture;
 		};
 		void Downsample();
 		void Upsample();
 		void Combine();
 
-		OGLFrameBuffer* bloomFrameBuffer;
+		GameTechRenderer& renderer;
+
+		std::shared_ptr<MeshGeometry> quad;
+
+		std::unique_ptr<FrameBuffer> bloomFrameBuffer;
+		std::unique_ptr<FrameBuffer> combineFrameBuffer;
+
+		std::optional<std::reference_wrapper<TextureBase>> sceneTexIn;
+
 		std::vector<BloomMip> mipChain;
+		std::unique_ptr<TextureBase> colourOutTex;
 
-		OGLFrameBuffer* combineFrameBuffer;
-		OGLTexture* colourOutTex;
-
-		OGLTexture* sceneTexIn;
-
-		OGLMesh* quad;
-
-		OGLShader* downsampleShader;
-		OGLShader* upsampleShader;
-		OGLShader* combineShader;
+		std::unique_ptr<ShaderBase> downsampleShader;
+		std::unique_ptr<ShaderBase> upsampleShader;
+		std::unique_ptr<ShaderBase> combineShader;
 
 		size_t bloomDepth = 5;
 	};

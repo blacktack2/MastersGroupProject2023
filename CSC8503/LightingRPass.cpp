@@ -7,49 +7,38 @@
  */
 #include "LightingRPass.h"
 
-#include "OGLFrameBuffer.h"
-#include "OGLMesh.h"
-#include "OGLShader.h"
-#include "OGLTexture.h"
-#include "RenderObject.h"
+#include "GameTechRenderer.h"
+#include "GameWorld.h"
 
-using namespace NCL::CSC8503;
+#include "AssetLibrary.h"
+#include "AssetLoader.h"
 
-LightingRPass::LightingRPass(OGLRenderer& renderer, GameWorld& gameWorld, OGLTexture* depthTexIn, OGLTexture* normalTexIn) :
-OGLMainRenderPass(renderer), gameWorld(gameWorld), depthTexIn(depthTexIn), normalTexIn(normalTexIn) {
-	lightDiffuseOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
-	lightSpecularOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
-	AddScreenTexture(lightDiffuseOutTex);
-	AddScreenTexture(lightSpecularOutTex);
+#include "FrameBuffer.h"
+#include "MeshGeometry.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
 
-	frameBuffer = new OGLFrameBuffer();
+using namespace NCL;
+using namespace CSC8503;
+
+LightingRPass::LightingRPass() : OGLMainRenderPass(),
+gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
+	sphere = AssetLibrary::instance().GetMesh("sphere");
+	quad = AssetLibrary::instance().GetMesh("quad");
+
+	lightDiffuseOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetWidth(), renderer.GetHeight());
+	lightSpecularOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetWidth(), renderer.GetHeight());
+	AddScreenTexture(*lightDiffuseOutTex);
+	AddScreenTexture(*lightSpecularOutTex);
+
+	frameBuffer = AssetLoader::CreateFrameBuffer();
 	frameBuffer->Bind();
-	frameBuffer->AddTexture(lightDiffuseOutTex);
-	frameBuffer->AddTexture(lightSpecularOutTex);
+	frameBuffer->AddTexture(*lightDiffuseOutTex);
+	frameBuffer->AddTexture(*lightSpecularOutTex);
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
-	sphere = new OGLMesh("Sphere.msh");
-	sphere->SetPrimitiveType(GeometryPrimitive::Triangles);
-	sphere->UploadToGPU();
-
-	quad = new OGLMesh();
-	quad->SetVertexPositions({
-		Vector3(-1,  1, -1),
-		Vector3(-1, -1, -1),
-		Vector3( 1, -1, -1),
-		Vector3( 1,  1, -1),
-		});
-	quad->SetVertexTextureCoords({
-		Vector2(0, 1),
-		Vector2(0, 0),
-		Vector2(1, 0),
-		Vector2(1, 1),
-		});
-	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
-	quad->UploadToGPU();
-
-	shader = new OGLShader("light.vert", "light.frag");
+	shader = AssetLoader::CreateShader("light.vert", "light.frag");
 
 	shader->Bind();
 
@@ -62,15 +51,6 @@ OGLMainRenderPass(renderer), gameWorld(gameWorld), depthTexIn(depthTexIn), norma
 }
 
 LightingRPass::~LightingRPass() {
-	delete frameBuffer;
-
-	delete lightDiffuseOutTex;
-	delete lightSpecularOutTex;
-
-	delete sphere;
-	delete quad;
-
-	delete shader;
 }
 
 void LightingRPass::OnWindowResize(int width, int height) {
@@ -101,8 +81,8 @@ void LightingRPass::DrawLight(const Light& light) {
 	renderer.GetConfig().SetBlend(true, BlendFuncSrc::One, BlendFuncDst::One);
 	renderer.GetConfig().SetDepthTest(true, DepthTestFunc::Always);
 
-	depthTexIn->Bind(0);
-	normalTexIn->Bind(1);
+	depthTexIn.value().get().Bind(0);
+	normalTexIn.value().get().Bind(1);
 
 	shader->SetUniformFloat("cameraPos", gameWorld.GetMainCamera()->GetPosition());
 

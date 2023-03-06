@@ -8,19 +8,35 @@
 #pragma once
 #include "OGLOverlayRenderPass.h"
 
-#include "GameWorld.h"
+#include "Vector2.h"
+#include "Vector3.h"
+#include "Vector4.h"
 
-namespace NCL::Rendering {
-	class OGLShader;
-	class OGLTexture;
+#include <functional>
+#include <memory>
+#include <optional>
+
+namespace NCL {
+	class MeshGeometry;
 }
 
-using namespace NCL::Rendering;
+namespace NCL::Rendering {
+	class FrameBuffer;
+	class ShaderBase;
+	class TextureBase;
+}
+
+using namespace NCL;
+using namespace Rendering;
+using namespace Maths;
 
 namespace NCL::CSC8503 {
+	class GameTechRenderer;
+	class GameWorld;
+
 	class DebugRPass : public OGLOverlayRenderPass {
 	public:
-		DebugRPass(OGLRenderer& renderer, GameWorld& gameWorld);
+		DebugRPass();
 		~DebugRPass();
 
 		virtual void Render() override;
@@ -31,11 +47,11 @@ namespace NCL::CSC8503 {
 		void RenderLines();
 		void RenderText();
 
+		GameTechRenderer& renderer;
 		GameWorld& gameWorld;
 
-		OGLShader* lineShader;
-
-		OGLShader* textShader;
+		std::unique_ptr<ShaderBase> lineShader;
+		std::unique_ptr<ShaderBase> textShader;
 
 		std::vector<Vector3> debugLineData;
 
@@ -43,14 +59,14 @@ namespace NCL::CSC8503 {
 		std::vector<Vector4> debugTextColours;
 		std::vector<Vector2> debugTextUVs;
 
-		GLuint lineVAO;
-		GLuint lineVertVBO;
-		size_t lineCount;
+		//GLuint lineVAO;
+		//GLuint lineVertVBO;
+		//size_t lineCount;
 
-		GLuint textVAO;
-		GLuint textVertVBO;
-		GLuint textColourVBO;
-		GLuint textTexVBO;
-		size_t textCount;
+		//GLuint textVAO;
+		//GLuint textVertVBO;
+		//GLuint textColourVBO;
+		//GLuint textTexVBO;
+		//size_t textCount;
 	};
 }

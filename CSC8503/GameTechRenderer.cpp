@@ -7,72 +7,79 @@
  * @date   February 2023
  */
 #include "GameTechRenderer.h"
+
+#include "Camera.h"
 #include "GameObject.h"
 #include "RenderObject.h"
-#include "Camera.h"
-#include "TextureLoader.h"
+
+#include "MeshAnimation.h"
+#include "MeshGeometry.h"
+#include "MeshMaterial.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
+
+#include "AssetLoader.h"
+
+#include "OGLMesh.h"
+#include "OGLShader.h"
+
 using namespace NCL;
 using namespace Rendering;
 using namespace CSC8503;
-
-Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(Vector3(0.5f, 0.5f, 0.5f));
 
 GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()), gameWorld(GameWorld::instance()) {
 }
 
 GameTechRenderer::~GameTechRenderer() {
-	delete skyboxPass;
-	delete modelPass;
-	delete lightingPass;
-	delete combinePass;
-	delete presentPass;
-	delete bloomPass;
-	delete hdrPass;
-	delete debugPass;
-	delete menuPass;
 }
 
 void GameTechRenderer::InitPipeline() {
-	paintingRPass = new PaintingRPass(*this);
+	paintingRPass = std::make_unique<PaintingRPass>();
 	AddMainPass(*paintingRPass);
 
-	skyboxPass = new SkyboxRPass(*this, gameWorld);
+	skyboxPass = std::make_unique<SkyboxRPass>();
 	AddMainPass(*skyboxPass);
 
-	modelPass = new ModelRPass(*this, gameWorld);
+	modelPass = std::make_unique<ModelRPass>();
 	AddMainPass(*modelPass);
 
-	lightingPass = new LightingRPass(*this, gameWorld,
-		modelPass->GetDepthOutTex(), modelPass->GetNormalOutTex());
+	lightingPass = std::make_unique<LightingRPass>();
+	lightingPass->SetDepthTexIn(modelPass->GetDepthOutTex());
+	lightingPass->SetNormalTexIn(modelPass->GetNormalOutTex());
 	AddMainPass(*lightingPass);
 
-	ssaoPass = new SSAORPass(*this,
-		modelPass->GetDepthOutTex(), modelPass->GetNormalOutTex());
+	ssaoPass = std::make_unique<SSAORPass>();
+	ssaoPass->SetDepthTexIn(modelPass->GetDepthOutTex());
+	ssaoPass->SetNormalTexIn(modelPass->GetNormalOutTex());
 	AddMainPass(*ssaoPass);
 
-	combinePass = new CombineRPass(*this,
-		skyboxPass->GetOutTex(), modelPass->GetDiffuseOutTex(),
-		lightingPass->GetDiffuseOutTex(), lightingPass->GetSpecularOutTex(), ssaoPass->GetOutTex(),
-		modelPass->GetNormalOutTex(), modelPass->GetDepthOutTex());
+	combinePass = std::make_unique<CombineRPass>();
+	combinePass->SetSkyboxTexIn(skyboxPass->GetOutTex());
+	combinePass->SetDiffuseTexIn(modelPass->GetDiffuseOutTex());
+	combinePass->SetDiffuseLightTexIn(lightingPass->GetDiffuseOutTex());
+	combinePass->SetSpecularLightTexIn(lightingPass->GetSpecularOutTex());
+	combinePass->SetSSAOTexIn(ssaoPass->GetOutTex());
+	combinePass->SetNormalTexIn(modelPass->GetNormalOutTex());
+	combinePass->SetDepthTexIn(modelPass->GetDepthOutTex());
 	SetCombinePass(*combinePass);
 
-	bloomPass = new BloomRPass(*this);
+	bloomPass = std::make_unique<BloomRPass>();
 	SetBloomAmount(bloomAmount);
 	SetBloomBias(bloomBias);
 	AddPostPass(*bloomPass, "Bloom");
 
-	hdrPass = new HDRRPass(*this);
+	hdrPass = std::make_unique<HDRRPass>();
 	SetHDRExposure(hdrExposure);
 	AddPostPass(*hdrPass, "HDR");
 
-	presentPass = new PresentRPass(*this);
+	presentPass = std::make_unique<PresentRPass>();
 	SetGamma(gamma);
 	SetPresentPass(*presentPass);
 
-	menuPass = new MenuRPass(*this, gameWorld);
+	menuPass = std::make_unique<MenuRPass>();
 	AddOverlayPass(*menuPass, "Menu");
 
-	debugPass = new DebugRPass(*this, gameWorld);
+	debugPass = std::make_unique<DebugRPass>();
 	AddOverlayPass(*debugPass, "Debug");
 
 	UpdatePipeline();
@@ -95,21 +102,6 @@ void GameTechRenderer::BuildObjectList() {
 
 void GameTechRenderer::SortObjectList() {
 
-}
-
-MeshGeometry* GameTechRenderer::LoadMesh(const std::string& name) {
-	OGLMesh* mesh = new OGLMesh(name);
-	mesh->SetPrimitiveType(GeometryPrimitive::Triangles);
-	mesh->UploadToGPU();
-	return mesh;
-}
-
-TextureBase* GameTechRenderer::LoadTexture(const std::string& name) {
-	return TextureLoader::LoadAPITexture(name);
-}
-
-ShaderBase* GameTechRenderer::LoadShader(const std::string& vertex, const std::string& fragment) {
-	return new OGLShader(vertex, fragment);
 }
 
 void GameTechRenderer::Update(float dt) {

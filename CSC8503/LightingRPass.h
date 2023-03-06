@@ -8,48 +8,69 @@
 #pragma once
 #include "OGLMainRenderPass.h"
 
-#include "GameWorld.h"
 #include "Light.h"
 
-namespace NCL::Rendering {
-	class OGLFrameBuffer;
-	class OGLShader;
-	class OGLTexture;
+#include <functional>
+#include <memory>
+#include <optional>
+
+namespace NCL {
+	class MeshGeometry;
 }
 
-using namespace NCL::Rendering;
+namespace NCL::Rendering {
+	class FrameBuffer;
+	class ShaderBase;
+	class TextureBase;
+}
+
+using namespace NCL;
+using namespace Rendering;
 
 namespace NCL::CSC8503 {
+	class GameWorld;
+	class GameTechRenderer;
+
 	class LightingRPass : public OGLMainRenderPass {
 	public:
-		LightingRPass(OGLRenderer& renderer, GameWorld& gameWorld, OGLTexture* depthTexIn, OGLTexture* normalTexIn);
+		LightingRPass();
 		~LightingRPass();
 
 		virtual void OnWindowResize(int width, int height) override;
 
 		virtual void Render() override;
 
-		inline OGLTexture* GetDiffuseOutTex() const {
-			return lightDiffuseOutTex;
+		inline TextureBase& GetDiffuseOutTex() const {
+			return *lightDiffuseOutTex;
 		}
-		inline OGLTexture* GetSpecularOutTex() const {
-			return lightSpecularOutTex;
+		inline TextureBase& GetSpecularOutTex() const {
+			return *lightSpecularOutTex;
+		}
+
+		inline void SetDepthTexIn(TextureBase& tex) {
+			depthTexIn = tex;
+		}
+
+		inline void SetNormalTexIn(TextureBase& tex) {
+			normalTexIn = tex;
 		}
 	private:
 		void DrawLight(const Light& light);
 
+		GameTechRenderer& renderer;
 		GameWorld& gameWorld;
 
-		OGLFrameBuffer* frameBuffer;
-		OGLTexture* lightDiffuseOutTex;
-		OGLTexture* lightSpecularOutTex;
+		std::shared_ptr<MeshGeometry> sphere;
+		std::shared_ptr<MeshGeometry> quad;
 
-		OGLTexture* depthTexIn;
-		OGLTexture* normalTexIn;
+		std::unique_ptr<FrameBuffer> frameBuffer;
 
-		OGLMesh* sphere;
-		OGLMesh* quad;
+		std::optional<std::reference_wrapper<TextureBase>> depthTexIn;
+		std::optional<std::reference_wrapper<TextureBase>> normalTexIn;
 
-		OGLShader* shader;
+		std::unique_ptr<TextureBase> lightDiffuseOutTex;
+		std::unique_ptr<TextureBase> lightSpecularOutTex;
+
+		std::unique_ptr<ShaderBase> shader;
 	};
 }

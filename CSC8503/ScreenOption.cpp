@@ -17,11 +17,8 @@ using namespace CSC8503;
 void ScreenOption::initMenu() {
 	std::cout << "init Option" << std::endl;
 
-	ShaderBase* shader = (ShaderBase*)AssetLibrary::GetShader("menu");
+	TextureBase* texture = AssetLibrary::instance().GetTexture("menuOption").get();
 
-	TextureBase* texture = AssetLibrary::GetTexture("menuOption");
-
-	MeshGeometry* quad = (MeshGeometry*)AssetLibrary::GetMesh("quad");
 	Menu* menu = new Menu(Vector2(0, 0), Vector2(1.0f, 1.0f ));
 	menu->SetRenderObject(new MenuRenderObject(texture));
 	menuManager.AddMenu(name, menu);
@@ -34,7 +31,7 @@ void ScreenOption::initMenu() {
 		sprintf_s(name, "button%d", i + 4);
 
 		Button* btn = new Button(0, 0.45f + i * -0.3f, 0.16f, 0.08f);
-		TextureBase* tex = AssetLibrary::GetTexture(name);
+		TextureBase* tex = AssetLibrary::instance().GetTexture(name).get();
 
 		btn->SetRenderObject(new MenuRenderObject(tex));
 		menu->AddButton(btn);

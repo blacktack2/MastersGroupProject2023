@@ -74,8 +74,6 @@ set(Render_Files
     "ModelRPass.cpp"
     "MenuRPass.h"
     "MenuRPass.cpp"
-    "Billboard.h"
-    "Billboard.cpp"
 )
 
 if(USE_VULKAN)

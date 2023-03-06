@@ -1,3 +1,11 @@
+/**
+ * @file   TutorialGame.h
+ * @brief  
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #pragma once
 #include "EnemyObject.h"
 #include "GameTechRenderer.h"
@@ -19,7 +27,7 @@
 #include "GameStateManager.h"
 #include "MenuManager.h"
 
-#include "MeshAnimation.h";
+#include "MeshAnimation.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -28,23 +36,10 @@ namespace NCL {
 
 		class TutorialGame {
 		public:
-			enum class InitMode {
-				EMPTY,
-				MAZE,
-				MIXED_GRID,
-				CUBE_GRID,
-				OBB_GRID,
-				SPHERE_GRID,
-				BRIDGE_TEST,
-				BRIDGE_TEST_ANG,
-				PERFORMANCE_TEST,
-				AUDIO_TEST//added for audio testing
-			};
-
 			TutorialGame();
 			~TutorialGame();
 
-			void InitWorld(InitMode mode = InitMode::EMPTY);
+			void InitWorld();
 
 			virtual void UpdateGame(float dt);
 
@@ -52,21 +47,11 @@ namespace NCL {
 				return gameStateManager->GetGameState() == GameState::Quit;
 			}
 		protected:
-
 			void UpdateStateOngoing(float dt);
-
-			void InitialiseAssets();
-			void InitialisePrefabs();
 
 			void InitCamera();
 			void UpdateKeys();
 			void InitGameExamples();
-
-			void InitMazeWorld(int numRows, int numCols, float size);
-			void InitMixedGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing);
-			void InitCubeGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, const Vector3& cubeDims, bool axisAligned = true);
-			void InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius);
-			void InitBridgeConstraintTestWorld(int numLinks, float cubeDistance, float maxDistance, bool isOrientation);
 
 			void InitDefaultFloor();
 
@@ -80,23 +65,11 @@ namespace NCL {
 			EnemyObject* AddEnemyToWorld(const Vector3& position, NavigationMap& navMap);
 
 			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
-			//HealingKit* UpdateHealingKit();
 			void BuildLevel();
 			void UpdateLevel();
 			NPCObject* AddNPCToWorld(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
 			GameObject* AddTriggerToWorld(const Vector3& position, float size);
-
-			void InitaliseAnimationAssets();
-			MeshMaterial* maleguardMaterial = nullptr;
-			MeshAnimation* maleguardAnim = nullptr;
-			MeshGeometry* maleguardMesh = nullptr;
-			std::vector<OGLTexture*>  maleguardMatTextures;
-
-			bool SelectObject();
-			void MoveSelectedObject();
-			void DebugObjectMovement();
-			void LockedObjectMovement();
 
 #ifdef USEVULKAN
 			GameTechVulkanRenderer*	renderer;
@@ -119,50 +92,20 @@ namespace NCL {
 
 			Maze* mazes = nullptr;
 
-			GameObject* selectionObject = nullptr;
-
-			MeshGeometry*	capsuleMesh = nullptr;
-			MeshGeometry*	cubeMesh    = nullptr;
-			MeshGeometry* sphereMesh = nullptr;
-
-			TextureBase*	basicTex    = nullptr;
-			TextureBase*	pillarTex    = nullptr;
-			TextureBase*	healingKitTex = nullptr;
-
-			//Coursework Meshes
-			MeshGeometry*	charMesh = nullptr;
-			MeshGeometry*	enemyMesh = nullptr;
-			MeshGeometry*	npcMesh	  = nullptr;
-			MeshGeometry*	bonusMesh = nullptr;
-
-			//Coursework Additional functionality	
-			GameObject* lockedObject	= nullptr;
-			Vector3 lockedOffset		= Vector3(0, 14, 20);
-			void LockCameraToObject(GameObject* o) {
-				lockedObject = o;
-			}
-
-			GameObject* objClosest = nullptr;
-
 			PlayerObject* player = nullptr;
 
 			int score;
 
 			paintHell::debug::DebugViewPoint* debugViewPoint;
 
-			GameLevel* gameLevel = nullptr;	/////////
-			float interval = 0.0f;			/////////
-			GameGrid* gameGrid = nullptr;	/////////
-			//GameObject* floor = nullptr;	/////////
-			Boss* testingBoss = nullptr;   /////////
-			BossBehaviorTree* testingBossBehaviorTree = nullptr;   /////////
+			GameLevel* gameLevel = nullptr;
+			float interval = 0.0f;
+			GameGrid* gameGrid = nullptr;
+			Boss* testingBoss = nullptr;
+			BossBehaviorTree* testingBossBehaviorTree = nullptr;
 
-			//GameGrid stuff
 			GameGridManager* gridManager;
 			float wallTimer = 0.0f;
-
-			//menu
-			bool isclicked = false;
 		};
 	}
 }
