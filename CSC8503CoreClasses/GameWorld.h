@@ -55,6 +55,7 @@ namespace NCL {
 
 			Light* AddLight(Light* l);
 			void RemoveLight(LightIterator l);
+			void ClearLight();
 
 			Camera* GetMainCamera() const {
 				return mainCamera;

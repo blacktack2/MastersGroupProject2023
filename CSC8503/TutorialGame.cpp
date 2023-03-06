@@ -69,6 +69,7 @@ TutorialGame::TutorialGame() {
 
 TutorialGame::~TutorialGame() {
 	world->ClearAndErase();
+	world->ClearLight();
 	BulletInstanceManager::instance().NullifyArray();
 	gridManager->Clear();
 	delete testingBossBehaviorTree;
