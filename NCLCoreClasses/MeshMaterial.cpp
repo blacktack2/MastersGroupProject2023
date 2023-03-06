@@ -12,6 +12,9 @@
 #include "AssetLoader.h"
 #include "Assets.h"
 
+#include "ShaderBase.h"
+#include "TextureBase.h"
+
 #include <fstream>
 #include <iostream>
 
@@ -49,7 +52,7 @@ MeshMaterial::MeshMaterial(const std::string& filename) {
 		file >> shader;
 		file >> count;
 
-		materialLayers[i].shader = AssetLibrary::instance().HasShader(shader) ? AssetLibrary::instance().GetShader(shader) : nullptr;
+		materialLayers[i].SetShader(AssetLibrary::instance().HasShader(shader) ? AssetLibrary::instance().GetShader(shader) : nullptr);
 		for (int j = 0; j < count; ++j) {
 			std::string entryData;
 			file >> entryData;
@@ -64,14 +67,10 @@ MeshMaterial::MeshMaterial(const std::string& filename) {
 				if (tex) {
 					AssetLibrary::instance().AddTexture(texture, std::move(tex));
 					
-					materialLayers[i].textures.insert(
-						std::make_pair(channel, AssetLibrary::instance().GetTexture(texture))
-					);
+					materialLayers[i].AddTexture(channel, AssetLibrary::instance().GetTexture(texture));
 				}
 			} else {
-				materialLayers[i].textures.insert(
-					std::make_pair(channel, AssetLibrary::instance().GetTexture(texture))
-				);
+				materialLayers[i].AddTexture(channel, AssetLibrary::instance().GetTexture(texture));
 			}
 		}
 	}
@@ -79,15 +78,15 @@ MeshMaterial::MeshMaterial(const std::string& filename) {
 	for (int i = 0; i < meshCount; ++i) {
 		int entry;
 		file >> entry;
-		meshLayers.emplace_back(&materialLayers[entry]);
+		meshLayers.emplace_back(materialLayers[entry]);
 	}
 }
 
 MeshMaterial::MeshMaterial(const std::vector<std::pair<std::string, std::shared_ptr<TextureBase>>>& textures, std::shared_ptr<ShaderBase> shader) {
 	materialLayers.resize(1);
-	materialLayers[0].shader = shader;
+	materialLayers[0].SetShader(shader);
 	for (const auto& texPair : textures) {
-		materialLayers[0].textures.insert(texPair);
+		materialLayers[0].AddTexture(texPair.first, texPair.second);
 	}
 }
 

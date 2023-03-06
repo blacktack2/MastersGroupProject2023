@@ -8,16 +8,11 @@
  */
 #pragma once
 #include "Vector2.h"
+#include "Vector3.h"
 #include "Vector4.h"
 
 #include <string>
 #include <vector>
-
-namespace NCL::Maths {
-	class Vector2;
-	class Vector3;
-	class Vector4;
-}
 
 using namespace NCL::Maths;
 

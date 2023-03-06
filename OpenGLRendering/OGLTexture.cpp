@@ -49,7 +49,7 @@ OGLTexture::~OGLTexture() {
 void OGLTexture::Resize(unsigned int width, unsigned int height) {
 	this->width  = width;
 	this->height = height;
-	glTexImage2D(GL_TEXTURE_2D, 0, pixComponents, width, height, 0, 0, 0, nullptr);
+	glTexImage2D(GL_TEXTURE_2D, 0, pixComponents, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 }
 
 void OGLTexture::Upload(void* data, PixelDataFormat format, PixelDataType type) {

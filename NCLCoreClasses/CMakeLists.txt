@@ -4,12 +4,12 @@ set(PROJECT_NAME NCLCoreClasses)
 # Source groups
 ################################################################################
 set(Asset_Handling
+    "Assets.cpp"
+    "Assets.h"
     "AssetLibrary.cpp"
     "AssetLibrary.h"
     "AssetLoader.cpp"
     "AssetLoader.h"
-    "Assets.cpp"
-    "Assets.h"
     "SimpleFont.cpp"
     "SimpleFont.h"
     "TextureWriter.cpp"

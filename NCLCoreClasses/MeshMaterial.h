@@ -23,18 +23,25 @@ using namespace NCL::Rendering;
 
 namespace NCL {
 	class MeshMaterialEntry {
-		friend class MeshMaterial;
 	public:
+		MeshMaterialEntry() {}
+
+		inline void AddTexture(const std::string& name, std::shared_ptr<TextureBase> texture) {
+			textures.emplace(std::make_pair(name, texture));
+		}
 		inline std::optional<std::reference_wrapper<TextureBase>> GetTexture(const std::string& name) const {
 			auto i = textures.find(name);
 			return i == textures.end() ? std::optional<std::reference_wrapper<TextureBase>>() : *i->second;
+		}
+		inline void SetShader(std::shared_ptr<ShaderBase> shader) {
+			this->shader = shader;
 		}
 		inline std::optional<std::reference_wrapper<ShaderBase>> GetShader() const {
 			return shader ? *shader : std::optional<std::reference_wrapper<ShaderBase>>();
 		}
 	protected:
-		std::unordered_map<std::string, std::shared_ptr<TextureBase>> textures;
-		std::shared_ptr<ShaderBase> shader;
+		std::unordered_map<std::string, std::shared_ptr<TextureBase>> textures{};
+		std::shared_ptr<ShaderBase> shader = nullptr;
 	};
 
 	class MeshMaterial {

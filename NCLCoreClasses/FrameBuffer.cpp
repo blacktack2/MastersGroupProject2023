@@ -7,6 +7,8 @@
  */
 #include "FrameBuffer.h"
 
+#include "TextureBase.h"
+
 using namespace NCL::Rendering;
 
 FrameBuffer::FrameBuffer() {

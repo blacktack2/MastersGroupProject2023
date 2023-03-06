@@ -8,6 +8,10 @@
 #include "MenuRenderObject.h"
 
 #include "AssetLibrary.h"
+
+#include "MeshGeometry.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
 #include "UIObject.h"
 
 using namespace NCL;

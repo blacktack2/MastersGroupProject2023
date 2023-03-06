@@ -49,10 +49,10 @@ namespace NCL {
 		std::shared_ptr<MeshMaterial> GetMaterial(const std::string& name);
 		bool HasMaterial(const std::string& name);
 	private:
-		std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>  meshes;
-		std::unordered_map<std::string, std::shared_ptr<TextureBase>>   textures;
-		std::unordered_map<std::string, std::shared_ptr<ShaderBase>>    shaders;
-		std::unordered_map<std::string, std::shared_ptr<MeshAnimation>> animations;
-		std::unordered_map<std::string, std::shared_ptr<MeshMaterial>>  materials;
+		std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>  meshes{};
+		std::unordered_map<std::string, std::shared_ptr<TextureBase>>   textures{};
+		std::unordered_map<std::string, std::shared_ptr<ShaderBase>>    shaders{};
+		std::unordered_map<std::string, std::shared_ptr<MeshAnimation>> animations{};
+		std::unordered_map<std::string, std::shared_ptr<MeshMaterial>>  materials{};
 	};
 }

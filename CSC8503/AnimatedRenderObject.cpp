@@ -19,6 +19,7 @@
 
 using namespace NCL;
 using namespace CSC8503;
+using namespace Rendering;
 
 AnimatedRenderObject::AnimatedRenderObject(Transform& parentTransform, std::shared_ptr<MeshGeometry> mesh, std::shared_ptr<MeshMaterial> material, std::shared_ptr<MeshAnimation> animation) :
 RenderObject(parentTransform, mesh, material), anim(animation) {

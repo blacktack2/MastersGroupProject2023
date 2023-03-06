@@ -37,6 +37,12 @@
 #include "AssetLoader.h"
 #include "PrefabLibrary.h"
 
+#include "MeshAnimation.h"
+#include "MeshGeometry.h"
+#include "MeshMaterial.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
+
 #include <chrono>
 #include <thread>
 #include <sstream>
@@ -170,6 +176,7 @@ void LoadAsset() {
 	LoadMenuAsset();
 	LoadGlobalAssets();
 	LoadAnimationAsset();
+	LoadPrefabs();
 }
 
 

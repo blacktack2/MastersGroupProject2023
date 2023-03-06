@@ -11,10 +11,13 @@
 #include "AssetLibrary.h"
 #include "MeshGeometry.h"
 #include "MeshMaterial.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
 #include "Transform.h"
 
 using namespace NCL;
 using namespace CSC8503;
+using namespace Rendering;
 
 RenderObject::RenderObject(Transform& parentTransform, std::shared_ptr<MeshGeometry> mesh, std::shared_ptr<MeshMaterial> material) :
 transform(parentTransform), mesh(mesh), material(material), colour(1.0f, 1.0f, 1.0f, 1.0f) {

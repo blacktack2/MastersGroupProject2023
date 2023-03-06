@@ -8,14 +8,13 @@
 #pragma once
 #include "RenderObject.h"
 
-#include "TextureBase.h"
-#include "MeshAnimation.h"
-#include "MeshGeometry.h"
-#include "MeshMaterial.h"
-
 #include <memory>
 #include <string>
 #include <vector>
+
+namespace NCL::Rendering {
+	class TextureBase;
+}
 
 namespace NCL::CSC8503 {
 	class MenuRenderObject {
