@@ -25,8 +25,8 @@ using namespace CSC8503;
 
 ModelRPass::ModelRPass() : OGLMainRenderPass(),
 gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
-	diffuseOutTex = AssetLoader::CreateTexture(TextureType::ColourR8, renderer.GetWidth(), renderer.GetHeight());
-	normalOutTex  = AssetLoader::CreateTexture(TextureType::ColourR8, renderer.GetWidth(), renderer.GetHeight());
+	diffuseOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetWidth(), renderer.GetHeight());
+	normalOutTex  = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetWidth(), renderer.GetHeight());
 	depthOutTex   = AssetLoader::CreateTexture(TextureType::Depth, renderer.GetWidth(), renderer.GetHeight());
 	AddScreenTexture(*diffuseOutTex);
 	AddScreenTexture(*normalOutTex);

@@ -64,7 +64,7 @@ void OGLFrameBuffer::BindToTexture(TextureBase& texture, unsigned int attachment
 		case BufferType::DepthAttachment   : attach = GL_DEPTH_ATTACHMENT              ; break;
 		case BufferType::StencilAttachment : attach = GL_STENCIL_ATTACHMENT            ; break;
 	}
-	numColourTexs = std::max(attachment, (unsigned int)numColourTexs);
+	numColourTexs = std::max(attachment + 1, (unsigned int)numColourTexs);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, attach, GL_TEXTURE_2D, static_cast<OGLTexture&>(texture).GetObjectID(), 0);
 }
 
