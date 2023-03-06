@@ -39,6 +39,8 @@ public:
 			game->UpdateGame(dt);
 		}
 		if (menuState == ChangeState::Quit) {
+			std::cout << "quit" << std::endl;
+			game->Disconnect();
 			Window::GetWindow()->ShowOSPointer(true);
 			Window::GetWindow()->LockMouseToWindow(false);
 			renderer.EnableOverlayPass("Menu", true);

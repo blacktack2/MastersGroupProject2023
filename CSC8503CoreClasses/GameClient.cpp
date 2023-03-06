@@ -10,6 +10,7 @@ GameClient::GameClient()	{
 
 GameClient::~GameClient()	{
 	enet_host_destroy(netHandle);
+	netHandle = nullptr;
 }
 
 bool GameClient::Connect(uint8_t a, uint8_t b, uint8_t c, uint8_t d, int portNum) {
@@ -22,6 +23,10 @@ bool GameClient::Connect(uint8_t a, uint8_t b, uint8_t c, uint8_t d, int portNum
 	return netPeer != nullptr;
 }
 
+void GameClient::Disconnect() {
+	enet_peer_disconnect_now(netPeer, 0);
+}
+
 void GameClient::UpdateClient() {
 	if (netHandle == nullptr) {
 		return;
@@ -31,6 +36,9 @@ void GameClient::UpdateClient() {
 		if(event.type == ENET_EVENT_TYPE_CONNECT){
 			std::cout << "CLient : Connected to server!" << std::endl;
 			std::cout << event.peer << " " << event.channelID << std::endl;
+		}
+		else if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
+			event.peer->data = NULL;
 		}
 		else if (event.type == ENET_EVENT_TYPE_RECEIVE) {
 			GamePacket* packet = (GamePacket*)event.packet->data;

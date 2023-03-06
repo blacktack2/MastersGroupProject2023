@@ -70,6 +70,8 @@ namespace NCL {
 
 			GameServer* GetServer();
 
+			void Disconnect();
+
 		protected:
 			void UpdateAsServer(float dt);
 			void UpdateAsClient(float dt);

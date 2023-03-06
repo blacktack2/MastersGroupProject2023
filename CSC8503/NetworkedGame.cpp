@@ -61,6 +61,7 @@ NetworkedGame::NetworkedGame(bool isServer)	{
 }
 
 NetworkedGame::~NetworkedGame()	{
+	Disconnect();
 	delete thisServer;
 	delete thisClient;
 	localPlayer = nullptr;
@@ -179,6 +180,18 @@ void NetworkedGame::UnfreezeSelf()
 GameServer* NetworkedGame::GetServer()
 {
 	return thisServer;
+}
+
+void NetworkedGame::Disconnect()
+{
+	std::cout << "attempt disconnect" << std::endl;
+	if (thisClient) {
+		thisClient->Disconnect();
+		/*std::cout << "send disconnect to server" << std::endl;
+		PlayerConnectionPacket newPacket;
+		newPacket.type = Player_Disconnected;
+		thisClient->SendPacket(&newPacket);*/
+	}
 }
 
 void NetworkedGame::UpdateAsServer(float dt) {
@@ -459,7 +472,6 @@ void NetworkedGame::HandlePlayerConnectedPacket(GamePacket* payload, int source)
 void NetworkedGame::HandlePlayerDisconnectedPacket(GamePacket* payload, int source) {
 	//player disconnected
 	int playerID = ((PlayerConnectionPacket*)payload)->playerID;
-	remove(connectedPlayerIDs.begin(), connectedPlayerIDs.end(), playerID);
 	NetworkedGame::PlayerLeftServer(playerID);
 	//server tell everyone to delete this
 	if (thisServer) {
@@ -548,9 +560,11 @@ void NetworkedGame::PlayerJoinedServer(int playerID) {
 }
 
 void NetworkedGame::PlayerLeftServer(int playerID) {
-	//std::cout << name << " " << selfID << " deleting player " << playerID << std::endl;
-	if (serverPlayers[playerID] != nullptr) {
-		world->RemoveGameObject(serverPlayers[playerID], false);
+	if (serverPlayers.contains(playerID)) {
+		std::cout << name << " " << selfID << " deleting player " << playerID << std::endl;
+		serverPlayers[playerID]->SetActive(false);
+		serverPlayers.erase(playerID);
+		remove(connectedPlayerIDs.begin(), connectedPlayerIDs.end(), playerID);
 	}
 		
 }
