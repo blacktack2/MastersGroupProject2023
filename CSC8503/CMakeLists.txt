@@ -14,8 +14,6 @@ set(Header_File
     "GameStateManager.h"
 	"Maze.h"
     "MenuRenderObject.h"
-    "NetworkedGame.h"
-    "NetworkPlayer.h"
 	"NPCObject.h"
     "Obstacle.h"
     "StateGameObject.h"
@@ -34,8 +32,6 @@ set(Source_Files
     "Main.cpp"
 	"Maze.cpp"
     "MenuRenderObject.cpp"
-    "NetworkedGame.cpp"
-    "NetworkPlayer.cpp"
 	"NPCObject.cpp"
     "StateGameObject.cpp"
     "TutorialGame.cpp"
@@ -158,9 +154,22 @@ set(Menu_Files
     "ScreenPause.cpp"
     "ScreenOption.h"
     "ScreenOption.cpp"
-
+    "ScreenMultiplayer.h"
+    "ScreenMultiplayer.cpp"
+    "ScreenMultiplayerOption.h"
+    "ScreenMultiplayerOption.cpp"
 )
 source_group("Menu Files" FILES ${Menu_Files})
+
+set(network_Files 
+    "NetworkedGame.h"
+    "NetworkedGame.cpp"
+    "NetworkPlayer.h"
+    "NetworkPlayer.cpp"
+    "NetworkBoss.h"
+    "NetworkBoss.cpp"
+)
+source_group("Network Files" FILES ${network_Files})
 
 set(ALL_FILES
     ${Header_Files}
@@ -172,6 +181,7 @@ set(ALL_FILES
 	${Player_Files}
     ${Enemy_Files}
     ${Menu_Files}
+    ${network_Files}
 )
 
 if(USE_VULKAN)
@@ -185,6 +195,7 @@ if(USE_VULKAN)
 	    ${Player_Files}
         ${Enemy_Files}
         ${Menu_Files}
+        ${network_Files}
     )
 
 foreach (file ${SHADER_FILES})

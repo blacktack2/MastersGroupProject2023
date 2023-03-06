@@ -25,31 +25,41 @@ void ScreenMain::initMenu() {
 	menuManager.AddMenu(name, menu);
 
 	//button 1
-	TextureBase* startTex = AssetLibrary::GetTexture("button1");
-	Button* startBtn = new Button(0.5f, 0.0f, 0.2f, 0.1f);
-	startBtn->SetRenderObject(new MenuRenderObject(startTex));
-	menu->AddButton(startBtn);
-	startBtn->OnClickCallback = [&]() {
+	TextureBase* tex = AssetLibrary::GetTexture("button1");
+	Button* btn = new Button(0.5f, 0.3f, 0.2f, 0.1f);
+	btn->SetRenderObject(new MenuRenderObject(tex));
+	menu->AddButton(btn);
+	btn->OnClickCallback = [&]() {
 		std::cout << "Start btn clicked" << std::endl;
 		menuState = ChangeState::Start;
 	};
 
 	//button 2
-	TextureBase* optionTex = AssetLibrary::GetTexture("button2");
-	Button* optionBtn = new Button(0.5f, -0.3f, 0.2f, 0.1f);
-	optionBtn->SetRenderObject(new MenuRenderObject(optionTex));
-	menu->AddButton(optionBtn);
-	optionBtn->OnClickCallback = [&]() {
+	tex = AssetLibrary::GetTexture("button1");
+	btn = new Button(0.5f, 0.0f, 0.2f, 0.1f);
+	btn->SetRenderObject(new MenuRenderObject(tex));
+	menu->AddButton(btn);
+	btn->OnClickCallback = [&]() {
+		std::cout << "Multiplayer btn clicked" << std::endl;
+		menuState = ChangeState::Multiplayer;
+	};
+
+	//button 3
+	tex = AssetLibrary::GetTexture("button2");
+	btn = new Button(0.5f, -0.3f, 0.2f, 0.1f);
+	btn->SetRenderObject(new MenuRenderObject(tex));
+	menu->AddButton(btn);
+	btn->OnClickCallback = [&]() {
 		std::cout << "Option btn clicked" << std::endl;
 		menuState = ChangeState::Option;
 	};
 
-	//button 3
-	TextureBase* quitTex = AssetLibrary::GetTexture("button3");
-	Button* quitBtn = new Button(0.5f, 2 * -0.3f, 0.2f, 0.1f);
-	quitBtn->SetRenderObject(new MenuRenderObject(quitTex));
-	menu->AddButton(quitBtn);
-	quitBtn->OnClickCallback = [&]() {
+	//button 4
+	tex = AssetLibrary::GetTexture("button3");
+	btn = new Button(0.5f, 2 * -0.3f, 0.2f, 0.1f);
+	btn->SetRenderObject(new MenuRenderObject(tex));
+	menu->AddButton(btn);
+	btn->OnClickCallback = [&]() {
 		std::cout << "Quit btn clicked" << std::endl;
 		menuState = ChangeState::Quit;
 	};

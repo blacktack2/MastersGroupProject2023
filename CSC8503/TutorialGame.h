@@ -21,6 +21,9 @@
 
 #include "MeshAnimation.h";
 
+
+
+
 namespace NCL {
 	namespace CSC8503 {
 		class Bullet;
@@ -44,7 +47,9 @@ namespace NCL {
 			TutorialGame();
 			~TutorialGame();
 
-			void InitWorld(InitMode mode = InitMode::EMPTY);
+			virtual void Clear();
+			virtual void StartLevel();
+			void InitWorld();
 
 			virtual void UpdateGame(float dt);
 
@@ -53,13 +58,13 @@ namespace NCL {
 			}
 		protected:
 
-			void UpdateStateOngoing(float dt);
+			void UpdateGameCore(float dt);
+			virtual void ProcessState();
 
 			void InitialiseAssets();
 			void InitialisePrefabs();
 
 			void InitCamera();
-			void UpdateKeys();
 			void InitGameExamples();
 
 			void InitMazeWorld(int numRows, int numCols, float size);
@@ -80,7 +85,6 @@ namespace NCL {
 			EnemyObject* AddEnemyToWorld(const Vector3& position, NavigationMap& navMap);
 
 			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
-			//HealingKit* UpdateHealingKit();
 			void BuildLevel();
 			void UpdateLevel();
 			NPCObject* AddNPCToWorld(const Vector3& position);
