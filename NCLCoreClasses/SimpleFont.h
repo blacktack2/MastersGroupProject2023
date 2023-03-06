@@ -21,7 +21,7 @@ namespace NCL::Rendering {
 
 	class SimpleFont {
 	public:
-		SimpleFont(const std::string& fontName, const std::string& texName);
+		SimpleFont(const std::string& fontName, const TextureBase& texture);
 		~SimpleFont();
 
 		struct InterleavedTextVertex {
@@ -50,7 +50,7 @@ namespace NCL::Rendering {
 		};
 
 		FontChar*    allCharData;
-		TextureBase& texture;
+		const TextureBase& texture;
 
 		int startChar;
 		int numChars;

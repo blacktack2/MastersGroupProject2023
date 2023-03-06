@@ -117,6 +117,8 @@ void LoadMenuAsset() {
 	AssetLibrary::instance().AddTexture("button6", AssetLoader::LoadTexture("button6.jpg"));
 	AssetLibrary::instance().AddTexture("button7", AssetLoader::LoadTexture("button7.jpg"));
 
+	AssetLibrary::instance().AddTexture("fontAtlas", AssetLoader::LoadTexture("PressStart2P.png"));
+
 	AssetLibrary::instance().AddShader("menu", std::move(AssetLoader::CreateShader("menuVertex.vert", "menuFragment.frag")));
 }
 

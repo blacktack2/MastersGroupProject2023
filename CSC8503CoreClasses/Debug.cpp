@@ -1,4 +1,7 @@
 #include "Debug.h"
+
+#include "AssetLibrary.h"
+
 using namespace NCL;
 
 std::vector<Debug::DebugStringEntry>	Debug::stringEntries;
@@ -77,7 +80,7 @@ void Debug::UpdateRenderables(float dt) {
 
 SimpleFont* Debug::GetDebugFont() {
 	if (!debugFont) {
-		debugFont = new SimpleFont("PressStart2P.fnt", "PressStart2P.png");
+		debugFont = new SimpleFont("PressStart2P.fnt", *AssetLibrary::instance().GetTexture("fontAtlas"));
 	}
 	return debugFont;
 }

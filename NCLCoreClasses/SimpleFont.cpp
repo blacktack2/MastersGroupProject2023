@@ -19,8 +19,8 @@ using namespace NCL;
 using namespace Rendering;
 using namespace Maths;
 
-SimpleFont::SimpleFont(const std::string& filename, const std::string& texName) :
-texture(*AssetLibrary::instance().GetTexture(texName)) {
+SimpleFont::SimpleFont(const std::string& filename, const TextureBase& texture) :
+texture(texture) {
 	startChar   = 0;
 	numChars    = 0;
 	allCharData = nullptr;

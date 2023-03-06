@@ -23,9 +23,9 @@ void FrameBuffer::AddTexture(TextureBase& texture) {
 
 void FrameBuffer::AddTexture(TextureBase& texture, unsigned int attachment) {
 	if (attachment >= textures.size()) {
-		textures[attachment] = texture;
-	} else {
 		textures.emplace_back(texture);
+	} else {
+		textures[attachment] = texture;
 	}
 	BindToTexture(texture, attachment);
 }
