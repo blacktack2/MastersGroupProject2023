@@ -30,6 +30,21 @@ class BehaviourNodeWithChildren;
 namespace NCL::CSC8503 {
     class Boss : public GameObject {
     public:
+
+        enum BossAction {
+            NoAction,
+            Dead,
+            Move1, //Random Walk
+            Attack1, //stab
+            Attack2, //spin
+            Attack3, //laser
+            Move2, //jump to
+            Move3, //jump away
+            Attack4, //ink rain
+            Attack5 //bulletStorm
+        };
+
+
         Boss();
         ~Boss();
 
@@ -77,6 +92,10 @@ namespace NCL::CSC8503 {
         bool InkRain(PlayerObject* player);
 
         bool BulletsStorm();
+
+        BossAction GetBossAction() {
+            return bossAction;
+        }
                 
         Health* GetHealth()
         {
@@ -118,9 +137,10 @@ namespace NCL::CSC8503 {
         PlayerObject* target;
 
         BehaviourNodeWithChildren* behaviourTree;
+        BossAction bossAction = NoAction;
     };
 
-    class BossBehaviorTree {
+    /*class BossBehaviorTree {
     public:
         BossBehaviorTree(Boss* boss) {
             this->boss = boss;
@@ -285,19 +305,6 @@ namespace NCL::CSC8503 {
             delete behaviorLock;
             delete root;
         }
-        enum BossAction {
-            NoAction,
-            Dead,
-            RandomWalk,
-            Stab,
-            Spin,
-            Laser,
-            JumpTo,
-            JumpAway,
-            SeekHeal,
-            InkRain,
-            BulletsStorm
-        };
 
         void ChangeTarget(PlayerObject* target) {
             this->target = target;
@@ -651,5 +658,5 @@ namespace NCL::CSC8503 {
 
         PlayerObject* target;
         Boss* boss;
-    };
+    }; */
 }

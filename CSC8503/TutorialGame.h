@@ -159,7 +159,6 @@ namespace NCL {
 			GameGrid* gameGrid = nullptr;	/////////
 			//GameObject* floor = nullptr;	/////////
 			Boss* testingBoss = nullptr;   /////////
-			BossBehaviorTree* testingBossBehaviorTree = nullptr;   /////////
 
 			//GameGrid stuff
 			GameGridManager* gridManager;

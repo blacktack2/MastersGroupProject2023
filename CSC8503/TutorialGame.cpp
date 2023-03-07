@@ -71,7 +71,6 @@ TutorialGame::~TutorialGame() {
 	world->ClearAndErase();
 	BulletInstanceManager::instance().NullifyArray();
 	gridManager->Clear();
-	delete testingBossBehaviorTree;
 	delete physics;
 
 	delete[] mazes;
@@ -85,8 +84,6 @@ void TutorialGame::StartLevel() {
 	player = AddPlayerToWorld(Vector3(0, 5, 90),true);
 
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
-	testingBossBehaviorTree = new BossBehaviorTree(testingBoss);
-	testingBossBehaviorTree->ChangeTarget(player);
 	testingBoss->SetTarget(player);
 }
 
@@ -99,8 +96,6 @@ void TutorialGame::Clear() {
 	physics->Clear();
 	gridManager->Clear();
 	testingBoss = nullptr;
-	delete testingBossBehaviorTree;
-	testingBossBehaviorTree = nullptr;
 }
 
 void TutorialGame::InitWorld() {
@@ -216,9 +211,6 @@ void TutorialGame::UpdateGameCore(float dt) {
 	physics->Update(dt);
 
 	world->PostUpdateWorld();
-	if (testingBossBehaviorTree) {
-		//testingBossBehaviorTree->update();
-	}
 	
 	if (gameLevel->GetShelterTimer() > 20.0f)
 	{

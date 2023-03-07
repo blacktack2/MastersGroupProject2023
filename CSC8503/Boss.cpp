@@ -71,7 +71,10 @@ void Boss::BuildTree() {
         if (SqrDistToTarget() > bossVision * bossVision || state == Ongoing)
         {
             if (RandomWalk()) return Success;
-            else return Ongoing;
+            else { 
+                bossAction = Move1;
+                return Ongoing; 
+            }
         }
         return Failure;
         }));
@@ -110,6 +113,7 @@ void Boss::BuildTree() {
             break;
         }
         if (StabPlayer(target)) return Success;
+        bossAction = Attack1;
         return Ongoing;
         }));
 
@@ -124,6 +128,7 @@ void Boss::BuildTree() {
         }
 
         if (Spin(target)) return Success;
+        bossAction = Attack2;
         return Ongoing;
     }));
 
@@ -141,6 +146,7 @@ void Boss::BuildTree() {
             break;
         }
         if (UseLaserOnPlayer(target)) return Success;
+        bossAction = Attack3;
         return Ongoing;
     }));
 
@@ -155,6 +161,7 @@ void Boss::BuildTree() {
         }
 
         if (JumpTo(target)) return Success;
+        bossAction = Move2;
         return Ongoing;
     }));
 
@@ -174,7 +181,10 @@ void Boss::BuildTree() {
         if (SqrDistToTarget() > bossVision * bossVision || state == Ongoing)
         {
             if (RandomWalk()) return Success;
-            else return Ongoing;
+            else {
+                bossAction = Move1;
+                return Ongoing;
+            }
         }
         return Failure;
     }));
@@ -192,7 +202,10 @@ void Boss::BuildTree() {
         if (SqrDistToTarget() < distanceToHaveCloseCombat * distanceToHaveCloseCombat || state == Ongoing)
         {
             if (JumpAway(target)) return Success;
-            else return Ongoing;
+            else {
+                bossAction = Move3;
+                return Ongoing;
+            }
         }
         return Failure;
     }));
@@ -209,6 +222,7 @@ void Boss::BuildTree() {
             break;
         }
         if (InkRain(target)) return Success;
+        bossAction = Attack4;
         return Ongoing;
     }));
 
@@ -223,6 +237,7 @@ void Boss::BuildTree() {
         }
 
         if (BulletsStorm()) return Success;
+        bossAction = Attack5;
         return Ongoing;
     }));
 }
@@ -247,11 +262,13 @@ void Boss::Update(float dt) {
     }
 
     std::cout << SqrDistToTarget() << std::endl;
+    bossAction = NoAction;
     if (behaviourTree->Execute(dt) != Ongoing) behaviourTree->Reset();
 }
 
 void Boss::ChangeLoseState()
 {
+    bossAction = Dead;
     gameStateManager->SetGameState(GameState::Win);
 }
 
