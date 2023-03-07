@@ -62,5 +62,5 @@ void PaintRenderObject::PreDraw(int sublayer, ShaderBase& shader) {
 }
 
 ShaderBase& PaintRenderObject::GetDefaultShader() {
-	return *AssetLibrary::instance().GetShader("paintDefault");
+	return *AssetLibrary::GetShader("paintDefault");
 }

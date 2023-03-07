@@ -21,7 +21,7 @@ using namespace NCL;
 using namespace CSC8503;
 
 HDRRPass::HDRRPass() : OGLPostRenderPass(), renderer(GameTechRenderer::instance()) {
-	quad = AssetLibrary::instance().GetMesh("quad");
+	quad = AssetLibrary::GetMesh("quad");
 
 	sceneOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA16F, renderer.GetWidth(), renderer.GetHeight());
 	AddScreenTexture(*sceneOutTex);

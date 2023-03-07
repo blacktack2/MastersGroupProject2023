@@ -52,5 +52,5 @@ void AnimatedRenderObject::PreDraw(int sublayer, ShaderBase& shader) {
 }
 
 ShaderBase& AnimatedRenderObject::GetDefaultShader() {
-	return *AssetLibrary::instance().GetShader("animationDefault");
+	return *AssetLibrary::GetShader("animationDefault");
 }

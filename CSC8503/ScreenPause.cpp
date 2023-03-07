@@ -15,7 +15,7 @@ using namespace NCL;
 using namespace CSC8503;
 
 void ScreenPause::initMenu() {
-	TextureBase* texture = AssetLibrary::instance().GetTexture("menuPause").get();
+	TextureBase* texture = AssetLibrary::GetTexture("menuPause").get();
 
 	Menu* menu = new Menu(Vector2(0, 0), Vector2(0.3, 0.7));
 	menu->SetRenderObject(new MenuRenderObject(texture));
@@ -29,7 +29,7 @@ void ScreenPause::initMenu() {
 		sprintf_s(name, "button%d", i + 4);
 
 		Button* btn = new Button(0, 0.45f + i * -0.3f, 0.16f, 0.08f, Vector4(0, 0, 0, 1));
-		TextureBase* tex = AssetLibrary::instance().GetTexture(name).get();
+		TextureBase* tex = AssetLibrary::GetTexture(name).get();
 
 		btn->SetRenderObject(new MenuRenderObject(tex));
 		menu->AddButton(btn);

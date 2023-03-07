@@ -16,6 +16,12 @@
 using namespace NCL;
 using namespace Rendering;
 
+std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>  AssetLibrary::meshes;
+std::unordered_map<std::string, std::shared_ptr<TextureBase>>   AssetLibrary::textures;
+std::unordered_map<std::string, std::shared_ptr<ShaderBase>>    AssetLibrary::shaders;
+std::unordered_map<std::string, std::shared_ptr<MeshAnimation>> AssetLibrary::animations;
+std::unordered_map<std::string, std::shared_ptr<MeshMaterial>>  AssetLibrary::materials;
+
 void AssetLibrary::AddMesh(const std::string& name, std::shared_ptr<MeshGeometry> mesh) {
 	meshes.emplace(name, std::move(mesh));
 }

@@ -42,7 +42,7 @@ void RenderObject::Draw() {
 }
 
 void RenderObject::PreDraw(int sublayer) {
-	MeshMaterial& mat = material ? *material : *AssetLibrary::instance().GetMaterial("default");
+	MeshMaterial& mat = material ? *material : *AssetLibrary::GetMaterial("default");
 
 	auto sublayerEntry = mat.GetMaterialForLayer(sublayer);
 	MeshMaterialEntry& entry = sublayerEntry ? sublayerEntry.value() : mat.GetMaterialForLayer(0).value();
@@ -58,20 +58,20 @@ void RenderObject::PreDraw(int sublayer) {
 	shader.SetUniformFloat("modelColour", colour);
 
 	auto entryDiffuse = entry.GetTexture("Diffuse");
-	TextureBase& diffuse = entryDiffuse ? entryDiffuse.value().get() : *AssetLibrary::instance().GetTexture("defaultDiffuse");
+	TextureBase& diffuse = entryDiffuse ? entryDiffuse.value().get() : *AssetLibrary::GetTexture("defaultDiffuse");
 	diffuse.Bind(0);
 
 	auto entryBump = entry.GetTexture("Bump");
-	TextureBase& bump = entryBump ? entryBump.value().get() : *AssetLibrary::instance().GetTexture("defaultBump");
+	TextureBase& bump = entryBump ? entryBump.value().get() : *AssetLibrary::GetTexture("defaultBump");
 	bump.Bind(1);
 
 	auto entrySpec = entry.GetTexture("Spec");
-	TextureBase& spec = entrySpec ? entrySpec.value().get() : *AssetLibrary::instance().GetTexture("defaultSpec");
+	TextureBase& spec = entrySpec ? entrySpec.value().get() : *AssetLibrary::GetTexture("defaultSpec");
 	spec.Bind(2);
 
 	PreDraw(sublayer, shader);
 }
 
 ShaderBase& RenderObject::GetDefaultShader() {
-	return *AssetLibrary::instance().GetShader("modelDefault");
+	return *AssetLibrary::GetShader("modelDefault");
 }

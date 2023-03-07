@@ -23,7 +23,7 @@ using namespace CSC8503;
 using namespace NCL::CSC8503;
 
 PresentRPass::PresentRPass() : OGLPresentRenderPass() {
-	quad = AssetLibrary::instance().GetMesh("quad");
+	quad = AssetLibrary::GetMesh("quad");
 
 	shader = AssetLoader::CreateShader("present.vert", "present.frag");
 }

@@ -23,8 +23,8 @@ using namespace CSC8503;
 
 LightingRPass::LightingRPass() : OGLMainRenderPass(),
 gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
-	sphere = AssetLibrary::instance().GetMesh("sphere");
-	quad = AssetLibrary::instance().GetMesh("quad");
+	sphere = AssetLibrary::GetMesh("sphere");
+	quad = AssetLibrary::GetMesh("quad");
 
 	lightDiffuseOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetWidth(), renderer.GetHeight());
 	lightSpecularOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetWidth(), renderer.GetHeight());

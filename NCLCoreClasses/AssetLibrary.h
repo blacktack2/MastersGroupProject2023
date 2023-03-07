@@ -24,35 +24,30 @@ namespace NCL {
 
 	class AssetLibrary {
 	public:
-		static AssetLibrary& instance() {
-			static AssetLibrary INSTANCE;
-			return INSTANCE;
-		}
+		static void AddMesh(const std::string& name, std::shared_ptr<MeshGeometry> mesh);
+		static std::shared_ptr<MeshGeometry> GetMesh(const std::string& name);
+		static bool HasMesh(const std::string& name);
 
-		void AddMesh(const std::string& name, std::shared_ptr<MeshGeometry> mesh);
-		std::shared_ptr<MeshGeometry> GetMesh(const std::string& name);
-		bool HasMesh(const std::string& name);
+		static void AddTexture(const std::string& name, std::shared_ptr<TextureBase> texture);
+		static std::shared_ptr<TextureBase> GetTexture(const std::string& name);
+		static bool HasTexture(const std::string& name);
 
-		void AddTexture(const std::string& name, std::shared_ptr<TextureBase> texture);
-		std::shared_ptr<TextureBase> GetTexture(const std::string& name);
-		bool HasTexture(const std::string& name);
+		static void AddShader(const std::string& name, std::shared_ptr<ShaderBase> shader);
+		static std::shared_ptr<ShaderBase> GetShader(const std::string& name);
+		static bool HasShader(const std::string& name);
 
-		void AddShader(const std::string& name, std::shared_ptr<ShaderBase> shader);
-		std::shared_ptr<ShaderBase> GetShader(const std::string& name);
-		bool HasShader(const std::string& name);
+		static void AddAnimation(const std::string& name, std::shared_ptr<MeshAnimation> anim);
+		static std::shared_ptr<MeshAnimation> GetAnimation(const std::string& name);
+		static bool HasAnimation(const std::string& name);
 
-		void AddAnimation(const std::string& name, std::shared_ptr<MeshAnimation> anim);
-		std::shared_ptr<MeshAnimation> GetAnimation(const std::string& name);
-		bool HasAnimation(const std::string& name);
-
-		void AddMaterial(const std::string& name, std::shared_ptr<MeshMaterial> material);
-		std::shared_ptr<MeshMaterial> GetMaterial(const std::string& name);
-		bool HasMaterial(const std::string& name);
+		static void AddMaterial(const std::string& name, std::shared_ptr<MeshMaterial> material);
+		static std::shared_ptr<MeshMaterial> GetMaterial(const std::string& name);
+		static bool HasMaterial(const std::string& name);
 	private:
-		std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>  meshes{};
-		std::unordered_map<std::string, std::shared_ptr<TextureBase>>   textures{};
-		std::unordered_map<std::string, std::shared_ptr<ShaderBase>>    shaders{};
-		std::unordered_map<std::string, std::shared_ptr<MeshAnimation>> animations{};
-		std::unordered_map<std::string, std::shared_ptr<MeshMaterial>>  materials{};
+		static std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>  meshes;
+		static std::unordered_map<std::string, std::shared_ptr<TextureBase>>   textures;
+		static std::unordered_map<std::string, std::shared_ptr<ShaderBase>>    shaders;
+		static std::unordered_map<std::string, std::shared_ptr<MeshAnimation>> animations;
+		static std::unordered_map<std::string, std::shared_ptr<MeshMaterial>>  materials;
 	};
 }

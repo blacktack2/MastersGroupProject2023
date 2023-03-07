@@ -22,7 +22,7 @@ using namespace NCL;
 using namespace CSC8503;
 
 SSAORPass::SSAORPass() : OGLMainRenderPass(), renderer(GameTechRenderer::instance()) {
-	quad = AssetLibrary::instance().GetMesh("quad");
+	quad = AssetLibrary::GetMesh("quad");
 
 	ssaoTex    = AssetLoader::CreateTexture(TextureType::ColourRGB8, renderer.GetWidth(), renderer.GetHeight());
 	ssaoOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB8, renderer.GetWidth(), renderer.GetHeight());

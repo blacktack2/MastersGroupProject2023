@@ -52,7 +52,7 @@ MeshMaterial::MeshMaterial(const std::string& filename) {
 		file >> shader;
 		file >> count;
 
-		materialLayers[i].SetShader(AssetLibrary::instance().HasShader(shader) ? AssetLibrary::instance().GetShader(shader) : nullptr);
+		materialLayers[i].SetShader(AssetLibrary::HasShader(shader) ? AssetLibrary::GetShader(shader) : nullptr);
 		for (int j = 0; j < count; ++j) {
 			std::string entryData;
 			file >> entryData;
@@ -62,15 +62,15 @@ MeshMaterial::MeshMaterial(const std::string& filename) {
 			channel = entryData.substr(0, split);
 			texture = entryData.substr(split + 1);
 
-			if (!AssetLibrary::instance().HasTexture(texture)) {
+			if (!AssetLibrary::HasTexture(texture)) {
 				std::shared_ptr<TextureBase> tex = AssetLoader::LoadTexture(texture);
 				if (tex) {
-					AssetLibrary::instance().AddTexture(texture, std::move(tex));
+					AssetLibrary::AddTexture(texture, std::move(tex));
 					
-					materialLayers[i].AddTexture(channel, AssetLibrary::instance().GetTexture(texture));
+					materialLayers[i].AddTexture(channel, AssetLibrary::GetTexture(texture));
 				}
 			} else {
-				materialLayers[i].AddTexture(channel, AssetLibrary::instance().GetTexture(texture));
+				materialLayers[i].AddTexture(channel, AssetLibrary::GetTexture(texture));
 			}
 		}
 	}

@@ -40,9 +40,9 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
-	AddModelShader(AssetLibrary::instance().GetShader("modelDefault"));
-	AddModelShader(AssetLibrary::instance().GetShader("paintDefault"));
-	AddModelShader(AssetLibrary::instance().GetShader("animationDefault"));
+	AddModelShader(AssetLibrary::GetShader("modelDefault"));
+	AddModelShader(AssetLibrary::GetShader("paintDefault"));
+	AddModelShader(AssetLibrary::GetShader("animationDefault"));
 }
 
 ModelRPass::~ModelRPass() {

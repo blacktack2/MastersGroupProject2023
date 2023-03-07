@@ -13,14 +13,14 @@ using namespace NCL;
 using namespace CSC8503;
 
 void ScreenMultiplayerOption::initMenu() {
-	TextureBase* mainMenuBg = AssetLibrary::instance().GetTexture("menuMain").get();
+	TextureBase* mainMenuBg = AssetLibrary::GetTexture("menuMain").get();
 
 	Menu* menu = new Menu(Vector2(0, 0), Vector2(1, 1));
 	menu->SetRenderObject(new MenuRenderObject(mainMenuBg));
 	menuManager.AddMenu(name, menu);
 
 	//button 1
-	TextureBase* tex = AssetLibrary::instance().GetTexture("button1").get();
+	TextureBase* tex = AssetLibrary::GetTexture("button1").get();
 	Button* btn = new Button(0.5f, 0.0f, 0.2f, 0.1f);
 	btn->SetRenderObject(new MenuRenderObject(tex));
 	menu->AddButton(btn);
@@ -30,7 +30,7 @@ void ScreenMultiplayerOption::initMenu() {
 	};
 
 	//button 2
-	tex = AssetLibrary::instance().GetTexture("button1").get();
+	tex = AssetLibrary::GetTexture("button1").get();
 	btn = new Button(0.5f, -0.3f, 0.2f, 0.1f);
 	btn->SetRenderObject(new MenuRenderObject(tex));
 	menu->AddButton(btn);
@@ -40,7 +40,7 @@ void ScreenMultiplayerOption::initMenu() {
 	};
 
 	//button 3
-	tex = AssetLibrary::instance().GetTexture("button3").get();
+	tex = AssetLibrary::GetTexture("button3").get();
 	btn = new Button(0.5f, 2 * -0.3f, 0.2f, 0.1f);
 	btn->SetRenderObject(new MenuRenderObject(tex));
 	menu->AddButton(btn);
