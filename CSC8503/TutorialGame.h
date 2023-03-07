@@ -1,10 +1,8 @@
 #pragma once
-#include "EnemyObject.h"
 #include "GameTechRenderer.h"
 #ifdef USEVULKAN
 #include "GameTechVulkanRenderer.h"
 #endif
-#include "NPCObject.h"
 #include "PhysicsSystem.h"
 #include "PlayerObject.h"
 #include "StateGameObject.h"
@@ -15,6 +13,7 @@
 #include "Boss.h"	
 #include "Obstacle.h"
 #include "GameLevel.h"
+
 
 #include "GameStateManager.h"
 #include "MenuManager.h"
@@ -82,12 +81,10 @@ namespace NCL {
 			StateGameObject* AddStateObjectToWorld(const Vector3& position);
 
 			PlayerObject* AddPlayerToWorld(const Vector3& position, bool cameraFollow = true);
-			EnemyObject* AddEnemyToWorld(const Vector3& position, NavigationMap& navMap);
 
 			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
 			void BuildLevel();
 			void UpdateLevel();
-			NPCObject* AddNPCToWorld(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
 			GameObject* AddTriggerToWorld(const Vector3& position, float size);
 
