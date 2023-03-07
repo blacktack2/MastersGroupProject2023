@@ -101,7 +101,6 @@ namespace NCL
 			GameGrid(Vector3 gridOrigin, float totalLength, float totalWidth, float unitLength);
 			~GameGrid();
 			void Update(float dt) {
-				UpdateGrid(dt);
 				DrawDebugGameGrid();
 			}
 
@@ -125,9 +124,6 @@ namespace NCL
 			//	}
 			//}
 
-			void UpdateGrid(float dt = 0.0f);
-
-			bool FindCatmullRomPath(const Vector3& from, const Vector3& to, NavigationPath& outPath);
 
 			GameNode* NearestNode(Vector3 position);
 
@@ -136,13 +132,6 @@ namespace NCL
 			void DrawDebugGameGrid();
 
 			void PaintNode(Vector3 position, paintHell::InkType type);
-
-			std::vector<GameNode> GetTraceNodes();
-
-			GameNode* GetRandomNode();
-
-			//healing stuff (shouldn't be here)
-			float GetHealingKitTimer();
 
 			//Vector3 GetRandomLocationToAddHealingKit(HealingKit* obj)
 			//{

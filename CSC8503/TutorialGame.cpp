@@ -218,7 +218,7 @@ void TutorialGame::UpdateGameCore(float dt) {
 	if (testingBossBehaviorTree) {
 		testingBossBehaviorTree->update();
 	}
-	
+	if(gameLevel)
 	if (gameLevel->GetShelterTimer() > 20.0f)
 	{
 		gameLevel->SetShelterTimer(0.0f);

@@ -76,7 +76,8 @@ void PlayerObject::Update(float dt) {
 	//If on ink
 	if (onGround) {
 		GameNode* node = GameGridManager::instance().NearestNode(this->GetTransform().GetGlobalPosition());
-		InkEffectManager::instance().ApplyInkEffect(node->inkType, &health, 0);
+		if(node)
+			InkEffectManager::instance().ApplyInkEffect(node->inkType, &health, 0);
 	}
 	
 }
