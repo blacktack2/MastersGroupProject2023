@@ -41,9 +41,6 @@ namespace NCL::CSC8503 {
 
 		virtual void Render() override;
 	private:
-		void SetDebugStringBufferSizes(size_t newVertCount);
-		void SetDebugLineBufferSizes(size_t newVertCount);
-
 		void RenderLines();
 		void RenderText();
 
@@ -58,6 +55,12 @@ namespace NCL::CSC8503 {
 		std::vector<Vector3> debugTextPos;
 		std::vector<Vector4> debugTextColours;
 		std::vector<Vector2> debugTextUVs;
+
+		std::unique_ptr<MeshGeometry> lineMesh;
+		std::unique_ptr<MeshGeometry> textMesh;
+
+		size_t lineCount;
+		size_t textCount;
 
 		//GLuint lineVAO;
 		//GLuint lineVertVBO;

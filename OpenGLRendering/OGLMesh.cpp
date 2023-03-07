@@ -90,7 +90,9 @@ void OGLMesh::Draw(unsigned int subLayer) {
 }
 
 void CreateVertexBuffer(GLuint& buffer, int byteCount, char* data) {
-	glGenBuffers(1, &buffer);
+	if (!buffer) {
+		glGenBuffers(1, &buffer);
+	}
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	glBufferData(GL_ARRAY_BUFFER, byteCount, data, GL_STATIC_DRAW);
 }
@@ -107,7 +109,9 @@ void OGLMesh::UploadToGPU() {
 	if (!ValidateMeshData()) {
 		return;
 	}
-	glGenVertexArrays(1, &vao);
+	if (!vao) {
+		glGenVertexArrays(1, &vao);
+	}
 	glBindVertexArray(vao);
 
 	int numVertices = GetVertexCount();
