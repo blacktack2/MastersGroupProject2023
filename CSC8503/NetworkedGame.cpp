@@ -82,6 +82,11 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(GameState_Message, this);
 	thisClient->RegisterPacketHandler(Lobby_Message, this);
 
+	ClientPacket newPacket;
+	newPacket.lastID = stateID;
+
+	thisClient->SendPacket(&newPacket);
+
 	StartLobby();
 }
 
@@ -90,6 +95,7 @@ void NetworkedGame::Clear()
 {
 	TutorialGame::Clear();
 	player = NULL;
+	localPlayer = NULL;
 }
 
 void NetworkedGame::StartLobby()
@@ -193,7 +199,6 @@ void NetworkedGame::UpdateAsServer(float dt) {
 		health += static_cast<NetworkPlayer*>(player.second)->GetHealth()->GetHealth();
 	}
 	if (health <= 0) {
-		std::cout << "all die" << std::endl;
 		gameStateManager->SetGameState(GameState::Lose);
 		BroadcastGameStateChange();
 	}
@@ -255,7 +260,7 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	newPacket.lastID = stateID;
 	keyMap.Update();
 	newPacket.buttonstates = keyMap.GetButtonState();
-	if (!Window::GetKeyboard()->KeyDown(KeyboardKeys::C)) {
+	if (!keyMap.CheckButtonPressed(newPacket.buttonstates, FreeLook)) {
 		newPacket.yaw = (int) world->GetMainCamera()->GetYaw() * 1000;
 	}
 	else {

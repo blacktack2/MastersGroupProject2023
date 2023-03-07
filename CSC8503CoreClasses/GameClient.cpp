@@ -1,6 +1,7 @@
 #include "GameClient.h"
 #include "./enet/enet.h"
 #include <iostream>
+#include "../CSC8503/GameStateManager.h"
 using namespace NCL;
 using namespace CSC8503;
 
@@ -39,6 +40,9 @@ void GameClient::UpdateClient() {
 		}
 		else if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
 			event.peer->data = NULL;
+			std::cout << "CLient : Disconnected to server!" << std::endl;
+			GameStateManager* gameState = &GameStateManager::instance();
+			gameState->SetGameState(GameState::Quit);
 		}
 		else if (event.type == ENET_EVENT_TYPE_RECEIVE) {
 			GamePacket* packet = (GamePacket*)event.packet->data;
