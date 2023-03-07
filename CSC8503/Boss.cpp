@@ -11,6 +11,225 @@
 #include "BulletInstanceManager.h"
 #include "AssetLibrary.h"
 #include "PrefabLibrary.h"
+#include "BehaviourSelector.h"
+#include "BehaviourSequence.h"
+#include "BehaviourNodeWithChildren.h"
+#include "BehaviourAction.h"
+#include <limits>
+
+
+
+
+    const float offensiveHealthLowerBound = 50;
+    const float bossVision = 80;
+    const float distanceToHaveCloseCombat = 40;
+
+
+Boss::Boss() {
+    BuildTree();
+}
+
+Boss::~Boss() {
+    delete behaviourTree;
+}
+
+void Boss::BuildTree() {
+    
+
+    behaviourTree = new BehaviourSelector("Root");
+
+    BehaviourSequence* offensiveMode = new BehaviourSequence("Offensive sub-tree");
+    behaviourTree->AddChild(offensiveMode);
+
+    offensiveMode->AddChild(new BehaviourAction("Check Boss Health for offensive mode", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        default:
+            break;
+        }
+
+        if (health.GetHealth() < offensiveHealthLowerBound) return Failure;
+        return Success;
+        }));
+
+    BehaviourSelector* offensinveMoves = new BehaviourSelector("Offensive Moves");
+    offensiveMode->AddChild(offensinveMoves);
+
+    offensinveMoves->AddChild(new BehaviourAction("Walk if player to far awway", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        default:
+            break;
+        }
+
+        if (SqrDistToTarget() > bossVision * bossVision || state == Ongoing)
+        {
+            if (RandomWalk()) return Success;
+            else return Ongoing;
+        }
+        return Failure;
+        }));
+
+    BehaviourSequence* offensiveClose = new BehaviourSequence("Offensive Close Combat");
+    offensinveMoves->AddChild(offensiveClose);
+
+
+    //offensive close actions
+    offensiveClose->AddChild(new BehaviourAction("Check Player Dist for close Combat", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        default:
+            break;
+        }
+
+        if (SqrDistToTarget() < distanceToHaveCloseCombat * distanceToHaveCloseCombat) return Success;
+        return Failure;
+        }));
+
+    BehaviourSelector* offensiveCloseAction = new BehaviourSelector("Choose Offensive Close Combat");
+    offensiveClose->AddChild(offensiveCloseAction);
+
+    offensiveCloseAction->AddChild(new BehaviourAction("Stab Player", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        case Initialise:
+            if (std::rand() % 100 > 60) return Failure;
+        default:
+            break;
+        }
+        if (StabPlayer(target)) return Success;
+        return Ongoing;
+        }));
+
+    offensiveClose->AddChild(new BehaviourAction("Spin On Player", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        default:
+            break;
+        }
+
+        if (Spin(target)) return Success;
+        return Ongoing;
+    }));
+
+
+    //offensive remote actions
+    offensinveMoves->AddChild(new BehaviourAction("Laser Player", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        case Initialise:
+            if (std::rand() % 100 > 70) return Failure;
+        default:
+            break;
+        }
+        if (UseLaserOnPlayer(target)) return Success;
+        return Ongoing;
+    }));
+
+    offensinveMoves->AddChild(new BehaviourAction("Jump To Player", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        default:
+            break;
+        }
+
+        if (JumpTo(target)) return Success;
+        return Ongoing;
+    }));
+
+
+
+    //Deffensive Sub tree
+    behaviourTree->AddChild(new BehaviourAction("Walk if player to far awway", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        default:
+            break;
+        }
+
+        if (SqrDistToTarget() > bossVision * bossVision || state == Ongoing)
+        {
+            if (RandomWalk()) return Success;
+            else return Ongoing;
+        }
+        return Failure;
+    }));
+
+    behaviourTree->AddChild(new BehaviourAction("Jump away if player is close", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        default:
+            break;
+        }
+
+        if (SqrDistToTarget() < distanceToHaveCloseCombat * distanceToHaveCloseCombat || state == Ongoing)
+        {
+            if (JumpAway(target)) return Success;
+            else return Ongoing;
+        }
+        return Failure;
+    }));
+    //Defensive Attacks
+    behaviourTree->AddChild(new BehaviourAction("Ink Rain", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        case Initialise:
+            if (std::rand() % 100 > 70) return Failure;
+        default:
+            break;
+        }
+        if (InkRain(target)) return Success;
+        return Ongoing;
+    }));
+
+    behaviourTree->AddChild(new BehaviourAction("Bullet Storm", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        default:
+            break;
+        }
+
+        if (BulletsStorm()) return Success;
+        return Ongoing;
+    }));
+}
+
+
+
+
 
 void Boss::Update(float dt) {
     GetTarget();
@@ -26,6 +245,9 @@ void Boss::Update(float dt) {
     if (this->transform.GetGlobalPosition().y < -10) {
         ChangeLoseState();
     }
+
+    std::cout << SqrDistToTarget() << std::endl;
+    if (behaviourTree->Execute(dt) != Ongoing) behaviourTree->Reset();
 }
 
 void Boss::ChangeLoseState()
@@ -407,4 +629,13 @@ bool Boss::BulletsStorm() {
     }
     bulletsStormTimer = 0.0f;
     return true;
+}
+
+
+float Boss::SqrDistToTarget() {
+    if (!target) return std::numeric_limits<float>::max();
+    return (transform.GetGlobalPosition() - target->GetTransform().GetGlobalPosition()).LengthSquared();
+}
+float Boss::DistToTarget() {
+    return  (transform.GetGlobalPosition() - target->GetTransform().GetGlobalPosition()).Length();
 }

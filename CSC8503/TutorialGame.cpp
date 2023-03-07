@@ -87,6 +87,7 @@ void TutorialGame::StartLevel() {
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss);
 	testingBossBehaviorTree->ChangeTarget(player);
+	testingBoss->SetTarget(player);
 }
 
 void TutorialGame::Clear() {
@@ -216,7 +217,7 @@ void TutorialGame::UpdateGameCore(float dt) {
 
 	world->PostUpdateWorld();
 	if (testingBossBehaviorTree) {
-		testingBossBehaviorTree->update();
+		//testingBossBehaviorTree->update();
 	}
 	
 	if (gameLevel->GetShelterTimer() > 20.0f)

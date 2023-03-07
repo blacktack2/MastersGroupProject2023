@@ -24,15 +24,14 @@
 
 #include "AnimatedRenderObject.h"
 
+
+class BehaviourNodeWithChildren;
+
 namespace NCL::CSC8503 {
     class Boss : public GameObject {
     public:
-        Boss()
-            : GameObject()
-        {
-        }
-
-        ~Boss(){}
+        Boss();
+        ~Boss();
 
         virtual void Update(float dt) override;
 
@@ -56,6 +55,9 @@ namespace NCL::CSC8503 {
 
         PlayerObject* GetTarget() {
             return target;
+        }
+        void SetTarget(PlayerObject* player) {
+            target = player;
         }
 
         bool RandomWalk();
@@ -81,6 +83,11 @@ namespace NCL::CSC8503 {
             return &health;
         }
     protected:
+
+        void BuildTree();
+        float SqrDistToTarget();
+        float DistToTarget();
+
         float deltaTime = 0.0f;
 
         Health health = Health(100);
@@ -109,6 +116,8 @@ namespace NCL::CSC8503 {
         std::vector<Vector3> rainBombPositions;
 
         PlayerObject* target;
+
+        BehaviourNodeWithChildren* behaviourTree;
     };
 
     class BossBehaviorTree {
@@ -390,17 +399,17 @@ namespace NCL::CSC8503 {
                     break;
                 }
 
-                    if (finish) {
-                        bossAction = NoAction;
-                    }
+                if (finish) {
+                    bossAction = NoAction;
                 }
+            }
 
-                bool isLocked() {
-                    if (bossAction == NoAction) {
-                        return false;
-                    }
-                    return true;
+            bool isLocked() {
+                if (bossAction == NoAction) {
+                    return false;
                 }
+                return true;
+            }
 
         private:
             BossAction bossAction = NoAction;
