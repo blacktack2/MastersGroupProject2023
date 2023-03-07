@@ -65,7 +65,7 @@ void NetworkedGame::StartAsServer() {
 	thisServer->RegisterPacketHandler(Player_Connected, this);
 	thisServer->RegisterPacketHandler(Player_Disconnected, this);
 
-	LobbyLevel();
+	StartLobby();
 }
 
 void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
@@ -82,7 +82,7 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(GameState_Message, this);
 	thisClient->RegisterPacketHandler(Lobby_Message, this);
 
-	LobbyLevel();
+	StartLobby();
 }
 
 
@@ -92,30 +92,32 @@ void NetworkedGame::Clear()
 	player = NULL;
 }
 
-void NetworkedGame::LobbyLevel()
+void NetworkedGame::StartLobby()
 {
 	canJoin = true;
-	Clear();
+
 	InitWorld();
 	SpawnPlayers();
 	int id = OBJECTID_START;
 	BulletInstanceManager::instance().AddNetworkObject(id);
+
 	gameStateManager->SetGameState(GameState::Lobby);
-	
 	BroadcastGameStateChange();
 }
 
 void NetworkedGame::StartLevel() {
 	canJoin = false;
+
 	InitWorld();
 	SpawnPlayers();
 	int id = OBJECTID_START;
 	BulletInstanceManager::instance().AddNetworkObject(id);
+
 	testingBoss = AddNetworkBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss);
 	testingBossBehaviorTree->ChangeTarget(localPlayer);
-	gameStateManager->SetGameState(GameState::OnGoing);
 
+	gameStateManager->SetGameState(GameState::OnGoing);
 	BroadcastGameStateChange();
 }
 
@@ -131,7 +133,7 @@ void NetworkedGame::SpawnPlayers() {
 	}
 }
 
-void NCL::CSC8503::NetworkedGame::BroadcastGameStateChange()
+void NetworkedGame::BroadcastGameStateChange()
 {
 	if (thisServer) {
 		GameStatePacket packet;
@@ -508,6 +510,12 @@ void NetworkedGame::HandleGameStatePacket(GamePacket* payload, int source)
 	if (currentState == GameState::Lobby && newState == GameState::OnGoing) {
 		StartLevel();
 	}
+	if (currentState == GameState::Lose && newState == GameState::Lobby) {
+		StartLobby();
+	}
+	if (currentState == GameState::Win && newState == GameState::Lobby) {
+		StartLobby();
+	}
 	
 	gameStateManager->SetGameState(static_cast<GameState>(static_cast<GameStatePacket*>(payload)->state));
 }
@@ -665,7 +673,7 @@ void NetworkedGame::ProcessState() {
 		}
 		if (keyMap.GetButton(InputType::Restart)) {
 			std::cout << "Return to lobby" << std::endl;
-			this->LobbyLevel();
+			this->StartLobby();
 		}
 	}
 	

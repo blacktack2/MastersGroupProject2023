@@ -26,7 +26,7 @@ namespace NCL {
 			void StartAsServer();
 			void StartAsClient(char a, char b, char c, char d);
 			void Clear() override;
-			void LobbyLevel();
+			void StartLobby();
 			void StartLevel() override;
 			void SpawnPlayers();
 
