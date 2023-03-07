@@ -213,11 +213,11 @@ void PhysicsSystem::BasicCollisionDetection() {
 	gameWorld.GetObjectIterators(first, last);
 
 	for (auto i = first; i != last; i++) {
-		if ((*i)->GetPhysicsObject() == nullptr) {
+		if (!(*i)->GetPhysicsObject()) {
 			continue;
 		}
 		for (auto j = i + 1; j != last; j++) {
-			if ((*j)->GetPhysicsObject() == nullptr) {
+			if (!(*j)->GetPhysicsObject()) {
 				continue;
 			}
 			CollisionDetection::CollisionInfo info;
@@ -241,6 +241,9 @@ so that objects separate back out.
 void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, CollisionDetection::ContactPoint& p) const {
 	PhysicsObject* physA = a.GetPhysicsObject();
 	PhysicsObject* physB = b.GetPhysicsObject();
+
+	float elasticityA = std::clamp(physA->GetElasticity(), 0.0f, 1.0f);
+	float elasticityB = std::clamp(physB->GetElasticity(), 0.0f, 1.0f);
 
 	Transform& transformA = a.GetTransform();
 	Transform& transformB = b.GetTransform();
@@ -276,7 +279,7 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 
 	float angularEffect = Vector3::Dot(inertiaA + inertiaB, p.normal);
 
-	float cRestitution = 0.66f;
+	float cRestitution = (elasticityA + elasticityB) / 2;
 
 	float j = (-(1.0f + cRestitution) * impulseForce) / (totalMass + angularEffect);
 

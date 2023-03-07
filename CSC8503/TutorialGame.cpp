@@ -45,6 +45,7 @@
 
 #include <string>
 
+#include "XboxController.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -70,14 +71,14 @@ TutorialGame::TutorialGame() {
 	
 	SoundSystem::Initialize();
 	gridManager = &GameGridManager::instance();
-	InitWorld();
+	StartLevel();
 }
 
 TutorialGame::~TutorialGame() {
 	world->ClearAndErase();
 	BulletInstanceManager::instance().NullifyArray();
 	gridManager->Clear();
-
+	delete testingBossBehaviorTree;
 	delete physics;
 
 	delete[] mazes;
@@ -85,21 +86,33 @@ TutorialGame::~TutorialGame() {
 	SoundSystem::Destroy();
 }
 
-void TutorialGame::InitWorld() {
+void TutorialGame::StartLevel() {
+	InitWorld();
+	player = AddPlayerToWorld(Vector3(0, 5, 90),true);
+
+	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
+	testingBossBehaviorTree = new BossBehaviorTree(testingBoss);
+	testingBossBehaviorTree->ChangeTarget(player);
+}
+
+void TutorialGame::Clear() {
+	gameStateManager->SetGameState(GameState::OnGoing);
 	delete[] mazes;
 	mazes = nullptr;
 	world->ClearAndErase();
 	BulletInstanceManager::instance().ObjectIntiation();
 	physics->Clear();
 	gridManager->Clear();
+	testingBoss = nullptr;
 	delete testingBossBehaviorTree;
+	testingBossBehaviorTree = nullptr;
+}
 
-	gridManager->AddGameGrid( new GameGrid( { 0,0,0 }, 300, 300, 2 ) );
+void TutorialGame::InitWorld() {
+	Clear();
+
+	gridManager->AddGameGrid(new GameGrid({ 0,0,0 }, 300, 300, 2));
 	BuildLevel();
-	player = AddPlayerToWorld(Vector3(0, 5, 90));
-
-	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
-	testingBossBehaviorTree = new BossBehaviorTree(testingBoss, player);
 
 	InitGameExamples();
 
@@ -110,33 +123,53 @@ void TutorialGame::InitWorld() {
 
 void TutorialGame::UpdateGame(float dt) {
 	GameState gameState = gameStateManager->GetGameState();
-	menuManager->Update(dt);
 	keyMap.Update();
+
+	/*XboxController c;
+	float v;
+	bool b = c.GetRightTrigger(1, v);
+	if (b) std::cout << v << "\n";
+	else std::cout << "No displacement\n";*/
 
 	debugViewPoint->BeginFrame();
 	debugViewPoint->MarkTime("Update");
 	
-	UpdateKeys();
+	static bool moveSun = false;
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM0)) {
+		moveSun = !moveSun;
+	}
+	if (moveSun) {
+		float runtime = world->GetRunTime();
+		sunLight->direction = Vector3(std::sin(runtime), std::cos(runtime), 0.0f);
+		renderer->GetSkyboxPass().SetSunDir(sunLight->direction);
+	}
+
 
 	SoundSystem::GetSoundSystem()->Update(dt);
 
-	if (gameState == GameState::OnGoing) {
-		UpdateStateOngoing(dt);
-	}
+	UpdateGameCore(dt);
+
+	gameStateManager->Update(dt);
+	ProcessState();
+	
+
 	debugViewPoint->FinishTime("Update");
 	debugViewPoint->MarkTime("Render");
 	renderer->Render();
 	
 	Debug::UpdateRenderables(dt);
 	debugViewPoint->FinishTime("Render");
-
 }
 
-void TutorialGame::UpdateStateOngoing(float dt) {
+void TutorialGame::UpdateGameCore(float dt) {
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 
-	Debug::Print(std::string("health: ").append(std::to_string((int)player->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
-
+	if(player){
+		Debug::Print(std::string("health: ").append(std::to_string((int)player->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
+	}
+	if (testingBoss) {
+		Debug::Print(std::string("Boss health: ").append(std::to_string((int)testingBoss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
+	}
 	if (!inSelectionMode) {
 		world->GetMainCamera()->UpdateCamera(dt);
 	}
@@ -151,10 +184,23 @@ void TutorialGame::UpdateStateOngoing(float dt) {
 
 	world->PostUpdateWorld();
 
-	testingBossBehaviorTree->update();
+	if (testingBossBehaviorTree) {
+		testingBossBehaviorTree->update();
+	}
+	
 	if (gameLevel->GetShelterTimer() > 20.0f) {
 		gameLevel->SetShelterTimer(0.0f);
 		UpdateLevel();
+	}
+}
+
+void TutorialGame::ProcessState() {
+	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	if (keyMap.GetButton(InputType::Restart)) {
+		this->StartLevel();
+	}
+	if (keyMap.GetButton(InputType::Return)) {
+		gameStateManager->SetGameState(GameState::Quit);
 	}
 }
 
@@ -164,62 +210,8 @@ void TutorialGame::InitCamera() {
 	world->GetMainCamera()->SetPitch(-15.0f);
 	world->GetMainCamera()->SetYaw(315.0f);
 	world->GetMainCamera()->SetPosition(Vector3(-60, 40, 60));
-}
 
-void TutorialGame::UpdateKeys() {
-	GameState gameState = gameStateManager->GetGameState();
-	switch (gameState) {
-		case GameState::OnGoing: default:
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
-				gameStateManager->SetGameState(GameState::Paused);
-			}
-
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F1)) {
-				InitWorld();
-			}
-
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F11)) {
-				world->ShuffleConstraints(false);
-			}
-
-			break;
-
-		case GameState::Paused:
-			Window::GetWindow()->ShowOSPointer(true);
-			Window::GetWindow()->LockMouseToWindow(false);
-
-			Debug::Print("Press [Escape] to resume", Vector2(5, 80), Vector4(1, 1, 1, 1));
-			Debug::Print("Press [q] to quit", Vector2(5, 90), Vector4(1, 1, 1, 1));
-
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Q)) {
-				gameStateManager->SetGameState(GameState::Quit);
-			}
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
-				gameStateManager->SetGameState(GameState::OnGoing);
-				Window::GetWindow()->ShowOSPointer(false);
-				Window::GetWindow()->LockMouseToWindow(true);
-			}
-
-			break;
-		case GameState::Win:
-			Debug::Print("You Win!", Vector2(5, 80), Vector4(0, 1, 0, 1));
-			Debug::Print("Press [Space] to play again", Vector2(5, 90), Vector4(1, 1, 1, 1));
-
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) {
-				InitWorld();
-				gameStateManager->SetGameState(GameState::OnGoing);
-			}
-			break;
-		case GameState::Lose:
-			Debug::Print("You got Goosed!", Vector2(5, 80), Vector4(1, 0, 0, 1));
-			Debug::Print("Press [Space] to play again", Vector2(5, 90), Vector4(1, 1, 1, 1));
-
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) {
-				InitWorld();
-				gameStateManager->SetGameState(GameState::OnGoing);
-			}
-			break;
-	}
+	world->GetMainCamera()->SetFollow(nullptr);
 }
 
 void TutorialGame::InitGameExamples() {
@@ -381,31 +373,8 @@ PlayerObject* TutorialGame::AddPlayerToWorld(const Vector3& position, bool camer
 	return character;
 }
 
-EnemyObject* TutorialGame::AddEnemyToWorld(const Vector3& position, NavigationMap& navMap) {
-	EnemyObject* enemy = new EnemyObject(*player, navMap);
-	SphereVolume* volume = new SphereVolume(1.0f, CollisionLayer::Enemy);
-
-	enemy->SetBoundingVolume((CollisionVolume*)volume);
-
-	enemy->GetTransform()
-		.SetScale(Vector3(1.0f))
-		.SetPosition(position);
-
-	enemy->SetRenderObject(new RenderObject(enemy->GetTransform(), AssetLibrary::instance().GetMesh("cube"), nullptr));
-	enemy->SetPhysicsObject(new PhysicsObject(&enemy->GetTransform(), enemy->GetBoundingVolume()));
-
-	enemy->GetRenderObject()->SetColour(Vector4(1, 0.9f, 0.8f, 1));
-
-	enemy->GetPhysicsObject()->SetInverseMass(1);
-	enemy->GetPhysicsObject()->InitSphereInertia();
-
-	world->AddGameObject(enemy);
-
-	return enemy;
-}
-
 Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
-	Boss* boss = new Boss(*gameGrid);
+	Boss* boss = new Boss();
 
 	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
 
@@ -430,7 +399,7 @@ void TutorialGame::BuildLevel()
 {
 	interval = 5.0f;
 	gameLevel = new GameLevel{};
-	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -100,0,-70 }, interval);
+	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -100, 0, -70 }, interval);
 	world->AddGameObject(gameLevel);
 	UpdateLevel();
 }
@@ -439,17 +408,17 @@ void TutorialGame::UpdateLevel()
 {
 	for (auto& object : gameLevel->GetGameStuffs())
 	{
-		if (object.HasDestroyed())
+		if (object->HasDestroyed())
 		{
-			object.Destroy(false);
-			if (object.objectType == ObjectType::Pillar)
+			object->Destroy(false);
+			if (object->objectType == ObjectType::Pillar)
 			{
 				Vector3 dimensions{ interval / 2.0f, 10, interval / 2.0f };
-				Obstacle* pillar = new Obstacle{ &object, true };
+				Obstacle* pillar = new Obstacle{ object, true };
 				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3f, 2.0f, 1.3f }, CollisionLayer::PaintAble));
 
 				pillar->GetTransform()
-					.SetPosition(object.worldPos + Vector3{ 0,20,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,20,0 })
 					.SetScale(dimensions * 2);
 				//pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), AssetLibrary::instance().GetMesh("pillar"), healingKitTex, nullptr));
 				
@@ -461,13 +430,13 @@ void TutorialGame::UpdateLevel()
 				pillar->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(pillar);
 			}
-			if (object.objectType == ObjectType::FenceX)
+			if (object->objectType == ObjectType::FenceX)
 			{
 				Vector3 dimensions{ interval / 4.0f, 0.5f, interval / 5.0f };
-				Obstacle* fenceX = new Obstacle{ &object, true };
+				Obstacle* fenceX = new Obstacle{ object, true };
 				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
 				fenceX->GetTransform()
-					.SetPosition(object.worldPos + Vector3{ 0,2,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,2,0 })
 					.SetScale(dimensions * 2);
 				//fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), AssetLibrary::instance().GetMesh("fenceX"), basicTex, nullptr));		// TODO: change to the right Mesh
 				
@@ -479,13 +448,13 @@ void TutorialGame::UpdateLevel()
 				fenceX->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(fenceX);
 			}
-			if (object.objectType == ObjectType::FenceY)
+			if (object->objectType == ObjectType::FenceY)
 			{
 				Vector3 dimensions{ interval / 5.0f, 0.5f, interval / 4.0f };
-				Obstacle* fenceY = new Obstacle{ &object, true };
+				Obstacle* fenceY = new Obstacle{ object, true };
 				fenceY->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
 				fenceY->GetTransform()
-					.SetPosition(object.worldPos + Vector3{ 0,2,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,2,0 })
 					.SetScale(dimensions * 2);
 				//fenceY->SetRenderObject(new RenderObject(&fenceY->GetTransform(), AssetLibrary::instance().GetMesh("fenceY"), basicTex, nullptr));		// TODO: change to the right Mesh
 				
@@ -497,13 +466,13 @@ void TutorialGame::UpdateLevel()
 				fenceY->GetPhysicsObject()->InitCubeInertia();
 				world->AddGameObject(fenceY);
 			}
-			if (object.objectType == ObjectType::Shelter)
+			if (object->objectType == ObjectType::Shelter)
 			{
 				Vector3 dimensions{ interval / 5.0f, 2.0f, interval / 2.0f };
-				Obstacle* shelter = new Obstacle{ &object, false };
+				Obstacle* shelter = new Obstacle{ object, false };
 				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
 				shelter->GetTransform()
-					.SetPosition(object.worldPos + Vector3{ 0.0f, 2.2f, 0.0f })
+					.SetPosition(object->worldPos + Vector3{ 0.0f, 2.2f, 0.0f })
 					.SetScale(dimensions);
 				//shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary::instance().GetMesh("shelter"), basicTex, nullptr));
 
@@ -517,29 +486,6 @@ void TutorialGame::UpdateLevel()
 			}
 		}
 	}
-}
-
-NPCObject* TutorialGame::AddNPCToWorld(const Vector3& position) {
-	NPCObject* npc = new NPCObject();
-	CapsuleVolume* volume = new CapsuleVolume(1.5f, 1.0f);
-
-	npc->SetBoundingVolume((CollisionVolume*)volume);
-
-	npc->GetTransform()
-		.SetScale(Vector3(2.0f))
-		.SetPosition(position);
-
-	npc->SetRenderObject(new RenderObject(npc->GetTransform(), AssetLibrary::instance().GetMesh("capsule"), nullptr));
-	npc->SetPhysicsObject(new PhysicsObject(&npc->GetTransform(), npc->GetBoundingVolume()));
-
-	npc->GetRenderObject()->SetColour(Vector4(1, 1, 0.8f, 1));
-
-	npc->GetPhysicsObject()->SetInverseMass(1);
-	npc->GetPhysicsObject()->InitCapsuleInertia();
-
-	world->AddGameObject(npc);
-
-	return npc;
 }
 
 GameObject* TutorialGame::AddBonusToWorld(const Vector3& position) {

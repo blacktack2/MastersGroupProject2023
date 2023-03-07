@@ -69,7 +69,7 @@ void SoundSource::AttachSource(OALSource* s)
 	alSourcef(mSource->source, AL_REFERENCE_DISTANCE, mMaxDistance * 0.2f);
 	alSourcei(mSource->source, AL_BUFFER, mSoundBuffer);
 	//alSourcef ( currentSource - > source , AL_SEC_OFFSET , ( sound - > GetLength ()/ 1000.0) - ( timeLeft / 1000.0));
-	Play(mSoundBuffer);
+	//Play(mSoundBuffer);
 }
 
 void SoundSource::DetachSource()

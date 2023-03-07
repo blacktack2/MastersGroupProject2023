@@ -3,6 +3,7 @@
  * @brief  See Boss.h.
  *
  * @author Xiaoyang Liu
+ * @author Felix Chiu
  * @date   February 2023
  */
 #pragma once
@@ -12,17 +13,24 @@
 #include "PrefabLibrary.h"
 
 void Boss::Update(float dt) {
+    GetTarget();
     health.Update(dt);
     deltaTime = dt;
     // check if inked
-    //if (onGround) {
     GameNode* node = GameGridManager::instance().NearestNode(this->GetTransform().GetGlobalPosition());
     InkEffectManager::instance().ApplyInkEffect(node->inkType, GetHealth(), 1);
-    //}
     //check boss health
     if (GetHealth()->GetHealth() <= 0) {
-        gameStateManager->SetGameState(GameState::Win);
+        ChangeLoseState();
     }
+    if (this->transform.GetGlobalPosition().y < -10) {
+        ChangeLoseState();
+    }
+}
+
+void Boss::ChangeLoseState()
+{
+    gameStateManager->SetGameState(GameState::Win);
 }
 
 void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt) {
@@ -93,10 +101,12 @@ BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p) {
         //ink->SetDamage(10);
     }
     ink->SetActive(true);
-
+    BulletModification(ink);
     return ink;
 
 }
+
+void Boss::ChangeTarget(){}
 
 bool Boss::RandomWalk() {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
@@ -112,6 +122,8 @@ bool Boss::RandomWalk() {
         float z = (std::rand() % 11) - 5;
         randomWalkDirection = Vector3{ x,0,z };
         randomWalkDirection = randomWalkDirection.Normalised();
+        Quaternion orientation = Quaternion(Matrix4::BuildViewMatrix(this->GetTransform().GetGlobalPosition() + randomWalkDirection * 10, this->GetTransform().GetGlobalPosition(), Vector3(0, 1, 0)).Inverse());
+        this->GetTransform().SetOrientation(orientation);
         return true;
     }
     Debug::DrawLine(GetTransform().GetGlobalPosition(), GetTransform().GetGlobalPosition() + randomWalkDirection * 15, Vector4{ 0,1,0,1 }, 0.0f);

@@ -57,7 +57,7 @@ namespace NCL::CSC8503 {
 			paintCollisions.clear();
 		}
 		void AddPaintCollision(PaintCollision collision) {
-			paintCollisions.push_back(collision);
+			paintCollisions.push_back(PaintCollision(collision));
 		}
 
 		int GetWidth() const {

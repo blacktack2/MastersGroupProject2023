@@ -25,9 +25,7 @@ MenuManager::~MenuManager() {
 
 void MenuManager::Update(float dt) {
 	for (auto menu : menus) {
-		if (!menu.second)
-			continue;
-		(menu.second)->Update(dt);
+		if (menu.second) (menu.second)->Update(dt);
 	}
 }
 
@@ -43,7 +41,7 @@ void MenuManager::AddMenu(std::string name, Menu* menu)
 
 void MenuManager::RemoveMenu(std::string name)
 {
-	if (menus[name]) {
+	if (menus.contains(name)) {
 		delete menus[name];
 	}
 }

@@ -17,18 +17,17 @@ GameObject::GameObject(std::string objectName) : gameWorld(GameWorld::instance()
 	networkObject	= nullptr;
 }
 
-GameObject::GameObject(GameObject& other) : gameWorld(GameWorld::instance()), transform(this) {
-	transform = other.transform;
+GameObject::GameObject(GameObject& other) : gameWorld(GameWorld::instance()), transform(this, other.transform) {
 	boundingVolume = other.boundingVolume == nullptr ? nullptr : CollisionVolume::Clone(*other.boundingVolume);
 	physicsObject  = other.physicsObject  == nullptr ? nullptr : new PhysicsObject(*other.physicsObject, &transform);
 	renderObject   = other.renderObject   == nullptr ? nullptr : new RenderObject(*other.renderObject, transform);
 	networkObject  = other.networkObject  == nullptr ? nullptr : new NetworkObject(*other.networkObject);
 
-	isActive = other.isActive;
+	isActive = bool(other.isActive);
 	worldID = -1;
-	name = other.name + "(Copy)";
+	name = std::string(other.name + "(Copy)");
 
-	broadphaseAABB = other.broadphaseAABB;
+	broadphaseAABB = Vector3(other.broadphaseAABB);
 }
 
 GameObject::~GameObject()	{
