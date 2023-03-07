@@ -26,7 +26,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-PlayerObject::PlayerObject(int id) : GameObject(), id(id), keyMap(paintHell::InputKeyMap::instance()) {
+PlayerObject::PlayerObject(int playerID) : GameObject(), playerID(playerID), keyMap(paintHell::InputKeyMap::instance()) {
 	OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
 	};
@@ -69,7 +69,7 @@ void PlayerObject::Update(float dt) {
 
 		// testing (Xbox) controller input:
 		Vector3 movingDir;
-		GetControllerInput(1, movingDir);
+		GetControllerInput(movingDir);
 		MoveByPosition(dt, movingDir);
 	}
 
@@ -123,7 +123,7 @@ void PlayerObject::MoveCamera() {
 	}
 }
 
-void PlayerObject::GetControllerInput(unsigned int controllerNum, Vector3& movingDir3D)		// controllerNum == 1,2,3,4
+void PlayerObject::GetControllerInput(Vector3& movingDir3D)		// controllerNum == 1,2,3,4
 /*
 This is a temporary member function used for testing controller's input. Feel free to merge this into PlayerObject::GetInput when necessary.
 */
@@ -135,8 +135,9 @@ This is a temporary member function used for testing controller's input. Feel fr
 	Vector3 cameraForwardDirection = gameWorld.GetMainCamera()->GetPosition() - this->GetTransform().GetGlobalPosition();
 	Vector2 movementThumbData{ 0,0 };
 	float rightTriggerDepth = 0;
+	float leftTriggerDepth = 0;
 	movingDir3D = Vector3{ 0,0,0 };
-	if (keyMap.GetAxisData(2, AxisInput::Axis1, movementThumbData.x) && keyMap.GetAxisData(2, AxisInput::Axis2, movementThumbData.y))
+	if (keyMap.GetAxisData(playerID, AxisInput::Axis1, movementThumbData.x) && keyMap.GetAxisData(playerID, AxisInput::Axis2, movementThumbData.y))
 	{
 		if (!(movementThumbData.x == 0 && movementThumbData.y == 0))
 		{
@@ -148,16 +149,16 @@ This is a temporary member function used for testing controller's input. Feel fr
 			movingDir3D = -(Vector3{ movingDir2D.x,0,-movingDir2D.y }).Normalised();
 		}
 	}
-	if (keyMap.GetAxisData(2, AxisInput::Axis5, rightTriggerDepth))
+	if (keyMap.GetAxisData(playerID, AxisInput::Axis5, rightTriggerDepth))
 	{
 		if (rightTriggerDepth > 0.5f)
 		{
 			Shoot();
 		}
 	}
-	if (keyMap.GetAxisData(2, AxisInput::Axis6, rightTriggerDepth))
+	if (keyMap.GetAxisData(playerID, AxisInput::Axis6, leftTriggerDepth))
 	{
-		if (rightTriggerDepth > 0.5f && onGround && jumpTimer <= 0.0f)
+		if (leftTriggerDepth > 0.5f && onGround && jumpTimer <= 0.0f)
 		{
 			Vector3 upDir = this->GetTransform().GetGlobalOrientation() * Vector3(0, 1, 0);
 			jumpTimer = jumpCooldown;

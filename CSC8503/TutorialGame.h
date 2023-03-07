@@ -80,7 +80,7 @@ namespace NCL {
 			GameObject* AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius, float inverseMass = 10.0f);
 			StateGameObject* AddStateObjectToWorld(const Vector3& position);
 
-			PlayerObject* AddPlayerToWorld(const Vector3& position, bool cameraFollow = true);
+			PlayerObject* AddPlayerToWorld(int playerID, const Vector3& position, bool cameraFollow = true);
 
 			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
 			void BuildLevel();
@@ -146,6 +146,9 @@ namespace NCL {
 			GameObject* objClosest = nullptr;
 
 			PlayerObject* player = nullptr;
+			PlayerObject* player2 = nullptr;
+			PlayerObject* player3 = nullptr;
+			PlayerObject* player4 = nullptr;
 
 			int score;
 

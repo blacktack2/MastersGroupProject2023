@@ -25,21 +25,21 @@ void InputKeyMap::Update() {
 	float leftTriggerDepth;
 	for (int i = 0; i < 4; i++)
 	{
-		if (XboxControllerManager::GetXboxController().GetThumbLeft(i, thumbLeft))
+		if (XboxControllerManager::GetXboxController().GetThumbLeft(i+1, thumbLeft))
 		{
 			AxisDataArray[i][AxisInput::Axis1] = thumbLeft.x;
 			AxisDataArray[i][AxisInput::Axis2] = thumbLeft.y;
 		}
-		if (XboxControllerManager::GetXboxController().GetThumbRight(i, thumbRight))
+		if (XboxControllerManager::GetXboxController().GetThumbRight(i+1, thumbRight))
 		{
 			AxisDataArray[i][AxisInput::Axis3] = thumbRight.x;
 			AxisDataArray[i][AxisInput::Axis4] = thumbRight.y;
 		}
-		if (XboxControllerManager::GetXboxController().GetRightTrigger(i, rightTriggerDepth))
+		if (XboxControllerManager::GetXboxController().GetRightTrigger(i+1, rightTriggerDepth))
 		{
 			AxisDataArray[i][AxisInput::Axis5] = rightTriggerDepth;
 		}
-		if (XboxControllerManager::GetXboxController().GetLeftTrigger(i, leftTriggerDepth))
+		if (XboxControllerManager::GetXboxController().GetLeftTrigger(i+1, leftTriggerDepth))
 		{
 			AxisDataArray[i][AxisInput::Axis6] = leftTriggerDepth;
 		}

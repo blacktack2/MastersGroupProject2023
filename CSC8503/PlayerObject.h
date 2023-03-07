@@ -12,7 +12,7 @@ namespace NCL {
 
 		class PlayerObject : public GameObject {
 		public:
-			PlayerObject(int id);
+			PlayerObject(int playerID);
 			~PlayerObject();
 
 			void Update(float dt);
@@ -39,7 +39,7 @@ namespace NCL {
 			void Move(Vector3 dir);
 			void MoveByPosition(float dt, Vector3 dir);
 			void GetInput(Vector3& dir, unsigned int keyPress = InputType::Empty);
-			void GetControllerInput(unsigned int controllerNum, Vector3& movingDir3D);
+			void GetControllerInput(Vector3& movingDir3D);
 
 			void RotateYaw(float yaw);
 			void RotateToCamera();
@@ -52,7 +52,7 @@ namespace NCL {
 			virtual void Shoot();
 			void BulletModification(PlayerBullet* bullet){};
 
-			int id;
+			int playerID = -1;
 
 			//network
 			bool isNetwork = false;

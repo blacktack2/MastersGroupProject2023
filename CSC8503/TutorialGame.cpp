@@ -37,7 +37,7 @@
 
 #include <string>
 
-#include "XboxController.h"
+#include "XboxControllerManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -82,7 +82,28 @@ TutorialGame::~TutorialGame() {
 
 void TutorialGame::StartLevel() {
 	InitWorld();
-	player = AddPlayerToWorld(Vector3(0, 5, 90),true);
+
+	// Currently, port 0 (i.e. controllerNum == 1) control the camera
+	XboxControllerManager::GetXboxController().CheckPorts();
+	int n = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
+	switch (n)
+	{
+	case 4:
+		player4 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player4"), Vector3(0, 5, 90), false);
+	case 3:
+		player3 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player3"), Vector3(0, 5, 90), false);
+	case 2:
+		player2 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player2"), Vector3(0, 5, 90), false);
+	case 1:
+		player = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player1"), Vector3(0, 5, 90), true);
+	default:
+		// Do something for cases where no controller is used...
+		if (player == nullptr)
+		{
+			player = AddPlayerToWorld(-1, Vector3(0, 5, 90), true);
+		}
+		break;
+	}
 
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss);
@@ -522,10 +543,11 @@ StateGameObject* TutorialGame::AddStateObjectToWorld(const Vector3& position) {
 	return sgo;
 }
 
-PlayerObject* TutorialGame::AddPlayerToWorld(const Vector3& position, bool cameraFollow) {
-	static int id = 0;
+PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& position, bool cameraFollow) {
 
-	PlayerObject* character = new PlayerObject(id++);
+	// TODO: input validation for playerID == 1,2,3,4
+
+	PlayerObject* character = new PlayerObject(playerID);
 	SphereVolume* volume = new SphereVolume(1.0f, CollisionLayer::Player);
 
 	character->SetBoundingVolume((CollisionVolume*)volume);

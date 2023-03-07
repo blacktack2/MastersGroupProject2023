@@ -97,7 +97,7 @@ void Camera::UpdateCamera(float dt) {
 		// Controller Right Thumb:
 		paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
 		Vector2 orientationThumbData{ 0,0 };
-		if (keyMap.GetAxisData(2, AxisInput::Axis3, orientationThumbData.x) && keyMap.GetAxisData(2, AxisInput::Axis4, orientationThumbData.y))
+		if (keyMap.GetAxisData(1, AxisInput::Axis3, orientationThumbData.x) && keyMap.GetAxisData(1, AxisInput::Axis4, orientationThumbData.y))
 		{
 			if (!(orientationThumbData.x == 0 && orientationThumbData.y == 0))
 			{
