@@ -1,3 +1,4 @@
+#ifdef _ORBIS
 #include "PS4Camera.h"
 #include "PS4InputManager.h"
 #include "../../Common/Vector2.h"
@@ -76,3 +77,4 @@ void NCL::PS4::PS4Camera::UpdateCamera(float dt)
 	//}
 
 }
+#endif //_ORBIS

@@ -14,7 +14,37 @@ PS4Input PS4InputManager::devices[SCE_USER_SERVICE_MAX_LOGIN_USERS];
 SceUserServiceUserId PS4InputManager::mPlayer1Id =SCE_DEVICE_SERVICE_ERROR_INVALID_USER;
 
 void PS4InputManager::Initialize() {
-	SceUserServiceInitializeParams params;
+	if (mPlayer1Id == SCE_DEVICE_SERVICE_ERROR_INVALID_USER) {
+		SceUserServiceInitializeParams params;
+		memset((void*)&params, 0, sizeof(params));
+		params.priority = SCE_KERNEL_PRIO_FIFO_DEFAULT;
+		if (sceUserServiceInitialize(&params) != SCE_OK) {
+			std::cout << "PS4Input: Failed to initialise User Service!" << std::endl;
+		};
+
+		SceUserServiceLoginUserIdList usersList;
+		sceUserServiceGetLoginUserIdList(&usersList);
+
+		SceUserServiceUserId userId;
+		int ret = sceUserServiceGetInitialUser(&userId);
+		int index = 0;
+		scePadInit();
+		if (ret == SCE_OK) {
+			mPlayer1Id = userId;
+			devices[index++] = PS4Input(userId);
+
+		}
+
+		for (int i = 0; i < SCE_USER_SERVICE_MAX_LOGIN_USERS; i++) {
+			if (usersList.userId[i] != SCE_USER_SERVICE_USER_ID_INVALID && usersList.userId[i] != mPlayer1Id) {
+				devices[index++] = PS4Input(usersList.userId[i]);
+			}
+		}
+		/*while (index < SCE_USER_SERVICE_MAX_LOGIN_USERS) {
+			devices[index++] = nullptr;
+		}*/
+	}
+	/*SceUserServiceInitializeParams params;
 	memset((void*)&params, 0, sizeof(params));
 	params.priority = SCE_KERNEL_PRIO_FIFO_DEFAULT;
 	if (sceUserServiceInitialize(&params) != SCE_OK) {
@@ -38,7 +68,7 @@ void PS4InputManager::Initialize() {
 		if (usersList.userId[i] != SCE_USER_SERVICE_USER_ID_INVALID && usersList.userId[i] != mPlayer1Id) {
 			devices[index++] = PS4Input(usersList.userId[i]);
 		}
-	}
+	}*/
 	/*while (index < SCE_USER_SERVICE_MAX_LOGIN_USERS) {
 		devices[index++] = nullptr;
 	}*/

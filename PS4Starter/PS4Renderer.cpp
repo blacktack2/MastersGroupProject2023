@@ -1,3 +1,4 @@
+#ifdef _ORBIS
 #include "PS4Renderer.h"
 #include "../Plugins/PlayStation4/PS4Mesh.h"
 #include "../Plugins/PlayStation4/PS4Shader.h"
@@ -136,3 +137,4 @@ void NCL::PS4::PS4Renderer::Update(float dt)
 
 }
 
+#endif //_ORBIS

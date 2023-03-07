@@ -1,3 +1,4 @@
+#ifdef _ORBIS
 #pragma once
 #include "../Plugins/PlayStation4/PS4RendererBase.h"
 #include "../Plugins/PlayStation4/PS4Camera.h"
@@ -42,3 +43,4 @@ namespace NCL {
 		};
 	}
 }
+#endif //_ORBIS

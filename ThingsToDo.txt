@@ -1,7 +1,18 @@
+Rendering:
 Check out the RenderObject class in common and remove things related to specific renderer. -Done
 Create a PS4Renderer -Done
 Look into creating a PS4 GameObject - Done
+Look into adding skybox
+Look into adding deferred rendering passes
+Look into shader logic
+Look into adding Animation
+
+
+Physics:
 Test the Physics and collision systems -Done
 
+Controller:
 Create controller files  -Done
 Create input map 
+
+

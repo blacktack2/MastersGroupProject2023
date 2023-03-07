@@ -22,7 +22,10 @@
 //#include "../Common/GameObject.h"
 //#include "../Common/MeshGeometry.h"
 
+#ifdef _ORBIS
 #include "PS4Renderer.h"
+#endif // _ORBIS
+
 #include "../Common/TextureBase.h"
 
 namespace NCL {
@@ -100,8 +103,10 @@ namespace NCL {
 
 #ifdef USEVULKAN
 			GameTechVulkanRenderer* renderer;
-#else
+#elif _ORBIS
 			NCL::PS4::PS4Renderer* renderer;
+#else
+			NCL::CSC8503::GameTechRenderer* renderer;
 #endif
 			PhysicsSystem* physics;
 			GameWorld* world;
