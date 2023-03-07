@@ -83,27 +83,28 @@ TutorialGame::~TutorialGame() {
 void TutorialGame::StartLevel() {
 	InitWorld();
 
-	// Currently, port 0 (i.e. controllerNum == 1) control the camera
 	XboxControllerManager::GetXboxController().CheckPorts();
 	int n = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
+	std::cout << "controller connected " << n << std::endl;
 	switch (n)
 	{
 	case 4:
-		player4 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player4"), Vector3(0, 5, 90), false);
+		player4 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player4"), Vector3(0, 5, 90));
 	case 3:
-		player3 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player3"), Vector3(0, 5, 90), false);
+		player3 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player3"), Vector3(0, 5, 90));
 	case 2:
-		player2 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player2"), Vector3(0, 5, 90), false);
+		player2 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player2"), Vector3(0, 5, 90));
 	case 1:
-		player = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player1"), Vector3(0, 5, 90), true);
+		player = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player1"), Vector3(0, 5, 90));
 	default:
-		// Do something for cases where no controller is used...
-		if (player == nullptr)
+		// NOT using keyboard if there are already 4 controllers connected
+		if (player4 == nullptr)
 		{
-			player = AddPlayerToWorld(-1, Vector3(0, 5, 90), true);
+			player4 = AddPlayerToWorld(0, Vector3(0, 5, 90));	// playerID == 0 indicating player using keyboard
 		}
 		break;
 	}
+	SetCameraFollow(player);
 
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss);
@@ -142,11 +143,14 @@ void TutorialGame::UpdateGame(float dt) {
 	GameState gameState = gameStateManager->GetGameState();
 	keyMap.Update();
 
-	/*XboxController c;
-	float v;
-	bool b = c.GetRightTrigger(1, v);
-	if (b) std::cout << v << "\n";
-	else std::cout << "No displacement\n";*/
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::P))
+	{
+		SetCameraFollow(player4);
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::O))
+	{
+		SetCameraFollow(player);
+	}
 
 	debugViewPoint->BeginFrame();
 	debugViewPoint->MarkTime("Update");
@@ -543,7 +547,7 @@ StateGameObject* TutorialGame::AddStateObjectToWorld(const Vector3& position) {
 	return sgo;
 }
 
-PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& position, bool cameraFollow) {
+PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& position) {
 
 	// TODO: input validation for playerID == 1,2,3,4
 
@@ -567,12 +571,34 @@ PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& positi
 
 	world->AddGameObject(character);
 
-	if (cameraFollow) {
-		world->GetMainCamera()->SetFollow(&character->GetTransform());
-		character->AttachedCamera();
-	}
-
 	return character;
+}
+
+void TutorialGame::SetCameraFollow(PlayerObject* p)
+{
+	world->GetMainCamera()->SetFollow(&p->GetTransform());
+	p->AttachedCamera();
+
+	if (p->GetPlayerID() == 0)
+	{
+		world->GetMainCamera()->SetControlType(ControlType::KeyboardMouse);
+	}
+	if (p->GetPlayerID() == 1)
+	{
+		world->GetMainCamera()->SetControlType(ControlType::Controller_1);
+	}
+	if (p->GetPlayerID() == 2)
+	{
+		world->GetMainCamera()->SetControlType(ControlType::Controller_2);
+	}
+	if (p->GetPlayerID() == 3)
+	{
+		world->GetMainCamera()->SetControlType(ControlType::Controller_3);
+	}
+	if (p->GetPlayerID() == 4)
+	{
+		world->GetMainCamera()->SetControlType(ControlType::Controller_4);
+	}
 }
 
 Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {

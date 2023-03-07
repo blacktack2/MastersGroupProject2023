@@ -50,10 +50,12 @@ void InputKeyMap::Update() {
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W))
 	{
 		buttonstates |= InputType::Foward;
+		//AxisDataArray[1][AxisInput::Axis2] = 1;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S))
 	{
 		buttonstates |= InputType::Backward;
+		//AxisDataArray[1][AxisInput::Axis2] = -1;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A))
 	{

@@ -60,6 +60,8 @@ namespace NCL {
 			void UpdateGameCore(float dt);
 			virtual void ProcessState();
 
+			void SetCameraFollow(PlayerObject* p);
+
 			void InitialiseAssets();
 			void InitialisePrefabs();
 
@@ -80,7 +82,7 @@ namespace NCL {
 			GameObject* AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius, float inverseMass = 10.0f);
 			StateGameObject* AddStateObjectToWorld(const Vector3& position);
 
-			PlayerObject* AddPlayerToWorld(int playerID, const Vector3& position, bool cameraFollow = true);
+			PlayerObject* AddPlayerToWorld(int playerID, const Vector3& position);
 
 			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
 			void BuildLevel();

@@ -20,6 +20,16 @@ namespace NCL {
 		Perspective
 	};
 
+	enum ControlType
+	{
+		KeyboardMouse,
+
+		Controller_1,
+		Controller_2,
+		Controller_3,
+		Controller_4
+	};
+
 	class Camera {
 	public:
 		Camera(void);
@@ -31,6 +41,16 @@ namespace NCL {
 		void SetFollow(Transform* transform, bool isSmooth = false);
 
 		void UpdateCamera(float dt);
+
+		ControlType GetControlType()
+		{
+			return controlledBy;
+		}
+
+		void SetControlType(ControlType type)
+		{
+			controlledBy = type;
+		}
 
 		float GetFieldOfVision() const {
 			return fov;
@@ -102,5 +122,7 @@ namespace NCL {
 		float followLat;
 		float followLon;
 		Vector3 lookat;
+
+		ControlType controlledBy = KeyboardMouse;
 	};
 }

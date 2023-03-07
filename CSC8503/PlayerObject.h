@@ -34,6 +34,11 @@ namespace NCL {
 				return &health;
 			}
 
+			int GetPlayerID()
+			{
+				return playerID;
+			}
+
 		protected:
 			void MoveTo(Vector3 position);
 			void Move(Vector3 dir);
