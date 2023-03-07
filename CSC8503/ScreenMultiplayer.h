@@ -21,6 +21,9 @@ public:
 
 	ScreenMultiplayer(bool isServer = true) {
 		game = new NetworkedGame(isServer);
+		if (!isServer) {
+
+		}
 	}
 	~ScreenMultiplayer() {
 		delete game;

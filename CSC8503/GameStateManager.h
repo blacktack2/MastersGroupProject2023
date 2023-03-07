@@ -5,7 +5,7 @@ enum class GameState {
 	OnGoing,
 	Win,
 	Lose,
-	Quit,
+	Quit
 };
 
 namespace NCL {

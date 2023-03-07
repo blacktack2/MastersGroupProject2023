@@ -29,16 +29,6 @@
 #define OBJECTID_START 10; //reserve 0-4 for playerID
 #define BOSSID 5; //reserve 0-4 for playerID
 
-struct MessagePacket : public GamePacket {
-	short playerID;
-	short messageID;
-
-	MessagePacket() {
-		type = Message;
-		size = sizeof(short) * 2;
-	}
-};
-
 NetworkedGame::NetworkedGame(bool isServer)	{
 	thisServer = nullptr;
 	thisClient = nullptr;
@@ -90,6 +80,7 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(Item_Init_Message, this);
 	thisClient->RegisterPacketHandler(BossAction_Message, this);
 	thisClient->RegisterPacketHandler(GameState_Message, this);
+	thisClient->RegisterPacketHandler(Lobby_Message, this);
 
 	LobbyLevel();
 }
@@ -169,12 +160,14 @@ void NetworkedGame::UpdateGame(float dt) {
 
 void NetworkedGame::FreezeSelf()
 {
-	static_cast<NetworkPlayer*>(localPlayer)->isFrozen = true;
+	if(localPlayer)
+		static_cast<NetworkPlayer*>(localPlayer)->isFrozen = true;
 }
 
 void NetworkedGame::UnfreezeSelf()
 {
-	static_cast<NetworkPlayer*>(localPlayer)->isFrozen = false;
+	if (localPlayer)
+		static_cast<NetworkPlayer*>(localPlayer)->isFrozen = false;
 }
 
 GameServer* NetworkedGame::GetServer()
@@ -187,10 +180,6 @@ void NetworkedGame::Disconnect()
 	std::cout << "attempt disconnect" << std::endl;
 	if (thisClient) {
 		thisClient->Disconnect();
-		/*std::cout << "send disconnect to server" << std::endl;
-		PlayerConnectionPacket newPacket;
-		newPacket.type = Player_Disconnected;
-		thisClient->SendPacket(&newPacket);*/
 	}
 }
 
@@ -388,6 +377,8 @@ PlayerObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 }
 
 void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID) {
+	if (!serverPlayers.contains(playerID))
+		return;
 	//rotation
 	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(((ClientPacket*)payload)->buttonstates);
 
@@ -427,8 +418,12 @@ void NetworkedGame::HandleFullPacket(GamePacket* payload, int source){
 }
 
 void NetworkedGame::HandlePlayerConnectedPacket(GamePacket* payload, int source) {
-	if (gameStateManager->GetGameState() != GameState::Lobby)
+	if (gameStateManager->GetGameState() != GameState::Lobby) {
+		LobbyPacket newPacket;
+		newPacket.status = LobbyState::Started;
+		thisServer->SendPacket(&newPacket, source, true);
 		return;
+	}
 
 	int playerID = ((PlayerConnectionPacket*)payload)->playerID;
 	connectedPlayerIDs.push_back(playerID);
@@ -443,7 +438,7 @@ void NetworkedGame::HandlePlayerConnectedPacket(GamePacket* payload, int source)
 			existingPacket.playerID = 0;
 			thisServer->SendPacket(&existingPacket, playerID, true);
 		}
-		std::vector<int> connectedClients = thisServer->GetClientIDs();
+		std::vector<int> connectedClients = connectedPlayerIDs;
 		for (auto i : connectedClients) {
 			//std::cout << "Server sending to : " << i << std::endl;
 			if (i == playerID) {
@@ -517,6 +512,24 @@ void NetworkedGame::HandleGameStatePacket(GamePacket* payload, int source)
 	gameStateManager->SetGameState(static_cast<GameState>(static_cast<GameStatePacket*>(payload)->state));
 }
 
+void NetworkedGame::HandleLobbyPacket(GamePacket* payload, int source)
+{
+	LobbyState lobbyState = static_cast<LobbyPacket*>(payload)->status;
+
+	switch (lobbyState)
+	{
+	case LobbyState::Lobby:
+		break;
+	case LobbyState::Full:
+	case LobbyState::Started:
+		std::cout << "Quit due to lobby" << std::endl;
+		gameStateManager->SetGameState(GameState::Quit);
+		break;
+	default:
+		break;
+	}
+}
+
 void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 
 	switch (type)
@@ -550,6 +563,9 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	case GameState_Message:
 		HandleGameStatePacket(payload, source);
 		break;
+	case Lobby_Message:
+		HandleLobbyPacket(payload, source);
+		break;
 	default:
 		break;
 	}
@@ -562,9 +578,11 @@ void NetworkedGame::PlayerJoinedServer(int playerID) {
 void NetworkedGame::PlayerLeftServer(int playerID) {
 	if (serverPlayers.contains(playerID)) {
 		std::cout << name << " " << selfID << " deleting player " << playerID << std::endl;
-		serverPlayers[playerID]->SetActive(false);
+		if (gameStateManager->GetGameState() == GameState::Lobby) {
+			serverPlayers[playerID]->SetActive(false);
+		}
 		serverPlayers.erase(playerID);
-		remove(connectedPlayerIDs.begin(), connectedPlayerIDs.end(), playerID);
+		connectedPlayerIDs.erase(remove(connectedPlayerIDs.begin(), connectedPlayerIDs.end(), playerID));
 	}
 		
 }

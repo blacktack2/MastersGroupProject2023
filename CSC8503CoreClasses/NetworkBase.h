@@ -19,6 +19,7 @@ enum BasicNetworkMessages {
 	PlayerSync_Message,
 	BossAction_Message,
 	GameState_Message,
+	Lobby_Message
 };
 
 struct GamePacket {
