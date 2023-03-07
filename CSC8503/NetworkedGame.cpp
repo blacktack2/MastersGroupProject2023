@@ -592,7 +592,7 @@ PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, bo
 
 	if (cameraFollow) {
 		world->GetMainCamera()->SetFollow(&character->GetTransform());
-		character->AttachedCamera();
+		character->AttachedCamera(true);
 	}
 
 	return character;

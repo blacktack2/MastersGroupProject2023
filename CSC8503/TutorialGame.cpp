@@ -104,7 +104,7 @@ void TutorialGame::StartLevel() {
 		}
 		break;
 	}
-	SetCameraFollow(player);
+	SetCameraFollow(player4);
 
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	testingBossBehaviorTree = new BossBehaviorTree(testingBoss);
@@ -577,7 +577,13 @@ PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& positi
 void TutorialGame::SetCameraFollow(PlayerObject* p)
 {
 	world->GetMainCamera()->SetFollow(&p->GetTransform());
-	p->AttachedCamera();
+
+	if (player != nullptr) player->AttachedCamera(false);
+	if (player2 != nullptr) player2->AttachedCamera(false);
+	if (player3 != nullptr) player3->AttachedCamera(false);
+	if (player4 != nullptr) player4->AttachedCamera(false);
+
+	p->AttachedCamera(true);
 
 	if (p->GetPlayerID() == 0)
 	{

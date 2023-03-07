@@ -21,8 +21,8 @@ namespace NCL {
 
 			void CollisionWith(GameObject* other);
 
-			void AttachedCamera() {
-				hasCamera = true;
+			void AttachedCamera(bool b) {
+				hasCamera = b;
 				//camera = cam;
 			};
 
