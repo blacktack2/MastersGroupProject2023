@@ -166,6 +166,9 @@ void TutorialGame::UpdateGameCore(float dt) {
 	if (testingBoss) {
 		Debug::Print(std::string("Boss health: ").append(std::to_string((int)testingBoss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
 	}
+
+	GameGridManager::instance().Update(dt);
+
 	if (!inSelectionMode) {
 		world->GetMainCamera()->UpdateCamera(dt);
 	}

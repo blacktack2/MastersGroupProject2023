@@ -135,7 +135,7 @@ namespace NCL
 
 			void DrawDebugGameGrid();
 
-			void PaintNode(Vector3 position, paintHell::InkType type);
+			void PaintNode(Vector3 position, float radius, paintHell::InkType type);
 
 			std::vector<GameNode> GetTraceNodes();
 

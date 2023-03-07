@@ -27,7 +27,7 @@ namespace NCL {
 
 			GameNode* NearestNode(Vector3 position);
 
-			void PaintPosition(Vector3 position, paintHell::InkType type);
+			void PaintPosition(Vector3 position, float paintRadius, paintHell::InkType type);
 		};
 	}
 }

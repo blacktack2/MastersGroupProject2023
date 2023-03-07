@@ -300,7 +300,7 @@ void GameGrid::DrawDebugGameGrid()
 	}
 }
 
-void GameGrid::PaintNode(Vector3 position, paintHell::InkType type) {
+void GameGrid::PaintNode(Vector3 position, float radius, paintHell::InkType type) {
 	GameNode* nearestNode = this->NearestNode(position);
 	if (nearestNode)
 	{
