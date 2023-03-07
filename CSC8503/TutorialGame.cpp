@@ -13,7 +13,6 @@
 #include "PrefabLibrary.h"
 
 #include "PlayerBullet.h"
-#include "Bonus.h"
 #include "Debug.h"
 
 #include "GameWorld.h"
@@ -486,29 +485,6 @@ void TutorialGame::UpdateLevel()
 			}
 		}
 	}
-}
-
-GameObject* TutorialGame::AddBonusToWorld(const Vector3& position) {
-	GameObject* bonus = new BonusObject();
-	SphereVolume* volume = new SphereVolume(1.5f);
-
-	bonus->SetBoundingVolume((CollisionVolume*)volume);
-
-	bonus->GetTransform()
-		.SetScale(Vector3(1))
-		.SetPosition(position);
-
-	bonus->SetRenderObject(new RenderObject(bonus->GetTransform(), AssetLibrary::GetMesh("sphere"), nullptr));
-	bonus->SetPhysicsObject(new PhysicsObject(&bonus->GetTransform(), bonus->GetBoundingVolume(), true));
-
-	bonus->GetRenderObject()->SetColour(Vector4(1, 0.2f, 0.2f, 1));
-
-	bonus->GetPhysicsObject()->SetInverseMass(0.0f);
-	bonus->GetPhysicsObject()->InitSphereInertia();
-
-	world->AddGameObject(bonus);
-
-	return bonus;
 }
 
 GameObject* TutorialGame::AddTriggerToWorld(const Vector3& position, float size) {

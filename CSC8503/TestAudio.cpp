@@ -11,7 +11,6 @@
 #include "AssetLibrary.h"
 #include "AssetLoader.h"
 #include "Bullet.h"
-#include "Bonus.h"
 #include "Debug.h"
 #include "GameWorld.h"
 #include "Maze.h"

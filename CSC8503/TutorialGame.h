@@ -71,7 +71,6 @@ namespace NCL {
 			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
 			void BuildLevel();
 			void UpdateLevel();
-			GameObject* AddBonusToWorld(const Vector3& position);
 			GameObject* AddTriggerToWorld(const Vector3& position, float size);
 
 #ifdef USEVULKAN
