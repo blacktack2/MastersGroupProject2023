@@ -61,26 +61,44 @@ GameNode* GameGrid::NearestNode(Vector3 position)
 }
 
 void GameGrid::PaintNode(Vector3 position, float radius, paintHell::InkType type) {
+	if (position.y > 8) {
+		return;
+	}
 	//translate world position to grid local position
 	Vector3 localPosition = position - gameGridOrigin;
+	/*
+	Debug::DrawLine(position, position + Vector3{ 0, 1, 0 }, Debug::CYAN, 1.0f);
+	*/
+	float halfLength = unitLength / 2;
+	float searchRadius = radius + 0.5f;
 
 	//translate x,z coord to row col (node)
-	int minRow = std::clamp(static_cast<int>(std::round((localPosition.x - radius) / unitLength)), 0, numOfRows - 1);
-	int maxRow = std::clamp(static_cast<int>(std::round((localPosition.x + radius) / unitLength)), 0, numOfRows - 1);
-	int minCol = std::clamp(static_cast<int>(std::round((localPosition.z - radius) / unitLength)), 0, numOfRows - 1);
-	int maxCol = std::clamp(static_cast<int>(std::round((localPosition.z + radius) / unitLength)), 0, numOfRows - 1);
-
+	int minRow = std::clamp(static_cast<int>(std::round((localPosition.x - searchRadius) / unitLength) + halfLength), 0, numOfRows);
+	int maxRow = std::clamp(static_cast<int>(std::round((localPosition.x + searchRadius) / unitLength) + halfLength), 0, numOfRows);
+	int minCol = std::clamp(static_cast<int>(std::round((localPosition.z - searchRadius) / unitLength) + halfLength), 0, numOfRows);
+	int maxCol = std::clamp(static_cast<int>(std::round((localPosition.z + searchRadius) / unitLength) + halfLength), 0, numOfRows);
+	GameNode* node;
 	for (int col = minCol; col < maxCol; col++) {
 		for (int row = minRow; row < maxRow; row++) {
-			gameNodes[col][row].isInked = true;
-			gameNodes[col][row].inkType = type;
+			node = &gameNodes[col][row];
+			if (abs((node->worldPosition - position).Length()) < radius) {
+				gameNodes[col][row].isInked = true;
+				gameNodes[col][row].inkType = type;
+			}
+			
 		}
 	}
-
+	/*
+	Debug::DrawLine(gameNodes[minCol][minRow].worldPosition, gameNodes[minCol][minRow].worldPosition + Vector3{ 0, 1, 0 }, Debug::YELLOW, 1.0f);
+	Debug::DrawLine(gameNodes[minCol][maxRow].worldPosition, gameNodes[minCol][maxRow].worldPosition + Vector3{ 0, 1, 0 }, Debug::YELLOW, 1.0f);
+	Debug::DrawLine(gameNodes[maxCol][minRow].worldPosition, gameNodes[maxCol][minRow].worldPosition + Vector3{ 0, 1, 0 }, Debug::YELLOW, 1.0f);
+	Debug::DrawLine(gameNodes[maxCol][maxRow].worldPosition, gameNodes[maxCol][maxRow].worldPosition + Vector3{ 0, 1, 0 }, Debug::YELLOW, 1.0f);
+	*/
 }
 
 void GameGrid::DrawDebugGameGrid()
 {
+	/*
 	Debug::DrawLine(gameGridOrigin, 
 		gameGridOrigin + Vector3(numOfColumns * unitLength * 0.5, 10, numOfRows * unitLength * 0.5), Debug::YELLOW, 0.01f);
 	Debug::DrawLine(gameGridOrigin + Vector3(numOfColumns * unitLength , 0.0f , 0.0f), 
@@ -89,6 +107,7 @@ void GameGrid::DrawDebugGameGrid()
 		gameGridOrigin + Vector3(numOfColumns * unitLength * 0.5, 10, numOfRows * unitLength * 0.5), Debug::YELLOW, 0.01f);
 	Debug::DrawLine(gameGridOrigin + Vector3(numOfColumns * unitLength, 0.0f , numOfRows * unitLength), 
 		gameGridOrigin + Vector3(numOfColumns * unitLength * 0.5, 10, numOfRows * unitLength * 0.5), Debug::YELLOW, 0.01f);
+	*/
 	for (auto& currentRow : gameNodes)
 	{
 		for (auto& currentNode : currentRow)
@@ -103,24 +122,6 @@ void GameGrid::DrawDebugGameGrid()
 				break;
 			default:
 				break;
-			}
-		}
-	}
-}
-
-void GameGrid::PaintNode(Vector3 position, paintHell::InkType type) {
-	GameNode* nearestNode = this->NearestNode(position);
-	if (nearestNode)
-	{
-		nearestNode->isInked = true;
-		nearestNode->inkType = type;
-		Vector3 floatDiff = nearestNode->worldPosition - LastNearestNode.worldPosition;
-		float gap = unitLength;
-		if (abs(floatDiff.x) > gap || abs(floatDiff.y) > gap || abs(floatDiff.z) > gap) {
-			LastNearestNode = *nearestNode;
-			TraceNodes.push_back(*nearestNode);
-			if (TraceNodes.size() > maxNumOfNodesInTrace) {
-				TraceNodes.erase(TraceNodes.begin());
 			}
 		}
 	}
