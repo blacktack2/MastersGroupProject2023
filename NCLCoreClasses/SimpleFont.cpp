@@ -23,7 +23,6 @@ SimpleFont::SimpleFont(const std::string& filename, const TextureBase& texture) 
 texture(texture) {
 	startChar   = 0;
 	numChars    = 0;
-	allCharData = nullptr;
 
 	std::ifstream fontFile(Assets::FONTSSDIR + filename);
 
@@ -32,7 +31,7 @@ texture(texture) {
 	fontFile >> startChar;
 	fontFile >> numChars;
 
-	allCharData = new FontChar[numChars];
+	allCharData.resize(numChars);
 
 	for (int i = 0; i < numChars; ++i) {
 		fontFile >> allCharData[i].x0;
@@ -48,9 +47,7 @@ texture(texture) {
 	texHeightRecip = 1.0f / texHeight;
 }
 
-SimpleFont::~SimpleFont()
-{
-	delete[] allCharData;
+SimpleFont::~SimpleFont() {
 }
 
 int SimpleFont::GetVertexCountForString(const std::string& text) {
@@ -71,7 +68,7 @@ void SimpleFont::BuildVerticesForString(const std::string& text, const Vector2& 
 	texCoords.reserve(texCoords.size() + (text.length() * 6));
 
 	for (size_t i = 0; i < text.length(); ++i) {
-		int charIndex = (int)text[i];
+		int charIndex = static_cast<int>(text[i]);
 
 		if (charIndex < startChar) {
 			continue;
@@ -130,7 +127,7 @@ void SimpleFont::BuildInterleavedVerticesForString(const std::string& text, cons
 	InterleavedTextVertex verts[6];
 
 	for (size_t i = 0; i < text.length(); ++i) {
-		int charIndex = (int)text[i];
+		int charIndex = static_cast<int>(text[i]);
 
 		if (charIndex < startChar) {
 			continue;

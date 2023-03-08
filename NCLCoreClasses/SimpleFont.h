@@ -49,11 +49,11 @@ namespace NCL::Rendering {
 			float xAdvance;
 		};
 
-		FontChar*    allCharData;
+		std::vector<FontChar> allCharData;
 		const TextureBase& texture;
 
-		int startChar;
-		int numChars;
+		size_t startChar;
+		size_t numChars;
 
 		float texWidth;
 		float texHeight;
