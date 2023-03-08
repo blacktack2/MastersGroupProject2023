@@ -104,7 +104,7 @@ void PlayerObject::MoveByPosition(float dt, Vector3 dir)
 This is a temporary member function. Feel free to merge this into PlayerObject::Move when necessary.
 */
 {
-	this->GetTransform().SetPosition(this->GetTransform().GetGlobalPosition() + dir * 20 * dt);
+	this->GetTransform().SetPosition(this->GetTransform().GetGlobalPosition() + dir * 10 * dt);
 }
 
 void PlayerObject::Move(Vector3 dir) {
