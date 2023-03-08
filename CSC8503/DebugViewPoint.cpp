@@ -42,7 +42,7 @@ void DebugViewPoint::FinishTime(std::string name) {
 		{
 			auto finishTime = std::chrono::high_resolution_clock::now();
 
-			NCL::Debug::Print(std::format("{} : {:2}ms", name, std::chrono::duration_cast<std::chrono::milliseconds>(finishTime - startingPoints[name]).count()), NCL::Vector2(2, 14 + 2 * (++itemsPrinted)), NCL::Debug::WHITE, 12.0f);
+			NCL::Debug::Print(std::format("{} : {:2}ms", name, std::chrono::duration_cast<std::chrono::milliseconds>(finishTime - startingPoints[name]).count()), NCL::Vector2(2, 14.0f + 2.0f * (++itemsPrinted)), NCL::Debug::WHITE, 12.0f);
 		}
 	}
 }
