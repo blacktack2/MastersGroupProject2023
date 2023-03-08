@@ -18,9 +18,7 @@
 #include "GameStateManager.h"
 #include "MenuManager.h"
 
-#include "MeshAnimation.h";
-
-
+#include "MeshAnimation.h"
 
 
 namespace NCL {
@@ -156,7 +154,6 @@ namespace NCL {
 			GameGrid* gameGrid = nullptr;	/////////
 			//GameObject* floor = nullptr;	/////////
 			Boss* testingBoss = nullptr;   /////////
-			BossBehaviorTree* testingBossBehaviorTree = nullptr;   /////////
 
 			//GameGrid stuff
 			GameGridManager* gridManager;

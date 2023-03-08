@@ -6,6 +6,7 @@ enum class GameState {
 	Win,
 	Lose,
 	Quit,
+	Invalid
 };
 
 namespace NCL {
