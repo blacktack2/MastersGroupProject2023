@@ -28,7 +28,7 @@ using namespace NCL;
 using namespace CSC8503;
 
 MenuRPass::MenuRPass() : OGLOverlayRenderPass(),
-gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
+gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()), menuManager(MenuManager::instance()) {
 	defaultTexture = AssetLoader::LoadTexture("defaultmain.jpg");
 
 	defaultShader = AssetLoader::CreateShader("menuVertex.vert", "menuFragment.frag");
@@ -46,38 +46,7 @@ MenuRPass::~MenuRPass() {
 void MenuRPass::Render() {
 	renderer.GetConfig().SetCullFace(false);
 
-	DrawMenu();
-	DrawButtons();
+	menuManager.GetCurrentMenu().Draw();
 
 	renderer.GetConfig().SetCullFace();
-}
-
-void MenuRPass::DrawMenu(){
-	MenuManager& menuManager = MenuManager::instance();
-	Menu* menu = menuManager.GetCurrentMenu();
-	if (menu) {
-		DrawUIObject((UIObject*)menu);
-	}
-}
-
-void MenuRPass::DrawButtons() {
-	MenuManager& menuManager = MenuManager::instance();
-	Menu* menu = menuManager.GetCurrentMenu();
-	if (!menu) {
-		return;
-	}
-	for (Button* btn : *menu->GetButtons()) {
-		if (!btn)
-			return;
-		DrawUIObject((UIObject*)btn);
-	}
-}
-
-void MenuRPass::DrawUIObject(UIObject* obj){
-	MenuRenderObject* renderObject = obj->GetRenderObject();
-	if (!renderObject) {
-		return;
-	}
-
-	renderObject->Draw(obj->GetDimension());
 }

@@ -31,6 +31,7 @@ namespace NCL::CSC8503 {
 	class GameTechRenderer;
 	class GameWorld;
 
+	class MenuManager;
 	class UIObject;
 
 	class MenuRPass : public OGLOverlayRenderPass {
@@ -40,12 +41,9 @@ namespace NCL::CSC8503 {
 
 		virtual void Render() override;
 	private:
-		void DrawMenu();
-		void DrawButtons();
-		void DrawUIObject(UIObject* obj);
-
 		GameTechRenderer& renderer;
 		GameWorld& gameWorld;
+		MenuManager& menuManager;
 
 		std::unique_ptr<TextureBase> defaultTexture;
 

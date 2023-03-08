@@ -12,38 +12,25 @@ using namespace NCL;
 using namespace CSC8503;
 using namespace Maths;
 
-MenuManager::MenuManager() {
-	renderer = &GameTechRenderer::instance();
+MenuManager::MenuManager() : renderer(GameTechRenderer::instance()) {
 }
 
 MenuManager::~MenuManager() {
-	for (auto menu : menus) {
-		delete (menu.second);
-	}
 	menus.clear();
 }
 
 void MenuManager::Update(float dt) {
-	for (auto menu : menus) {
-		if (menu.second) (menu.second)->Update(dt);
+	for (auto& menu : menus) {
+		menu.second->Update(dt);
 	}
 }
 
-Vector4 MenuManager::GetMenuDimension(){
+Vector4 MenuManager::GetMenuDimension() {
 	return menus[currentMenu]->GetDimension();
 }
 
-void MenuManager::AddMenu(std::string name, Menu* menu)
-{
-	RemoveMenu(name);
-	menus[name] = menu;
-}
-
-void MenuManager::RemoveMenu(std::string name)
-{
-	if (menus.contains(name)) {
-		delete menus[name];
-	}
+Menu& MenuManager::AddMenu(const std::string& name, const Vector2& position, const Vector2& size, std::shared_ptr<TextureBase> texture) {
+	return *menus.emplace(name, std::move(std::make_unique<Menu>(position, size, texture))).first->second;
 }
 
 Vector4 MenuManager::PixelToScreenSpace(float screenWidth, float screenHeight, Vector4 componentDimension) {

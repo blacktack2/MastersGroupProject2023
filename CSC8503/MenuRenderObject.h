@@ -6,24 +6,36 @@
  * @date   February 2023
  */
 #pragma once
-#include "RenderObject.h"
+#include "Vector4.h"
 
 #include <memory>
 #include <string>
 #include <vector>
 
+namespace NCL {
+	class MeshGeometry;
+}
+
 namespace NCL::Rendering {
+	class ShaderBase;
 	class TextureBase;
 }
+
+using namespace NCL;
+using namespace NCL::Maths;
+using namespace NCL::Rendering;
 
 namespace NCL::CSC8503 {
 	class MenuRenderObject {
 	public:
-		MenuRenderObject(TextureBase* texture);
+		MenuRenderObject(std::shared_ptr<TextureBase> texture);
 		~MenuRenderObject();
 
 		void Draw(const Vector4& dimensions);
 	private:
-		TextureBase* texture;
+		std::shared_ptr<TextureBase> texture;
+
+		std::shared_ptr<ShaderBase> shader;
+		std::shared_ptr<MeshGeometry> quad;
 	};
 }

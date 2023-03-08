@@ -1,8 +1,9 @@
 /**
  * @file   ScreenOption.cpp
- * @brief  See ScreenOption.h .
+ * @brief  See ScreenOption.h.
  *
  * @author Felix Chiu
+ * @author Stuart Lewis
  * @date   February 2023
  */
 #pragma once
@@ -14,41 +15,52 @@
 using namespace NCL;
 using namespace CSC8503;
 
-void ScreenOption::initMenu() {
-	std::cout << "init Option" << std::endl;
+ScreenOption::ScreenOption() {
+	InitMenu();
+	OnAwake();
+}
 
-	TextureBase* texture = AssetLibrary::GetTexture("menuOption").get();
-
-	Menu* menu = new Menu(Vector2(0, 0), Vector2(1.0f, 1.0f ));
-	menu->SetRenderObject(new MenuRenderObject(texture));
-	menuManager.AddMenu(name, menu);
-
-	//Load button
-	std::vector<Button*> buttons;
-	int num = 4;
-	for (int i = 0; i < num; i++) {
-		char name[8] = { 0 };
-		sprintf_s(name, "button%d", i + 4);
-
-		Button* btn = new Button(0, 0.45f + i * -0.3f, 0.16f, 0.08f);
-		TextureBase* tex = AssetLibrary::GetTexture(name).get();
-
-		btn->SetRenderObject(new MenuRenderObject(tex));
-		menu->AddButton(btn);
-		buttons.push_back(btn);
+PushdownState::PushdownResult ScreenOption::OnUpdate(float dt, PushdownState** newState) {
+	menuManager.Update(dt);
+	keyMap.Update();
+	renderer.Render();
+	if (menuState == ChangeState::Resume || menuState == ChangeState::Quit) {
+		return PushdownResult::Pop;
 	}
-	buttons[0]->OnClickCallback = [&]() {
-		std::cout << "1 btn clicked" << std::endl;
+	menuState = ChangeState::OnGoing;
+	return PushdownResult::NoChange;
+}
+
+void ScreenOption::OnAwake() {
+	menuState = ChangeState::None;
+
+	menuManager.SetCurrentMenu(NAME);
+
+	renderer.EnableOverlayPass("Menu", true);
+	renderer.EnableRenderScene(false);
+	renderer.UpdatePipeline();
+
+	Window::GetWindow()->ShowOSPointer(true);
+	Window::GetWindow()->LockMouseToWindow(false);
+}
+
+void ScreenOption::InitMenu() {
+	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(1.0f), AssetLibrary::GetTexture("menuOption"));
+
+	menu.AddButton(0.0f, 0.45f, 0.16f, 0.08f, AssetLibrary::GetTexture("button4"), [&]() {
+		std::cout << "Resume button clicked\n";
 		menuState = ChangeState::Resume;
-	};
-	buttons[1]->OnClickCallback = [&]() {
-		std::cout << "2 btn clicked" << std::endl;
-	};
-	buttons[2]->OnClickCallback = [&]() {
-		std::cout << "3 btn clicked" << std::endl;
-	};
-	buttons[3]->OnClickCallback = [&]() {
-		std::cout << "4 btn clicked" << std::endl;
+	});
+	menu.AddButton(0.0f, 0.15f, 0.16f, 0.08f, AssetLibrary::GetTexture("button5"), [&]() {
+		std::cout << "Dummy button clicked\n";
+		// TODO - Add functionality
+	});
+	menu.AddButton(0.0f, -0.15f, 0.16f, 0.08f, AssetLibrary::GetTexture("button5"), [&]() {
+		std::cout << "Dummy button clicked\n";
+		// TODO - Add functionality
+	});
+	menu.AddButton(0.0f, -0.45f, 0.16f, 0.08f, AssetLibrary::GetTexture("button6"), [&]() {
+		std::cout << "Quit button clicked\n";
 		menuState = ChangeState::Quit;
-	};
+	});
 }

@@ -3,6 +3,7 @@
  * @brief  A Pushdown automata state for game options.
  *
  * @author Felix Chiu
+ * @author Stuart Lewis
  * @date   February 2023
  */
 #pragma once
@@ -15,41 +16,16 @@ using namespace CSC8503;
 
 class ScreenOption : public PushdownState {
 public:
-	ScreenOption() {
-		initMenu();
-		OnAwake();
-	}
-	~ScreenOption() {}
-	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
-		menuManager.Update(dt);
-		keyMap.Update();
-		renderer.Render();
-		if (menuState == ChangeState::Resume) {
-			return PushdownResult::Pop;
-		}
-		if (menuState == ChangeState::Quit) {
-			return PushdownResult::Pop;
-		}
-		menuState = ChangeState::OnGoing;
-		return PushdownResult::NoChange;
-	}
-	void OnAwake() override {
-		menuState = ChangeState::None;
-		menuManager.SetCurrentMenu(name);
-		renderer.EnableOverlayPass("Menu", true);
-		renderer.EnableRenderScene(false);
-		renderer.UpdatePipeline();
-		Window::GetWindow()->ShowOSPointer(true);
-		Window::GetWindow()->LockMouseToWindow(false);
-	}
+	ScreenOption();
+	~ScreenOption() = default;
+	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
+	void OnAwake() override;
 
 	GameTechRenderer& renderer = GameTechRenderer::instance();
 	MenuManager& menuManager = MenuManager::instance();
 	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
 
 private:
-	void initMenu();
-
 	enum class ChangeState {
 		None,
 		OnGoing,
@@ -57,7 +33,10 @@ private:
 		Option,
 		Quit
 	};
+
+	void InitMenu();
+
 	ChangeState menuState = ChangeState::None;
 
-	std::string name = "option";
+	const std::string NAME = "option";
 };

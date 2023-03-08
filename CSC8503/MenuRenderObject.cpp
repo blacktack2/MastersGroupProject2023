@@ -12,29 +12,29 @@
 #include "MeshGeometry.h"
 #include "ShaderBase.h"
 #include "TextureBase.h"
-#include "UIObject.h"
 
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Maths;
+using namespace NCL::Rendering;
 
-MenuRenderObject::MenuRenderObject(TextureBase* texture) {
-	this->texture = texture;
+MenuRenderObject::MenuRenderObject(std::shared_ptr<TextureBase> texture) : texture(texture) {
+	shader = AssetLibrary::GetShader("menu");
+	quad   = AssetLibrary::GetMesh("quad");
 }
 
 MenuRenderObject::~MenuRenderObject() {
 }
 
 void MenuRenderObject::Draw(const Vector4& dimensions) {
-	std::shared_ptr<ShaderBase> shader = AssetLibrary::GetShader("menu");
-
 	shader->Bind();
 
 	texture->Bind(0);
 
 	float data[] = {
-		dimensions.z, 0.0f        , 0.0f,
-		0.0f        , dimensions.w, 0.0f,
-		-dimensions.x, -dimensions.y, 1.0f
+		 dimensions.z,  0.0f        , 0.0f,
+		 0.0f        ,  dimensions.w, 0.0f,
+		-dimensions.x, -dimensions.y, 1.0f,
 	};
 	Matrix3 quadMatrix = Matrix3(data);
 
@@ -42,7 +42,6 @@ void MenuRenderObject::Draw(const Vector4& dimensions) {
 	
 	texture->Bind(0);
 
-	std::shared_ptr<MeshGeometry> quad = AssetLibrary::GetMesh("quad");
 	quad->Draw();
 
 	shader->Unbind();

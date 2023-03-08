@@ -3,6 +3,7 @@
  * @brief  A Pushdown automata state for running a multiplayer game.
  *
  * @author Felix Chiu
+ * @author Stuart Lewis
  * @date   February 2023
  */
 #pragma once
@@ -13,49 +14,18 @@
 #include "NetworkedGame.h"
 #include "ScreenPause.h"
 
+#include <memory>
+
 using namespace NCL;
 using namespace CSC8503;
 
 class ScreenMultiplayer : public PushdownState {
 public:
+	ScreenMultiplayer(bool isServer = true);
+	~ScreenMultiplayer() = default;
 
-	ScreenMultiplayer(bool isServer = true) {
-		game = new NetworkedGame(isServer);
-	}
-	~ScreenMultiplayer() {
-		delete game;
-	}
-
-	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
-		keyMap.Update();
-		if (keyMap.GetButton(InputType::Pause)) {
-			*newState = new ScreenPause(game);
-			return PushdownResult::Push;
-		}
-		if (game->IsQuit()) {
-			menuState = ChangeState::Quit;
-		}
-		else {
-			game->UpdateGame(dt);
-		}
-		if (menuState == ChangeState::Quit) {
-			Window::GetWindow()->ShowOSPointer(true);
-			Window::GetWindow()->LockMouseToWindow(false);
-			renderer.EnableOverlayPass("Menu", true);
-			renderer.UpdatePipeline();
-			return PushdownResult::Pop;
-		}
-		return PushdownResult::NoChange;
-	}
-	void OnAwake() override {
-		menuState = ChangeState::None;
-		Window::GetWindow()->ShowOSPointer(false);
-		Window::GetWindow()->LockMouseToWindow(true);
-		renderer.EnableRenderScene(true);
-		renderer.EnableOverlayPass("Menu", false);
-		renderer.EnableOverlayPass("Debug", true);
-		renderer.UpdatePipeline();
-	}
+	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
+	void OnAwake() override;
 
 private:
 	enum class ChangeState {
@@ -64,13 +34,13 @@ private:
 		Start,
 		Quit
 	};
-
 	
-	GameStateManager* gameStateManager = &GameStateManager::instance();
+	GameStateManager& gameStateManager = GameStateManager::instance();
 	GameTechRenderer& renderer = GameTechRenderer::instance();
 	MenuManager& menuManager = MenuManager::instance();
 	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
-	NetworkedGame* game;
+
+	std::unique_ptr<NetworkedGame> game;
 
 	ChangeState menuState = ChangeState::None;
 };

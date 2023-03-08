@@ -3,45 +3,45 @@
  * @brief  A class for defining a menu.
  *
  * @author Felix Chiu
+ * @author Stuart Lewis
  * @date   February 2023
  */
 #pragma once
-#include "Vector2.h"
 #include "Button.h"
-#include <vector>
 #include "UIObject.h"
 
-namespace NCL {
-	namespace CSC8503 {
-		using namespace Maths;
-		class Menu : public UIObject 
-		{
-		public:
-			Menu(){}
-			Menu(Vector2 screenPos, Vector2 dimension);
-			~Menu();
+#include "Vector2.h"
 
-			void Draw(OGLShader* menuShader, OGLTexture* menuTexture, OGLMesh* quad);
+#include <memory>
+#include <vector>
 
-			void Update(float dt) override;
+namespace NCL::Rendering {
+	class TextureBase;
+}
 
-			void AddButton(Button* btn) {
-				buttons.push_back(btn);
-			}
+using namespace NCL::Rendering;
+using namespace NCL::Maths;
 
-			std::vector<Button*>* GetButtons() {
-				return &buttons;
-			}
+namespace NCL::CSC8503 {
+	class Menu : public UIObject {
+	public:
+		Menu(Vector2 screenPos, Vector2 dimension, std::shared_ptr<TextureBase> texture);
+		~Menu();
 
-			Vector4 GetDimension();
+		void Update(float dt) override;
+		Vector4 GetDimension() const override;
 
-		protected:
-			Vector2 screenPos;
-			Vector2 dimension;
+		Button& AddButton(float x, float y, float width, float height, std::shared_ptr<TextureBase> texture, Button::overlap_func onclick = nullptr);
 
-			std::vector<Button*> buttons;
+		const std::vector<std::unique_ptr<Button>>& GetButtons() {
+			return buttons;
+		}
+	protected:
+		Vector2 screenPos;
+		Vector2 dimension;
 
-			int buttonSelect = 0;
-		};
-	}
+		std::vector<std::unique_ptr<Button>> buttons;
+
+		int buttonSelect = 0;
+	};
 }
