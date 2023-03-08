@@ -73,7 +73,7 @@ void PlayerObject::Update(float dt) {
 			Vector3 movingDir;
 			GetControllerInput(movingDir);
 			Move(movingDir);
-			RotateByAxis();
+			//RotateByAxis();
 			//MoveByPosition(dt, movingDir);
 		}
 		MoveCamera();
