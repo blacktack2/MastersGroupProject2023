@@ -232,7 +232,8 @@ void Boss::Update(float dt) {
     deltaTime = dt;
     // check if inked
     GameNode* node = GameGridManager::instance().NearestNode(this->GetTransform().GetGlobalPosition());
-    InkEffectManager::instance().ApplyInkEffect(node->inkType, GetHealth(), 1);
+    if(node)
+        InkEffectManager::instance().ApplyInkEffect(node->inkType, GetHealth(), 1);
     //check boss health
     if (GetHealth()->GetHealth() <= 0) {
         ChangeLoseState();
@@ -262,7 +263,6 @@ void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
     float aiSpeed = speed;
 
     NavigationPath samples;
-    gameGrid->FindCatmullRomPath(this->GetTransform().GetGlobalPosition(), destination, samples);
     Vector3 node;
     std::vector<Vector3> tempSteps;
     while (samples.PopWaypoint(node)) {

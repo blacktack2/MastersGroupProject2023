@@ -123,7 +123,7 @@ void TutorialGame::Clear() {
 void TutorialGame::InitWorld() {
 	Clear();
 
-	gridManager->AddGameGrid(new GameGrid({ 0,0,0 }, 300, 300, 2));
+	gridManager->AddGameGrid(new GameGrid({ 0,0,0 }, 400, 400, 1));
 	BuildLevel();
 
 	InitGameExamples();
@@ -187,6 +187,9 @@ void TutorialGame::UpdateGameCore(float dt) {
 	if (testingBoss) {
 		Debug::Print(std::string("Boss health: ").append(std::to_string((int)testingBoss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
 	}
+
+	GameGridManager::instance().Update(dt);
+
 	if (!inSelectionMode) {
 		world->GetMainCamera()->UpdateCamera(dt);
 	}
@@ -278,24 +281,6 @@ void TutorialGame::InitaliseAnimationAssets() {
 	maleguardMaterial = AssetLibrary::GetMaterial("boss");
 	maleguardMesh = AssetLibrary::GetMesh("boss");
 	maleguardAnim = AssetLibrary::GetAnimation("WalkForward");
-
-	//for (int i = 0; i < maleguardMesh->GetSubMeshCount(); ++i) {
-	//	const MeshMaterialEntry* matEntry = maleguardMaterial->GetMaterialForLayer(i);
-
-	//	const string* filename = nullptr;
-
-	//	matEntry->GetEntry("Diffuse", &filename);
-	//	OGLTexture* tex = nullptr;
-
-	//	if (filename) {
-	//		string path = Assets::TEXTUREDIR + *filename;
-	//		stbi_set_flip_vertically_on_load(true);
-	//		tex = static_cast<OGLTexture*>(renderer->LoadTexture(path));
-	//		stbi_set_flip_vertically_on_load(false);
-	//		tex->SetEdgeRepeat();
-	//	}
-	//	maleguardMatTextures.emplace_back(tex);
-	//}
 }
 
 void TutorialGame::InitialisePrefabs() {
@@ -626,7 +611,7 @@ void TutorialGame::BuildLevel()
 {
 	interval = 5.0f;
 	gameLevel = new GameLevel{};
-	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -100, 0, -70 }, interval);
+	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -200, 0, -200 }, interval);
 	world->AddGameObject(gameLevel);
 	UpdateLevel();
 }
@@ -642,7 +627,7 @@ void TutorialGame::UpdateLevel()
 			{
 				Vector3 dimensions{ interval / 2.0f, 10, interval / 2.0f };
 				Obstacle* pillar = new Obstacle{ object, true };
-				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3,2,1.3 }, CollisionLayer::PaintAble));
+				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3f,2,1.3f }, CollisionLayer::PaintAble));
 
 				pillar->GetTransform()
 					.SetPosition(object->worldPos + Vector3{ 0,20,0 })
@@ -661,7 +646,7 @@ void TutorialGame::UpdateLevel()
 			{
 				Vector3 dimensions{ interval / 4.0f, 0.5f, interval / 5.0f };
 				Obstacle* fenceX = new Obstacle{ object, true };
-				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
+				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * 2, CollisionLayer::PaintAble));
 				fenceX->GetTransform()
 					.SetPosition(object->worldPos + Vector3{ 0,2,0 })
 					.SetScale(dimensions * 2);
@@ -679,7 +664,7 @@ void TutorialGame::UpdateLevel()
 			{
 				Vector3 dimensions{ interval / 5.0f, 0.5f, interval / 4.0f };
 				Obstacle* fenceY = new Obstacle{ object, true };
-				fenceY->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
+				fenceY->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * 2, CollisionLayer::PaintAble));
 				fenceY->GetTransform()
 					.SetPosition(object->worldPos + Vector3{ 0,2,0 })
 					.SetScale(dimensions * 2);
@@ -699,7 +684,7 @@ void TutorialGame::UpdateLevel()
 				Obstacle* shelter = new Obstacle{ object, false };
 				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
 				shelter->GetTransform()
-					.SetPosition(object->worldPos + Vector3{ 0,2.2,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,2.2f,0 })
 					.SetScale(dimensions);
 				//shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary::GetMesh("shelter"), basicTex, nullptr));
 
