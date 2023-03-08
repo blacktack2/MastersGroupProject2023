@@ -62,7 +62,7 @@ struct PlayerConnectionPacket : public GamePacket {
 	}
 };
 struct BossActionPacket : public GamePacket {
-	short int bossAction;
+	short int bossAction = 0;
 
 	BossActionPacket() {
 		type = BossAction_Message;

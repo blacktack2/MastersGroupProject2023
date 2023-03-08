@@ -41,7 +41,7 @@ namespace NCL {
 				if (point.empty()) {
 					point.resize(1);
 				}
-				int pSize = point.size() - 1;
+				size_t pSize = point.size() - 1;
 				if (pSize != 0) {
 					point.resize(point.size() + 1);
 					pSize++;

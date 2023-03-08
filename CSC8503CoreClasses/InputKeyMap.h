@@ -20,7 +20,7 @@ enum InputType : unsigned int {
 	Return = (1u << 30),
 	Confirm = (1u << 31),
 
-	All = -1
+	All = UINT_MAX
 }; 
 
 enum AxisInput
@@ -91,7 +91,7 @@ namespace paintHell {
 		void UpdateGameStateDependant();
 
 		unsigned int buttonstates;
-		float AxisDataArray[4][AxisInput::AxisInputDataMax];
+		float AxisDataArray[4][AxisInput::AxisInputDataMax] = { 0 };
 		Vector2 movementAxis;
 		Vector2 cameraAxis;
 		Vector2 mousePosition;
