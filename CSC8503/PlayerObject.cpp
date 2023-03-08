@@ -66,14 +66,19 @@ void PlayerObject::Update(float dt) {
 		if (playerID == 5)
 		{
 			GetInput(dir, keyMap.GetButtonState());
+			Move(dir);
 		}
-		Move(dir);
+		else {
+			// testing (Xbox) controller input:
+			Vector3 movingDir;
+			GetControllerInput(movingDir);
+			Move(movingDir);
+			RotateByAxis();
+			//MoveByPosition(dt, movingDir);
+		}
 		MoveCamera();
 
-		// testing (Xbox) controller input:
-		Vector3 movingDir;
-		GetControllerInput(movingDir);
-		MoveByPosition(dt, movingDir);
+		
 	}
 
 	//If on ink
@@ -244,6 +249,15 @@ void PlayerObject::RotateToCamera() {
 	if (hasCamera && !isFreeLook) {
 		RotateYaw(gameWorld.GetMainCamera()->GetYaw());
 	}
+
+}
+
+void PlayerObject::RotateByAxis() {
+	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	float yaw;
+	keyMap.GetAxisData(playerID, AxisInput::Axis4, yaw);
+	//add yaw 
+	RotateYaw(yaw * 100);
 
 }
 

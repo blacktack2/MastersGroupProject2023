@@ -569,7 +569,7 @@ PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& positi
 
 void TutorialGame::SetCameraFollow(PlayerObject* p)
 {
-	world->GetMainCamera()->SetFollow(&p->GetTransform());
+	world->GetMainCamera()->SetFollow(&(p->GetTransform()));
 
 	if (player != nullptr) player->AttachedCamera(false);
 	if (player2 != nullptr) player2->AttachedCamera(false);

@@ -14,7 +14,7 @@ NetworkObject::NetworkObject(GameObject& o, int id) : object(o), renderTransform
 	else
 		networkID = o.GetWorldID();
 	object.SetNetworkObject(this);
-	renderTransform = o.GetTransform();
+	renderTransform = Transform(o.GetTransform());
 	(object.GetRenderObject())->SetTransform(&renderTransform);
 	lastDeltaState.position = object.GetTransform().GetGlobalPosition();
 	lastDeltaState.orientation = object.GetTransform().GetGlobalOrientation();
