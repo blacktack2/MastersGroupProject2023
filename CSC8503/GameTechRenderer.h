@@ -135,10 +135,7 @@ namespace NCL::CSC8503 {
 
 		GameWorld& gameWorld;
 
-		void BuildObjectList();
 		void SortObjectList();
-
-		std::vector<const RenderObject*> activeObjects;
 
 		std::unique_ptr<SkyboxRPass>   skyboxPass;
 		std::unique_ptr<ModelRPass>    modelPass;
