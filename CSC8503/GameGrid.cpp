@@ -18,7 +18,7 @@ GameGrid::GameGrid(Vector3 gridOrigin, float totalLength, float totalWidth, floa
 	numOfColumns = (int)(totalWidth / unitLength);
 	this->unitLength = unitLength;
 
-	gameGridOrigin = gridOrigin - Vector3(totalLength * 0.5, 0, totalWidth * 0.5);
+	gameGridOrigin = gridOrigin - Vector3(totalLength * 0.5f, 0, totalWidth * 0.5f);
 	float width = gameGridOrigin.z;
 	for (int row = 0; row < numOfRows; row++)
 	{
@@ -45,8 +45,8 @@ GameNode* GameGrid::NearestNode(Vector3 position)
 	Vector3 localPosition = position - gameGridOrigin;
 
 	//translate x,z coord to row col (node)
-	int row = std::round(localPosition.x / unitLength);
-	int col = std::round(localPosition.z / unitLength);
+	int row = (int)std::round(localPosition.x / unitLength);
+	int col = (int)std::round(localPosition.z / unitLength);
 	if (row < 0 || row >= numOfRows) {
 		return nullptr;
 	}
@@ -115,10 +115,10 @@ void GameGrid::DrawDebugGameGrid()
 			switch (currentNode.inkType)
 			{
 			case paintHell::InkType::BossDamage:
-				Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0, 0.5, 0 }, Vector4(0, 1, 0.2, 1), 0.01f);
+				Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0, 0.5f, 0 }, Vector4(0, 1, 0.2f, 1), 0.01f);
 				break;
 			case paintHell::InkType::PlayerDamage:
-				Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0, 0.5, 0 }, Vector4(1, 0, 0, 1), 0.01f);
+				Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0, 0.5f, 0 }, Vector4(1, 0, 0, 1), 0.01f);
 				break;
 			default:
 				break;

@@ -573,7 +573,7 @@ void TutorialGame::UpdateLevel()
 			{
 				Vector3 dimensions{ interval / 2.0f, 10, interval / 2.0f };
 				Obstacle* pillar = new Obstacle{ object, true };
-				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3,2,1.3 }, CollisionLayer::PaintAble));
+				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3f,2,1.3f }, CollisionLayer::PaintAble));
 
 				pillar->GetTransform()
 					.SetPosition(object->worldPos + Vector3{ 0,20,0 })
@@ -630,7 +630,7 @@ void TutorialGame::UpdateLevel()
 				Obstacle* shelter = new Obstacle{ object, false };
 				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
 				shelter->GetTransform()
-					.SetPosition(object->worldPos + Vector3{ 0,2.2,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,2.2f,0 })
 					.SetScale(dimensions);
 				//shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary::GetMesh("shelter"), basicTex, nullptr));
 
