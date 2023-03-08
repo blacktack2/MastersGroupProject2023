@@ -81,8 +81,8 @@ void LightingRPass::DrawLight(const Light& light) {
 	renderer.GetConfig().SetBlend(true, BlendFuncSrc::One, BlendFuncDst::One);
 	renderer.GetConfig().SetDepthTest(true, DepthTestFunc::Always);
 
-	depthTexIn.value().get().Bind(0);
-	normalTexIn.value().get().Bind(1);
+	depthTexIn->Bind(0);
+	normalTexIn->Bind(1);
 
 	shader->SetUniformFloat("cameraPos", gameWorld.GetMainCamera()->GetPosition());
 

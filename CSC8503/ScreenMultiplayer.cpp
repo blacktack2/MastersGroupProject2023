@@ -15,7 +15,7 @@ ScreenMultiplayer::ScreenMultiplayer(bool isServer) {
 PushdownState::PushdownResult ScreenMultiplayer::OnUpdate(float dt, PushdownState** newState) {
 	keyMap.Update();
 	if (keyMap.GetButton(InputType::Pause)) {
-		*newState = new ScreenPause(*game);
+		*newState = new ScreenPause(game.get());
 		return PushdownResult::Push;
 	}
 

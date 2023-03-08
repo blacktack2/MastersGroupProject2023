@@ -105,8 +105,8 @@ void SSAORPass::DrawSSAO() {
 	renderer.ClearBuffers(ClearBit::Color);
 	ssaoShader->Bind();
 
-	depthTexIn.value().get().Bind(0);
-	normalTexIn.value().get().Bind(1);
+	depthTexIn->Bind(0);
+	normalTexIn->Bind(1);
 	noiseTex->Bind(2);
 
 	Matrix4 viewMatrix = GameWorld::instance().GetMainCamera()->BuildViewMatrix();

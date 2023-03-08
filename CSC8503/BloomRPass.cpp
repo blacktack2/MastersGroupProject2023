@@ -109,7 +109,7 @@ void BloomRPass::SetBias(float bias) {
 void BloomRPass::Downsample() {
 	downsampleShader->Bind();
 
-	sceneTexIn.value().get().Bind(0);
+	sceneTexIn->Bind(0);
 
 	for (auto mip = mipChain.begin(); mip != mipChain.end(); mip++) {
 		renderer.GetConfig().SetViewport(0, 0, (unsigned int)mip->width, (unsigned int)mip->height);
@@ -149,7 +149,7 @@ void BloomRPass::Combine() {
 	combineFrameBuffer->Bind();
 	combineShader->Bind();
 
-	sceneTexIn.value().get().Bind(0);
+	sceneTexIn->Bind(0);
 	mipChain.back().texture->Bind(1);
 
 	quad->Draw();

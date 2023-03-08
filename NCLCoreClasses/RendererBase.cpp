@@ -57,24 +57,22 @@ void RendererBase::UpdatePipeline() {
 		}
 		renderPipeline.push_back(*combinePass);
 		if (doRenderPost) {
-			bool first = true;
-			std::optional<std::reference_wrapper<IPostRenderPass>> last;
+			IPostRenderPass* last = nullptr;
 			for (auto pass = postRenderPasses.begin(); pass != postRenderPasses.end(); pass++) {
 				if (!pass->enabled) {
 					continue;
 				}
-				if (first) {
-					first = false;
-					pass->pass.SetSceneTexIn(combinePass.value().get().GetOutTex());
+				if (last) {
+					pass->pass.SetSceneTexIn(last->GetOutTex());
 				} else {
-					pass->pass.SetSceneTexIn(last.value().get().GetOutTex());
+					pass->pass.SetSceneTexIn(combinePass->GetOutTex());
 				}
 				renderPipeline.push_back(pass->pass);
-				last = pass->pass;
+				last = &pass->pass;
 			}
-			presentPass.value().get().SetSceneTexIn(last.has_value() ? last.value().get().GetOutTex() : combinePass.value().get().GetOutTex());
+			presentPass->SetSceneTexIn(last ? last->GetOutTex() : combinePass->GetOutTex());
 		} else {
-			presentPass.value().get().SetSceneTexIn(combinePass.value().get().GetOutTex());
+			presentPass->SetSceneTexIn(combinePass->GetOutTex());
 		}
 		renderPipeline.push_back(*presentPass);
 	}
@@ -92,13 +90,13 @@ void RendererBase::OnWindowResize(int width, int height) {
 		pass.pass.OnWindowResize(width, height);
 	}
 	if (combinePass) {
-		combinePass.value().get().OnWindowResize(width, height);
+		combinePass->OnWindowResize(width, height);
 	}
 	for (auto& pass : postRenderPasses) {
 		pass.pass.OnWindowResize(width, height);
 	}
 	if (presentPass) {
-		presentPass.value().get().OnWindowResize(width, height);
+		presentPass->OnWindowResize(width, height);
 	}
 	for (auto& pass : overlayRenderPasses) {
 		pass.pass.OnWindowResize(width, height);

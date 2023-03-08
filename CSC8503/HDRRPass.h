@@ -42,7 +42,7 @@ namespace NCL::CSC8503 {
 		}
 
 		void SetSceneTexIn(TextureBase& sceneTex) override {
-			sceneTexIn = sceneTex;
+			sceneTexIn = &sceneTex;
 		}
 	private:
 		GameTechRenderer& renderer;
@@ -51,7 +51,7 @@ namespace NCL::CSC8503 {
 
 		std::unique_ptr<FrameBuffer> frameBuffer;
 
-		std::optional<std::reference_wrapper<TextureBase>> sceneTexIn;
+		TextureBase* sceneTexIn = nullptr;
 
 		std::unique_ptr<TextureBase> sceneOutTex;
 

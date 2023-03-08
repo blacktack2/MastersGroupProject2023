@@ -17,7 +17,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-ScreenPause::ScreenPause(std::optional<std::reference_wrapper<TutorialGame>> game) {
+ScreenPause::ScreenPause(TutorialGame* game) {
 	this->game = game;
 	InitMenu();
 }
@@ -27,17 +27,17 @@ PushdownState::PushdownResult ScreenPause::OnUpdate(float dt, PushdownState** ne
 	keyMap.Update();
 	renderer.Render();
 	if (game) {
-		NetworkedGame* netGame = dynamic_cast<NetworkedGame*>(&game.value().get());
+		NetworkedGame* netGame = dynamic_cast<NetworkedGame*>(game);
 		if (netGame) {
 			netGame->FreezeSelf();
 		}
-		game.value().get().UpdateGame(dt);
+		game->UpdateGame(dt);
 	}
 	switch (menuState) {
 		case ChangeState::Resume:
 		case ChangeState::Quit:
 			if (game) {
-				NetworkedGame* netGame = dynamic_cast<NetworkedGame*>(&game.value().get());
+				NetworkedGame* netGame = dynamic_cast<NetworkedGame*>(game);
 				if (netGame) {
 					netGame->FreezeSelf();
 				}

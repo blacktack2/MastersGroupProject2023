@@ -61,15 +61,5 @@ namespace NCL::CSC8503 {
 
 		size_t lineCount;
 		size_t textCount;
-
-		//GLuint lineVAO;
-		//GLuint lineVertVBO;
-		//size_t lineCount;
-
-		//GLuint textVAO;
-		//GLuint textVertVBO;
-		//GLuint textColourVBO;
-		//GLuint textTexVBO;
-		//size_t textCount;
 	};
 }

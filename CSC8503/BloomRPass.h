@@ -42,7 +42,7 @@ namespace NCL::CSC8503 {
 			return *colourOutTex;
 		}
 		void SetSceneTexIn(TextureBase& sceneTex) override {
-			sceneTexIn = sceneTex;
+			sceneTexIn = &sceneTex;
 		}
 
 		void SetBloomDepth(size_t depth);
@@ -64,7 +64,7 @@ namespace NCL::CSC8503 {
 		std::unique_ptr<FrameBuffer> bloomFrameBuffer;
 		std::unique_ptr<FrameBuffer> combineFrameBuffer;
 
-		std::optional<std::reference_wrapper<TextureBase>> sceneTexIn;
+		TextureBase* sceneTexIn = nullptr;
 
 		std::vector<BloomMip> mipChain;
 		std::unique_ptr<TextureBase> colourOutTex;

@@ -149,7 +149,7 @@ namespace NCL::Rendering {
 		 * @brief Must be followed by a call to UpdatePipeline() to take effect.
 		 */
 		inline void SetCombinePass(ICombineRenderPass& pass) {
-			combinePass = pass;
+			combinePass = &pass;
 		}
 		/**
 		 * @brief Add post-processing render pass. Meant to take in a screen
@@ -180,7 +180,7 @@ namespace NCL::Rendering {
 		 * effect.
 		 */
 		inline void SetPresentPass(IPresentRenderPass& pass) {
-			presentPass = pass;
+			presentPass = &pass;
 		}
 		/**
 		 * @brief Add overlay render pass. Meant to draw over top the contents
@@ -239,9 +239,9 @@ namespace NCL::Rendering {
 		bool doRenderOver  = true;
 
 		std::vector<MainPass> mainRenderPasses;
-		std::optional<std::reference_wrapper<ICombineRenderPass>> combinePass;
+		ICombineRenderPass* combinePass;
 		std::vector<PostPass> postRenderPasses;
-		std::optional<std::reference_wrapper<IPresentRenderPass>> presentPass;
+		IPresentRenderPass* presentPass;
 		std::vector<OverPass> overlayRenderPasses;
 
 		std::unordered_map<std::string, size_t> postMap;

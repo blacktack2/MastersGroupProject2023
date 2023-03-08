@@ -17,7 +17,7 @@ using namespace CSC8503;
 
 class ScreenPause : public PushdownState {
 public:
-	ScreenPause(std::optional<std::reference_wrapper<TutorialGame>> game = std::optional<std::reference_wrapper<TutorialGame>>());
+	ScreenPause(TutorialGame* game = nullptr);
 	~ScreenPause() = default;
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 	void OnAwake() override;
@@ -32,7 +32,7 @@ private:
 
 	void InitMenu();
 
-	std::optional<std::reference_wrapper<TutorialGame>> game;
+	TutorialGame* game;
 
 	GameStateManager& gameStateManager = GameStateManager::instance();
 	GameTechRenderer& renderer = GameTechRenderer::instance();

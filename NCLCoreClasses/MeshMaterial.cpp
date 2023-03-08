@@ -90,6 +90,6 @@ MeshMaterial::MeshMaterial(const std::vector<std::pair<std::string, std::shared_
 	}
 }
 
-const std::optional<std::reference_wrapper<MeshMaterialEntry>> MeshMaterial::GetMaterialForLayer(int i) const {
-	return (i < 0 || i >= meshLayers.size()) ? std::optional<std::reference_wrapper<MeshMaterialEntry>>() : meshLayers[i];
+const MeshMaterialEntry* MeshMaterial::GetMaterialForLayer(int i) const {
+	return (i < 0 || i >= meshLayers.size()) ? nullptr : &meshLayers[i].get();
 }

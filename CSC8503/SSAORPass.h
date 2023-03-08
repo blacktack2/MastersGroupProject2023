@@ -52,11 +52,11 @@ namespace NCL::CSC8503 {
 		}
 
 		inline void SetDepthTexIn(TextureBase& tex) {
-			depthTexIn = tex;
+			depthTexIn = &tex;
 		}
 
 		inline void SetNormalTexIn(TextureBase& tex) {
-			normalTexIn = tex;
+			normalTexIn = &tex;
 		}
 	private:
 		void DrawSSAO();
@@ -72,8 +72,8 @@ namespace NCL::CSC8503 {
 		std::unique_ptr<FrameBuffer> ssaoFrameBuffer;
 		std::unique_ptr<FrameBuffer> blurFrameBuffer;
 
-		std::optional<std::reference_wrapper<TextureBase>> depthTexIn;
-		std::optional<std::reference_wrapper<TextureBase>> normalTexIn;
+		TextureBase* depthTexIn = nullptr;
+		TextureBase* normalTexIn = nullptr;
 
 		std::unique_ptr<TextureBase> noiseTex;
 		std::unique_ptr<TextureBase> ssaoTex;

@@ -58,13 +58,13 @@ void CombineRPass::Render() {
 	renderer.ClearBuffers(ClearBit::Color);
 	shader->Bind();
 
-	skyboxTexIn.value().get().Bind(0);
-	diffuseTexIn.value().get().Bind(1);
-	diffuseLightTexIn.value().get().Bind(2);
-	specularLightTexIn.value().get().Bind(3);
-	ssaoTexIn.value().get().Bind(4);
-	normalTexIn.value().get().Bind(5);
-	depthTexIn.value().get().Bind(6);
+	skyboxTexIn->Bind(0);
+	diffuseTexIn->Bind(1);
+	diffuseLightTexIn->Bind(2);
+	specularLightTexIn->Bind(3);
+	ssaoTexIn->Bind(4);
+	normalTexIn->Bind(5);
+	depthTexIn->Bind(6);
 
 	quad->Draw();
 

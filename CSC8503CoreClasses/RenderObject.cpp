@@ -44,32 +44,32 @@ void RenderObject::Draw() {
 void RenderObject::PreDraw(int sublayer) {
 	MeshMaterial& mat = material ? *material : *AssetLibrary::GetMaterial("default");
 
-	auto sublayerEntry = mat.GetMaterialForLayer(sublayer);
-	MeshMaterialEntry& entry = sublayerEntry ? sublayerEntry.value() : mat.GetMaterialForLayer(0).value();
+	const MeshMaterialEntry* entry = mat.GetMaterialForLayer(sublayer);
+	entry = entry ? entry : mat.GetMaterialForLayer(0);
 
-	auto entryShader = entry.GetShader();
-	ShaderBase& shader = entryShader ? entryShader.value().get() : GetDefaultShader();
+	ShaderBase* shader = entry->GetShader();
+	shader = shader ? shader : &GetDefaultShader();
 
-	shader.Bind();
+	shader->Bind();
 
 	Matrix4 modelMatrix = transform.get().GetGlobalMatrix();
-	shader.SetUniformMatrix("modelMatrix", modelMatrix);
+	shader->SetUniformMatrix("modelMatrix", modelMatrix);
 
-	shader.SetUniformFloat("modelColour", colour);
+	shader->SetUniformFloat("modelColour", colour);
 
-	auto entryDiffuse = entry.GetTexture("Diffuse");
-	TextureBase& diffuse = entryDiffuse ? entryDiffuse.value().get() : *AssetLibrary::GetTexture("defaultDiffuse");
-	diffuse.Bind(0);
+	TextureBase* diffuse = entry->GetTexture("Diffuse");
+	diffuse = diffuse ? diffuse : AssetLibrary::GetTexture("defaultDiffuse").get();
+	diffuse->Bind(0);
 
-	auto entryBump = entry.GetTexture("Bump");
-	TextureBase& bump = entryBump ? entryBump.value().get() : *AssetLibrary::GetTexture("defaultBump");
-	bump.Bind(1);
+	TextureBase* bump = entry->GetTexture("Bump");
+	bump = bump ? bump : AssetLibrary::GetTexture("defaultBump").get();
+	bump->Bind(1);
 
-	auto entrySpec = entry.GetTexture("Spec");
-	TextureBase& spec = entrySpec ? entrySpec.value().get() : *AssetLibrary::GetTexture("defaultSpec");
-	spec.Bind(2);
+	TextureBase* spec = entry->GetTexture("Spec");
+	spec = spec ? spec : AssetLibrary::GetTexture("defaultSpec").get();
+	spec->Bind(2);
 
-	PreDraw(sublayer, shader);
+	PreDraw(sublayer, *shader);
 }
 
 ShaderBase& RenderObject::GetDefaultShader() {

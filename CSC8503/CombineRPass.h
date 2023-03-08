@@ -51,25 +51,25 @@ namespace NCL::CSC8503 {
 		}
 
 		inline void SetSkyboxTexIn(TextureBase& tex) {
-			skyboxTexIn = tex;
+			skyboxTexIn = &tex;
 		}
 		inline void SetDiffuseTexIn(TextureBase& tex) {
-			diffuseTexIn = tex;
+			diffuseTexIn = &tex;
 		}
 		inline void SetDiffuseLightTexIn(TextureBase& tex) {
-			diffuseLightTexIn = tex;
+			diffuseLightTexIn = &tex;
 		}
 		inline void SetSpecularLightTexIn(TextureBase& tex) {
-			specularLightTexIn = tex;
+			specularLightTexIn = &tex;
 		}
 		inline void SetSSAOTexIn(TextureBase& tex) {
-			ssaoTexIn = tex;
+			ssaoTexIn = &tex;
 		}
 		inline void SetNormalTexIn(TextureBase& tex) {
-			normalTexIn = tex;
+			normalTexIn = &tex;
 		}
 		inline void SetDepthTexIn(TextureBase& tex) {
-			depthTexIn = tex;
+			depthTexIn = &tex;
 		}
 	private:
 		GameTechRenderer& renderer;
@@ -78,13 +78,13 @@ namespace NCL::CSC8503 {
 
 		std::unique_ptr<FrameBuffer> frameBuffer;
 
-		std::optional<std::reference_wrapper<TextureBase>> skyboxTexIn;
-		std::optional<std::reference_wrapper<TextureBase>> diffuseTexIn;
-		std::optional<std::reference_wrapper<TextureBase>> diffuseLightTexIn;
-		std::optional<std::reference_wrapper<TextureBase>> specularLightTexIn;
-		std::optional<std::reference_wrapper<TextureBase>> ssaoTexIn;
-		std::optional<std::reference_wrapper<TextureBase>> normalTexIn;
-		std::optional<std::reference_wrapper<TextureBase>> depthTexIn;
+		TextureBase* skyboxTexIn        = nullptr;
+		TextureBase* diffuseTexIn       = nullptr;
+		TextureBase* diffuseLightTexIn  = nullptr;
+		TextureBase* specularLightTexIn = nullptr;
+		TextureBase* ssaoTexIn          = nullptr;
+		TextureBase* normalTexIn        = nullptr;
+		TextureBase* depthTexIn         = nullptr;
 
 		std::unique_ptr<TextureBase> sceneOutTex;
 

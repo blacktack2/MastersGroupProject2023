@@ -48,11 +48,11 @@ namespace NCL::CSC8503 {
 		}
 
 		inline void SetDepthTexIn(TextureBase& tex) {
-			depthTexIn = tex;
+			depthTexIn = &tex;
 		}
 
 		inline void SetNormalTexIn(TextureBase& tex) {
-			normalTexIn = tex;
+			normalTexIn = &tex;
 		}
 	private:
 		void DrawLight(const Light& light);
@@ -65,8 +65,8 @@ namespace NCL::CSC8503 {
 
 		std::unique_ptr<FrameBuffer> frameBuffer;
 
-		std::optional<std::reference_wrapper<TextureBase>> depthTexIn;
-		std::optional<std::reference_wrapper<TextureBase>> normalTexIn;
+		TextureBase* depthTexIn = nullptr;
+		TextureBase* normalTexIn = nullptr;
 
 		std::unique_ptr<TextureBase> lightDiffuseOutTex;
 		std::unique_ptr<TextureBase> lightSpecularOutTex;

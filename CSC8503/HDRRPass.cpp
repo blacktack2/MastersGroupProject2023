@@ -49,7 +49,7 @@ void HDRRPass::Render() {
 	renderer.ClearBuffers(ClearBit::Color);
 	shader->Bind();
 
-	sceneTexIn.value().get().Bind(0);
+	sceneTexIn->Bind(0);
 
 	quad->Draw();
 

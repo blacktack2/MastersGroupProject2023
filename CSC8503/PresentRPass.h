@@ -34,14 +34,14 @@ namespace NCL::CSC8503 {
 		virtual void Render() override;
 
 		virtual void SetSceneTexIn(TextureBase& sceneTex) override {
-			sceneTexIn = sceneTex;
+			sceneTexIn = &sceneTex;
 		}
 
 		void SetGamma(float gamma);
 	private:
 		std::shared_ptr<MeshGeometry> quad;
 
-		std::optional<std::reference_wrapper<TextureBase>> sceneTexIn;
+		TextureBase* sceneTexIn = nullptr;
 
 		std::unique_ptr<ShaderBase> shader;
 	};
