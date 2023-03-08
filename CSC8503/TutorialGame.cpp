@@ -221,7 +221,7 @@ void TutorialGame::UpdateGameCore(float dt) {
 	if (testingBossBehaviorTree) {
 		testingBossBehaviorTree->update();
 	}
-	
+	if(gameLevel)
 	if (gameLevel->GetShelterTimer() > 20.0f)
 	{
 		gameLevel->SetShelterTimer(0.0f);
@@ -263,24 +263,6 @@ void TutorialGame::InitaliseAnimationAssets() {
 	maleguardMaterial = AssetLibrary::GetMaterial("boss");
 	maleguardMesh = AssetLibrary::GetMesh("boss");
 	maleguardAnim = AssetLibrary::GetAnimation("WalkForward");
-
-	//for (int i = 0; i < maleguardMesh->GetSubMeshCount(); ++i) {
-	//	const MeshMaterialEntry* matEntry = maleguardMaterial->GetMaterialForLayer(i);
-
-	//	const string* filename = nullptr;
-
-	//	matEntry->GetEntry("Diffuse", &filename);
-	//	OGLTexture* tex = nullptr;
-
-	//	if (filename) {
-	//		string path = Assets::TEXTUREDIR + *filename;
-	//		stbi_set_flip_vertically_on_load(true);
-	//		tex = static_cast<OGLTexture*>(renderer->LoadTexture(path));
-	//		stbi_set_flip_vertically_on_load(false);
-	//		tex->SetEdgeRepeat();
-	//	}
-	//	maleguardMatTextures.emplace_back(tex);
-	//}
 }
 
 void TutorialGame::InitialisePrefabs() {
@@ -582,7 +564,7 @@ void TutorialGame::BuildLevel()
 {
 	interval = 5.0f;
 	gameLevel = new GameLevel{};
-	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -100, 0, -70 }, interval);
+	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -200, 0, -200 }, interval);
 	world->AddGameObject(gameLevel);
 	UpdateLevel();
 }
@@ -617,7 +599,7 @@ void TutorialGame::UpdateLevel()
 			{
 				Vector3 dimensions{ interval / 4.0f, 0.5f, interval / 5.0f };
 				Obstacle* fenceX = new Obstacle{ object, true };
-				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
+				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * 2, CollisionLayer::PaintAble));
 				fenceX->GetTransform()
 					.SetPosition(object->worldPos + Vector3{ 0,2,0 })
 					.SetScale(dimensions * 2);
@@ -635,7 +617,7 @@ void TutorialGame::UpdateLevel()
 			{
 				Vector3 dimensions{ interval / 5.0f, 0.5f, interval / 4.0f };
 				Obstacle* fenceY = new Obstacle{ object, true };
-				fenceY->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
+				fenceY->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * 2, CollisionLayer::PaintAble));
 				fenceY->GetTransform()
 					.SetPosition(object->worldPos + Vector3{ 0,2,0 })
 					.SetScale(dimensions * 2);
