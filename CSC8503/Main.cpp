@@ -148,7 +148,7 @@ void StartPushdownAutomata(Window* w) {
 }
 
 int main() {
-	Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720, true);
+	Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720, false);
 
 	std::cout << "loading\n";
 	GameTechRenderer& renderer = GameTechRenderer::instance();
