@@ -240,8 +240,6 @@ void Boss::Update(float dt) {
     if (this->transform.GetGlobalPosition().y < -10) {
         ChangeLoseState();
     }
-
-    std::cout << SqrDistToTarget() << std::endl;
     if (health.GetHealth() > 0 )
     {
         bossAction = NoAction;
