@@ -5,17 +5,15 @@ set(PROJECT_NAME CSC8503)
 ################################################################################
 
 set(Header_Files
-    "AnimatedRenderObject.h"
 	"Bonus.h"
     "DebugViewPoint.h"
-	"EnemyObject.h"
     "GameLevel.h"
     "GameGrid.h"
     "GameGridManager.h"
     "GameStateManager.h"
 	"Maze.h"
     "MenuRenderObject.h"
-	"NPCObject.h"
+
     "Obstacle.h"
     "StateGameObject.h"
     "TutorialGame.h"
@@ -23,10 +21,8 @@ set(Header_Files
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
-    "AnimatedRenderObject.cpp"
 	"Bonus.cpp"
     "DebugViewPoint.cpp"
-	"EnemyObject.cpp"
     "GameLevel.cpp"
     "GameGrid.cpp"
     "GameGridManager.cpp"
@@ -34,12 +30,14 @@ set(Source_Files
     "Main.cpp"
 	"Maze.cpp"
     "MenuRenderObject.cpp"
-	"NPCObject.cpp"
+
     "StateGameObject.cpp"
     "TutorialGame.cpp"
 )
 
 set(Render_Files
+    "AnimatedRenderObject.h"
+    "AnimatedRenderObject.cpp"
     "GameTechRenderer.h"
     "GameTechRenderer.cpp"
     "SkyboxRPass.h"
@@ -70,8 +68,6 @@ set(Render_Files
     "ModelRPass.cpp"
     "MenuRPass.h"
     "MenuRPass.cpp"
-    "Billboard.h"
-    "Billboard.cpp"
 )
 
 if(USE_VULKAN)
@@ -92,8 +88,6 @@ set(Audio_Files
     "SoundSystem.cpp"
     "Sound.h"
     "Sound.cpp"
-    "SoundManager.h"
-    "SoundManager.cpp"
     "SoundSource.h"
     "SoundSource.cpp"
     "SoundDevice.h"

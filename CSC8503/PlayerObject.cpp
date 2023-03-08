@@ -8,7 +8,6 @@
 #include "Bonus.h"
 #include "Constraint.h"
 #include "GameWorld.h"
-#include "NPCObject.h"
 #include "PhysicsObject.h"
 #include "Window.h"
 

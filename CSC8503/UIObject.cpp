@@ -11,7 +11,7 @@ using namespace NCL;
 using namespace CSC8503;
 
 UIObject::UIObject() {
-	
+	renderObject = nullptr;
 }
 
 UIObject::~UIObject() {
