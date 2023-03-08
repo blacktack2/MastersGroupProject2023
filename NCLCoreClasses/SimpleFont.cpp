@@ -62,6 +62,10 @@ void SimpleFont::BuildVerticesForString(const std::string& text, const Vector2& 
 
 	float currentX = 0.0f;
 
+	if (positions.size() > 1000) {
+		return;
+	}
+
 	positions.reserve(positions.size() + (text.length() * 6));
 	colours.reserve(colours.size() + (text.length() * 6));
 	texCoords.reserve(texCoords.size() + (text.length() * 6));
