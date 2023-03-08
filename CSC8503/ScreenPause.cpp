@@ -20,7 +20,7 @@ void ScreenPause::initMenu() {
 	TextureBase* texture = AssetLibrary::GetTexture("menuPause");
 
 	MeshGeometry* quad = (MeshGeometry*)AssetLibrary::GetMesh("quad");
-	Menu* menu = new Menu(Vector2(0, 0), Vector2(0.3, 0.7));
+	Menu* menu = new Menu(Vector2(0, 0), Vector2(0.3f, 0.7f));
 	menu->SetRenderObject(new MenuRenderObject(texture));
 	menuManager.AddMenu(name, menu);
 

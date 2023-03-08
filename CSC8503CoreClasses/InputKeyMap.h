@@ -20,7 +20,7 @@ enum InputType : unsigned int {
 	Return = (1u << 30),
 	Confirm = (1u << 31),
 
-	All = -1
+	All = UINT_MAX
 }; 
 
 enum AxisInput
