@@ -527,8 +527,6 @@ StateGameObject* TutorialGame::AddStateObjectToWorld(const Vector3& position) {
 
 PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& position) {
 
-	// TODO: input validation for playerID == 1,2,3,4,5
-
 	PlayerObject* character = new PlayerObject(playerID);
 	SphereVolume* volume = new SphereVolume(1.0f, CollisionLayer::Player);
 
@@ -565,6 +563,9 @@ void TutorialGame::SetCameraFollow(PlayerObject* p)
 	int id = p->GetPlayerID();
 	switch (id)
 	{
+	case 0:
+		world->GetMainCamera()->SetControlType(ControlType::KeyboardMouse);
+		break;
 	case 1:
 		world->GetMainCamera()->SetControlType(ControlType::Controller_1);
 		break;
@@ -576,9 +577,6 @@ void TutorialGame::SetCameraFollow(PlayerObject* p)
 		break;
 	case 4:
 		world->GetMainCamera()->SetControlType(ControlType::Controller_4);
-		break;
-	case 5:
-		world->GetMainCamera()->SetControlType(ControlType::KeyboardMouse);
 		break;
 	default:
 		break;
