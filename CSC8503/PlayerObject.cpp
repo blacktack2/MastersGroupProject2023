@@ -167,7 +167,6 @@ This is a temporary member function used for testing controller's input. Feel fr
 }
 
 void PlayerObject::GetInput(Vector3& dir, unsigned int keyPress) {
-	GameObject* proj;
 	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
 
 	Vector3 fwdAxis = this->GetTransform().GetGlobalOrientation() * Vector3(0, 0, -1);
@@ -266,7 +265,7 @@ PlayerBullet* PlayerObject::PrepareBullet()
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
 	ink->GetPhysicsObject()->SetInverseMass(2.0f);
 	ink->GetPhysicsObject()->SetLinearVelocity(this->physicsObject->GetLinearVelocity() * Vector3(1, 0, 1));
-	Quaternion dir = transform.GetGlobalOrientation() * Quaternion::EulerAnglesToQuaternion((rand() % 100 - 50) / 20, (rand() % 100 - 50) / 20, (rand() % 100 - 50) / 20);
+	Quaternion dir = transform.GetGlobalOrientation() * Quaternion::EulerAnglesToQuaternion((float)(rand() % 100 - 50) / 20, (float)(rand() % 100 - 50) / 20, (float)(rand() % 100 - 50) / 20);
 	ink->GetPhysicsObject()->ApplyLinearImpulse(dir * Vector3(0, 0, -1) * projectileForce);
 	ink->SetActive(true);
 	return ink;
