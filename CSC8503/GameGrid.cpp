@@ -258,29 +258,35 @@ GameNode* GameGrid::NearestNode(Vector3 position)
 	return resultingNode;
 }
 
-std::vector<GameNode*> GameGrid::AreaNode(Vector3 position, float radius)
-{
+void GameGrid::PaintNode(Vector3 position, float radius, paintHell::InkType type) {
 	//translate world position to grid local position
 	Vector3 localPosition = position - gameGridOrigin;
 
 	//translate x,z coord to row col (node)
-	int minRow = std::round((localPosition.x - radius) / unitLength);
-	int maxRow = std::round((localPosition.x + radius) / unitLength);
-	int minCol = std::round((localPosition.z - radius) / unitLength);
-	int maxCol = std::round((localPosition.z + radius) / unitLength);
-	
+	int minRow = std::clamp(static_cast<int>(std::round((localPosition.x - radius) / unitLength)), 0, numOfRows - 1);
+	int maxRow = std::clamp(static_cast<int>(std::round((localPosition.x + radius) / unitLength)), 0, numOfRows - 1);
+	int minCol = std::clamp(static_cast<int>(std::round((localPosition.z - radius) / unitLength)), 0, numOfRows - 1);
+	int maxCol = std::clamp(static_cast<int>(std::round((localPosition.z + radius) / unitLength)), 0, numOfRows - 1);
 
-
-
-
-	std::vector<GameNode*> t;
-	return t;
+	for (int col = minCol; col < maxCol; col++) {
+		for (int row = minRow; row < maxRow; row++) {
+			gameNodes[col][row].isInked = true;
+			gameNodes[col][row].inkType = type;
+		}
+	}
 
 }
 
 void GameGrid::DrawDebugGameGrid()
 {
-
+	Debug::DrawLine(gameGridOrigin, 
+		gameGridOrigin + Vector3(numOfColumns * unitLength * 0.5, 10, numOfRows * unitLength * 0.5), Debug::YELLOW, 0.01f);
+	Debug::DrawLine(gameGridOrigin + Vector3(numOfColumns * unitLength , 0.0f , 0.0f), 
+		gameGridOrigin + Vector3(numOfColumns * unitLength * 0.5, 10, numOfRows * unitLength * 0.5), Debug::YELLOW, 0.01f);
+	Debug::DrawLine(gameGridOrigin + Vector3(0.0f , 0.0f , numOfRows * unitLength), 
+		gameGridOrigin + Vector3(numOfColumns * unitLength * 0.5, 10, numOfRows * unitLength * 0.5), Debug::YELLOW, 0.01f);
+	Debug::DrawLine(gameGridOrigin + Vector3(numOfColumns * unitLength, 0.0f , numOfRows * unitLength), 
+		gameGridOrigin + Vector3(numOfColumns * unitLength * 0.5, 10, numOfRows * unitLength * 0.5), Debug::YELLOW, 0.01f);
 	for (auto& currentRow : gameNodes)
 	{
 		for (auto& currentNode : currentRow)
@@ -295,24 +301,6 @@ void GameGrid::DrawDebugGameGrid()
 				break;
 			default:
 				break;
-			}
-		}
-	}
-}
-
-void GameGrid::PaintNode(Vector3 position, float radius, paintHell::InkType type) {
-	GameNode* nearestNode = this->NearestNode(position);
-	if (nearestNode)
-	{
-		nearestNode->isInked = true;
-		nearestNode->inkType = type;
-		Vector3 floatDiff = nearestNode->worldPosition - LastNearestNode.worldPosition;
-		float gap = unitLength;
-		if (abs(floatDiff.x) > gap || abs(floatDiff.y) > gap || abs(floatDiff.z) > gap) {
-			LastNearestNode = *nearestNode;
-			TraceNodes.push_back(*nearestNode);
-			if (TraceNodes.size() > maxNumOfNodesInTrace) {
-				TraceNodes.erase(TraceNodes.begin());
 			}
 		}
 	}

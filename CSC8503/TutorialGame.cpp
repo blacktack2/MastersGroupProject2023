@@ -105,7 +105,7 @@ void TutorialGame::Clear() {
 void TutorialGame::InitWorld() {
 	Clear();
 
-	gridManager->AddGameGrid(new GameGrid({ 0,0,0 }, 300, 300, 2));
+	gridManager->AddGameGrid(new GameGrid({ 0,0,0 }, 400, 400, 1));
 	BuildLevel();
 
 	InitGameExamples();

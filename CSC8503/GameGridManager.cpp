@@ -29,11 +29,8 @@ GameNode* GameGridManager::NearestNode(Vector3 position) {
 }
 
 void GameGridManager::PaintPosition(Vector3 position, float paintRadius, paintHell::InkType type) {
-	GameNode* node = NearestNode(position);
-
-	if (node)
-	{
-		node->isInked = true;
-		node->inkType = type;
+	for (auto gameGrid : gameGrids) {
+		gameGrid->PaintNode(position, paintRadius, type);
+		
 	}
 }

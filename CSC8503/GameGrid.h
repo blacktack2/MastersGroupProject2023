@@ -131,11 +131,9 @@ namespace NCL
 
 			GameNode* NearestNode(Vector3 position);
 
-			std::vector<GameNode*> AreaNode(Vector3 position, float radius);
+			void PaintNode(Vector3 position, float radius, paintHell::InkType type);
 
 			void DrawDebugGameGrid();
-
-			void PaintNode(Vector3 position, float radius, paintHell::InkType type);
 
 			std::vector<GameNode> GetTraceNodes();
 
