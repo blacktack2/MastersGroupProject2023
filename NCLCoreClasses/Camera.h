@@ -22,12 +22,15 @@ namespace NCL {
 
 	enum ControlType
 	{
-		KeyboardMouse,
+		None,
 
 		Controller_1,
 		Controller_2,
 		Controller_3,
-		Controller_4
+		Controller_4,
+
+		KeyboardMouse
+
 	};
 
 	class Camera {

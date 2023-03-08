@@ -11,7 +11,7 @@ void InputKeyMap::Update() {
 	movementAxis = Vector2(0);
 	cameraAxis = Vector2(0);
 	// Axis:
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < AxisInput::AxisInputDataMax; j++)
 		{
@@ -50,24 +50,27 @@ void InputKeyMap::Update() {
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W))
 	{
 		buttonstates |= InputType::Foward;
-		//AxisDataArray[1][AxisInput::Axis2] = 1;
+		AxisDataArray[4][AxisInput::Axis2] = 1;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S))
 	{
 		buttonstates |= InputType::Backward;
-		//AxisDataArray[1][AxisInput::Axis2] = -1;
+		AxisDataArray[4][AxisInput::Axis2] = -1;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A))
 	{
 		buttonstates |= InputType::Left;
+		AxisDataArray[4][AxisInput::Axis1] = -1;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D))
 	{
 		buttonstates |= InputType::Right;
+		AxisDataArray[4][AxisInput::Axis1] = 1;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SPACE))
 	{
 		buttonstates |= InputType::Jump;
+		AxisDataArray[4][AxisInput::Axis6] = 1;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::C))
 	{
@@ -81,6 +84,7 @@ void InputKeyMap::Update() {
 		if (Window::GetMouse()->ButtonDown(MouseButtons::LEFT))
 		{
 			buttonstates |= InputType::Action1;
+			AxisDataArray[4][AxisInput::Axis5] = 1;
 		}
 		if (Window::GetMouse()->ButtonPressed(MouseButtons::RIGHT))
 		{
@@ -91,6 +95,9 @@ void InputKeyMap::Update() {
 		{
 			buttonstates |= InputType::Confirm;
 		}
+
+		AxisDataArray[4][AxisInput::Axis4] = -1.0f * Window::GetMouse()->GetRelativePosition().y;
+		AxisDataArray[4][AxisInput::Axis3] = Window::GetMouse()->GetRelativePosition().x;
 
 		mousePosition = Window::GetMouse()->GetAbsolutePosition();
 	}

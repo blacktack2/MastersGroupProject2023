@@ -59,9 +59,9 @@ namespace paintHell {
 			return state & key;
 		}
 
-		bool GetAxisData(unsigned int controllerNum, AxisInput axis, float& data)		// controllerNum == 1,2,3,4
+		bool GetAxisData(unsigned int controllerNum, AxisInput axis, float& data)		// controllerNum == 1,2,3,4,5
 		{
-			if ((controllerNum == 0) || (controllerNum > 4))
+			if ((controllerNum == 0) || (controllerNum > 5))
 			{
 				return false;
 			}
@@ -91,7 +91,7 @@ namespace paintHell {
 		void UpdateGameStateDependant();
 
 		unsigned int buttonstates;
-		float AxisDataArray[4][AxisInput::AxisInputDataMax] = { 0 };
+		float AxisDataArray[5][AxisInput::AxisInputDataMax] = { 0 };
 		Vector2 movementAxis;
 		Vector2 cameraAxis;
 		Vector2 mousePosition;

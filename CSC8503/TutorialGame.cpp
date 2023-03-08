@@ -100,7 +100,7 @@ void TutorialGame::StartLevel() {
 		// NOT using keyboard if there are already 4 controllers connected
 		if (player4 == nullptr)
 		{
-			player4 = AddPlayerToWorld(0, Vector3(0, 5, 90));	// playerID == 0 indicating player using keyboard
+			player4 = AddPlayerToWorld(5, Vector3(0, 5, 90));	// playerID == 5 indicating player using keyboard
 		}
 		break;
 	}
@@ -549,7 +549,7 @@ StateGameObject* TutorialGame::AddStateObjectToWorld(const Vector3& position) {
 
 PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& position) {
 
-	// TODO: input validation for playerID == 1,2,3,4
+	// TODO: input validation for playerID == 1,2,3,4,5
 
 	PlayerObject* character = new PlayerObject(playerID);
 	SphereVolume* volume = new SphereVolume(1.0f, CollisionLayer::Player);
@@ -584,26 +584,26 @@ void TutorialGame::SetCameraFollow(PlayerObject* p)
 	if (player4 != nullptr) player4->AttachedCamera(false);
 
 	p->AttachedCamera(true);
-
-	if (p->GetPlayerID() == 0)
+	int id = p->GetPlayerID();
+	switch (id)
 	{
-		world->GetMainCamera()->SetControlType(ControlType::KeyboardMouse);
-	}
-	if (p->GetPlayerID() == 1)
-	{
+	case 1:
 		world->GetMainCamera()->SetControlType(ControlType::Controller_1);
-	}
-	if (p->GetPlayerID() == 2)
-	{
+		break;
+	case 2:
 		world->GetMainCamera()->SetControlType(ControlType::Controller_2);
-	}
-	if (p->GetPlayerID() == 3)
-	{
+		break;
+	case 3:
 		world->GetMainCamera()->SetControlType(ControlType::Controller_3);
-	}
-	if (p->GetPlayerID() == 4)
-	{
+		break;
+	case 4:
 		world->GetMainCamera()->SetControlType(ControlType::Controller_4);
+		break;
+	case 5:
+		world->GetMainCamera()->SetControlType(ControlType::KeyboardMouse);
+		break;
+	default:
+		break;
 	}
 }
 

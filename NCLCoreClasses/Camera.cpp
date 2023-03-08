@@ -92,23 +92,20 @@ void Camera::UpdateCamera(float dt) {
 		followPos = Vector3::Lerp(LastPos, followPos, std::min(smoothFactor * dt, 1.0f));
 		LastPos = followPos;
 
-		if (controlledBy == ControlType::KeyboardMouse)
+		/*if (controlledBy == ControlType::KeyboardMouse)
 		{
 			pitch -= (Window::GetMouse()->GetRelativePosition().y);
 			yaw -= (Window::GetMouse()->GetRelativePosition().x);
-		}
-		if (controlledBy > ControlType::KeyboardMouse)
+		}*/
+		paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+		Vector2 orientationThumbData{ 0,0 };
+		if (keyMap.GetAxisData((unsigned int)controlledBy, AxisInput::Axis3, orientationThumbData.x) && keyMap.GetAxisData((unsigned int)controlledBy, AxisInput::Axis4, orientationThumbData.y))
 		{
-			paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
-			Vector2 orientationThumbData{ 0,0 };
-			if (keyMap.GetAxisData((unsigned int)controlledBy, AxisInput::Axis3, orientationThumbData.x) && keyMap.GetAxisData((unsigned int)controlledBy, AxisInput::Axis4, orientationThumbData.y))
+			if (!(orientationThumbData.x == 0 && orientationThumbData.y == 0))
 			{
-				if (!(orientationThumbData.x == 0 && orientationThumbData.y == 0))
-				{
-					float sensitivity = 1.5f;
-					pitch += (orientationThumbData.y * sensitivity);
-					yaw -= (orientationThumbData.x * sensitivity);
-				}
+				float sensitivity = 1.5f;
+				pitch += (orientationThumbData.y * sensitivity);
+				yaw -= (orientationThumbData.x * sensitivity);
 			}
 		}
 		
