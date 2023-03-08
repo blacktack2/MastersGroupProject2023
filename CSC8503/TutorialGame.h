@@ -81,7 +81,7 @@ namespace NCL {
 			PhysicsSystem*		physics;
 			GameWorld*			world;
 
-			paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+			NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 
 			Light* sunLight;
 
@@ -98,7 +98,7 @@ namespace NCL {
 
 			int score;
 
-			paintHell::debug::DebugViewPoint* debugViewPoint;
+			NCL::DebugViewPoint* debugViewPoint;
 
 			GameLevel* gameLevel = nullptr;
 			float interval = 0.0f;

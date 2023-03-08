@@ -18,7 +18,7 @@ using namespace Maths;
 
 
 Button::Button(float PosX, float PosY, float Width, float Height, std::shared_ptr<TextureBase> texture, overlap_func onclick): UIObject(texture),
-keyMap(paintHell::InputKeyMap::instance()), renderer(GameTechRenderer::instance()), OnClickCallback(onclick) {
+keyMap(NCL::InputKeyMap::instance()), renderer(GameTechRenderer::instance()), OnClickCallback(onclick) {
     posX = PosX;
     posY = PosY;
     width = Width;

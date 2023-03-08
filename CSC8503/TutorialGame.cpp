@@ -66,7 +66,7 @@ TutorialGame::TutorialGame() {
 
 	forceMagnitude	= 10.0f;
 	inSelectionMode = false;
-	debugViewPoint = &paintHell::debug::DebugViewPoint::Instance();
+	debugViewPoint = &NCL::DebugViewPoint::Instance();
 	
 	SoundSystem::Initialize();
 	gridManager = &GameGridManager::instance();
@@ -194,7 +194,7 @@ void TutorialGame::UpdateGameCore(float dt) {
 }
 
 void TutorialGame::ProcessState() {
-	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	if (keyMap.GetButton(InputType::Restart)) {
 		this->StartLevel();
 	}

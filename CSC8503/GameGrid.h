@@ -84,7 +84,7 @@ namespace NCL
 			Vector3 worldPosition;
 
 			bool isInked;
-			paintHell::InkType inkType = paintHell::InkType::NoInk;
+			NCL::InkType inkType = NCL::InkType::NoInk;
 			NodeType type;				// the type of object represented by the node
 
 			GameNode* parent;
@@ -135,7 +135,7 @@ namespace NCL
 
 			void DrawDebugGameGrid();
 
-			void PaintNode(Vector3 position, paintHell::InkType type);
+			void PaintNode(Vector3 position, NCL::InkType type);
 
 			std::vector<GameNode> GetTraceNodes();
 

@@ -25,7 +25,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-PlayerObject::PlayerObject(int id) : GameObject(), id(id), keyMap(paintHell::InputKeyMap::instance()) {
+PlayerObject::PlayerObject(int id) : GameObject(), id(id), keyMap(NCL::InputKeyMap::instance()) {
 	OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
 	};
@@ -108,7 +108,7 @@ void PlayerObject::Move(Vector3 dir) {
 
 	if (lastDir != Vector3(0, 0, 0)) {
 		//Vector3 stopDir = dir - lastDir;
-		if (paintHell::InputKeyMap::instance().GetButtonState() != lastKey) {
+		if (NCL::InputKeyMap::instance().GetButtonState() != lastKey) {
 			this->GetPhysicsObject()->ApplyLinearImpulse(-lastDir * moveSpeed);
 		}
 
@@ -127,7 +127,7 @@ void PlayerObject::GetControllerInput(unsigned int controllerNum, Vector3& movin
 This is a temporary member function used for testing controller's input. Feel free to merge this into PlayerObject::GetInput when necessary.
 */
 {
-	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	isFreeLook = false;
 	
 	// Thumb for movement:
@@ -167,7 +167,7 @@ This is a temporary member function used for testing controller's input. Feel fr
 
 void PlayerObject::GetInput(Vector3& dir, unsigned int keyPress) {
 	GameObject* proj;
-	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 
 	Vector3 fwdAxis = this->GetTransform().GetGlobalOrientation() * Vector3(0, 0, -1);
 

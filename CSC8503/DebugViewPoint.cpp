@@ -6,7 +6,6 @@
 #include <psapi.h>
 #endif
 
-using namespace paintHell::debug;
 using namespace NCL;
 using namespace Maths;
 

@@ -287,10 +287,10 @@ void GameGrid::DrawDebugGameGrid()
 		{
 			switch (currentNode.inkType)
 			{
-			case paintHell::InkType::BossDamage:
+			case NCL::InkType::BossDamage:
 				Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0, 0.5, 0 }, Vector4(0, 1, 0.2, 1), 0.01f);
 				break;
-			case paintHell::InkType::PlayerDamage:
+			case NCL::InkType::PlayerDamage:
 				Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0, 0.5, 0 }, Vector4(1, 0, 0, 1), 0.01f);
 				break;
 			default:
@@ -300,7 +300,7 @@ void GameGrid::DrawDebugGameGrid()
 	}
 }
 
-void GameGrid::PaintNode(Vector3 position, paintHell::InkType type) {
+void GameGrid::PaintNode(Vector3 position, NCL::InkType type) {
 	GameNode* nearestNode = this->NearestNode(position);
 	if (nearestNode)
 	{

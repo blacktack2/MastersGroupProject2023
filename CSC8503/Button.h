@@ -46,7 +46,7 @@ namespace NCL::CSC8503 {
     private:
         void CheckMousePosition(Vector2 mousePos);
 
-        paintHell::InputKeyMap& keyMap;
+        NCL::InputKeyMap& keyMap;
         GameTechRenderer& renderer;
 
         float posX;

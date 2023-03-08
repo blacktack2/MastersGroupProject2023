@@ -3,7 +3,7 @@
 #include <string>
 
 
-namespace paintHell::debug {
+namespace NCL {
 	class DebugViewPoint
 	{
 	public:

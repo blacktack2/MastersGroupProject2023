@@ -9,7 +9,7 @@
 #include "BehaviourNodeWithChildren.h"
 #include <string>
 
-namespace paintHell::core {
+namespace NCL::core {
 
 	class BehaviourInvertor : public BehaviourNodeWithChildren {
 	public:

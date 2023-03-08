@@ -24,7 +24,7 @@ public:
 
 	GameTechRenderer& renderer = GameTechRenderer::instance();
 	MenuManager& menuManager = MenuManager::instance();
-	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 
 private:
 	void InitMenu();

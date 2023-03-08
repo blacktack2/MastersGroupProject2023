@@ -17,7 +17,6 @@
 
 using namespace NCL;
 using namespace CSC8503;
-using namespace paintHell::debug;
 
 PaintingRPass::PaintingRPass() : OGLMainRenderPass(),
 gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {

@@ -623,7 +623,7 @@ NetworkBoss* NetworkedGame::AddNetworkBossToWorld(const Vector3& position, Vecto
 }
 
 void NetworkedGame::ProcessState() {
-	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	if (thisServer) {
 		if (keyMap.GetButton(InputType::Start)) {
 			std::cout << "Starting" << std::endl;
