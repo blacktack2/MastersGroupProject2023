@@ -60,6 +60,43 @@ namespace NCL {
 				return mainCamera;
 			}
 
+			Camera* GetCamera(int n) const {
+				switch (n)
+				{
+				case 1:
+					return playerCamera1;
+				case 2:
+					return playerCamera2;
+				case 3:
+					return playerCamera3;
+				case 4:
+					return playerCamera4;
+				default:
+					return nullptr;		// wrong input
+				}
+			}
+
+			Camera* SetMainCamera(int n)
+			{
+				switch (n)
+				{
+				case 1:
+					mainCamera = playerCamera1;
+					return mainCamera;
+				case 2:
+					mainCamera = playerCamera2;
+					return mainCamera;
+				case 3:
+					mainCamera = playerCamera3;
+					return mainCamera;
+				case 4:
+					mainCamera = playerCamera4;
+					return mainCamera;
+				default:
+					return nullptr;		// wrong input
+				}
+			}
+
 			void ShuffleConstraints(bool state) {
 				shuffleConstraints = state;
 			}
@@ -110,6 +147,10 @@ namespace NCL {
 			QuadTree staticQuadTree;
 
 			Camera* mainCamera;
+			Camera* playerCamera1 = nullptr;
+			Camera* playerCamera2 = nullptr;
+			Camera* playerCamera3 = nullptr;
+			Camera* playerCamera4 = nullptr;
 
 			bool shuffleConstraints;
 			bool shuffleObjects;

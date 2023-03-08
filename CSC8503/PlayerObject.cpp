@@ -63,7 +63,7 @@ void PlayerObject::Update(float dt) {
 		Vector3 dir = Vector3(0, 0, 0);
 		lastKey = keyMap.GetButtonState();
 		keyMap.Update();
-		if (playerID == 0)
+		if (playerID == 0)		// Keyboard&Mouse user
 		{
 			GetInput(dir, keyMap.GetButtonState());
 			Move(dir);
@@ -248,7 +248,7 @@ void PlayerObject::RotateYaw(float yaw) {
 
 void PlayerObject::RotateToCamera() {
 	if (hasCamera && !isFreeLook) {
-		RotateYaw(gameWorld.GetMainCamera()->GetYaw());
+		RotateYaw(gameWorld.GetCamera(hasCamera)->GetYaw());
 	}
 
 }

@@ -21,7 +21,7 @@ namespace NCL {
 
 			void CollisionWith(GameObject* other);
 
-			void AttachedCamera(bool b) {
+			void AttachedCamera(int b) {
 				hasCamera = b;
 				//camera = cam;
 			};
@@ -94,7 +94,7 @@ namespace NCL {
 			
 			//camera related
 			//Camera& camera;
-			bool hasCamera = false;
+			int hasCamera = 0;		// 0 means no camera; 1,2,3,4 indicates which playerCamera it is attached to.
 			bool isFreeLook = false;
 			float camTurnSpeed = 0.5f;
 			Vector3 cameraOffset = Vector3(0.5f, 5.0f, 2.0f);

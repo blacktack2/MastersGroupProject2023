@@ -84,22 +84,32 @@ void TutorialGame::StartLevel() {
 
 	XboxControllerManager::GetXboxController().CheckPorts();
 	int n = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
-	std::cout << "controller connected " << n << std::endl;
+	//std::cout << "controller connected " << n << std::endl;
 	switch (n)
 	{
 	case 4:
 		player4 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player4"), Vector3(0, 5, 90));
+		player4->AttachedCamera(4);
+		world->GetCamera(4)->SetControlType(ControlType::Controller_4);
 	case 3:
 		player3 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player3"), Vector3(0, 5, 90));
+		player3->AttachedCamera(3);
+		world->GetCamera(3)->SetControlType(ControlType::Controller_3);
 	case 2:
 		player2 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player2"), Vector3(0, 5, 90));
+		player2->AttachedCamera(2);
+		world->GetCamera(2)->SetControlType(ControlType::Controller_2);
 	case 1:
 		player = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player1"), Vector3(0, 5, 90));
+		player->AttachedCamera(1);
+		world->GetCamera(1)->SetControlType(ControlType::Controller_1);
 	default:
 		// NOT using keyboard if there are already 4 controllers connected
 		if (player4 == nullptr)
 		{
 			player4 = AddPlayerToWorld(0, Vector3(0, 5, 90));	// playerID == 0 indicating player using keyboard
+			player4->AttachedCamera(4);
+			world->GetCamera(4)->SetControlType(ControlType::KeyboardMouse);
 		}
 		break;
 	}
@@ -191,7 +201,11 @@ void TutorialGame::UpdateGameCore(float dt) {
 	GameGridManager::instance().Update(dt);
 
 	if (!inSelectionMode) {
-		world->GetMainCamera()->UpdateCamera(dt);
+		//world->GetMainCamera()->UpdateCamera(dt);
+		world->GetCamera(1)->UpdateCamera(dt);
+		world->GetCamera(2)->UpdateCamera(dt);
+		world->GetCamera(3)->UpdateCamera(dt);
+		world->GetCamera(4)->UpdateCamera(dt);
 	}
 	Vector3 crossPos = CollisionDetection::Unproject(Vector3(screenSize * 0.5f, 0.99f), *world->GetMainCamera());
 	Debug::DrawAxisLines(Matrix4::Translation(crossPos), 1.0f);
@@ -552,35 +566,10 @@ PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& positi
 
 void TutorialGame::SetCameraFollow(PlayerObject* p)
 {
-	world->GetMainCamera()->SetFollow(&(p->GetTransform()));
-
-	if (player != nullptr) player->AttachedCamera(false);
-	if (player2 != nullptr) player2->AttachedCamera(false);
-	if (player3 != nullptr) player3->AttachedCamera(false);
-	if (player4 != nullptr) player4->AttachedCamera(false);
-
-	p->AttachedCamera(true);
 	int id = p->GetPlayerID();
-	switch (id)
-	{
-	case 0:
-		world->GetMainCamera()->SetControlType(ControlType::KeyboardMouse);
-		break;
-	case 1:
-		world->GetMainCamera()->SetControlType(ControlType::Controller_1);
-		break;
-	case 2:
-		world->GetMainCamera()->SetControlType(ControlType::Controller_2);
-		break;
-	case 3:
-		world->GetMainCamera()->SetControlType(ControlType::Controller_3);
-		break;
-	case 4:
-		world->GetMainCamera()->SetControlType(ControlType::Controller_4);
-		break;
-	default:
-		break;
-	}
+	if (id == 0) world->SetMainCamera(4);
+	else world->SetMainCamera(id);
+	world->GetMainCamera()->SetFollow(&(p->GetTransform()));
 }
 
 Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
