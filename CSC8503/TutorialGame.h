@@ -19,9 +19,7 @@
 #include "GameStateManager.h"
 #include "MenuManager.h"
 
-#include "MeshAnimation.h";
-
-
+#include "MeshAnimation.h"
 
 
 namespace NCL {

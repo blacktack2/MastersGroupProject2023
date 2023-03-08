@@ -42,7 +42,7 @@ bool EnemyObject::CanSeePlayer() {
 std::vector<Vector3> EnemyObject::GetRandomPatrolPoint() {
 	NavigationPath outPath;
 	int baseCounter = 20;
-	while (!navMap.FindPath(transform.GetGlobalPosition(), Vector3(rand() % 200, 0, rand() % 200), outPath) && --baseCounter >= 0) {
+	while (!navMap.FindPath(transform.GetGlobalPosition(), Vector3((float)(rand() % 200), 0, (float)(rand() % 200)), outPath) && --baseCounter >= 0) {
 
 	}
 	Vector3 pos;

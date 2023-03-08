@@ -8,10 +8,10 @@ Billboard::Billboard(Vector3 position) {
 
 	quad = new OGLMesh();
 	quad->SetVertexPositions({
-		Vector3(-0.1, 0, -1),
-		Vector3(-0.1, -0.1, -1),
-		Vector3(0.1, -0.1, -1),
-		Vector3(0.1, 0, -1),
+		Vector3(-0.1f, 0, -1),
+		Vector3(-0.1f, -0.1f, -1),
+		Vector3(0.1f, -0.1f, -1),
+		Vector3(0.1f, 0, -1),
 		});
 	quad->SetVertexTextureCoords({
 		Vector2(0, 1),

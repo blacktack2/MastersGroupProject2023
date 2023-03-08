@@ -30,8 +30,8 @@
 #define BOSSID 5; //reserve 0-4 for playerID
 
 struct MessagePacket : public GamePacket {
-	short playerID;
-	short messageID;
+	short playerID = 0;
+	short messageID = 0;
 
 	MessagePacket() {
 		type = Message;
@@ -182,7 +182,7 @@ GameServer* NetworkedGame::GetServer()
 
 void NetworkedGame::UpdateAsServer(float dt) {
 	//update Game state
-	int health = 0;
+	float health = 0;
 	health += static_cast<NetworkPlayer*>(localPlayer)->GetHealth()->GetHealth();
 	for (auto const& player : serverPlayers) {
 		health += static_cast<NetworkPlayer*>(player.second)->GetHealth()->GetHealth();
@@ -378,7 +378,7 @@ void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID
 	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(((ClientPacket*)payload)->buttonstates);
 
 	if (((ClientPacket*)payload)->yaw != NULL) {
-		((NetworkPlayer*)serverPlayers[playerID])->RotateYaw(((ClientPacket*)payload)->yaw*0.001);
+		((NetworkPlayer*)serverPlayers[playerID])->RotateYaw(((ClientPacket*)payload)->yaw*0.001f);
 	}
 
 	if (((ClientPacket*)payload)->lastID > stateIDs[playerID]) {

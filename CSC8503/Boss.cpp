@@ -15,6 +15,7 @@
 #include "BehaviourSequence.h"
 #include "BehaviourNodeWithChildren.h"
 #include "BehaviourAction.h"
+#include "DebugViewPoint.h"
 #include <limits>
 
 
@@ -47,8 +48,6 @@ void Boss::BuildTree() {
         case Failure:
         case Success:
             return state;
-        default:
-            break;
         }
 
         if (health.GetHealth() < offensiveHealthLowerBound) return Failure;
@@ -64,8 +63,6 @@ void Boss::BuildTree() {
         case Failure:
         case Success:
             return state;
-        default:
-            break;
         }
 
         if (SqrDistToTarget() > bossVision * bossVision || state == Ongoing)
@@ -90,8 +87,6 @@ void Boss::BuildTree() {
         case Failure:
         case Success:
             return state;
-        default:
-            break;
         }
 
         if (SqrDistToTarget() < distanceToHaveCloseCombat * distanceToHaveCloseCombat) return Success;
@@ -109,8 +104,6 @@ void Boss::BuildTree() {
             return state;
         case Initialise:
             if (std::rand() % 100 > 60) return Failure;
-        default:
-            break;
         }
         if (StabPlayer(target)) return Success;
         bossAction = Attack1;
@@ -123,8 +116,6 @@ void Boss::BuildTree() {
         case Failure:
         case Success:
             return state;
-        default:
-            break;
         }
 
         if (Spin(target)) return Success;
@@ -142,8 +133,6 @@ void Boss::BuildTree() {
             return state;
         case Initialise:
             if (std::rand() % 100 > 70) return Failure;
-        default:
-            break;
         }
         if (UseLaserOnPlayer(target)) return Success;
         bossAction = Attack3;
@@ -156,8 +145,6 @@ void Boss::BuildTree() {
         case Failure:
         case Success:
             return state;
-        default:
-            break;
         }
 
         if (JumpTo(target)) return Success;
@@ -174,8 +161,6 @@ void Boss::BuildTree() {
         case Failure:
         case Success:
             return state;
-        default:
-            break;
         }
 
         if (SqrDistToTarget() > bossVision * bossVision || state == Ongoing)
@@ -195,8 +180,6 @@ void Boss::BuildTree() {
         case Failure:
         case Success:
             return state;
-        default:
-            break;
         }
 
         if (SqrDistToTarget() < distanceToHaveCloseCombat * distanceToHaveCloseCombat || state == Ongoing)
@@ -218,8 +201,6 @@ void Boss::BuildTree() {
             return state;
         case Initialise:
             if (std::rand() % 100 > 70) return Failure;
-        default:
-            break;
         }
         if (InkRain(target)) return Success;
         bossAction = Attack4;
@@ -232,8 +213,6 @@ void Boss::BuildTree() {
         case Failure:
         case Success:
             return state;
-        default:
-            break;
         }
 
         if (BulletsStorm()) return Success;
@@ -247,6 +226,7 @@ void Boss::BuildTree() {
 
 
 void Boss::Update(float dt) {
+    paintHell::debug::DebugViewPoint::Instance().MarkTime("Boss Update");
     GetTarget();
     health.Update(dt);
     deltaTime = dt;
@@ -262,8 +242,12 @@ void Boss::Update(float dt) {
     }
 
     std::cout << SqrDistToTarget() << std::endl;
-    bossAction = NoAction;
-    if (behaviourTree->Execute(dt) != Ongoing) behaviourTree->Reset();
+    if (health.GetHealth() > 0 )
+    {
+        bossAction = NoAction;
+        if (behaviourTree->Execute(dt) != Ongoing) behaviourTree->Reset();
+    }
+    paintHell::debug::DebugViewPoint::Instance().FinishTime("Boss Update");
 }
 
 void Boss::ChangeLoseState()
@@ -358,8 +342,8 @@ bool Boss::RandomWalk() {
     randomWalkTimer += deltaTime;
     if (randomWalkTimer > period) {
         randomWalkTimer = 0.0f;
-        float x = (std::rand() % 11) - 5;
-        float z = (std::rand() % 11) - 5;
+        float x = (float)((std::rand() % 11) - 5);
+        float z = (float)((std::rand() % 11) - 5);
         randomWalkDirection = Vector3{ x,0,z };
         randomWalkDirection = randomWalkDirection.Normalised();
         Quaternion orientation = Quaternion(Matrix4::BuildViewMatrix(this->GetTransform().GetGlobalPosition() + randomWalkDirection * 10, this->GetTransform().GetGlobalPosition(), Vector3(0, 1, 0)).Inverse());
@@ -465,7 +449,7 @@ bool Boss::UseLaserOnPlayer(PlayerObject* player) {
         {
             for (int j = 0; j < 5; j++)
             {
-                Vector3 v = bombVelocity + leftDir * dColumn * j + upDir * dRow * i;
+                Vector3 v = bombVelocity + leftDir * dColumn * (float)j + upDir * dRow * (float)i;
                 releaseBossBullet(v, bombScale);
             }
         }
@@ -473,7 +457,7 @@ bool Boss::UseLaserOnPlayer(PlayerObject* player) {
         {
             for (int j = 1; j < 5; j++)
             {
-                Vector3 v = bombVelocity - leftDir * dColumn * j + upDir * dRow * i;
+                Vector3 v = bombVelocity - leftDir * dColumn * (float)j + upDir * dRow * (float)i;
                 releaseBossBullet(v, bombScale);
             }
         }
@@ -576,11 +560,11 @@ bool Boss::InkRain(PlayerObject* player) {
     if (!rainIsInitialised) {
         rain = std::vector<BossBullet*>(numOfBomb);
         for (int n = 0; n < numOfBomb; n++) {
-            float xDot = std::rand() % rainRange + 1;
-            float xDotDot = -(std::rand() % rainRange + 1);
-            float yDot = std::rand() % rainRange + 1;
-            float zDot = std::rand() % rainRange + 1;
-            float zDotDot = -(std::rand() % rainRange + 1);
+            float xDot = (float)(std::rand() % rainRange + 1);
+            float xDotDot = (float)-(std::rand() % rainRange + 1);
+            float yDot = (float)(std::rand() % rainRange + 1);
+            float zDot = (float)(std::rand() % rainRange + 1);
+            float zDotDot = (float)-(std::rand() % rainRange + 1);
             float dx = xDot + xDotDot;
             float dy = yDot;
             float dz = zDot + zDotDot;
@@ -630,20 +614,23 @@ bool Boss::BulletsStorm() {
         bulletsStormFrequencyTimer += deltaTime;
         if (bulletsStormFrequencyTimer > bulletsStormPeriod) {
             bulletsStormFrequencyTimer = 0.0f;
-            const float PI = 3.1415926;
+            const float PI = 3.1415926f;
             int rayNum = 16;
             bulletsStormAngle += PI / 50;
             float currentPhase = bulletsStormAngle;
             float dAngle = (2 * PI) / rayNum;
             for (; currentPhase < (2 * PI + bulletsStormAngle); currentPhase += dAngle) {
-                Vector3 rayDir = this->GetTransform().GetGlobalOrientation() * Vector3(cos(currentPhase), 0, sin(currentPhase));
+                Vector3 rayDir = transform.GetGlobalOrientation() * Vector3(cos(currentPhase), 0, sin(currentPhase));
                 Vector3 bombVelocity = rayDir * bombSpeed;
                 releaseBossBullet(bombVelocity, bombScale);
             }
-            this->GetPhysicsObject()->SetAngularVelocity(this->GetTransform().GetGlobalOrientation() * Vector3 { 1, 1, 1 });
+            physicsObject->SetAngularVelocity(transform.GetGlobalOrientation() * Vector3 { 1, 1, 1 });
         }
         return false;
     }
+    physicsObject->SetAngularVelocity(Vector3(0, 0, 0));
+    Vector3 eurler = transform.GetGlobalOrientation().ToEuler();
+    transform.SetOrientation(Quaternion::EulerAnglesToQuaternion(0, eurler.y, 0));
     bulletsStormTimer = 0.0f;
     return true;
 }

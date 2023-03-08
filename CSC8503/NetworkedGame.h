@@ -19,7 +19,7 @@ namespace NCL {
 		class NetworkPlayer;
 
 		struct GameStatePacket : public GamePacket {
-			GameState state;
+			GameState state = GameState::Invalid;
 
 			GameStatePacket() {
 				type = GameState_Message;

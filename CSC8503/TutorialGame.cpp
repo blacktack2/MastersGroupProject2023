@@ -332,21 +332,21 @@ void TutorialGame::InitMazeWorld(int numRows, int numCols, float size) {
 	NavigationGrid& nav = mazes[0].GetNavGrid();
 
 	Vector3 position;
-	while (!mazes[0].ValidPoint(position = Vector3(((rand() % 400) - 200), 5, (rand() % 400) - 200))) {}
+	while (!mazes[0].ValidPoint(position = Vector3(((float)(rand() % 400) - 200), 5, (float)(rand() % 400) - 200))) {}
 	//AddEnemyToWorld(position, nav);
 
 	for (int i = 0; i < 20; i++) {
-		while (!mazes[0].ValidPoint(position = Vector3(((rand() % 400) - 200), 4, (rand() % 400) - 200))) {}
+		while (!mazes[0].ValidPoint(position = Vector3(((float)(rand() % 400) - 200), 4, (float)(rand() % 400) - 200))) {}
 		AddBonusToWorld(position);
 	}
 
 	for (int i = 0; i < 50; i++) {
-		while (!mazes[0].ValidPoint(position = Vector3(((rand() % 400) - 200), 5, (rand() % 400) - 200))) {}
+		while (!mazes[0].ValidPoint(position = Vector3(((float)(rand() % 400) - 200), 5, (float)(rand() % 400) - 200))) {}
 		AddNPCToWorld(position);
 	}
 
 	for (int i = 0; i < 100; i++) {
-		while (!mazes[0].ValidPoint(position = Vector3(((rand() % 400) - 200), 1.5f + rand() % 30, (rand() % 400) - 200))) {}
+		while (!mazes[0].ValidPoint(position = Vector3(((float)(rand() % 400) - 200), 1.5f + (float)(rand() % 30), (float)(rand() % 400) - 200))) {}
 		switch (rand() % 5) {
 			case 0: AddCubeToWorld(position, Vector3(2), 20.0f, true); break;
 			case 1: AddCubeToWorld(position, Vector3(1), 10.0f, false); break;
@@ -641,7 +641,7 @@ void TutorialGame::UpdateLevel()
 			{
 				Vector3 dimensions{ interval / 2.0f, 10, interval / 2.0f };
 				Obstacle* pillar = new Obstacle{ &object, true };
-				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3,2,1.3 }, CollisionLayer::PaintAble));
+				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3f,2,1.3f }, CollisionLayer::PaintAble));
 
 				pillar->GetTransform()
 					.SetPosition(object.worldPos + Vector3{ 0,20,0 })
@@ -698,7 +698,7 @@ void TutorialGame::UpdateLevel()
 				Obstacle* shelter = new Obstacle{ &object, false };
 				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
 				shelter->GetTransform()
-					.SetPosition(object.worldPos + Vector3{ 0,2.2,0 })
+					.SetPosition(object.worldPos + Vector3{ 0,2.2f,0 })
 					.SetScale(dimensions);
 				//shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary::GetMesh("shelter"), basicTex, nullptr));
 
