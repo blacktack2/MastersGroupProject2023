@@ -99,7 +99,7 @@ void TutorialGame::StartLevel() {
 		// NOT using keyboard if there are already 4 controllers connected
 		if (player4 == nullptr)
 		{
-			player4 = AddPlayerToWorld(5, Vector3(0, 5, 90));	// playerID == 5 indicating player using keyboard
+			player4 = AddPlayerToWorld(0, Vector3(0, 5, 90));	// playerID == 0 indicating player using keyboard
 		}
 		break;
 	}

@@ -63,7 +63,7 @@ void PlayerObject::Update(float dt) {
 		Vector3 dir = Vector3(0, 0, 0);
 		lastKey = keyMap.GetButtonState();
 		keyMap.Update();
-		if (playerID == 5)
+		if (playerID == 0)
 		{
 			GetInput(dir, keyMap.GetButtonState());
 			Move(dir);
