@@ -105,8 +105,7 @@ bool NetworkObject::ReadFullPacket(FullPacket &p, float dt) {
 }
 
 bool NetworkObject::ReadItemInitPacket(ItemInitPacket& p, float dt) {
-	object.SetActive(true);
-	static_cast<Bullet*>(&object)->SetLifespan(1.0f);
+	static_cast<Bullet*>(&object)->SetLifespan(5.0f);
 	object.GetTransform().SetPosition(p.position);
 	object.GetTransform().SetOrientation(p.orientation);
 	object.GetTransform().SetScale(p.scale);
@@ -116,6 +115,7 @@ bool NetworkObject::ReadItemInitPacket(ItemInitPacket& p, float dt) {
 	lastDeltaState.orientation = object.GetTransform().GetGlobalOrientation();
 
 	this->SnapRenderToSelf();
+	object.SetActive(true);
 
 	return true;
 }

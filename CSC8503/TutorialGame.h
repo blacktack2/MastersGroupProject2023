@@ -153,7 +153,7 @@ namespace NCL {
 			float interval = 0.0f;			/////////
 			GameGrid* gameGrid = nullptr;	/////////
 			//GameObject* floor = nullptr;	/////////
-			Boss* testingBoss = nullptr;   /////////
+			Boss* boss = nullptr;   /////////
 
 			//GameGrid stuff
 			GameGridManager* gridManager;

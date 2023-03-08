@@ -119,9 +119,8 @@ void NetworkedGame::StartLevel() {
 	int id = OBJECTID_START;
 	BulletInstanceManager::instance().AddNetworkObject(id);
 
-	testingBoss = AddNetworkBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
-	testingBoss->SetTarget(localPlayer);
-	gameStateManager->SetGameState(GameState::OnGoing);
+	boss = AddNetworkBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
+	boss->SetNextTarget(player);
 
 	gameStateManager->SetGameState(GameState::OnGoing);
 	BroadcastGameStateChange();
@@ -201,6 +200,28 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	if (health <= 0) {
 		gameStateManager->SetGameState(GameState::Lose);
 		BroadcastGameStateChange();
+	}
+	
+	//boss special
+	if (boss) {
+		//Change boss target
+		Vector3 displacement;
+		PlayerObject* target = boss->GetTarget();
+		PlayerObject* player;
+		float minDist = 300;
+		for (auto pair : serverPlayers) {
+			player = static_cast<PlayerObject*>(pair.second);
+			if(player->GetHealth()->GetHealth() <= 0){
+				continue;
+			}
+			displacement = player->GetTransform().GetGlobalPosition() - boss->GetTransform().GetGlobalPosition();
+			float dist = abs(displacement.Length());
+			if (dist < minDist) {
+				target = static_cast<PlayerObject*>(player);
+				minDist = dist;
+			}
+		}
+		boss->SetNextTarget(target);
 	}
 
 	//send important information to each player
@@ -326,9 +347,9 @@ void NetworkedGame::SendSnapshot(bool deltaFrame, int playerID) {
 			delete newPacket;
 		}
 	}
-	if (testingBoss) {
+	if (boss) {
 		BossActionPacket newPacket;
-		newPacket.bossAction = static_cast<short int> (testingBoss->GetBossAction());
+		newPacket.bossAction = static_cast<short int> (boss->GetBossAction());
 		thisServer->SendPacket(static_cast <GamePacket*> (&newPacket), playerID);
 	}
 	
@@ -501,13 +522,11 @@ void NetworkedGame::HandleItemInitPacket(GamePacket* payload, int source) {
 
 void NetworkedGame::HandleBossActionPacket(GamePacket* payload, int source)
 {
-	//std::cout << "receiving boss action" << std::endl;
-	
 	//Needs Implementing in Boss's Code
 	
 	Boss::BossAction action = static_cast<Boss::BossAction>(static_cast<BossActionPacket*>(payload)->bossAction);
-	if (testingBoss) {
-		//testingBoss->SetBossAction(action);
+	if (boss) {
+		//boss->SetBossAction(action);
 	}
 }
 

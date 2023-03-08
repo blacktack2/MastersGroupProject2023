@@ -84,8 +84,8 @@ void TutorialGame::StartLevel() {
 	InitWorld();
 	player = AddPlayerToWorld(Vector3(0, 5, 90),true);
 
-	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
-	testingBoss->SetTarget(player);
+	boss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
+	boss->SetNextTarget(player);
 }
 
 void TutorialGame::Clear() {
@@ -96,7 +96,7 @@ void TutorialGame::Clear() {
 	BulletInstanceManager::instance().ObjectIntiation();
 	physics->Clear();
 	gridManager->Clear();
-	testingBoss = nullptr;
+	boss = nullptr;
 }
 
 void TutorialGame::InitWorld() {
@@ -160,8 +160,8 @@ void TutorialGame::UpdateGameCore(float dt) {
 	if(player){
 		Debug::Print(std::string("health: ").append(std::to_string((int)player->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
 	}
-	if (testingBoss) {
-		Debug::Print(std::string("Boss health: ").append(std::to_string((int)testingBoss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
+	if (boss) {
+		Debug::Print(std::string("Boss health: ").append(std::to_string((int)boss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
 	}
 
 	GameGridManager::instance().Update(dt);
