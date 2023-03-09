@@ -136,10 +136,10 @@ void GameWorld::UpdateWorld(float dt) {
 		std::shuffle(constraints.begin(), constraints.end(), e);
 	}
 
-	for (GameObject* g : gameObjects) {
-		if (g->IsActive())
+	for (int i = 0; i < gameObjects.size(); i++) {
+		if (gameObjects[i]->IsActive())
 		{
-			g->Update(dt);
+			gameObjects[i]->Update(dt);
 		}
 	}
 
@@ -158,14 +158,14 @@ void GameWorld::UpdateStaticTree() {
 		}
 	);
 
-	for (GameObject* g : gameObjects) {
-		if (g->GetPhysicsObject() && g->GetPhysicsObject()->IsStatic()) {
+	for (auto i = gameObjects.begin(); i != gameObjects.end(); i++) {
+		if ((*i)->GetPhysicsObject() && (*i)->GetPhysicsObject()->IsStatic()) {
 			Vector3 halfSizes;
-			if (!g->GetBroadphaseAABB(halfSizes)) {
+			if (!(*i)->GetBroadphaseAABB(halfSizes)) {
 				continue;
 			}
-			Vector3 pos = g->GetTransform().GetGlobalPosition();
-			staticQuadTree.Insert(g, Vector2(pos.x, pos.z), Vector2(halfSizes.x, halfSizes.z));
+			Vector3 pos = (*i)->GetTransform().GetGlobalPosition();
+			staticQuadTree.Insert(*i, Vector2(pos.x, pos.z), Vector2(halfSizes.x, halfSizes.z));
 		}
 	}
 }
@@ -173,14 +173,14 @@ void GameWorld::UpdateStaticTree() {
 void GameWorld::UpdateDynamicTree() {
 	dynamicQuadTree.Clear();
 
-	for (GameObject* g : gameObjects) {
-		if (g->GetPhysicsObject() && !g->GetPhysicsObject()->IsStatic() && g->IsActive()) {
+	for (auto i = gameObjects.begin(); i != gameObjects.end(); i++) {
+		if ((*i)->GetPhysicsObject() && !(*i)->GetPhysicsObject()->IsStatic() && (*i)->IsActive()) {
 			Vector3 halfSizes;
-			if (!g->GetBroadphaseAABB(halfSizes)) {
+			if (!(*i)->GetBroadphaseAABB(halfSizes)) {
 				continue;
 			}
-			Vector3 pos = g->GetTransform().GetGlobalPosition();
-			dynamicQuadTree.Insert(g, Vector2(pos.x, pos.z), Vector2(halfSizes.x, halfSizes.z));
+			Vector3 pos = (*i)->GetTransform().GetGlobalPosition();
+			dynamicQuadTree.Insert(*i, Vector2(pos.x, pos.z), Vector2(halfSizes.x, halfSizes.z));
 		}
 	}
 }
