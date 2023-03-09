@@ -96,7 +96,7 @@ Maths::Vector2 NCL::PS4::PS4InputManager::GetAxis(unsigned int playerId, unsigne
 {
 	if (playerId < SCE_USER_SERVICE_MAX_LOGIN_USERS && reqAxis < 3 && devices[playerId].IsInitialized())
 		return Maths::Vector2(devices[playerId].GetAxis(reqAxis).x, devices[playerId].GetAxis(reqAxis).y);
-	else return Maths::Vector2(-2, -2);
+	else return Maths::Vector2(Axis_Negative);
 }
 
 bool NCL::PS4::PS4InputManager::GetButtons(unsigned int playerId, unsigned int button)

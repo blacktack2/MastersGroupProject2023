@@ -16,7 +16,8 @@ namespace NCL {
 			L1,
 			R1,
 			L3,
-			R3
+			R3,
+			START
 		};
 		enum Axes {
 			LEFTSTICK=0,

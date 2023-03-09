@@ -105,6 +105,8 @@ void PS4Input::Poll() {
 
 			buttons[8] = ((data.buttons & SCE_PAD_BUTTON_L3) ? 1.0f : 0.0f);
 			buttons[9] = ((data.buttons & SCE_PAD_BUTTON_R3) ? 1.0f : 0.0f);
+
+			buttons[10]= ((data.buttons & SCE_PAD_BUTTON_START) ? 1.0f : 0.0f);
 		}
 	}
 }

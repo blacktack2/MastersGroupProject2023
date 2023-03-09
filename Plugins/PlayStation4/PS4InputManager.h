@@ -2,6 +2,7 @@
 #ifdef _ORBIS
 #include "PS4Input.h"
 
+#define Axis_Negative -2
 namespace NCL{
 	namespace Maths { class Vector2; }
 	namespace PS4 {

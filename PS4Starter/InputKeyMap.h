@@ -1,10 +1,9 @@
 #pragma once
 #ifdef x64
 #include "../Common/Window.h"
-#elif _ORBIS
-#include "../Plugins/PlayStation4/PS4InputManager.h"
-#endif // _ORBIS
+#endif //- x64
 
+#include"../Common/Vector2.h"
 
 enum InputType :unsigned int {
 	Empty = 0,
@@ -16,7 +15,29 @@ enum InputType :unsigned int {
 	Action1 = (1u << 5),
 	Action2 = (1u << 6),
 	FreeLook = (1u << 7),
-	All = -1
+	ESC = (1u << 8),
+
+	Start = (1u << 27),
+	Pause = (1u << 28),
+	Restart = (1u << 29),
+	Return = (1u << 30),
+	Confirm = (1u << 31),
+
+	All = UINT_MAX
+};
+
+enum AxisInput
+{
+	Axis1,
+	Axis2,
+
+	Axis3,
+	Axis4,
+
+	Axis5,
+	Axis6,
+
+	AxisInputDataMax
 };
 using namespace NCL;
 
@@ -40,55 +61,44 @@ namespace paintHell {
 			return state & key;
 		}
 
-		void Update() {
-			buttonstates = InputType::Empty;
-#ifdef _ORBIS
-			
-#elif x64
-			if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W))
+		bool GetAxisData(unsigned int controllerNum, AxisInput axis, float& data)		// controllerNum == 1,2,3,4
+		{
+			if ((controllerNum == 0) || (controllerNum > 4))
 			{
-				buttonstates |= InputType::Foward;
+				return false;
 			}
-			if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S))
-			{
-				buttonstates |= InputType::Backward;
-			}
-			if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A))
-			{
-				buttonstates |= InputType::Left;
-			}
-			if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D))
-			{
-				buttonstates |= InputType::Right;
-			}
-			if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SPACE))
-			{
-				buttonstates |= InputType::Jump;
-			}
-			if (Window::GetMouse()->ButtonDown(MouseButtons::LEFT))
-			{
-				buttonstates |= InputType::Action1;
-			}
-			if (Window::GetMouse()->ButtonPressed(MouseButtons::RIGHT))
-			{
-				buttonstates |= InputType::Action2;
-			}
-			if (Window::GetKeyboard()->KeyDown(KeyboardKeys::C))
-			{
-				buttonstates |= InputType::FreeLook;
-			}
-#endif // _ORBIS
-
-			
+			controllerNum--;
+			data = AxisDataArray[controllerNum][axis];
+			return true;
 		}
-	private:
-		InputKeyMap() {}
-		~InputKeyMap() {}
-		unsigned int buttonstates;
 
-#ifdef _ORBIS
-		PS4::PS4Input* devices[4];
-#endif // _ORBIS
+#ifdef x64
+		Maths::Vector2 GetMousePosition() {
+			return mousePosition;
+	}
+		bool HasMouse() {
+			return Window::GetMouse();
+		}
+#endif // x64
+
+		void Update();
+
+	private:
+		InputKeyMap() {
+			buttonstates = InputType::Empty;
+			movementAxis = Maths::Vector2(0);
+			cameraAxis = Maths::Vector2(0);
+			mousePosition = Maths::Vector2(0);
+		}
+		~InputKeyMap() {}
+
+		void UpdateGameStateDependant();
+
+		unsigned int buttonstates;
+		float AxisDataArray[4][AxisInput::AxisInputDataMax] = { 0 };
+		Maths::Vector2 movementAxis;
+		Maths::Vector2 cameraAxis;
+		Maths::Vector2 mousePosition;
 
 
 	};
