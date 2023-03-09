@@ -592,7 +592,7 @@ bool Boss::InkRain(PlayerObject* player) {
         return true;
     }
     inkRainTimer += deltaTime;
-    if (inkRainTimer > rainPeriod) {
+    if (inkRainTimer > rainPeriod && !isClient) {
         inkRainTimer = 0.0f;
         rain[currentRainBomb]->SetLifespan(0.0f);
         Vector3 bombDirection = (player->GetTransform().GetGlobalPosition() - rainBombPositions[currentRainBomb]).Normalised();

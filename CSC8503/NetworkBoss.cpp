@@ -29,6 +29,7 @@ void NetworkBoss::ChangeLoseState()
 
 	if (game->GetServer())
 		game->GetServer()->SendGlobalPacket(static_cast<GamePacket*>(&packet));
+	Boss::ChangeLoseState();
 }
 
 void NetworkBoss::BulletModification(BossBullet* bullet)

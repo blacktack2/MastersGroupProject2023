@@ -160,6 +160,28 @@ void NetworkedGame::UpdateGame(float dt) {
 		timeToNextPacket = packetGap;
 	}
 
+	//boss special
+	if (boss) {
+		//Change boss target
+		Vector3 displacement;
+		PlayerObject* target = boss->GetTarget();
+		PlayerObject* player;
+		float minDist = 300;
+		for (auto pair : serverPlayers) {
+			player = static_cast<PlayerObject*>(pair.second);
+			if (player->GetHealth()->GetHealth() <= 0) {
+				continue;
+			}
+			displacement = player->GetTransform().GetGlobalPosition() - boss->GetTransform().GetGlobalPosition();
+			float dist = abs(displacement.Length());
+			if (dist < minDist) {
+				target = static_cast<PlayerObject*>(player);
+				minDist = dist;
+			}
+		}
+		boss->SetNextTarget(target);
+	}
+
 	TutorialGame::UpdateGame(dt);
 
 	world->GetMainCamera()->UpdateCamera(dt);
@@ -200,28 +222,6 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	if (health <= 0) {
 		gameStateManager->SetGameState(GameState::Lose);
 		BroadcastGameStateChange();
-	}
-	
-	//boss special
-	if (boss) {
-		//Change boss target
-		Vector3 displacement;
-		PlayerObject* target = boss->GetTarget();
-		PlayerObject* player;
-		float minDist = 300;
-		for (auto pair : serverPlayers) {
-			player = static_cast<PlayerObject*>(pair.second);
-			if(player->GetHealth()->GetHealth() <= 0){
-				continue;
-			}
-			displacement = player->GetTransform().GetGlobalPosition() - boss->GetTransform().GetGlobalPosition();
-			float dist = abs(displacement.Length());
-			if (dist < minDist) {
-				target = static_cast<PlayerObject*>(player);
-				minDist = dist;
-			}
-		}
-		boss->SetNextTarget(target);
 	}
 
 	//send important information to each player
