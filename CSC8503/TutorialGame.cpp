@@ -77,28 +77,36 @@ void TutorialGame::StartLevel() {
 	InitWorld();
 
 	XboxControllerManager::GetXboxController().CheckPorts();
-	int n = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
-	//std::cout << "controller connected " << n << std::endl;
-	switch (n)
+	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
+
+	players[0] = AddPlayerToWorld(0, Vector3(0, 5, 90));
+	keyMap.ChangePlayerControlTypeMap(0, ControllerType::KeyboardMouse);
+	for (int i = 1; i <= numOfPlayers; i++) {
+		players[i] = AddPlayerToWorld(i, Vector3(0, 5, 90));
+		keyMap.ChangePlayerControlTypeMap(i, ControllerType::Xbox);
+	}
+
+	/*
+	switch (numOfController)
 	{
 	case 4:
 		player4 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player4"), Vector3(0, 5, 90));
-		player4->AttachedCamera(4);
+		player4->AttachCamera(4);
 		gameWorld.GetCamera(4)->SetControlType(ControlType::Controller_4);
 		gameWorld.GetCamera(4)->SetFollow(&(player4->GetTransform()));
 	case 3:
 		player3 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player3"), Vector3(0, 5, 90));
-		player3->AttachedCamera(3);
+		player3->AttachCamera(3);
 		gameWorld.GetCamera(3)->SetControlType(ControlType::Controller_3);
 		gameWorld.GetCamera(3)->SetFollow(&(player3->GetTransform()));
 	case 2:
 		player2 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player2"), Vector3(0, 5, 90));
-		player2->AttachedCamera(2);
+		player2->AttachCamera(2);
 		gameWorld.GetCamera(2)->SetControlType(ControlType::Controller_2);
 		gameWorld.GetCamera(2)->SetFollow(&(player2->GetTransform()));
 	case 1:
 		player = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player1"), Vector3(0, 5, 90));
-		player->AttachedCamera(1);
+		player->AttachCamera(1);
 		gameWorld.GetCamera(1)->SetControlType(ControlType::Controller_1);
 		gameWorld.GetCamera(1)->SetFollow(&(player->GetTransform()));
 	default:
@@ -106,16 +114,18 @@ void TutorialGame::StartLevel() {
 		if (player4 == nullptr)
 		{
 			player4 = AddPlayerToWorld(0, Vector3(0, 5, 90));	// playerID == 0 indicating player using keyboard
-			player4->AttachedCamera(4);
+			player4->AttachCamera(4);
 			gameWorld.GetCamera(4)->SetControlType(ControlType::KeyboardMouse);
 			gameWorld.GetCamera(4)->SetFollow(&(player4->GetTransform()));
 		}
 		break;
 	}
-	SetCameraFollow(player4);
+	*/
+
+	SetCameraFollow(players[0]);
 
 	boss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
-	boss->SetNextTarget(player);
+	boss->SetNextTarget(players[0]);
 }
 
 void TutorialGame::Clear() {
@@ -147,11 +157,12 @@ void TutorialGame::UpdateGame(float dt) {
 	//temp change player
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::P))
 	{
-		SetCameraFollow(player4);
+		if(players[1])
+			SetCameraFollow(players[1]);
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::O))
 	{
-		SetCameraFollow(player);
+		SetCameraFollow(players[0]);
 	}
 
 	debugViewPoint.BeginFrame();
@@ -193,8 +204,8 @@ bool TutorialGame::IsQuit() {
 void TutorialGame::UpdateGameCore(float dt) {
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 
-	if(player){
-		Debug::Print(std::string("health: ").append(std::to_string((int)player->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
+	if(players[0]) {
+		Debug::Print(std::string("health: ").append(std::to_string((int)players[0]->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
 	}
 	if (boss) {
 		Debug::Print(std::string("Boss health: ").append(std::to_string((int)boss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));

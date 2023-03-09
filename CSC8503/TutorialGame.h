@@ -78,11 +78,8 @@ namespace NCL::CSC8503 {
 		
 		std::unique_ptr<Hud> hud;
 		std::unique_ptr<PhysicsSystem> physics;
-
-		PlayerObject* player = nullptr;
-		PlayerObject* player2 = nullptr;
-		PlayerObject* player3 = nullptr;
-		PlayerObject* player4 = nullptr;
+		
+		PlayerObject* players[4];
 
 		Light* sunLight = nullptr;
 

@@ -31,6 +31,10 @@ PlayerObject::PlayerObject(int playerID) : GameObject(), playerID(playerID), key
 	};
 	SetupAudio();
 
+	AttachCamera(playerID);
+	gameWorld.GetCamera(playerID)->SetPlayerID(playerID);
+	gameWorld.GetCamera(playerID)->SetFollow(&this->GetTransform());
+
 }
 
 PlayerObject::~PlayerObject() {
@@ -62,19 +66,19 @@ void PlayerObject::Update(float dt) {
 		Vector3 dir = Vector3(0, 0, 0);
 		lastKey = keyMap.GetButtonState();
 		keyMap.Update();
+		/*
 		if (playerID == 0)		// Keyboard&Mouse user
 		{
 			GetInput(dir, keyMap.GetButtonState());
 			Move(dir);
 		}
 		else {
-			// testing (Xbox) controller input:
 			Vector3 movingDir;
 			GetControllerInput(movingDir);
 			Move(movingDir);
-			//RotateByAxis();
-			//MoveByPosition(dt, movingDir);
-		}
+		}*/
+		GetControllerInput(dir);
+		Move(dir);
 		MoveCamera();
 
 		
@@ -141,16 +145,17 @@ This is a temporary member function used for testing controller's input. Feel fr
 	
 	// Thumb for movement:
 	Vector3 cameraForwardDirection = gameWorld.GetCamera(playerID)->GetPosition() - this->GetTransform().GetGlobalPosition();
-	Vector2 movementThumbData{ 0,0 };
+	Vector2 movementData{ 0,0 };
 	float rightTriggerDepth = 0;
 	float leftTriggerDepth = 0;
 	movingDir3D = Vector3{ 0,0,0 };
-	if (keyMap.GetAxisData(playerID, AxisInput::Axis1, movementThumbData.x) && keyMap.GetAxisData(playerID, AxisInput::Axis2, movementThumbData.y))
+	keyMap.GetAxisData(playerID, AxisInput::Axis1, movementData.x);
+	if (keyMap.GetAxisData(playerID, AxisInput::Axis1, movementData.x) && keyMap.GetAxisData(playerID, AxisInput::Axis2, movementData.y))
 	{
-		if (!(movementThumbData.x == 0 && movementThumbData.y == 0))
+		if (!(movementData.x == 0 && movementData.y == 0))
 		{
 			Vector2 unitForwardDir{ 0,1 };
-			float angle = atan2(unitForwardDir.x * movementThumbData.y - movementThumbData.x * unitForwardDir.y, unitForwardDir.x * movementThumbData.x + unitForwardDir.y * movementThumbData.y);
+			float angle = atan2(unitForwardDir.x * movementData.y - movementData.x * unitForwardDir.y, unitForwardDir.x * movementData.x + unitForwardDir.y * movementData.y);
 			Vector2 movingDir2D;
 			movingDir2D.x = cameraForwardDirection.x * cos(angle) - (-cameraForwardDirection.z) * sin(angle);
 			movingDir2D.y = (-cameraForwardDirection.z) * cos(angle) + cameraForwardDirection.x * sin(angle);
@@ -246,7 +251,7 @@ void PlayerObject::RotateYaw(float yaw) {
 }
 
 void PlayerObject::RotateToCamera() {
-	if (hasCamera && !isFreeLook) {
+	if (!isFreeLook) {
 		RotateYaw(gameWorld.GetCamera(hasCamera)->GetYaw());
 	}
 
