@@ -27,6 +27,8 @@ namespace NCL {
 			}
 
 		protected:
+			void DisconnectClient(int clientID);
+
 			int			port;
 			int			clientMax;
 			int			clientCount;

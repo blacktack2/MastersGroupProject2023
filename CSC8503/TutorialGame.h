@@ -82,7 +82,7 @@ namespace NCL::CSC8503 {
 		GameLevel* gameLevel = nullptr;
 
 		GameGrid* gameGrid = nullptr;
-		Boss* testingBoss = nullptr;
+		Boss* boss = nullptr;
 
 		float interval = 0.0f;
 	};

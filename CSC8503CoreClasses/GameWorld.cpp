@@ -292,3 +292,8 @@ Light* GameWorld::AddLight(Light* l) {
 void GameWorld::RemoveLight(LightIterator l) {
 	lights.erase(l);
 }
+
+void GameWorld::ClearLight() {
+	lights.clear();
+}
+

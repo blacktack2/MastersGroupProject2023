@@ -18,13 +18,9 @@
 #include "DebugViewPoint.h"
 #include <limits>
 
-
-
-
-    const float offensiveHealthLowerBound = 50;
-    const float bossVision = 80;
-    const float distanceToHaveCloseCombat = 40;
-
+const float offensiveHealthLowerBound = 50;
+const float bossVision = 80;
+const float distanceToHaveCloseCombat = 40;
 
 Boss::Boss() {
     BuildTree();
@@ -152,8 +148,6 @@ void Boss::BuildTree() {
         return Ongoing;
     }));
 
-
-
     //Deffensive Sub tree
     behaviourTree->AddChild(new BehaviourAction("Walk if player to far awway", [&](float dt, BehaviourState state)->BehaviourState {
         switch (state)
@@ -224,6 +218,7 @@ void Boss::BuildTree() {
 void Boss::Update(float dt) {
     NCL::DebugViewPoint::Instance().MarkTime("Boss Update");
     GetTarget();
+    BossAction prevState = bossAction;
     health.Update(dt);
     deltaTime = dt;
     // check if inked
@@ -240,7 +235,12 @@ void Boss::Update(float dt) {
     if (health.GetHealth() > 0 )
     {
         bossAction = NoAction;
-        if (behaviourTree->Execute(dt) != Ongoing) behaviourTree->Reset();
+        if (behaviourTree->Execute(dt) != Ongoing) {
+            behaviourTree->Reset();
+        }
+    }
+    if (bossAction != prevState) {
+        ChangeTarget();
     }
     NCL::DebugViewPoint::Instance().FinishTime("Boss Update");
 }
@@ -299,6 +299,9 @@ void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
 }
 
 BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p) {
+    if (isClient) {
+        return nullptr;
+    }
     BossBullet* ink = BulletInstanceManager::instance().GetBossBullet();
 
     ink->SetLifespan(5.0f);
@@ -323,7 +326,11 @@ BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p) {
 
 }
 
-void Boss::ChangeTarget(){}
+void Boss::ChangeTarget(){
+    if (nextTarget != target) {
+        target = nextTarget;
+    }
+}
 
 bool Boss::RandomWalk() {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
@@ -558,8 +565,11 @@ bool Boss::InkRain(PlayerObject* player) {
             Vector3 bombPostion{ startingPosition.x + dx, startingPosition.y + dy, startingPosition.z + dz };
             rainBombPositions.push_back(bombPostion);   // we NEED this extra container to store the positions, otherwise it will cause memory violation!
             BossBullet* b = releaseBossBullet({ 0,0,0 }, bombScale, bombPostion);
-            b->SetLifespan(99999.0f);
-            rain[n] = b;
+            if (b) {
+                b->SetLifespan(99999.0f);
+                rain[n] = b;
+            }
+            
         }
         rainIsInitialised = true;
         return false;
@@ -572,7 +582,7 @@ bool Boss::InkRain(PlayerObject* player) {
         return true;
     }
     inkRainTimer += deltaTime;
-    if (inkRainTimer > rainPeriod) {
+    if (inkRainTimer > rainPeriod && !isClient) {
         inkRainTimer = 0.0f;
         rain[currentRainBomb]->SetLifespan(0.0f);
         Vector3 bombDirection = (player->GetTransform().GetGlobalPosition() - rainBombPositions[currentRainBomb]).Normalised();

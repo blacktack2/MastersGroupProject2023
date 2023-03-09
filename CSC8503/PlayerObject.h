@@ -12,7 +12,7 @@ namespace NCL {
 
 		class PlayerObject : public GameObject {
 		public:
-			PlayerObject(int id);
+			PlayerObject(int playerID);
 			~PlayerObject();
 
 			void Update(float dt);
@@ -52,7 +52,7 @@ namespace NCL {
 			virtual void Shoot();
 			void BulletModification(PlayerBullet* bullet){};
 
-			int id;
+			int playerID;
 
 			//network
 			bool isNetwork = false;
