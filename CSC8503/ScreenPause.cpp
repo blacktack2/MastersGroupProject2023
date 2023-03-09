@@ -34,18 +34,24 @@ PushdownState::PushdownResult ScreenPause::OnUpdate(float dt, PushdownState** ne
 		}
 		game->UpdateGame(dt);
 	}
-	switch (menuState) {
-		case ChangeState::Resume:
-		case ChangeState::Quit:
-			if (game) {
-				NetworkedGame* netGame = dynamic_cast<NetworkedGame*>(game);
-				if (netGame) {
-					netGame->FreezeSelf();
-				}
+
+	switch (menuState)
+	{
+	case ChangeState::Resume:
+		return PushdownResult::Pop;
+	case ChangeState::Option:
+		*newState = new ScreenOption();
+		return PushdownResult::Push;
+	case ChangeState::Quit:
+		if (game) {
+			NetworkedGame* netGame = dynamic_cast<NetworkedGame*>(game);
+			if (netGame) {
+				netGame->FreezeSelf();
 			}
-			return PushdownResult::Pop;
-		default:
-			return PushdownResult::NoChange;
+		}
+		return PushdownResult::Pop;
+	default:
+		return PushdownResult::NoChange;
 	}
 }
 
@@ -65,21 +71,21 @@ void ScreenPause::OnAwake() {
 void ScreenPause::InitMenu() {
 	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(0.3f, 0.7f), AssetLibrary::GetTexture("menuPause"));
 
-	menu.AddButton(0.0f, 0.45f, 0.16f, 0.08f, AssetLibrary::GetTexture("button4"), [&]() {
+	menu.AddButton(0.0f, 0.45f, 0.16f, 0.08f, AssetLibrary::GetTexture("button4"), [&](Button& button) {
 		std::cout << "Resume button clicked\n";
 		menuState = ChangeState::Resume;
-	});
-	menu.AddButton(0.0f, 0.15f, 0.16f, 0.08f, AssetLibrary::GetTexture("button5"), [&]() {
+		});
+	menu.AddButton(0.0f, 0.15f, 0.16f, 0.08f, AssetLibrary::GetTexture("button5"), [&](Button& button) {
+		std::cout << "Option button clicked\n";
+		menuState = ChangeState::Option;
+		});
+	menu.AddButton(0.0f, -0.15f, 0.16f, 0.08f, AssetLibrary::GetTexture("button6"), [&](Button& button) {
 		std::cout << "Dummy button clicked\n";
 		// TODO - Add functionality
-	});
-	menu.AddButton(0.0f, -0.15f, 0.16f, 0.08f, AssetLibrary::GetTexture("button6"), [&]() {
-		std::cout << "Dummy button clicked\n";
-		// TODO - Add functionality
-	});
-	menu.AddButton(0.0f, -0.45f, 0.16f, 0.08f, AssetLibrary::GetTexture("button7"), [&]() {
+		});
+	menu.AddButton(0.0f, -0.45f, 0.16f, 0.08f, AssetLibrary::GetTexture("button7"), [&](Button& button) {
 		std::cout << "Quit button clicked\n";
 		gameStateManager.SetGameState(GameState::Quit);
 		menuState = ChangeState::Quit;
-	});
+		});
 }

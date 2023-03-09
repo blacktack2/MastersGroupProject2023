@@ -1,7 +1,7 @@
 /**
  * @file   TutorialGame.h
- * @brief  
- * 
+ * @brief
+ *
  * @author Rich Davidson
  * @author Stuart Lewis
  * @date   March 2023
@@ -75,12 +75,12 @@ namespace NCL {
 			GameObject* AddTriggerToWorld(const Vector3& position, float size);
 
 #ifdef USEVULKAN
-			GameTechVulkanRenderer*	renderer;
+			GameTechVulkanRenderer* renderer;
 #else
 			GameTechRenderer* renderer;
 #endif
-			PhysicsSystem*		physics;
-			GameWorld*			world;
+			PhysicsSystem* physics;
+			GameWorld* world;
 
 			NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 
@@ -109,6 +109,7 @@ namespace NCL {
 
 			GameGridManager* gridManager;
 			float wallTimer = 0.0f;
+			OptionManager* optionManager;
 		};
 	}
 }

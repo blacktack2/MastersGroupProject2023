@@ -134,18 +134,16 @@ void TutorialGame::UpdateGame(float dt) {
 	debugViewPoint->BeginFrame();
 	debugViewPoint->MarkTime("Update");
 	
-	bool moveSun = optionManager->GetSunMove();
-	if (moveSun) {
+	if (optionManager->GetSunMove()) {
 		float runtime = world->GetRunTime();
 		sunLight->direction = Vector3(std::sin(runtime), std::cos(runtime), 0.0f);
 		renderer->GetSkyboxPass().SetSunDir(sunLight->direction);
 	}
 
-	bool isSound = optionManager->GetSound();
-	if (!isSound) {
+	if (!optionManager->GetSound()) {
 		SoundSystem::GetSoundSystem()->SetMasterVolume(0.0);
 	}
-	if (isSound) {
+	if (optionManager->GetSound()) {
 		SoundSystem::GetSoundSystem()->SetMasterVolume(0.5);
 		SoundSystem::GetSoundSystem()->Update(dt);
 	}

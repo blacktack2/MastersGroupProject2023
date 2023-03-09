@@ -52,7 +52,7 @@ void Button::OnClick() {
         std::cout << "Button has no OnClick callback!\n";
         return;
     }
-    OnClickCallback();
+    OnClickCallback(*this);
 }
 
 void Button::DrawExtras() {

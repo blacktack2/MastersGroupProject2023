@@ -14,9 +14,6 @@ enum InputType : unsigned int {
 	FreeLook = (1u << 7),
 	ESC = (1u << 8),
 
-	MouseLeftClick = (1u << 12),
-	MouseRightClick = (1u << 13),
-
 	Start = (1u << 27),
 	Pause = (1u << 28),
 	Restart = (1u << 29),
