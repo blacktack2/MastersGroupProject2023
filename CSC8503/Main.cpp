@@ -201,6 +201,7 @@ int main() {
 
 	std::cout << "loading\n";
 	GameTechRenderer& renderer = GameTechRenderer::instance();
+	
 	LoadAsset();
 	renderer.InitPipeline();
 	

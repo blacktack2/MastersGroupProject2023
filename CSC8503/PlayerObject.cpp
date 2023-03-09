@@ -33,7 +33,7 @@ PlayerObject::PlayerObject(int playerID) : GameObject(), playerID(playerID), key
 
 	AttachCamera(playerID);
 	gameWorld.GetCamera(playerID)->SetPlayerID(playerID);
-	gameWorld.GetCamera(playerID)->SetFollow(&(this->GetTransform()));
+	gameWorld.GetCamera(playerID)->SetFollow(&this->GetTransform());
 
 }
 

@@ -79,9 +79,12 @@ void TutorialGame::StartLevel() {
 	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
 
 	players[0] = AddPlayerToWorld(0, Vector3(0, 5, 90));
+	keyMap.ChangePlayerControlTypeMap(0, ControllerType::KeyboardMouse);
 	for (int i = 1; i <= numOfPlayers; i++) {
 		players[i] = AddPlayerToWorld(i, Vector3(0, 5, 90));
+		keyMap.ChangePlayerControlTypeMap(i, ControllerType::Xbox);
 	}
+
 	/*
 	switch (numOfController)
 	{

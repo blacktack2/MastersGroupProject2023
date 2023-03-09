@@ -381,10 +381,12 @@ PlayerObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 	else if (playerID == 3) {
 		colour = Vector4(0, 1, 1, 1);
 	}
-	PlayerObject* newPlayer = AddNetworkPlayerToWorld(Vector3(0, 5, 90), isSelf, playerID);
+	PlayerObject* newPlayer = AddNetworkPlayerToWorld(Vector3(0, 5, 90), playerID);
 	if (isSelf) {
+		keyMap.ChangePlayerControlTypeMap(selfID, ControllerType::KeyboardMouse);
+		SetCameraFollow(newPlayer);
 		gameWorld.GetMainCamera()->SetFollow(&(newPlayer->GetNetworkObject()->GetRenderTransform()));
-		players[0] = newPlayer;
+		players[selfID] = newPlayer;
 	}
 	serverPlayers[playerID] = newPlayer;
 	stateIDs[playerID] = -1;
@@ -623,7 +625,7 @@ void NetworkedGame::OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b) {
 	*/
 }
 
-PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID) {
+PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, int playerID) {
 	NetworkPlayer* character = new NetworkPlayer( this, playerID);
 	SphereVolume* volume = new SphereVolume(1.0f, CollisionLayer::Player);
 
@@ -642,11 +644,6 @@ PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, bo
 	character->GetPhysicsObject()->InitSphereInertia();
 	character->SetNetworkObject(new NetworkObject(*character, playerID));
 	gameWorld.AddGameObject(character);
-
-	if (cameraFollow) {
-		gameWorld.GetMainCamera()->SetFollow(&character->GetTransform());
-		character->AttachCamera(playerID);
-	}
 
 	return character;
 }
