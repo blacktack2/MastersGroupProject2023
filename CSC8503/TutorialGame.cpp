@@ -39,7 +39,7 @@
 #include "SoundSource.h"
 #include "SoundSystem.h"
 #include "TestAudio.h"
-
+#include"Hud.h"
 #include "MeshAnimation.h"
 
 #include "Debug.h"
@@ -58,6 +58,7 @@ renderer(GameTechRenderer::instance()), gameWorld(GameWorld::instance()), keyMap
 	sunLight = gameWorld.AddLight(new Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
 
 	physics = std::make_unique<PhysicsSystem>(gameWorld);
+	hud = std::make_unique<Hud>();
 	
 	SoundSystem::Initialize();
 	StartLevel();
@@ -173,7 +174,9 @@ void TutorialGame::UpdateGame(float dt) {
 
 	gameStateManager.Update(dt);
 	ProcessState();
-	
+	hud->loadHuds((int)boss->GetHealth()->GetHealth(), (int)player4->GetHealth()->GetHealth());
+	(renderer.GetHudRPass()).SetHud(hud->getHuds());
+	renderer.EnableOverlayPass("Hud", true);
 
 	debugViewPoint.FinishTime("Update");
 	debugViewPoint.MarkTime("Render");

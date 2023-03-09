@@ -52,6 +52,7 @@ void ScreenMain::OnAwake() {
 
 	renderer.EnableOverlayPass("Menu", true);
 	renderer.EnableOverlayPass("Debug", false);
+	renderer.EnableOverlayPass("Hud", false);
 	renderer.EnableRenderScene(false);
 	renderer.UpdatePipeline();
 

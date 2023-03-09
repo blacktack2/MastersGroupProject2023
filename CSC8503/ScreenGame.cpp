@@ -47,6 +47,7 @@ void ScreenGame::OnAwake() {
 	renderer.EnableRenderScene(true);
 	renderer.EnableOverlayPass("Menu", false);
 	renderer.EnableOverlayPass("Debug", true);
+	renderer.EnableOverlayPass("Hud", true);
 	renderer.UpdatePipeline();
 
 	Window::GetWindow()->ShowOSPointer(false);

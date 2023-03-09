@@ -8,7 +8,6 @@
  */
 #pragma once
 #include "Vector3.h"
-
 #include <memory>
 
 namespace NCL {
@@ -24,7 +23,7 @@ namespace NCL::CSC8503 {
 	class GameTechRenderer;
 	class GameWorld;
 	class MenuManager;
-
+	class Hud;
 	class GameLevel;
 	class PhysicsSystem;
 
@@ -76,7 +75,8 @@ namespace NCL::CSC8503 {
 		GameWorld&        gameWorld;
 		InputKeyMap&      keyMap;
 		MenuManager&      menuManager;
-
+		
+		std::unique_ptr<Hud> hud;
 		std::unique_ptr<PhysicsSystem> physics;
 
 		PlayerObject* player = nullptr;
