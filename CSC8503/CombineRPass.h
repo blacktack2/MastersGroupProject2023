@@ -32,9 +32,9 @@ namespace NCL::CSC8503 {
 		Default = 0,
 		Normals,
 		Depth,
+		Albedo,
 		Diffuse,
-		DiffuseLight,
-		SpecularLight,
+		Specular,
 		AmbientOcclusion,
 	};
 	class CombineRPass : public OGLCombineRenderPass {
@@ -53,14 +53,14 @@ namespace NCL::CSC8503 {
 		inline void SetSkyboxTexIn(TextureBase& tex) {
 			skyboxTexIn = &tex;
 		}
+		inline void SetAlbedoTexIn(TextureBase& tex) {
+			albedoTexIn = &tex;
+		}
 		inline void SetDiffuseTexIn(TextureBase& tex) {
 			diffuseTexIn = &tex;
 		}
-		inline void SetDiffuseLightTexIn(TextureBase& tex) {
-			diffuseLightTexIn = &tex;
-		}
-		inline void SetSpecularLightTexIn(TextureBase& tex) {
-			specularLightTexIn = &tex;
+		inline void SetSpecularTexIn(TextureBase& tex) {
+			specularTexIn = &tex;
 		}
 		inline void SetSSAOTexIn(TextureBase& tex) {
 			ssaoTexIn = &tex;
@@ -78,13 +78,13 @@ namespace NCL::CSC8503 {
 
 		std::unique_ptr<FrameBuffer> frameBuffer;
 
-		TextureBase* skyboxTexIn        = nullptr;
-		TextureBase* diffuseTexIn       = nullptr;
-		TextureBase* diffuseLightTexIn  = nullptr;
-		TextureBase* specularLightTexIn = nullptr;
-		TextureBase* ssaoTexIn          = nullptr;
-		TextureBase* normalTexIn        = nullptr;
-		TextureBase* depthTexIn         = nullptr;
+		TextureBase* skyboxTexIn   = nullptr;
+		TextureBase* albedoTexIn   = nullptr;
+		TextureBase* diffuseTexIn  = nullptr;
+		TextureBase* specularTexIn = nullptr;
+		TextureBase* ssaoTexIn     = nullptr;
+		TextureBase* normalTexIn   = nullptr;
+		TextureBase* depthTexIn    = nullptr;
 
 		std::unique_ptr<TextureBase> sceneOutTex;
 

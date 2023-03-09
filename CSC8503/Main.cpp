@@ -88,7 +88,7 @@ void LoadGlobalAssets() {
 	AssetLibrary<MeshGeometry>::AddAsset("shelter", AssetLoader::LoadMesh("shelterCube.msh"));
 	AssetLibrary<MeshGeometry>::AddAsset("pillar", AssetLoader::LoadMesh("pillarMsh.msh"));
 
-	AssetLibrary<TextureBase>::AddAsset("defaultDiffuse", AssetLoader::LoadTexture("DefaultDiffuse.png"));
+	AssetLibrary<TextureBase>::AddAsset("defaultAlbedo", AssetLoader::LoadTexture("DefaultAlbedo.png"));
 	AssetLibrary<TextureBase>::AddAsset("defaultBump", AssetLoader::LoadTexture("DefaultBump.png"));
 	AssetLibrary<TextureBase>::AddAsset("defaultSpec", AssetLoader::LoadTexture("DefaultSpec.png"));
 	AssetLibrary<TextureBase>::AddAsset("basic", AssetLoader::LoadTexture("checkerboard.png"));

@@ -43,8 +43,8 @@ namespace NCL::CSC8503 {
 			gamma = g;
 		}
 
-		inline TextureBase& GetDiffuseOutTex() const {
-			return *diffuseOutTex;
+		inline TextureBase& GetAlbedoOutTex() const {
+			return *albedoOutTex;
 		}
 		inline TextureBase& GetNormalOutTex() const {
 			return *normalOutTex;
@@ -58,7 +58,7 @@ namespace NCL::CSC8503 {
 
 		std::unique_ptr<FrameBuffer> frameBuffer;
 
-		std::unique_ptr<TextureBase> diffuseOutTex;
+		std::unique_ptr<TextureBase> albedoOutTex;
 		std::unique_ptr<TextureBase> normalOutTex;
 		std::unique_ptr<TextureBase> depthOutTex;
 

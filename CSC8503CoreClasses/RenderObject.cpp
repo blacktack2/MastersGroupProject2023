@@ -57,8 +57,8 @@ void RenderObject::PreDraw(int sublayer) {
 
 	shader->SetUniformFloat("modelColour", colour);
 
-	TextureBase* diffuse = entry->GetTexture("Diffuse");
-	diffuse = diffuse ? diffuse : AssetLibrary<TextureBase>::GetAsset("defaultDiffuse").get();
+	TextureBase* diffuse = entry->GetTexture("Albedo");
+	diffuse = diffuse ? diffuse : AssetLibrary<TextureBase>::GetAsset("defaultAlbedo").get();
 	diffuse->Bind(0);
 
 	TextureBase* bump = entry->GetTexture("Bump");
