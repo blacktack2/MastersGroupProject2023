@@ -101,7 +101,7 @@ void GameWorld::OperateOnConstraints(ConstraintFunc f) {
 }
 
 void GameWorld::OperateOnLights(LightFunc f) {
-	for (const Light* l : lights) {
+	for (const auto& l : lights) {
 		f(*l);
 	}
 }
@@ -259,11 +259,6 @@ bool GameWorld::Raycast(Ray& r, RayCollision& closestCollision, bool closestObje
 	return false;
 }
 
-
-/*
-Constraint Tutorial Stuff
-*/
-
 void GameWorld::AddConstraint(Constraint* c) {
 	constraints.emplace_back(c);
 }
@@ -284,9 +279,19 @@ void GameWorld::RemoveConstraint(std::vector<Constraint*>::const_iterator c, boo
 	}
 }
 
-Light* GameWorld::AddLight(Light* l) {
-	lights.push_back(l);
-	return l;
+PointLight& GameWorld::AddPointLight(const Vector3& position, const Vector4& colour, float radius) {
+	lights.push_back(std::make_unique<PointLight>(position, colour, radius));
+	return static_cast<PointLight&>(*lights.back());
+}
+
+SpotLight& GameWorld::AddSpotLight(const Vector3& position, const Vector4& direction, const Vector4& colour, float radius, float angle) {
+	lights.push_back(std::make_unique<SpotLight>(position, direction, colour, radius, angle));
+	return static_cast<SpotLight&>(*lights.back());
+}
+
+DirectionalLight& GameWorld::AddDirectionalLight(const Vector3& direction, const Vector4& colour) {
+	lights.push_back(std::make_unique<DirectionalLight>(direction, colour));
+	return static_cast<DirectionalLight&>(*lights.back());
 }
 
 void GameWorld::RemoveLight(LightIterator l) {

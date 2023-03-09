@@ -92,18 +92,14 @@ void LightingRPass::DrawLight(const Light& light) {
 	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
 	Matrix4 inverseViewProj = (projMatrix * viewMatrix).Inverse();
 
-	shader->SetUniformFloat("lightPosition" , light.position);
-	shader->SetUniformFloat("lightColour"   , light.colour);
-	shader->SetUniformFloat("lightRadius"   , light.radius);
-	shader->SetUniformFloat("lightDirection", light.direction);
-	shader->SetUniformFloat("lightAngle"    , light.angle);
+	light.Upload(*shader);
 
 	shader->SetUniformMatrix("inverseProjView", inverseViewProj);
 	shader->SetUniformMatrix("modelMatrix"    , modelMatrix);
 	shader->SetUniformMatrix("viewMatrix"     , viewMatrix);
 	shader->SetUniformMatrix("projMatrix"     , projMatrix);
 
-	if (light.position.w == 0.0f) {
+	if (dynamic_cast<const DirectionalLight*>(&light)) {
 		quad->Draw();
 	} else {
 		renderer.GetConfig().SetCullFace(true, CullFace::Back);

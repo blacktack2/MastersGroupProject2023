@@ -35,7 +35,7 @@ namespace NCL::CSC8503 {
 	class BossBehaviorTree;
 	class PlayerObject;
 
-	struct Light;
+	struct DirectionalLight;
 
 	class TutorialGame {
 	public:
@@ -77,7 +77,7 @@ namespace NCL::CSC8503 {
 
 		std::unique_ptr<PhysicsSystem> physics;
 
-		Light* sunLight = nullptr;
+		DirectionalLight* sunLight = nullptr;
 		PlayerObject* player = nullptr;
 		GameLevel* gameLevel = nullptr;
 

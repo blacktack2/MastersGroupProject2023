@@ -43,7 +43,7 @@ void main() {
 	} else {                    // Point/Spot light
 		vec3 lPos = lightPosition.xyz / lightPosition.w;
 		incident = normalize(lPos - worldPos);
-		if (lightAngle < 360.0 && degrees(acos(dot(-incident, lightDirection))) > lightAngle)
+		if (lightAngle > 0.0 && degrees(acos(dot(-incident, lightDirection))) > lightAngle)
 			discard;
 		float dist = length(lPos - worldPos);
 		if (dist > lightRadius)
