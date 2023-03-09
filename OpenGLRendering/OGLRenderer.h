@@ -75,6 +75,10 @@ namespace NCL::Rendering {
 
 #ifdef _WIN32
 		void InitWithWin32(Window& w);
+
+	public:
+		HGLRC CreateContext();
+	protected:
 		void DestroyWithWin32();
 
 		HDC deviceContext;

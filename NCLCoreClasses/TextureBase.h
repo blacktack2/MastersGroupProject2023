@@ -80,6 +80,9 @@ namespace NCL::Rendering {
 			return bufferType;
 		}
 
+		virtual void Initilize() = 0;
+
+
 		/**
 		 * @brief Resize the texture.
 		 * @brief This will set the contents of the texture to an undefined

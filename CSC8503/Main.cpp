@@ -34,7 +34,7 @@
 #include "ScreenMain.h"
 
 #include "AssetLibrary.h"
-#include "LoadingManager.h"
+#include "OGLLoadingManager.h"
 
 
 #include "AssetLoader.h"
@@ -201,11 +201,12 @@ void StartPushdownAutomata(Window* w) {
 int main() {
 
 	Window* w = Window::CreateGameWindow("CSC8507 Game technology!", 1280, 720);
-	paintHell::core::LoadingScreen loadingScreen = paintHell::core::LoadingScreen(w);
+	GameTechRenderer& renderer = GameTechRenderer::instance();
+	OGLLoadingManager loadingScreen = OGLLoadingManager(w, &renderer);
 
 	std::cout << "loading\n";
-	GameTechRenderer& renderer = GameTechRenderer::instance();
-	loadingScreen.Load(LoadAsset);
+	return 0;
+	//loadingScreen.Load(LoadAsset);
 	renderer.InitPipeline();
 	
 	if (!w->HasInitialised()) {
