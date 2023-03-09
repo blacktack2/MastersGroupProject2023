@@ -63,6 +63,8 @@ namespace NCL {
 			Camera* GetCamera(int n) const {
 				switch (n)
 				{
+				case 0:
+					return playerCamera4;	// this is HARDCODED! fix this later!
 				case 1:
 					return playerCamera1;
 				case 2:

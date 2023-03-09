@@ -15,7 +15,7 @@ GameWorld::GameWorld() : staticQuadTree(Vector2(1024, 1024), 7, 6), dynamicQuadT
 	playerCamera3 = new Camera();
 	playerCamera4 = new Camera();
 	
-	mainCamera = playerCamera4;
+	mainCamera = playerCamera1;
 
 	shuffleConstraints	= false;
 	shuffleObjects		= false;

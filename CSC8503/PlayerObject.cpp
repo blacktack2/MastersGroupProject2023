@@ -141,7 +141,7 @@ This is a temporary member function used for testing controller's input. Feel fr
 	isFreeLook = false;
 	
 	// Thumb for movement:
-	Vector3 cameraForwardDirection = gameWorld.GetMainCamera()->GetPosition() - this->GetTransform().GetGlobalPosition();
+	Vector3 cameraForwardDirection = gameWorld.GetCamera(playerID)->GetPosition() - this->GetTransform().GetGlobalPosition();
 	Vector2 movementThumbData{ 0,0 };
 	float rightTriggerDepth = 0;
 	float leftTriggerDepth = 0;
