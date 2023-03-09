@@ -2,7 +2,7 @@
 #include "Health.h"
 #include "Vector4.h"
 
-namespace paintHell {
+namespace NCL {
 	enum InkType
 	{
 		NoInk,			// No effect
@@ -21,8 +21,8 @@ namespace NCL {
 			}
 
 			void Update(float dt);
-			Vector3 GetColour(paintHell::InkType type);
-			void ApplyInkEffect(paintHell::InkType type, Health * health, int healthType);
+			Vector3 GetColour(NCL::InkType type);
+			void ApplyInkEffect(NCL::InkType type, Health * health, int healthType);
 
 		protected:
 			InkEffectManager();

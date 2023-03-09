@@ -4,7 +4,7 @@
 
 using namespace NCL;
 using namespace CSC8503;
-using namespace paintHell;
+using namespace NCL;
 
 void InputKeyMap::Update() {
 	buttonstates = InputType::Empty;

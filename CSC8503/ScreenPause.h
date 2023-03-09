@@ -17,49 +17,11 @@ using namespace CSC8503;
 
 class ScreenPause : public PushdownState {
 public:
-	ScreenPause(TutorialGame* game = nullptr) {
-		this->game = game;
-		initMenu();
-		menuManager.SetCurrentMenu(name);
-	}
-	~ScreenPause() {}
-	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
-		menuManager.Update(dt);
-		keyMap.Update();
-		renderer.Render();
-		if (game) {
-			if (static_cast<NetworkedGame*> (game)) {
-				static_cast<NetworkedGame*> (game)->FreezeSelf();
-			}
-			game->UpdateGame(dt);
-		}
-		switch (menuState)
-		{
-		case ChangeState::Resume:
-		case ChangeState::Quit:
-			if (game) {
-				if (static_cast<NetworkedGame*> (game)) {
-					static_cast<NetworkedGame*> (game)->UnfreezeSelf();
-				}
-			}
-			return PushdownResult::Pop;
-		default:
-			return PushdownResult::NoChange;
-		}
-	}
-	void OnAwake() override {
-		menuState = ChangeState::None;
-		menuManager.SetCurrentMenu(name);
-		renderer.EnableOverlayPass("Menu", true);
-		renderer.EnableOverlayPass("Debug", false);
-		renderer.UpdatePipeline();
-		Window::GetWindow()->ShowOSPointer(true);
-		Window::GetWindow()->LockMouseToWindow(false);
-	}
-
+	ScreenPause(TutorialGame* game = nullptr);
+	~ScreenPause();
+	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
+	void OnAwake() override;
 private:
-	void initMenu();
-
 	enum class ChangeState {
 		None,
 		OnGoing,
@@ -67,14 +29,17 @@ private:
 		Option,
 		Quit
 	};
+
+	void InitMenu();
+
 	TutorialGame* game;
 
-	GameStateManager* gameStateManager = &GameStateManager::instance();
+	GameStateManager& gameStateManager = GameStateManager::instance();
 	GameTechRenderer& renderer = GameTechRenderer::instance();
 	MenuManager& menuManager = MenuManager::instance();
-	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 
 	ChangeState menuState = ChangeState::None;
 
-	std::string name = "pause";
+	std::string NAME = "pause";
 };

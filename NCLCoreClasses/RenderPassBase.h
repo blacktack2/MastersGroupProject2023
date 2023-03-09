@@ -9,6 +9,7 @@
 #pragma once
 #include "TextureBase.h"
 
+#include <functional>
 #include <vector>
 
 namespace NCL::Rendering {
@@ -26,8 +27,8 @@ namespace NCL::Rendering {
 	protected:
 		RenderPassBase();
 
-		void AddScreenTexture(TextureBase* tex);
+		void AddScreenTexture(TextureBase& tex);
 	private:
-		std::vector<TextureBase*> textures;
+		std::vector<std::reference_wrapper<TextureBase>> textures;
 	};
 }

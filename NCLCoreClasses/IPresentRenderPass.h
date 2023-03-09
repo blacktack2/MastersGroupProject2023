@@ -21,6 +21,6 @@ namespace NCL::Rendering {
 	 */
 	class IPresentRenderPass : public IRenderPass {
 	public:
-		virtual void SetSceneTexIn(TextureBase* sceneTex) = 0;
+		virtual void SetSceneTexIn(TextureBase& sceneTex) = 0;
 	};
 }

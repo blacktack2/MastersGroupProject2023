@@ -17,6 +17,8 @@
 #include "IOverlayRenderPass.h"
 #include "RenderPassBase.h"
 
+#include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -134,8 +136,8 @@ namespace NCL::Rendering {
 		 * using this method.
 		 * @brief Must be followed by a call to UpdatePipeline() to take effect.
 		 */
-		inline void AddMainPass(IMainRenderPass* pass) {
-			mainRenderPasses.emplace_back(pass);
+		inline void AddMainPass(IMainRenderPass& pass) {
+			mainRenderPasses.push_back({ pass });
 		}
 		/**
 		 * @brief Set the combine render pass. Meant to take elements of the
@@ -146,8 +148,8 @@ namespace NCL::Rendering {
 		 * post-processing or overlay pass.
 		 * @brief Must be followed by a call to UpdatePipeline() to take effect.
 		 */
-		inline void SetCombinePass(ICombineRenderPass* pass) {
-			combinePass = pass;
+		inline void SetCombinePass(ICombineRenderPass& pass) {
+			combinePass = &pass;
 		}
 		/**
 		 * @brief Add post-processing render pass. Meant to take in a screen
@@ -161,8 +163,8 @@ namespace NCL::Rendering {
 		 * 
 		 * @param name Unique name identifier for this render pass.
 		 */
-		inline void AddPostPass(IPostRenderPass* pass, const std::string& name) {
-			postRenderPasses.emplace_back(pass, true);
+		inline void AddPostPass(IPostRenderPass& pass, const std::string& name) {
+			postRenderPasses.push_back({ pass, true });
 			postMap.insert({ name, postRenderPasses.size() - 1 });
 		}
 		/**
@@ -177,8 +179,8 @@ namespace NCL::Rendering {
 		 * @brief Must be followed by a call to UpdatePipeline() to take
 		 * effect.
 		 */
-		inline void SetPresentPass(IPresentRenderPass* pass) {
-			presentPass = pass;
+		inline void SetPresentPass(IPresentRenderPass& pass) {
+			presentPass = &pass;
 		}
 		/**
 		 * @brief Add overlay render pass. Meant to draw over top the contents
@@ -192,8 +194,8 @@ namespace NCL::Rendering {
 		 * 
 		 * @param name Unique name identifier for this render pass.
 		 */
-		inline void AddOverlayPass(IOverlayRenderPass* pass, const std::string& name) {
-			overlayRenderPasses.emplace_back(pass, true);
+		inline void AddOverlayPass(IOverlayRenderPass& pass, const std::string& name) {
+			overlayRenderPasses.push_back({ pass, true });
 			overlayMap.insert({ name, overlayRenderPasses.size() - 1 });
 		}
 
@@ -219,14 +221,14 @@ namespace NCL::Rendering {
 		int windowHeight;
 	private:
 		struct MainPass {
-			IMainRenderPass* pass;
+			IMainRenderPass& pass;
 		};
 		struct PostPass {
-			IPostRenderPass* pass;
+			IPostRenderPass& pass;
 			bool enabled;
 		};
 		struct OverPass {
-			IOverlayRenderPass* pass;
+			IOverlayRenderPass& pass;
 			bool enabled;
 		};
 
@@ -237,14 +239,14 @@ namespace NCL::Rendering {
 		bool doRenderOver  = true;
 
 		std::vector<MainPass> mainRenderPasses;
-		ICombineRenderPass*   combinePass = nullptr;
+		ICombineRenderPass* combinePass;
 		std::vector<PostPass> postRenderPasses;
-		IPresentRenderPass*   presentPass = nullptr;
+		IPresentRenderPass* presentPass;
 		std::vector<OverPass> overlayRenderPasses;
 
 		std::unordered_map<std::string, size_t> postMap;
 		std::unordered_map<std::string, size_t> overlayMap;
 
-		std::vector<IRenderPass*> renderPipeline;
+		std::vector<std::reference_wrapper<IRenderPass>> renderPipeline;
 	};
 }

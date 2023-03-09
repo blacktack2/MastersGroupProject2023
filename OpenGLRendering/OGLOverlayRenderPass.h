@@ -9,15 +9,13 @@
 #include "OGLRenderPass.h"
 #include "IOverlayRenderPass.h"
 
-#include "OGLRenderer.h"
-
 namespace NCL::Rendering {
 	/**
 	 * @brief Base OpenGL implementation of an overlay stage render pass.
 	 */
 	class OGLOverlayRenderPass : public OGLRenderPass, public IOverlayRenderPass {
 	public:
-		OGLOverlayRenderPass(OGLRenderer& renderer) : OGLRenderPass(renderer) {}
+		OGLOverlayRenderPass() : OGLRenderPass() {}
 
 		virtual void OnWindowResize(int width, int height) override {
 			OGLRenderPass::OnWindowResize(width, height);

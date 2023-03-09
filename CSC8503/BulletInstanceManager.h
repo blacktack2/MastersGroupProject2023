@@ -1,3 +1,4 @@
+#pragma once
 #include "BossBullet.h"
 #include "PlayerBullet.h"
 

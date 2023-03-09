@@ -8,6 +8,8 @@
  */
 #include "RendererBase.h"
 
+#include <optional>
+
 using namespace NCL;
 using namespace Rendering;
 
@@ -53,28 +55,26 @@ void RendererBase::UpdatePipeline() {
 		for (auto& pass : mainRenderPasses) {
 			renderPipeline.push_back(pass.pass);
 		}
-		renderPipeline.push_back(combinePass);
+		renderPipeline.push_back(*combinePass);
 		if (doRenderPost) {
-			bool first = true;
 			IPostRenderPass* last = nullptr;
 			for (auto pass = postRenderPasses.begin(); pass != postRenderPasses.end(); pass++) {
 				if (!pass->enabled) {
 					continue;
 				}
-				if (first) {
-					first = false;
-					pass->pass->SetSceneTexIn(combinePass->GetOutTex());
+				if (last) {
+					pass->pass.SetSceneTexIn(last->GetOutTex());
 				} else {
-					pass->pass->SetSceneTexIn(last->GetOutTex());
+					pass->pass.SetSceneTexIn(combinePass->GetOutTex());
 				}
 				renderPipeline.push_back(pass->pass);
-				last = pass->pass;
+				last = &pass->pass;
 			}
-			presentPass->SetSceneTexIn(last == nullptr ? combinePass->GetOutTex() : last->GetOutTex());
+			presentPass->SetSceneTexIn(last ? last->GetOutTex() : combinePass->GetOutTex());
 		} else {
 			presentPass->SetSceneTexIn(combinePass->GetOutTex());
 		}
-		renderPipeline.push_back(presentPass);
+		renderPipeline.push_back(*presentPass);
 	}
 	if (doRenderOver) {
 		for (auto& pass : overlayRenderPasses) {
@@ -87,25 +87,25 @@ void RendererBase::UpdatePipeline() {
 
 void RendererBase::OnWindowResize(int width, int height) {
 	for (auto& pass : mainRenderPasses) {
-		pass.pass->OnWindowResize(width, height);
+		pass.pass.OnWindowResize(width, height);
 	}
 	if (combinePass) {
 		combinePass->OnWindowResize(width, height);
 	}
 	for (auto& pass : postRenderPasses) {
-		pass.pass->OnWindowResize(width, height);
+		pass.pass.OnWindowResize(width, height);
 	}
 	if (presentPass) {
 		presentPass->OnWindowResize(width, height);
 	}
 	for (auto& pass : overlayRenderPasses) {
-		pass.pass->OnWindowResize(width, height);
+		pass.pass.OnWindowResize(width, height);
 	}
 }
 
 void RendererBase::RenderFrame() {
 	ClearBackbuffer();
 	for (auto& pass : renderPipeline) {
-		pass->Render();
+		pass.get().Render();
 	}
 }

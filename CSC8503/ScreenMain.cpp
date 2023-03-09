@@ -3,6 +3,7 @@
  * @brief  A class for defining the main menu.
  *
  * @author Felix Chiu
+ * @author Stuart Lewis
  * @date   February 2023
  */
 #pragma once
@@ -12,55 +13,69 @@
 #include "MenuRenderObject.h"
 
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
 
-void ScreenMain::initMenu() {
-	ShaderBase* shader = (ShaderBase*)AssetLibrary::GetShader("menu");
+ScreenMain::ScreenMain() {
+	InitMenu();
+	OnAwake();
+}
+ScreenMain::~ScreenMain() {
+	menuManager.RemoveAndEraseMenu(NAME);
+}
 
-	TextureBase* mainMenuBg = AssetLibrary::GetTexture("menuMain");
+PushdownState::PushdownResult ScreenMain::OnUpdate(float dt, PushdownState** newState) {
+	menuManager.Update(dt);
+	keyMap.Update();
+	renderer.Render();
+	switch (menuState) {
+		case ChangeState::Start:
+			*newState = new ScreenGame();
+			return PushdownResult::Push;
+		case ChangeState::Multiplayer:
+			*newState = new ScreenMultiplayerOption();
+			return PushdownResult::Push;
+		case ChangeState::Option:
+			*newState = new ScreenOption();
+			return PushdownResult::Push;
+		case ChangeState::Quit:
+			return PushdownResult::Pop;
+		default:
+			menuState = ChangeState::OnGoing;
+			return PushdownResult::NoChange;
+	}
+}
 
-	MeshGeometry* quad = (MeshGeometry*)AssetLibrary::GetMesh("quad");
-	Menu* menu = new Menu(Vector2(0,0), Vector2(1,1));
-	menu->SetRenderObject(new MenuRenderObject(mainMenuBg));
-	menuManager.AddMenu(name, menu);
+void ScreenMain::OnAwake() {
+	menuState = ChangeState::None;
 
-	//button 1
-	TextureBase* tex = AssetLibrary::GetTexture("button1");
-	Button* btn = new Button(0.5f, 0.3f, 0.2f, 0.1f);
-	btn->SetRenderObject(new MenuRenderObject(tex));
-	menu->AddButton(btn);
-	btn->OnClickCallback = [&]() {
-		std::cout << "Start btn clicked" << std::endl;
+	menuManager.SetCurrentMenu(NAME);
+
+	renderer.EnableOverlayPass("Menu", true);
+	renderer.EnableOverlayPass("Debug", false);
+	renderer.EnableRenderScene(false);
+	renderer.UpdatePipeline();
+
+	Window::GetWindow()->ShowOSPointer(true);
+	Window::GetWindow()->LockMouseToWindow(false);
+}
+
+void ScreenMain::InitMenu() {
+	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(1.0f), AssetLibrary<TextureBase>::GetAsset("menuMain"));
+	
+	menu.AddButton(0.5f, 0.3f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button1"), [&]() {
+		std::cout << "Start button clicked\n";
 		menuState = ChangeState::Start;
-	};
-
-	//button 2
-	tex = AssetLibrary::GetTexture("button1");
-	btn = new Button(0.5f, 0.0f, 0.2f, 0.1f);
-	btn->SetRenderObject(new MenuRenderObject(tex));
-	menu->AddButton(btn);
-	btn->OnClickCallback = [&]() {
-		std::cout << "Multiplayer btn clicked" << std::endl;
+	});
+	menu.AddButton(0.5f, 0.0f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button2"), [&]() {
+		std::cout << "Multiplayer button clicked\n";
 		menuState = ChangeState::Multiplayer;
-	};
-
-	//button 3
-	tex = AssetLibrary::GetTexture("button2");
-	btn = new Button(0.5f, -0.3f, 0.2f, 0.1f);
-	btn->SetRenderObject(new MenuRenderObject(tex));
-	menu->AddButton(btn);
-	btn->OnClickCallback = [&]() {
-		std::cout << "Option btn clicked" << std::endl;
+	});
+	menu.AddButton(0.5f, -0.3f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button2"), [&]() {
+		std::cout << "Option button clicked\n";
 		menuState = ChangeState::Option;
-	};
-
-	//button 4
-	tex = AssetLibrary::GetTexture("button3");
-	btn = new Button(0.5f, 2 * -0.3f, 0.2f, 0.1f);
-	btn->SetRenderObject(new MenuRenderObject(tex));
-	menu->AddButton(btn);
-	btn->OnClickCallback = [&]() {
-		std::cout << "Quit btn clicked" << std::endl;
+	});
+	menu.AddButton(0.5f, -0.6f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button3"), [&]() {
+		std::cout << "Quit button clicked\n";
 		menuState = ChangeState::Quit;
-	};
+	});
 }
