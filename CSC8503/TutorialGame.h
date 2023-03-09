@@ -83,7 +83,6 @@ namespace NCL::CSC8503 {
 
 		GameGrid* gameGrid = nullptr;
 		Boss* testingBoss = nullptr;
-		BossBehaviorTree* testingBossBehaviorTree = nullptr;
 
 		float interval = 0.0f;
 	};

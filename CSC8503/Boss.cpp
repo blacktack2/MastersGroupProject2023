@@ -11,14 +11,225 @@
 #include "BulletInstanceManager.h"
 #include "AssetLibrary.h"
 #include "PrefabLibrary.h"
+#include "BehaviourSelector.h"
+#include "BehaviourSequence.h"
+#include "BehaviourNodeWithChildren.h"
+#include "BehaviourAction.h"
+#include "DebugViewPoint.h"
+#include <limits>
+
+
+
+
+    const float offensiveHealthLowerBound = 50;
+    const float bossVision = 80;
+    const float distanceToHaveCloseCombat = 40;
+
+
+Boss::Boss() {
+    BuildTree();
+}
+
+Boss::~Boss() {
+    delete behaviourTree;
+}
+
+void Boss::BuildTree() {
+    
+
+    behaviourTree = new BehaviourSelector("Root");
+
+    BehaviourSequence* offensiveMode = new BehaviourSequence("Offensive sub-tree");
+    behaviourTree->AddChild(offensiveMode);
+
+    offensiveMode->AddChild(new BehaviourAction("Check Boss Health for offensive mode", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        }
+
+        if (health.GetHealth() < offensiveHealthLowerBound) return Failure;
+        return Success;
+        }));
+
+    BehaviourSelector* offensinveMoves = new BehaviourSelector("Offensive Moves");
+    offensiveMode->AddChild(offensinveMoves);
+
+    offensinveMoves->AddChild(new BehaviourAction("Walk if player to far awway", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        }
+
+        if (SqrDistToTarget() > bossVision * bossVision || state == Ongoing)
+        {
+            if (RandomWalk()) return Success;
+            else { 
+                bossAction = Move1;
+                return Ongoing; 
+            }
+        }
+        return Failure;
+        }));
+
+    BehaviourSequence* offensiveClose = new BehaviourSequence("Offensive Close Combat");
+    offensinveMoves->AddChild(offensiveClose);
+
+
+    //offensive close actions
+    offensiveClose->AddChild(new BehaviourAction("Check Player Dist for close Combat", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        }
+
+        if (SqrDistToTarget() < distanceToHaveCloseCombat * distanceToHaveCloseCombat) return Success;
+        return Failure;
+        }));
+
+    BehaviourSelector* offensiveCloseAction = new BehaviourSelector("Choose Offensive Close Combat");
+    offensiveClose->AddChild(offensiveCloseAction);
+
+    offensiveCloseAction->AddChild(new BehaviourAction("Stab Player", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        case Initialise:
+            if (std::rand() % 100 > 60) return Failure;
+        }
+        if (StabPlayer(target)) return Success;
+        bossAction = Attack1;
+        return Ongoing;
+        }));
+
+    offensiveClose->AddChild(new BehaviourAction("Spin On Player", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        }
+
+        if (Spin(target)) return Success;
+        bossAction = Attack2;
+        return Ongoing;
+    }));
+
+
+    //offensive remote actions
+    offensinveMoves->AddChild(new BehaviourAction("Laser Player", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        case Initialise:
+            if (std::rand() % 100 > 70) return Failure;
+        }
+        if (UseLaserOnPlayer(target)) return Success;
+        bossAction = Attack3;
+        return Ongoing;
+    }));
+
+    offensinveMoves->AddChild(new BehaviourAction("Jump To Player", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        }
+
+        if (JumpTo(target)) return Success;
+        bossAction = Move2;
+        return Ongoing;
+    }));
+
+
+
+    //Deffensive Sub tree
+    behaviourTree->AddChild(new BehaviourAction("Walk if player to far awway", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        }
+
+        if (SqrDistToTarget() > bossVision * bossVision || state == Ongoing)
+        {
+            if (RandomWalk()) return Success;
+            else {
+                bossAction = Move1;
+                return Ongoing;
+            }
+        }
+        return Failure;
+    }));
+
+    behaviourTree->AddChild(new BehaviourAction("Jump away if player is close", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        }
+
+        if (SqrDistToTarget() < distanceToHaveCloseCombat * distanceToHaveCloseCombat || state == Ongoing)
+        {
+            if (JumpAway(target)) return Success;
+            else {
+                bossAction = Move3;
+                return Ongoing;
+            }
+        }
+        return Failure;
+    }));
+    //Defensive Attacks
+    behaviourTree->AddChild(new BehaviourAction("Ink Rain", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        case Initialise:
+            if (std::rand() % 100 > 70) return Failure;
+        }
+        if (InkRain(target)) return Success;
+        bossAction = Attack4;
+        return Ongoing;
+    }));
+
+    behaviourTree->AddChild(new BehaviourAction("Bullet Storm", [&](float dt, BehaviourState state)->BehaviourState {
+        switch (state)
+        {
+        case Failure:
+        case Success:
+            return state;
+        }
+
+        if (BulletsStorm()) return Success;
+        bossAction = Attack5;
+        return Ongoing;
+    }));
+}
 
 void Boss::Update(float dt) {
+    NCL::DebugViewPoint::Instance().MarkTime("Boss Update");
     GetTarget();
     health.Update(dt);
     deltaTime = dt;
     // check if inked
     GameNode* node = GameGridManager::instance().NearestNode(this->GetTransform().GetGlobalPosition());
-    InkEffectManager::instance().ApplyInkEffect(node->inkType, GetHealth(), 1);
+    if(node)
+        InkEffectManager::instance().ApplyInkEffect(node->inkType, GetHealth(), 1);
     //check boss health
     if (GetHealth()->GetHealth() <= 0) {
         ChangeLoseState();
@@ -26,10 +237,17 @@ void Boss::Update(float dt) {
     if (this->transform.GetGlobalPosition().y < -10) {
         ChangeLoseState();
     }
+    if (health.GetHealth() > 0 )
+    {
+        bossAction = NoAction;
+        if (behaviourTree->Execute(dt) != Ongoing) behaviourTree->Reset();
+    }
+    NCL::DebugViewPoint::Instance().FinishTime("Boss Update");
 }
 
 void Boss::ChangeLoseState()
 {
+    bossAction = Dead;
     gameStateManager->SetGameState(GameState::Win);
 }
 
@@ -41,7 +259,6 @@ void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
     float aiSpeed = speed;
 
     NavigationPath samples;
-    gameGrid->FindCatmullRomPath(this->GetTransform().GetGlobalPosition(), destination, samples);
     Vector3 node;
     std::vector<Vector3> tempSteps;
     while (samples.PopWaypoint(node)) {
@@ -52,7 +269,7 @@ void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
     } else {
         Vector3 closest{ 9999, 9999, 9999 };
         Vector3 forward;
-        for (int n = 0; n < tempSteps.size() - 1; n++) {
+        for (size_t n = 0; n < tempSteps.size() - 1; n++) {
             if ((closest - this->GetTransform().GetGlobalPosition()).Length() > (tempSteps[n] - this->GetTransform().GetGlobalPosition()).Length()) {
                 closest = tempSteps[n];
                 forward = tempSteps[n + 1];
@@ -72,7 +289,7 @@ void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
 
     // Draw the path
     if (tempSteps.size() > 1) {
-        for (int i = 1; i < tempSteps.size(); i++) {
+        for (size_t i = 1; i < tempSteps.size(); i++) {
             Vector3 a = tempSteps[i - 1];
             Vector3 b = tempSteps[i];
 
@@ -118,8 +335,8 @@ bool Boss::RandomWalk() {
     randomWalkTimer += deltaTime;
     if (randomWalkTimer > period) {
         randomWalkTimer = 0.0f;
-        float x = (std::rand() % 11) - 5;
-        float z = (std::rand() % 11) - 5;
+        float x = (float)((std::rand() % 11) - 5);
+        float z = (float)((std::rand() % 11) - 5);
         randomWalkDirection = Vector3{ x,0,z };
         randomWalkDirection = randomWalkDirection.Normalised();
         Quaternion orientation = Quaternion(Matrix4::BuildViewMatrix(this->GetTransform().GetGlobalPosition() + randomWalkDirection * 10, this->GetTransform().GetGlobalPosition(), Vector3(0, 1, 0)).Inverse());
@@ -222,7 +439,7 @@ bool Boss::UseLaserOnPlayer(PlayerObject* player) {
         {
             for (int j = 0; j < 5; j++)
             {
-                Vector3 v = bombVelocity + leftDir * dColumn * j + upDir * dRow * i;
+                Vector3 v = bombVelocity + leftDir * dColumn * (float)j + upDir * dRow * (float)i;
                 releaseBossBullet(v, bombScale);
             }
         }
@@ -230,7 +447,7 @@ bool Boss::UseLaserOnPlayer(PlayerObject* player) {
         {
             for (int j = 1; j < 5; j++)
             {
-                Vector3 v = bombVelocity - leftDir * dColumn * j + upDir * dRow * i;
+                Vector3 v = bombVelocity - leftDir * dColumn * (float)j + upDir * dRow * (float)i;
                 releaseBossBullet(v, bombScale);
             }
         }
@@ -330,11 +547,11 @@ bool Boss::InkRain(PlayerObject* player) {
     if (!rainIsInitialised) {
         rain = std::vector<BossBullet*>(numOfBomb);
         for (int n = 0; n < numOfBomb; n++) {
-            float xDot = std::rand() % rainRange + 1;
-            float xDotDot = -(std::rand() % rainRange + 1);
-            float yDot = std::rand() % rainRange + 1;
-            float zDot = std::rand() % rainRange + 1;
-            float zDotDot = -(std::rand() % rainRange + 1);
+            float xDot = (float)(std::rand() % rainRange + 1);
+            float xDotDot = (float)-(std::rand() % rainRange + 1);
+            float yDot = (float)(std::rand() % rainRange + 1);
+            float zDot = (float)(std::rand() % rainRange + 1);
+            float zDotDot = (float)-(std::rand() % rainRange + 1);
             float dx = xDot + xDotDot;
             float dy = yDot;
             float dz = zDot + zDotDot;
@@ -383,20 +600,32 @@ bool Boss::BulletsStorm() {
         bulletsStormFrequencyTimer += deltaTime;
         if (bulletsStormFrequencyTimer > bulletsStormPeriod) {
             bulletsStormFrequencyTimer = 0.0f;
-            const float PI = 3.1415926;
+            const float PI = 3.1415926f;
             int rayNum = 16;
             bulletsStormAngle += PI / 50;
             float currentPhase = bulletsStormAngle;
             float dAngle = (2 * PI) / rayNum;
             for (; currentPhase < (2 * PI + bulletsStormAngle); currentPhase += dAngle) {
-                Vector3 rayDir = this->GetTransform().GetGlobalOrientation() * Vector3(cos(currentPhase), 0, sin(currentPhase));
+                Vector3 rayDir = transform.GetGlobalOrientation() * Vector3(cos(currentPhase), 0, sin(currentPhase));
                 Vector3 bombVelocity = rayDir * bombSpeed;
                 releaseBossBullet(bombVelocity, bombScale);
             }
-            this->GetPhysicsObject()->SetAngularVelocity(this->GetTransform().GetGlobalOrientation() * Vector3 { 1, 1, 1 });
+            physicsObject->SetAngularVelocity(transform.GetGlobalOrientation() * Vector3 { 1, 1, 1 });
         }
         return false;
     }
+    physicsObject->SetAngularVelocity(Vector3(0, 0, 0));
+    Vector3 eurler = transform.GetGlobalOrientation().ToEuler();
+    transform.SetOrientation(Quaternion::EulerAnglesToQuaternion(0, eurler.y, 0));
     bulletsStormTimer = 0.0f;
     return true;
+}
+
+
+float Boss::SqrDistToTarget() {
+    if (!target) return std::numeric_limits<float>::max();
+    return (transform.GetGlobalPosition() - target->GetTransform().GetGlobalPosition()).LengthSquared();
+}
+float Boss::DistToTarget() {
+    return  (transform.GetGlobalPosition() - target->GetTransform().GetGlobalPosition()).Length();
 }

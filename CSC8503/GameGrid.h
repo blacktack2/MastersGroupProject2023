@@ -101,114 +101,25 @@ namespace NCL
 			GameGrid(Vector3 gridOrigin, float totalLength, float totalWidth, float unitLength);
 			~GameGrid();
 			void Update(float dt) {
-				UpdateGrid(dt);
-				DrawDebugGameGrid();
+				//DrawDebugGameGrid();
 			}
-
-			//void UpdateHealingKits(GameObject* obj, Vector3 dimension)
-			//{
-			//	float rx = dimension.x;
-			//	float ry = dimension.y;
-			//	float rz = dimension.z;
-
-			//	for (int i = 0; i < healingKits.size(); i++)
-			//	{
-			//		Vector3 radius = obj->GetTransform().GetScale() / 2;
-			//		if ((healingKits[i]->GetTransform().GetGlobalPosition() - obj->GetTransform().GetGlobalPosition()).Length() < radius.x + rx ||
-			//			(healingKits[i]->GetTransform().GetGlobalPosition() - obj->GetTransform().GetGlobalPosition()).Length() < radius.y + ry ||
-			//			(healingKits[i]->GetTransform().GetGlobalPosition() - obj->GetTransform().GetGlobalPosition()).Length() < radius.z + rz)
-			//		{
-			//			healingKits[i]->Delete();
-			//			healingKits.erase(healingKits.begin() + i);
-			//			// TODO: update obj's health
-			//		}
-			//	}
-			//}
-
-			void UpdateGrid(float dt = 0.0f);
-
-			bool FindCatmullRomPath(const Vector3& from, const Vector3& to, NavigationPath& outPath);
 
 			GameNode* NearestNode(Vector3 position);
 
-			std::vector<GameNode*> AreaNode(Vector3 position, float radius);
+			void PaintNode(Vector3 position, float radius, NCL::InkType type);
 
 			void DrawDebugGameGrid();
-
-			void PaintNode(Vector3 position, NCL::InkType type);
-
-			std::vector<GameNode> GetTraceNodes();
-
-			GameNode* GetRandomNode();
-
-			//healing stuff (shouldn't be here)
-			float GetHealingKitTimer();
-
-			//Vector3 GetRandomLocationToAddHealingKit(HealingKit* obj)
-			//{
-			//	healingKitTimer = 0.0f;
-
-			//	healingKits.push_back(obj);
-
-			//	GameNode* node = GetRandomNode();
-			//	while (node->type == Impassable)	// this algorithm would cause a longer time if most nodes are Impassable
-			//	{
-			//		node = GetRandomNode();
-			//	}
-			//	return node->worldPosition;
-			//}
-
-			/*std::vector<HealingKit*> GetHealingKits()
-			{
-				return healingKits;
-			}*/
-
 			std::vector<std::vector<GameNode>> GetAllNodes()
 			{
 				return gameNodes;
 			}
-
 		protected:
-
 			int numOfRows = 0;
 			int numOfColumns = 0;
 			float unitLength;
 
 			std::vector<std::vector<GameNode>> gameNodes;
 			Vector3 gameGridOrigin;
-
-			float healingKitTimer = 0.0f;
-			//std::vector<HealingKit*> healingKits;
-
-			// For leaving a trace of ink on the floor:
-			std::vector<GameNode> TraceNodes;
-			const int maxNumOfNodesInTrace = 100;
-			GameNode LastNearestNode{ -1,-1,{99999,99999,99999} };
-
-			// For pathfinding:
-			bool NodeInList(GameNode* n, std::vector<GameNode*>& list) const {
-				std::vector<GameNode*>::iterator i = std::find(list.begin(), list.end(), n);
-				return i == list.end() ? false : true;
-			}
-
-			GameNode* RemoveBestNode(std::vector<GameNode*>& list) const {
-				std::vector<GameNode*>::iterator bestI = list.begin();
-				GameNode* bestNode = *list.begin();
-
-				for (auto i = list.begin(); i != list.end(); ++i) {
-					if ((*i)->f < bestNode->f) {
-						bestNode = (*i);
-						bestI = i;
-					}
-				}
-				list.erase(bestI);
-
-				return bestNode;
-			}
-
-			float Heuristic(GameNode* hNode, GameNode* endNode) const {
-				return (hNode->worldPosition - endNode->worldPosition).Length();		// Manhattan distance
-			}
 		};
 
 	}

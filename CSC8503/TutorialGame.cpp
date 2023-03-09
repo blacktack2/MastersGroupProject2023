@@ -65,9 +65,8 @@ TutorialGame::~TutorialGame() {
 	gameWorld.ClearAndErase();
 	BulletInstanceManager::instance().NullifyArray();
 	gridManager.Clear();
-	SoundSystem::Destroy();
 
-	delete testingBossBehaviorTree;
+	SoundSystem::Destroy();
 }
 
 void TutorialGame::StartLevel() {
@@ -75,8 +74,7 @@ void TutorialGame::StartLevel() {
 	player = AddPlayerToWorld(Vector3(0, 5, 90),true);
 
 	testingBoss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
-	testingBossBehaviorTree = new BossBehaviorTree(testingBoss);
-	testingBossBehaviorTree->ChangeTarget(player);
+	testingBoss->SetTarget(player);
 }
 
 void TutorialGame::Clear() {
@@ -86,14 +84,12 @@ void TutorialGame::Clear() {
 	physics->Clear();
 	gridManager.Clear();
 	testingBoss = nullptr;
-	delete testingBossBehaviorTree;
-	testingBossBehaviorTree = nullptr;
 }
 
 void TutorialGame::InitWorld() {
 	Clear();
 
-	gridManager.AddGameGrid(new GameGrid({ 0,0,0 }, 300, 300, 2));
+	gridManager.AddGameGrid(new GameGrid(Vector3(0.0f), 400, 400, 1));
 	BuildLevel();
 
 	InitGameExamples();
@@ -150,7 +146,13 @@ void TutorialGame::UpdateGameCore(float dt) {
 	if (testingBoss) {
 		Debug::Print(std::string("Boss health: ").append(std::to_string((int)testingBoss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
 	}
+
 	gameWorld.GetMainCamera()->UpdateCamera(dt);
+
+	GameGridManager::instance().Update(dt);
+
+	gameWorld.GetMainCamera()->UpdateCamera(dt);
+
 	Vector3 crossPos = CollisionDetection::Unproject(Vector3(screenSize * 0.5f, 0.99f), *gameWorld.GetMainCamera());
 	Debug::DrawAxisLines(Matrix4::Translation(crossPos), 1.0f);
 
@@ -161,10 +163,6 @@ void TutorialGame::UpdateGameCore(float dt) {
 	physics->Update(dt);
 
 	gameWorld.PostUpdateWorld();
-
-	if (testingBossBehaviorTree) {
-		testingBossBehaviorTree->update();
-	}
 	
 	if (gameLevel->GetShelterTimer() > 20.0f) {
 		gameLevel->SetShelterTimer(0.0f);
@@ -280,9 +278,11 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 
 void TutorialGame::BuildLevel() {
 	interval = 5.0f;
+
 	gameLevel = new GameLevel();
-	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -100, 0, -70 }, interval);
+	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -200, 0, -200 }, interval);
 	gameWorld.AddGameObject(gameLevel);
+
 	UpdateLevel();
 }
 
@@ -293,6 +293,7 @@ void TutorialGame::UpdateLevel() {
 			if (object->objectType == ObjectType::Pillar){
 				Vector3 dimensions{ interval / 2.0f, 10, interval / 2.0f };
 				Obstacle* pillar = new Obstacle{ object, true };
+
 				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3f, 2.0f, 1.3f }, CollisionLayer::PaintAble));
 
 				pillar->GetTransform()
@@ -311,7 +312,7 @@ void TutorialGame::UpdateLevel() {
 			if (object->objectType == ObjectType::FenceX){
 				Vector3 dimensions{ interval / 4.0f, 0.5f, interval / 5.0f };
 				Obstacle* fenceX = new Obstacle{ object, true };
-				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
+				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * 2, CollisionLayer::PaintAble));
 				fenceX->GetTransform()
 					.SetPosition(object->worldPos + Vector3{ 0,2,0 })
 					.SetScale(dimensions * 2);
@@ -328,7 +329,7 @@ void TutorialGame::UpdateLevel() {
 			if (object->objectType == ObjectType::FenceY) {
 				Vector3 dimensions{ interval / 5.0f, 0.5f, interval / 4.0f };
 				Obstacle* fenceY = new Obstacle{ object, true };
-				fenceY->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
+				fenceY->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * 2, CollisionLayer::PaintAble));
 				fenceY->GetTransform()
 					.SetPosition(object->worldPos + Vector3{ 0,2,0 })
 					.SetScale(dimensions * 2);
