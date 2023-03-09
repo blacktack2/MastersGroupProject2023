@@ -34,6 +34,21 @@
     <Filter Include="Collision">
       <UniqueIdentifier>{1c890693-8865-4ddd-90f0-1fcb7afb34f5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AI">
+      <UniqueIdentifier>{2257dfb9-5e50-4475-9b6b-14493157dd5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\BehaviourTree">
+      <UniqueIdentifier>{18d4c1aa-7191-4115-81e7-95cc425d546b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\Pathfinding">
+      <UniqueIdentifier>{dc42b880-5727-4fcf-987d-5f3d0ac38907}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\Pushdown Automata">
+      <UniqueIdentifier>{5dcef27a-6d48-483e-b175-82c0eb14fecb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AI\State Machine">
+      <UniqueIdentifier>{47fefe0f-24b7-499b-94c2-8a86ca0e98cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp">
@@ -155,6 +170,21 @@
     </ClCompile>
     <ClCompile Include="PhysicsSystem.cpp">
       <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="StateMachine.cpp">
+      <Filter>AI\State Machine</Filter>
+    </ClCompile>
+    <ClCompile Include="PushdownMachine.cpp">
+      <Filter>AI\Pushdown Automata</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationGrid.cpp">
+      <Filter>AI\Pathfinding</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationMesh.cpp">
+      <Filter>AI\Pathfinding</Filter>
+    </ClCompile>
+    <ClCompile Include="PrefabLibrary.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -298,6 +328,60 @@
     </ClInclude>
     <ClInclude Include="Light.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BehaviourNode.h">
+      <Filter>AI\BehaviourTree</Filter>
+    </ClInclude>
+    <ClInclude Include="BehaviourNodeWithChildren.h">
+      <Filter>AI\BehaviourTree</Filter>
+    </ClInclude>
+    <ClInclude Include="BehaviourParallel.h">
+      <Filter>AI\BehaviourTree</Filter>
+    </ClInclude>
+    <ClInclude Include="BehaviourParallelSelector.h">
+      <Filter>AI\BehaviourTree</Filter>
+    </ClInclude>
+    <ClInclude Include="BehaviourSelector.h">
+      <Filter>AI\BehaviourTree</Filter>
+    </ClInclude>
+    <ClInclude Include="BehaviourSequence.h">
+      <Filter>AI\BehaviourTree</Filter>
+    </ClInclude>
+    <ClInclude Include="State.h">
+      <Filter>AI\State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachine.h">
+      <Filter>AI\State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="StateTransition.h">
+      <Filter>AI\State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="PushdownState.h">
+      <Filter>AI\Pushdown Automata</Filter>
+    </ClInclude>
+    <ClInclude Include="PushdownMachine.h">
+      <Filter>AI\Pushdown Automata</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationGrid.h">
+      <Filter>AI\Pathfinding</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationMap.h">
+      <Filter>AI\Pathfinding</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationPath.h">
+      <Filter>AI\Pathfinding</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationMesh.h">
+      <Filter>AI\Pathfinding</Filter>
+    </ClInclude>
+    <ClInclude Include="PrefabLibrary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BehaviourAction.h">
+      <Filter>AI\BehaviourTree</Filter>
+    </ClInclude>
+    <ClInclude Include="BehaviourInvertor.h">
+      <Filter>AI\BehaviourTree</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

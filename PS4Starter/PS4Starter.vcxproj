@@ -81,15 +81,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Boss.cpp" />
+    <ClCompile Include="BossBullet.cpp" />
+    <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="BulletInstanceManager.cpp" />
     <ClCompile Include="ExampleRenderer.cpp" />
+    <ClCompile Include="GameGrid.cpp" />
+    <ClCompile Include="GameGridManager.cpp" />
+    <ClCompile Include="GameStateManager.cpp" />
+    <ClCompile Include="Health.cpp" />
+    <ClCompile Include="InkEffectManager.cpp" />
+    <ClCompile Include="InputKeyMap.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PlayerBullet.cpp" />
     <ClCompile Include="PS4Renderer.cpp" />
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="TutorialGame.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Boss.h" />
+    <ClInclude Include="BossBullet.h" />
+    <ClInclude Include="Bullet.h" />
+    <ClInclude Include="BulletInstanceManager.h" />
     <ClInclude Include="ExampleRenderer.h" />
+    <ClInclude Include="GameGrid.h" />
+    <ClInclude Include="GameGridManager.h" />
+    <ClInclude Include="GameStateManager.h" />
+    <ClInclude Include="Health.h" />
+    <ClInclude Include="InkEffectManager.h" />
     <ClInclude Include="InputKeyMap.h" />
+    <ClInclude Include="Obstacle.h" />
+    <ClInclude Include="PlayerBullet.h" />
+    <ClInclude Include="PlayerObject.h" />
     <ClInclude Include="PS4Renderer.h" />
     <ClInclude Include="RenderObject.h" />
     <ClInclude Include="TutorialGame.h" />

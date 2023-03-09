@@ -15,6 +15,21 @@
     <Filter Include="Textures">
       <UniqueIdentifier>{c660e2f2-adf0-4a00-aab0-cbee4d07e772}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Player Files">
+      <UniqueIdentifier>{50bef831-092a-4b79-a04e-02ae49f00189}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="InputHandling">
+      <UniqueIdentifier>{cf31f965-1d8c-4068-a63c-fc14aaf83170}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ink Files">
+      <UniqueIdentifier>{977f7a8c-dd57-49df-a693-abe4c53b21a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bullet Files">
+      <UniqueIdentifier>{2f714bc2-9c69-43cf-94f0-849ed6273286}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Boss Files">
+      <UniqueIdentifier>{a68e4221-8573-4f8a-ba3f-ea50078adeb7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -32,6 +47,39 @@
     <ClCompile Include="TutorialGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Health.cpp">
+      <Filter>Player Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InputKeyMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStateManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InkEffectManager.cpp">
+      <Filter>Ink Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Bullet Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameGridManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerBullet.cpp">
+      <Filter>Bullet Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BossBullet.cpp">
+      <Filter>Bullet Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Boss.cpp">
+      <Filter>Boss Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BulletInstanceManager.cpp">
+      <Filter>Bullet Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ExampleRenderer.h">
@@ -48,6 +96,42 @@
     </ClInclude>
     <ClInclude Include="InputKeyMap.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Health.h">
+      <Filter>Player Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InkEffectManager.h">
+      <Filter>Ink Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>Bullet Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameGrid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameGridManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerBullet.h">
+      <Filter>Bullet Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Boss.h">
+      <Filter>Boss Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BossBullet.h">
+      <Filter>Bullet Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerObject.h">
+      <Filter>Player Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Obstacle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletInstanceManager.h">
+      <Filter>Bullet Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
