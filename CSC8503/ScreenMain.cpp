@@ -19,6 +19,9 @@ ScreenMain::ScreenMain() {
 	InitMenu();
 	OnAwake();
 }
+ScreenMain::~ScreenMain() {
+	menuManager.RemoveAndEraseMenu(NAME);
+}
 
 PushdownState::PushdownResult ScreenMain::OnUpdate(float dt, PushdownState** newState) {
 	menuManager.Update(dt);

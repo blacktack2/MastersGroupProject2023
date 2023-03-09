@@ -20,7 +20,7 @@ using namespace NCL::CSC8503;
 class ScreenMain : public PushdownState {
 public:
 	ScreenMain();
-	~ScreenMain() = default;
+	~ScreenMain();
 
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 	void OnAwake() override;

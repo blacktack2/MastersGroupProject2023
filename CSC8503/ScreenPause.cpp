@@ -22,6 +22,10 @@ ScreenPause::ScreenPause(TutorialGame* game) {
 	InitMenu();
 }
 
+ScreenPause::~ScreenPause() {
+	menuManager.RemoveAndEraseMenu(NAME);
+}
+
 PushdownState::PushdownResult ScreenPause::OnUpdate(float dt, PushdownState** newState) {
 	menuManager.Update(dt);
 	keyMap.Update();

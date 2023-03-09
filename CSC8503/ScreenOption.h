@@ -17,7 +17,7 @@ using namespace CSC8503;
 class ScreenOption : public PushdownState {
 public:
 	ScreenOption();
-	~ScreenOption() = default;
+	~ScreenOption();
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 	void OnAwake() override;
 

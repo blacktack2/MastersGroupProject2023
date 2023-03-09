@@ -18,7 +18,7 @@ using namespace CSC8503;
 class ScreenPause : public PushdownState {
 public:
 	ScreenPause(TutorialGame* game = nullptr);
-	~ScreenPause() = default;
+	~ScreenPause();
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 	void OnAwake() override;
 private:

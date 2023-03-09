@@ -20,6 +20,10 @@ ScreenOption::ScreenOption() {
 	OnAwake();
 }
 
+ScreenOption::~ScreenOption() {
+	menuManager.RemoveAndEraseMenu(NAME);
+}
+
 PushdownState::PushdownResult ScreenOption::OnUpdate(float dt, PushdownState** newState) {
 	menuManager.Update(dt);
 	keyMap.Update();

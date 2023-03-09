@@ -18,6 +18,10 @@ ScreenMultiplayerOption::ScreenMultiplayerOption() {
 	InitMenu();
 }
 
+ScreenMultiplayerOption::~ScreenMultiplayerOption() {
+	menuManager.RemoveAndEraseMenu(NAME);
+}
+
 PushdownState::PushdownResult ScreenMultiplayerOption::OnUpdate(float dt, PushdownState** newState) {
 	menuManager.Update(dt);
 	keyMap.Update();

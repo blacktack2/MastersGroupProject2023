@@ -35,7 +35,7 @@ namespace NCL::CSC8503 {
 	class BossBehaviorTree;
 	class PlayerObject;
 
-	class Light;
+	struct Light;
 
 	class TutorialGame {
 	public:

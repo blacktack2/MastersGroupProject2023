@@ -39,3 +39,11 @@ Vector4 MenuManager::PixelToScreenSpace(float screenWidth, float screenHeight, V
 
 	return Vector4(x / screenWidth * 2 - 1,- ( y / screenHeight * 2 - 1 ), (x + componentDimension.z) / screenWidth * 2 - 1, - ( (y + componentDimension.w) / screenHeight * 2 - 1 ) );
 }
+
+
+void MenuManager::RemoveAndEraseMenu(const std::string& name) {
+	if (menus.contains(name))
+	{
+		menus.erase(name);
+	}
+}
