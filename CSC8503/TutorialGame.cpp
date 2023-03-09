@@ -82,22 +82,22 @@ void TutorialGame::StartLevel() {
 	{
 	case 4:
 		player4 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player4"), Vector3(0, 5, 90));
-		player4->AttachedCamera(4);
+		player4->AttachCamera(4);
 		gameWorld.GetCamera(4)->SetControlType(ControlType::Controller_4);
 		gameWorld.GetCamera(4)->SetFollow(&(player4->GetTransform()));
 	case 3:
 		player3 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player3"), Vector3(0, 5, 90));
-		player3->AttachedCamera(3);
+		player3->AttachCamera(3);
 		gameWorld.GetCamera(3)->SetControlType(ControlType::Controller_3);
 		gameWorld.GetCamera(3)->SetFollow(&(player3->GetTransform()));
 	case 2:
 		player2 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player2"), Vector3(0, 5, 90));
-		player2->AttachedCamera(2);
+		player2->AttachCamera(2);
 		gameWorld.GetCamera(2)->SetControlType(ControlType::Controller_2);
 		gameWorld.GetCamera(2)->SetFollow(&(player2->GetTransform()));
 	case 1:
 		player = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player1"), Vector3(0, 5, 90));
-		player->AttachedCamera(1);
+		player->AttachCamera(1);
 		gameWorld.GetCamera(1)->SetControlType(ControlType::Controller_1);
 		gameWorld.GetCamera(1)->SetFollow(&(player->GetTransform()));
 	default:
@@ -105,7 +105,7 @@ void TutorialGame::StartLevel() {
 		if (player4 == nullptr)
 		{
 			player4 = AddPlayerToWorld(0, Vector3(0, 5, 90));	// playerID == 0 indicating player using keyboard
-			player4->AttachedCamera(4);
+			player4->AttachCamera(4);
 			gameWorld.GetCamera(4)->SetControlType(ControlType::KeyboardMouse);
 			gameWorld.GetCamera(4)->SetFollow(&(player4->GetTransform()));
 		}

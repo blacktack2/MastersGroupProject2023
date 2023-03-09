@@ -57,6 +57,7 @@ Should be done once per frame! Pass it the msec since
 last frame (default value is for simplicities sake...)
 */
 void Camera::UpdateCamera(float dt) {
+	std::cout << follow << std::endl;
 	if (follow == nullptr) {
 		//Update the mouse by how much
 		pitch -= (Window::GetMouse()->GetRelativePosition().y);

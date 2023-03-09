@@ -643,7 +643,7 @@ PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, bo
 
 	if (cameraFollow) {
 		gameWorld.GetMainCamera()->SetFollow(&character->GetTransform());
-		character->AttachedCamera(playerID);
+		character->AttachCamera(playerID);
 	}
 
 	return character;
