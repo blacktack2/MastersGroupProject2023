@@ -253,7 +253,7 @@ void PlayerObject::RotateToCamera() {
 }
 
 void PlayerObject::RotateByAxis() {
-	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	float yaw;
 	keyMap.GetAxisData(playerID, AxisInput::Axis4, yaw);
 	//add yaw 

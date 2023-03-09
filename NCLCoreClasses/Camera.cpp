@@ -97,7 +97,7 @@ void Camera::UpdateCamera(float dt) {
 			pitch -= (Window::GetMouse()->GetRelativePosition().y);
 			yaw -= (Window::GetMouse()->GetRelativePosition().x);
 		}*/
-		paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+		NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 		Vector2 orientationThumbData{ 0,0 };
 		if (keyMap.GetAxisData((unsigned int)controlledBy, AxisInput::Axis3, orientationThumbData.x) && keyMap.GetAxisData((unsigned int)controlledBy, AxisInput::Axis4, orientationThumbData.y))
 		{

@@ -79,20 +79,16 @@ namespace NCL::CSC8503 {
 
 		std::unique_ptr<PhysicsSystem> physics;
 
-			PlayerObject* player = nullptr;
-			PlayerObject* player2 = nullptr;
-			PlayerObject* player3 = nullptr;
-			PlayerObject* player4 = nullptr;
+		PlayerObject* player = nullptr;
+		PlayerObject* player2 = nullptr;
+		PlayerObject* player3 = nullptr;
+		PlayerObject* player4 = nullptr;
 
-			Light* sunLight = nullptr;
+		Light* sunLight = nullptr;
 
-			paintHell::debug::DebugViewPoint* debugViewPoint;
-
-			GameLevel* gameLevel = nullptr;	/////////
-			Boss* boss = nullptr;   /////////
-
-		GameGrid* gameGrid = nullptr;
+		GameLevel* gameLevel = nullptr;
 		Boss* boss = nullptr;
+
 
 		float interval = 0.0f;
 	};
