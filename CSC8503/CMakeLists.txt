@@ -13,7 +13,7 @@ set(Header_Files
     "GameStateManager.h"
 	"Maze.h"
     "MenuRenderObject.h"
-
+    "LoadingManager.h"
     "Obstacle.h"
     "StateGameObject.h"
     "TutorialGame.h"

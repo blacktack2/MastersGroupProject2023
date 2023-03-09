@@ -51,6 +51,8 @@ namespace NCL::CSC8503 {
 		static TextureBase*  LoadTexture(const std::string& name);
 		static ShaderBase*   LoadShader(const std::string& vertex, const std::string& fragment);
 
+		void LoadingRender(float dt, ShaderBase* shader, MeshGeometry* mesh);
+
 		inline SkyboxRPass& GetSkyboxPass() {
 			return *skyboxPass;
 		}

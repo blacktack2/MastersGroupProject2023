@@ -171,13 +171,14 @@ void OGLShader::LoadPass(const GLchar* code, ShaderStage type) {
 	glCompileShader(shaderID);
 
 	glGetShaderiv(shaderID, GL_COMPILE_STATUS, &shaderValid[index]);
+	PrintCompileLog(shaderID);
 	if (shaderValid[index] != GL_TRUE) {
 		std::cout << ShaderNames[index] << " shader " << " has failed!" << "\n";
 		return;
 	}
 	glAttachShader(programID, shaderID);
 
-	PrintCompileLog(shaderID);
+	
 
 	glDeleteShader(shaderID);
 }

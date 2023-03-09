@@ -114,3 +114,15 @@ ShaderBase* GameTechRenderer::LoadShader(const std::string& vertex, const std::s
 
 void GameTechRenderer::Update(float dt) {
 }
+
+
+void GameTechRenderer::LoadingRender(float dt, ShaderBase* shader, MeshGeometry* mesh) {
+	BeginFrame();
+	ClearBuffers(ClearBit::ColorDepth);
+	shader->Bind();
+	shader->SetUniformFloat("screenSize", hostWindow.GetScreenSize());
+	mesh->Draw();
+
+	EndFrame();
+	SwapBuffers();
+}

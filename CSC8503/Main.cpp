@@ -32,6 +32,7 @@
 #include "ScreenMain.h"
 
 #include "AssetLibrary.h"
+#include "LoadingManager.h"
 
 #include <chrono>
 #include <thread>
@@ -132,7 +133,6 @@ void LoadAsset() {
 	LoadAnimationAsset();
 }
 
-
 void StartPushdownAutomata(Window* w) {
 	PushdownMachine machine(new ScreenMain());
 	while (w->UpdateWindow()) {
@@ -148,11 +148,12 @@ void StartPushdownAutomata(Window* w) {
 }
 
 int main() {
+	
 	Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
-
+	paintHell::core::LoadingScreen loadingScreen = paintHell::core::LoadingScreen(w);
 	std::cout << "loading\n";
 	GameTechRenderer& renderer = GameTechRenderer::instance();
-	LoadAsset();
+	loadingScreen.Load(LoadAsset);
 	renderer.InitPipeline();
 	
 	if (!w->HasInitialised()) {
