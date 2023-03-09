@@ -9,7 +9,13 @@ using namespace NCL;
 using namespace NCL::CSC8503;
 
 GameWorld::GameWorld() : staticQuadTree(Vector2(1024, 1024), 7, 6), dynamicQuadTree(Vector2(1024, 1024), 7, 6) {
-	mainCamera = new Camera();
+	
+	playerCamera1 = new Camera();
+	playerCamera2 = new Camera();
+	playerCamera3 = new Camera();
+	playerCamera4 = new Camera();
+	
+	mainCamera = playerCamera1;
 
 	shuffleConstraints	= false;
 	shuffleObjects		= false;
@@ -18,7 +24,11 @@ GameWorld::GameWorld() : staticQuadTree(Vector2(1024, 1024), 7, 6), dynamicQuadT
 }
 
 GameWorld::~GameWorld()	{
-	delete mainCamera;
+	//delete mainCamera;
+	delete playerCamera1;
+	delete playerCamera2;
+	delete playerCamera3;
+	delete playerCamera4;
 }
 
 void GameWorld::Clear() {

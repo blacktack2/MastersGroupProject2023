@@ -54,6 +54,8 @@ namespace NCL::CSC8503 {
 		void UpdateGameCore(float dt);
 		virtual void ProcessState();
 
+		void SetCameraFollow(PlayerObject* p);
+		
 		void InitCamera();
 		void InitGameExamples();
 
@@ -61,7 +63,7 @@ namespace NCL::CSC8503 {
 
 		GameObject* AddFloorToWorld(const Vector3& position);
 
-		PlayerObject* AddPlayerToWorld(const Vector3& position, bool cameraFollow = true);
+			PlayerObject* AddPlayerToWorld(int playerID, const Vector3& position);
 
 		Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
 		void BuildLevel();
@@ -76,13 +78,14 @@ namespace NCL::CSC8503 {
 		MenuManager&      menuManager;
 
 		std::unique_ptr<PhysicsSystem> physics;
+		
+		PlayerObject* players[4];
 
 		Light* sunLight = nullptr;
-		PlayerObject* player = nullptr;
-		GameLevel* gameLevel = nullptr;
 
-		GameGrid* gameGrid = nullptr;
+		GameLevel* gameLevel = nullptr;
 		Boss* boss = nullptr;
+
 
 		float interval = 0.0f;
 	};
