@@ -1,7 +1,9 @@
 #pragma once
 #include <chrono>
 #include <string>
+#include "OptionManager.h"
 
+using namespace NCL::CSC8503;
 
 namespace NCL {
 	class DebugViewPoint
@@ -42,6 +44,8 @@ namespace NCL {
 		bool state = true;
 		std::map<std::string, std::chrono::steady_clock::time_point> startingPoints;
 		int itemsPrinted;
+
+		OptionManager* optionManager = &OptionManager::instance();
 	};
 }
 

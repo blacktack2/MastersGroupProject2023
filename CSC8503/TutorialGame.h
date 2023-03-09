@@ -25,6 +25,7 @@
 
 #include "GameStateManager.h"
 #include "MenuManager.h"
+#include "OptionManager.h"
 
 #include "MeshAnimation.h"
 

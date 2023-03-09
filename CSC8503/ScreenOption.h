@@ -10,6 +10,9 @@
 #include "PushdownState.h"
 #include "Window.h"
 #include "MenuManager.h"
+#include "OptionManager.h"
+
+#include "DebugViewPoint.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -24,6 +27,10 @@ public:
 	GameTechRenderer& renderer = GameTechRenderer::instance();
 	MenuManager& menuManager = MenuManager::instance();
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
+
+	paintHell::debug::DebugViewPoint* debugViewPoint;
+
+	OptionManager& optionManager = OptionManager::instance();
 
 private:
 	enum class ChangeState {

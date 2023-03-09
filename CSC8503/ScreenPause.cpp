@@ -3,6 +3,7 @@
  * @brief  See ScreenPause.h .
  *
  * @author Felix Chiu
+ * @author Yifei Hu
  * @date   February 2023
  */
 #pragma once

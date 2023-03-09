@@ -1,7 +1,7 @@
 #version 460 core
 
 uniform sampler2D diffuseTex;
-//uniform sampler2D bumpTex;
+uniform sampler2D selectedTex;
 
 in Vertex {
 	vec2 texCoord;
@@ -11,9 +11,13 @@ in Vertex {
 	vec3 worldPos;
 } IN ;
 
-out vec4 fragColour;
+out vec4 diffuseOut;
+out vec4 selectedOut;
 
 void main ( void ) {
-	fragColour = texture ( diffuseTex, IN.texCoord );
-	fragColour.a = 1;
+	diffuseOut = IN.colour;
+	diffuseOut *= texture ( diffuseTex, IN.texCoord );
+
+	selectedOut = IN.colour;
+	selectedOut *= texture ( selectedTex, IN.texCoord );
 }

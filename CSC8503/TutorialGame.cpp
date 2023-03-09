@@ -52,6 +52,7 @@ using namespace CSC8503;
 TutorialGame::TutorialGame() {
 	gameStateManager = &GameStateManager::instance();
 	menuManager = &MenuManager::instance();
+	optionManager = &OptionManager::instance();
 
 	world = &GameWorld::instance();
 	sunLight = world->AddLight(new Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
@@ -133,18 +134,21 @@ void TutorialGame::UpdateGame(float dt) {
 	debugViewPoint->BeginFrame();
 	debugViewPoint->MarkTime("Update");
 	
-	static bool moveSun = false;
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM0)) {
-		moveSun = !moveSun;
-	}
+	bool moveSun = optionManager->GetSunMove();
 	if (moveSun) {
 		float runtime = world->GetRunTime();
 		sunLight->direction = Vector3(std::sin(runtime), std::cos(runtime), 0.0f);
 		renderer->GetSkyboxPass().SetSunDir(sunLight->direction);
 	}
 
-
-	SoundSystem::GetSoundSystem()->Update(dt);
+	bool isSound = optionManager->GetSound();
+	if (!isSound) {
+		SoundSystem::GetSoundSystem()->SetMasterVolume(0.0);
+	}
+	if (isSound) {
+		SoundSystem::GetSoundSystem()->SetMasterVolume(0.5);
+		SoundSystem::GetSoundSystem()->Update(dt);
+	}
 
 	UpdateGameCore(dt);
 

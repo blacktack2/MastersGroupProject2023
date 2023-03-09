@@ -8,9 +8,7 @@
  */
 #pragma once
 #include "ScreenOption.h"
-
 #include "AssetLibrary.h"
-#include "MenuRenderObject.h"
 
 using namespace NCL;
 using namespace CSC8503;
