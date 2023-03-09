@@ -74,7 +74,7 @@ void ScreenOption::InitMenu() {
 		);
 	});
 
-	std::shared_ptr<TextureBase> SoundTex = optionManager.GetSound() ?
+	std::shared_ptr<TextureBase> SoundTex = !optionManager.GetSound() ?
 		AssetLibrary::GetTexture("checkbox0") : AssetLibrary::GetTexture("checkbox1");
 	menu.AddButton(0.693f, -0.595f, 0.02f, 0.04f, SoundTex, [&](Button& button) {
 		std::cout << "sound button clicked\n";

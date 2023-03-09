@@ -58,6 +58,6 @@ namespace NCL::CSC8503 {
 
         bool isMouseHover;
 
-        overlap_func OnClickCallback;
+        overlap_func OnClickCallback = nullptr;
     };
 }

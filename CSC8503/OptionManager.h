@@ -14,13 +14,13 @@ namespace NCL {
 			OptionManager();
 			~OptionManager();
 
-			bool isSunMove;
+			bool isSunMove = false;
 
-			bool isSound;
-			bool isVolumeUp;
-			bool isVolumeDown;
+			bool isSound = true;
+			bool isVolumeUp = false;
+			bool isVolumeDown = false;
 
-			bool isDebugMode;
+			bool isDebugMode = false;
 
 			int upTimes;
 			int downTimes;

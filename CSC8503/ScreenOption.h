@@ -47,12 +47,6 @@ private:
 
 	const std::string NAME = "option";
 
-	bool isSunMove = false;
-	bool isDebugMode = false;
-	bool isSound = true;
-	bool isVolumeUp = false;
-	bool isVolumeDown = false;
-
 	int up = 0;
 	int down = 0;
 };
