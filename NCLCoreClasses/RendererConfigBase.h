@@ -5,6 +5,7 @@
  * @author Stuart Lewis
  * @date   February 2023
  */
+#pragma once
 #include "RendererBase.h"
 
 namespace NCL::Rendering {

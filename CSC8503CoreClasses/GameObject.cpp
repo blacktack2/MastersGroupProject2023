@@ -20,7 +20,7 @@ GameObject::GameObject(std::string objectName) : gameWorld(GameWorld::instance()
 GameObject::GameObject(GameObject& other) : gameWorld(GameWorld::instance()), transform(this, other.transform) {
 	boundingVolume = other.boundingVolume == nullptr ? nullptr : CollisionVolume::Clone(*other.boundingVolume);
 	physicsObject  = other.physicsObject  == nullptr ? nullptr : new PhysicsObject(*other.physicsObject, &transform);
-	renderObject   = other.renderObject   == nullptr ? nullptr : new RenderObject(*other.renderObject, &transform);
+	renderObject   = other.renderObject   == nullptr ? nullptr : new RenderObject(*other.renderObject, transform);
 	networkObject  = other.networkObject  == nullptr ? nullptr : new NetworkObject(*other.networkObject);
 
 	isActive = bool(other.isActive);

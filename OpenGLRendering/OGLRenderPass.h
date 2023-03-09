@@ -8,23 +8,14 @@
 #pragma once
 #include "RenderPassBase.h"
 
-#include "OGLMesh.h"
-#include "OGLRenderer.h"
-
-#include "glad/gl.h"
-#include "Matrix4.h"
-
-
 namespace NCL::Rendering {
 	/**
 	 * @brief Base OpenGL implementation of a render pass.
 	 */
 	class OGLRenderPass : public RenderPassBase {
 	public:
-		virtual ~OGLRenderPass();
+		virtual ~OGLRenderPass() {}
 	protected:
-		OGLRenderPass(OGLRenderer& renderer);
-
-		OGLRenderer& renderer;
+		OGLRenderPass() {}
 	};
 }

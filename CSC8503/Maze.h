@@ -1,3 +1,4 @@
+#pragma once
 #include "NavigationGrid.h"
 
 namespace NCL {

@@ -7,45 +7,45 @@
  */
 #include "ModelRPass.h"
 
-#include "OGLFrameBuffer.h"
-#include "OGLMesh.h"
-#include "OGLShader.h"
-#include "OGLTexture.h"
-#include "RenderObject.h"
-#include "AnimatedRenderObject.h"
+#include "GameTechRenderer.h"
+#include "GameWorld.h"
+
 #include "AssetLibrary.h"
-#include "Assets.h"
+#include "AssetLoader.h"
 
-using namespace NCL::CSC8503;
+#include "FrameBuffer.h"
+#include "MeshGeometry.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
 
-ModelRPass::ModelRPass(OGLRenderer& renderer, GameWorld& gameWorld) :
-OGLMainRenderPass(renderer), gameWorld(gameWorld) {
-	diffuseOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight());
-	normalOutTex  = new OGLTexture(renderer.GetWidth(), renderer.GetHeight());
-	depthOutTex   = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), TexType::Depth);
-	AddScreenTexture(diffuseOutTex);
-	AddScreenTexture(normalOutTex);
-	AddScreenTexture(depthOutTex);
+#include "RenderObject.h"
 
-	frameBuffer = new OGLFrameBuffer();
+using namespace NCL;
+using namespace CSC8503;
+
+ModelRPass::ModelRPass() : OGLMainRenderPass(),
+gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
+	diffuseOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetWidth(), renderer.GetHeight());
+	normalOutTex  = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetWidth(), renderer.GetHeight());
+	depthOutTex   = AssetLoader::CreateTexture(TextureType::Depth, renderer.GetWidth(), renderer.GetHeight());
+	AddScreenTexture(*diffuseOutTex);
+	AddScreenTexture(*normalOutTex);
+	AddScreenTexture(*depthOutTex);
+
+	frameBuffer = AssetLoader::CreateFrameBuffer();
 	frameBuffer->Bind();
-	frameBuffer->AddTexture(diffuseOutTex);
-	frameBuffer->AddTexture(normalOutTex);
-	frameBuffer->AddTexture(depthOutTex);
+	frameBuffer->AddTexture(*diffuseOutTex);
+	frameBuffer->AddTexture(*normalOutTex);
+	frameBuffer->AddTexture(*depthOutTex);
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
-	AddModelShader((OGLShader*)AssetLibrary::GetShader("modelDefault"));
-	AddModelShader((OGLShader*)AssetLibrary::GetShader("paintDefault"));
-	AddModelShader((OGLShader*)AssetLibrary::GetShader("animationDefault"));
+	AddModelShader(AssetLibrary<ShaderBase>::GetAsset("modelDefault"));
+	AddModelShader(AssetLibrary<ShaderBase>::GetAsset("paintDefault"));
+	AddModelShader(AssetLibrary<ShaderBase>::GetAsset("animationDefault"));
 }
 
 ModelRPass::~ModelRPass() {
-	delete frameBuffer;
-
-	delete diffuseOutTex;
-	delete normalOutTex;
-	delete depthOutTex;
 }
 
 void ModelRPass::Render() {
@@ -55,7 +55,7 @@ void ModelRPass::Render() {
 
 	renderer.ClearBuffers(ClearBit::ColorDepth);
 
-	for (OGLShader* shader : modelShaders) {
+	for (const auto& shader : modelShaders) {
 		shader->Bind();
 
 		Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
@@ -75,10 +75,6 @@ void ModelRPass::Render() {
 			return;
 		}
 
-		if (!dynamic_cast<OGLMesh*>(renderObject->GetMesh())) {
-			return;
-		}
-
 		renderObject->Draw();
 	});
 
@@ -87,7 +83,7 @@ void ModelRPass::Render() {
 	frameBuffer->Unbind();
 }
 
-void ModelRPass::AddModelShader(OGLShader* shader) {
+void ModelRPass::AddModelShader(std::shared_ptr<ShaderBase> shader) {
 	modelShaders.push_back(shader);
 	shader->Bind();
 

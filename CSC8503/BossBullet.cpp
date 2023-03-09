@@ -16,12 +16,12 @@ using namespace NCL;
 using namespace CSC8503;
 
 BossBullet::BossBullet() : Bullet() {
-	inkType = paintHell::InkType::BossDamage;
+	inkType = NCL::InkType::BossDamage;
 	UpdateColour();
 }
 
 BossBullet::BossBullet(BossBullet& other) : Bullet(other) {
-	inkType = paintHell::InkType::BossDamage;
+	inkType = NCL::InkType::BossDamage;
 	UpdateColour();
 }
 

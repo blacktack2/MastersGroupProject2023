@@ -8,26 +8,44 @@
 #pragma once
 #include "MenuRenderObject.h"
 
-namespace NCL {
-	namespace CSC8503 {
-		class UIObject{
-		public:
-			UIObject();
-			~UIObject();
+#include "Vector4.h"
 
-			virtual void Update(float dt){};
+#include <functional>
+#include <memory>
+#include <vector>
 
-			MenuRenderObject* GetRenderObject() const {
-				return renderObject;
-			}
+namespace NCL::Rendering {
+	class TextureBase;
+}
 
-			void SetRenderObject(MenuRenderObject* newObject) {
-				renderObject = newObject;
-			}
+using namespace NCL::Maths;
+using namespace NCL::Rendering;
 
-			virtual Vector4 GetDimension() { return Vector4(0.0f); };
-		protected:
-			MenuRenderObject* renderObject;
-		};
-	}
+namespace NCL::CSC8503 {
+	class MenuRenderObject;
+
+	class UIObject{
+	public:
+		UIObject(std::shared_ptr<TextureBase> texture);
+		~UIObject() = default;
+
+		virtual void Update(float dt) = 0;
+		virtual Vector4 GetDimension() const = 0;
+		
+		void Draw();
+
+		MenuRenderObject& GetRenderObject() const;
+
+		bool HasRenderObject() const;
+
+		void AddChild(UIObject& child) {
+			children.push_back(child);
+		}
+	protected:
+		virtual void DrawExtras() {}
+
+		std::unique_ptr<MenuRenderObject> renderObject;
+
+		std::vector<std::reference_wrapper<UIObject>> children{};
+	};
 }

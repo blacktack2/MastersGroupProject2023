@@ -104,13 +104,16 @@ void OGLShader::SetUniformFloat(const std::string& uniform, const Vector4& v) {
 	glUniform4fv(GetUniformLocation(uniform), 1, (GLfloat*)v.array);
 }
 
-void NCL::Rendering::OGLShader::SetUniformFloat(const std::string& uniform, unsigned int count, const Vector2* v) {
+void OGLShader::SetUniformFloat(const std::string& uniform, const std::vector<Vector2>& v) {
+	glUniform2fv(GetUniformLocation(uniform), v.size(), (GLfloat*)v[0].array);
 }
 
-void NCL::Rendering::OGLShader::SetUniformFloat(const std::string& uniform, unsigned int count, const Vector3* v) {
+void OGLShader::SetUniformFloat(const std::string& uniform, const std::vector<Vector3>& v) {
+	glUniform3fv(GetUniformLocation(uniform), v.size(), (GLfloat*)v[0].array);
 }
 
-void NCL::Rendering::OGLShader::SetUniformFloat(const std::string& uniform, unsigned int count, const Vector4* v) {
+void OGLShader::SetUniformFloat(const std::string& uniform, const std::vector<Vector4>& v) {
+	glUniform4fv(GetUniformLocation(uniform), v.size(), (GLfloat*)v[0].array);
 }
 
 void OGLShader::SetUniformInt(const std::string& uniform, int v1) {
@@ -141,16 +144,16 @@ void OGLShader::SetUniformMatrix(const std::string& uniform, const Matrix4& m) {
 	glUniformMatrix4fv(GetUniformLocation(uniform), 1, GL_FALSE, (GLfloat*)m.array);
 }
 
-void OGLShader::SetUniformMatrix(const std::string& uniform, unsigned int count, const Matrix2* m) {
-	glUniformMatrix2fv(GetUniformLocation(uniform), count, GL_FALSE, (GLfloat*)m->array);
+void OGLShader::SetUniformMatrix(const std::string& uniform, const std::vector<Matrix2>& m) {
+	glUniformMatrix2fv(GetUniformLocation(uniform), m.size(), GL_FALSE, (GLfloat*)m[0].array);
 }
 
-void OGLShader::SetUniformMatrix(const std::string& uniform, unsigned int count, const Matrix3* m) {
-	glUniformMatrix3fv(GetUniformLocation(uniform), count, GL_FALSE, (GLfloat*)m->array);
+void OGLShader::SetUniformMatrix(const std::string& uniform, const std::vector<Matrix3>& m) {
+	glUniformMatrix3fv(GetUniformLocation(uniform), m.size(), GL_FALSE, (GLfloat*)m[0].array);
 }
 
-void OGLShader::SetUniformMatrix(const std::string& uniform, unsigned int count, const Matrix4* m) {
-	glUniformMatrix4fv(GetUniformLocation(uniform), count, GL_FALSE, (GLfloat*)m->array);
+void OGLShader::SetUniformMatrix(const std::string& uniform, const std::vector<Matrix4>& m) {
+	glUniformMatrix4fv(GetUniformLocation(uniform), m.size(), GL_FALSE, (GLfloat*)m[0].array);
 }
 
 int OGLShader::GetUniformLocation(const std::string& uniform) {
@@ -197,6 +200,10 @@ void OGLShader::DeleteIDs() {
 	}
 	glDeleteProgram(programID);
 	Clear();
+}
+
+std::unique_ptr<ShaderBase> OGLShader::CreateShader(const std::string& vertex, const std::string& fragment) {
+	return std::make_unique<OGLShader>(vertex, fragment);
 }
 
 void OGLShader::PrintCompileLog(GLuint object) {

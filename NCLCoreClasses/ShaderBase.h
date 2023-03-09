@@ -8,6 +8,7 @@
  */
 #pragma once
 #include <string>
+#include <vector>
 
 namespace NCL::Maths {
 	class Vector2;
@@ -45,9 +46,9 @@ namespace NCL::Rendering {
 		virtual void SetUniformFloat(const std::string& uniform, const Vector2& v) = 0;
 		virtual void SetUniformFloat(const std::string& uniform, const Vector3& v) = 0;
 		virtual void SetUniformFloat(const std::string& uniform, const Vector4& v) = 0;
-		virtual void SetUniformFloat(const std::string& uniform, unsigned int count, const Vector2* v) = 0;
-		virtual void SetUniformFloat(const std::string& uniform, unsigned int count, const Vector3* v) = 0;
-		virtual void SetUniformFloat(const std::string& uniform, unsigned int count, const Vector4* v) = 0;
+		virtual void SetUniformFloat(const std::string& uniform, const std::vector<Vector2>& v) = 0;
+		virtual void SetUniformFloat(const std::string& uniform, const std::vector<Vector3>& v) = 0;
+		virtual void SetUniformFloat(const std::string& uniform, const std::vector<Vector4>& v) = 0;
 
 		virtual void SetUniformInt(const std::string& uniform, int v1) = 0;
 		virtual void SetUniformInt(const std::string& uniform, int v1, int v2) = 0;
@@ -57,9 +58,9 @@ namespace NCL::Rendering {
 		virtual void SetUniformMatrix(const std::string& uniform, const Matrix2& m) = 0;
 		virtual void SetUniformMatrix(const std::string& uniform, const Matrix3& m) = 0;
 		virtual void SetUniformMatrix(const std::string& uniform, const Matrix4& m) = 0;
-		virtual void SetUniformMatrix(const std::string& uniform, unsigned int count, const Matrix2* m) = 0;
-		virtual void SetUniformMatrix(const std::string& uniform, unsigned int count, const Matrix3* m) = 0;
-		virtual void SetUniformMatrix(const std::string& uniform, unsigned int count, const Matrix4* m) = 0;
+		virtual void SetUniformMatrix(const std::string& uniform, const std::vector<Matrix2>& m) = 0;
+		virtual void SetUniformMatrix(const std::string& uniform, const std::vector<Matrix3>& m) = 0;
+		virtual void SetUniformMatrix(const std::string& uniform, const std::vector<Matrix4>& m) = 0;
 
 		virtual int GetUniformLocation(const std::string& uniform) = 0;
 	protected:

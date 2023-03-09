@@ -9,10 +9,19 @@
 #pragma once
 #include "RenderObject.h"
 
-#include "OGLTexture.h"
-#include "ShaderBase.h"
-
+#include <functional>
+#include <memory>
 #include <vector>
+
+namespace NCL {
+	class MeshGeometry;
+	class MeshMaterial;
+}
+
+namespace NCL::Rendering {
+	class ShaderBase;
+	class TextureBase;
+}
 
 namespace NCL::CSC8503 {
 	struct PaintCollision{
@@ -34,12 +43,12 @@ namespace NCL::CSC8503 {
 
 	class PaintRenderObject : public RenderObject {
 	public:
-		PaintRenderObject(Transform* parentTransform, MeshGeometry* mesh, MeshMaterial* material);
-		PaintRenderObject(RenderObject& other, Transform* parentTransform);
+		PaintRenderObject(Transform& parentTransform, std::shared_ptr<MeshGeometry> mesh, std::shared_ptr<MeshMaterial> material);
+		PaintRenderObject(RenderObject& other, Transform& parentTransform);
 		~PaintRenderObject();
 
-		OGLTexture* GetPaintTexture() {
-			return paintTexture;
+		TextureBase& GetPaintTexture() {
+			return *paintTexture;
 		}
 		std::vector<PaintCollision> GetPaintCollisions() {
 			return paintCollisions;
@@ -58,11 +67,11 @@ namespace NCL::CSC8503 {
 			return height;
 		}
 	protected:
-		void PreDraw(int sublayer, ShaderBase* shader) override;
+		void PreDraw(int sublayer, ShaderBase& shader) override;
 
-		ShaderBase* GetDefaultShader() override;
+		ShaderBase& GetDefaultShader() override;
 	private:
-		OGLTexture* paintTexture;
+		std::unique_ptr<TextureBase> paintTexture;
 		std::vector<PaintCollision> paintCollisions;
 
 		int width;

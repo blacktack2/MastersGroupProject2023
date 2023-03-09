@@ -1,4 +1,13 @@
+/**
+ * @file   MeshAnimation.cpp
+ * @brief  See MeshAnimation.h.
+ * 
+ * @author 
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #include "MeshAnimation.h"
+
 #include "Matrix4.h"
 #include "Assets.h"
 
@@ -6,12 +15,12 @@
 #include <string>
 
 using namespace NCL;
-using namespace NCL::Maths;
+using namespace Maths;
 
 MeshAnimation::MeshAnimation() {
-	jointCount	= 0;
-	frameCount	= 0;
-	frameRate	= 0.0f;
+	jointCount = 0;
+	frameCount = 0;
+	frameRate  = 0.0f;
 }
 
 MeshAnimation::MeshAnimation(unsigned int jointCount, unsigned int frameCount, float frameRate, std::vector<Matrix4>& frames) {
@@ -21,7 +30,7 @@ MeshAnimation::MeshAnimation(unsigned int jointCount, unsigned int frameCount, f
 	this->allJoints  = frames;
 }
 
-MeshAnimation::MeshAnimation(const std::string& filename) : MeshAnimation() {		// Anim
+MeshAnimation::MeshAnimation(const std::string& filename) : MeshAnimation() {
 	std::ifstream file(Assets::MESHDIR + filename);
 
 	std::string filetype;
@@ -54,16 +63,11 @@ MeshAnimation::MeshAnimation(const std::string& filename) : MeshAnimation() {		/
 }
 
 MeshAnimation::~MeshAnimation() {
-
 }
 
-const Matrix4* MeshAnimation::GetJointData(unsigned int frame) const {
-	if (frame >= frameCount) {
-		return nullptr;
-	}
-	int matStart = frame * jointCount;
+const std::vector<Matrix4> MeshAnimation::GetJointData(unsigned int frame) const {
+	int matStart = (frame    ) * jointCount;
+	int matEnd   = (frame + 1) * jointCount;
 
-	Matrix4* dataStart = (Matrix4*)allJoints.data();
-
-	return dataStart + matStart;
+	return std::vector<Matrix4>(allJoints.begin() + matStart, allJoints.begin() + matEnd);
 }
