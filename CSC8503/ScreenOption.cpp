@@ -46,9 +46,6 @@ void ScreenOption::OnAwake() {
 void ScreenOption::InitMenu() {
 	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(1.0f), AssetLibrary::GetTexture("menuOption"));
 
-	std::shared_ptr<TextureBase> defaultTex = AssetLibrary::GetTexture("checkbox0");
-	std::shared_ptr<TextureBase> selectedTex = AssetLibrary::GetTexture("checkbox1");
-
 	menu.AddButton(0.88f, -0.8f, 0.06f, 0.12f, AssetLibrary::GetTexture("return"), [&](Button& button) {
 		std::cout << "Resume button clicked\n";
 		menuState = ChangeState::Resume;
