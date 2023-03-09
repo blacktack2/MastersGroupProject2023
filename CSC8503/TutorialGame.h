@@ -51,6 +51,8 @@ namespace NCL::CSC8503 {
 		bool IsQuit();
 	protected:
 		void UpdateGameCore(float dt);
+		virtual void UpdateHud(float dt);
+
 		virtual void ProcessState();
 
 		void SetCameraFollow(PlayerObject* p);
