@@ -10,32 +10,43 @@
 #pragma once
 #include "OGLOverlayRenderPass.h"
 
-#include "GameWorld.h"
-#include "UIObject.h"
+#include <functional>
+#include <memory>
+#include <optional>
 
-
-namespace NCL::Rendering {
-	class OGLShader;
-	class OGLTexture;
+namespace NCL {
+	class MeshGeometry;
 }
 
-using namespace NCL::Rendering;
+namespace NCL::Rendering {
+	class FrameBuffer;
+	class ShaderBase;
+	class TextureBase;
+}
+
+using namespace NCL;
+using namespace Rendering;
 
 namespace NCL::CSC8503 {
+	class GameTechRenderer;
+	class GameWorld;
+
+	class MenuManager;
+	class UIObject;
+
 	class MenuRPass : public OGLOverlayRenderPass {
 	public:
-		MenuRPass(OGLRenderer& renderer, GameWorld& gameWorld);
+		MenuRPass();
 		~MenuRPass();
 
 		virtual void Render() override;
 	private:
-		void DrawMenu();
-		void DrawButtons();
-		void DrawUIObject(UIObject* obj);
-
+		GameTechRenderer& renderer;
 		GameWorld& gameWorld;
+		MenuManager& menuManager;
 
-		ShaderBase* defaultShader;
-		TextureBase* defaultTexture;
+		std::unique_ptr<TextureBase> defaultTexture;
+
+		std::unique_ptr<ShaderBase> defaultShader;
 	};
 }

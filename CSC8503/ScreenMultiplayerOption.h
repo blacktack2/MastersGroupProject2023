@@ -3,6 +3,7 @@
  * @brief  A Pushdown automata state for multiplayer game options.
  *
  * @author Felix Chiu
+ * @author Stuart Lewis
  * @date   February 2023
  */
 #pragma once
@@ -16,45 +17,17 @@ using namespace CSC8503;
 
 class ScreenMultiplayerOption : public PushdownState {
 public:
-	ScreenMultiplayerOption() {
-		initMenu();
-	}
-	~ScreenMultiplayerOption() {}
-	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
-		menuManager.Update(dt);
-		keyMap.Update();
-		renderer.Render();
-		if (menuState == ChangeState::StartServer) {
-			*newState = new ScreenMultiplayer(true);
-			return PushdownResult::Push;
-		}
-		if (menuState == ChangeState::StartClient) {
-			*newState = new ScreenMultiplayer(false);
-			return PushdownResult::Push;
-		}
-		if (menuState == ChangeState::Quit) {
-			return PushdownResult::Pop;
-		}
-		menuState = ChangeState::OnGoing;
-		return PushdownResult::NoChange;
-	}
-	void OnAwake() override {
-		menuState = ChangeState::None;
-		menuManager.SetCurrentMenu(name);
-		renderer.EnableOverlayPass("Menu", true);
-		renderer.EnableOverlayPass("Debug", false);
-		renderer.EnableRenderScene(false);
-		renderer.UpdatePipeline();
-		Window::GetWindow()->ShowOSPointer(true);
-		Window::GetWindow()->LockMouseToWindow(false);
-	}
+	ScreenMultiplayerOption();
+	~ScreenMultiplayerOption();
+	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
+	void OnAwake() override;
 
 	GameTechRenderer& renderer = GameTechRenderer::instance();
 	MenuManager& menuManager = MenuManager::instance();
-	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 
 private:
-	void initMenu();
+	void InitMenu();
 
 	enum class ChangeState {
 		None,
@@ -65,5 +38,5 @@ private:
 	};
 	ChangeState menuState = ChangeState::None;
 
-	std::string name = "ScreenMultiplayerOption";
+	const std::string NAME = "ScreenMultiplayerOption";
 };

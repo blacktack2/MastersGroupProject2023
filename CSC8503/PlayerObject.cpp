@@ -5,7 +5,6 @@
 #include "PrefabLibrary.h"
 
 #include "PlayerBullet.h"
-#include "Bonus.h"
 #include "Constraint.h"
 #include "GameWorld.h"
 #include "PhysicsObject.h"
@@ -110,7 +109,7 @@ void PlayerObject::Move(Vector3 dir) {
 
 	if (lastDir != Vector3(0, 0, 0)) {
 		//Vector3 stopDir = dir - lastDir;
-		if (paintHell::InputKeyMap::instance().GetButtonState() != lastKey) {
+		if (NCL::InputKeyMap::instance().GetButtonState() != lastKey) {
 			this->GetPhysicsObject()->ApplyLinearImpulse(-lastDir * moveSpeed);
 		}
 
@@ -129,7 +128,7 @@ void PlayerObject::GetControllerInput(unsigned int controllerNum, Vector3& movin
 This is a temporary member function used for testing controller's input. Feel free to merge this into PlayerObject::GetInput when necessary.
 */
 {
-	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	isFreeLook = false;
 	
 	// Thumb for movement:
@@ -168,7 +167,7 @@ This is a temporary member function used for testing controller's input. Feel fr
 }
 
 void PlayerObject::GetInput(Vector3& dir, unsigned int keyPress) {
-	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 
 	Vector3 fwdAxis = this->GetTransform().GetGlobalOrientation() * Vector3(0, 0, -1);
 

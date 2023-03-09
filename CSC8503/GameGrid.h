@@ -84,7 +84,7 @@ namespace NCL
 			Vector3 worldPosition;
 
 			bool isInked;
-			paintHell::InkType inkType = paintHell::InkType::NoInk;
+			NCL::InkType inkType = NCL::InkType::NoInk;
 			NodeType type;				// the type of object represented by the node
 
 			GameNode* parent;
@@ -106,24 +106,20 @@ namespace NCL
 
 			GameNode* NearestNode(Vector3 position);
 
-			void PaintNode(Vector3 position, float radius, paintHell::InkType type);
+			void PaintNode(Vector3 position, float radius, NCL::InkType type);
 
 			void DrawDebugGameGrid();
-
 			std::vector<std::vector<GameNode>> GetAllNodes()
 			{
 				return gameNodes;
 			}
-
 		protected:
-
 			int numOfRows = 0;
 			int numOfColumns = 0;
 			float unitLength;
 
 			std::vector<std::vector<GameNode>> gameNodes;
 			Vector3 gameGridOrigin;
-
 		};
 
 	}

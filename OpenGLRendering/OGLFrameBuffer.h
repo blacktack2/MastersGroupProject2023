@@ -5,10 +5,12 @@
  * @author Stuart Lewis
  * @date   February 2023
  */
+#pragma once
 #include "FrameBuffer.h"
 
 #include <glad/gl.h>
 
+#include <memory>
 #include <vector>
 
 namespace NCL::Rendering {
@@ -25,20 +27,17 @@ namespace NCL::Rendering {
 		virtual void Bind() override;
 		virtual void Unbind() override;
 
-		void AddTexture(OGLTexture* texture);
-		void AddTexture(OGLTexture* texture, GLsizei attachment);
+		void DrawBuffers() override;
+		void DrawBuffers(unsigned int numBuffers) override;
 
-		void DrawBuffers();
-		void DrawBuffers(GLsizei numBuffers);
+		bool InitSuccess() override;
 
-		bool InitSuccess() {
-			return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
-		}
+		static std::unique_ptr<FrameBuffer> CreateFrameBuffer();
+	protected:
+		void BindToTexture(TextureBase& texture, unsigned int attachment) override;
 	private:
 		GLuint fboID;
 
 		GLsizei numColourTexs = 0;
-
-		std::vector<OGLTexture*> textures{};
 	};
 }

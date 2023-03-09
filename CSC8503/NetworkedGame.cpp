@@ -25,9 +25,9 @@
 #include <Maths.h>
 #include "PlayerBullet.h"
 
-#define COLLISION_MSG 30
-#define OBJECTID_START 10; //reserve 0-4 for playerID
-#define BOSSID 5; //reserve 0-4 for playerID
+constexpr auto COLLISION_MSG = 30;
+constexpr auto OBJECTID_START = 10; //reserve 0-4 for playerID;
+constexpr auto BOSSID = 5; //reserve 0-4 for playerID;
 
 NetworkedGame::NetworkedGame(bool isServer)	{
 	thisServer = nullptr;
@@ -40,7 +40,7 @@ NetworkedGame::NetworkedGame(bool isServer)	{
 	selfID = 0;
 	game_dt = 0;
 	objectID = OBJECTID_START;
-	gameStateManager->SetGameState(GameState::Lobby);
+	gameStateManager.SetGameState(GameState::Lobby);
 	if (isServer) {
 		std::cout << "start as server" << std::endl;
 		StartAsServer();
@@ -142,7 +142,7 @@ void NetworkedGame::BroadcastGameStateChange()
 {
 	if (thisServer) {
 		GameStatePacket packet;
-		packet.state = gameStateManager->GetGameState();
+		packet.state = gameStateManager.GetGameState();
 		thisServer->SendGlobalPacket(static_cast<GamePacket*>(&packet));
 	}
 }
@@ -184,7 +184,7 @@ void NetworkedGame::UpdateGame(float dt) {
 
 	TutorialGame::UpdateGame(dt);
 
-	world->GetMainCamera()->UpdateCamera(dt);
+	gameWorld.GetMainCamera()->UpdateCamera(dt);
 }
 
 void NetworkedGame::FreezeSelf()
@@ -245,7 +245,7 @@ void NetworkedGame::UpdateAsServer(float dt) {
 		player->ServerSideMovement();
 	}
 	localPlayer->GetNetworkObject()->SnapRenderToSelf();
-	std::vector<NetworkObject*> networkObjects = world->GetNetworkObjects();
+	std::vector<NetworkObject*> networkObjects = gameWorld.GetNetworkObjects();
 	bool processed = false;
 	for (auto networkObj : networkObjects) {
 		networkObj->SnapRenderToSelf();
@@ -254,7 +254,7 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	thisServer->UpdateServer();
 	packetsToSnapshot--;
 
-	if (gameStateManager->GetGameState() == GameState::Lobby) {
+	if (gameStateManager.GetGameState() == GameState::Lobby) {
 		if (keyMap.GetButton(Start)) {
 			std::cout << "Start Level" << std::endl;
 			StartLevel();
@@ -267,7 +267,7 @@ void NetworkedGame::UpdateAsClient(float dt) {
 
 	//move obj
 	///*
-	std::vector<NetworkObject*> networkObjects = world->GetNetworkObjects();
+	std::vector<NetworkObject*> networkObjects = gameWorld.GetNetworkObjects();
 	
 	bool processed = false;
 	for (auto networkObj: networkObjects) {
@@ -281,8 +281,8 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	newPacket.lastID = stateID;
 	keyMap.Update();
 	newPacket.buttonstates = keyMap.GetButtonState();
-	if (!keyMap.CheckButtonPressed(newPacket.buttonstates, FreeLook)) {
-		newPacket.yaw = (int) world->GetMainCamera()->GetYaw() * 1000;
+	if (!Window::GetKeyboard()->KeyDown(KeyboardKeys::C)) {
+		newPacket.yaw = (int) gameWorld.GetMainCamera()->GetYaw() * 1000;
 	}
 	else {
 		newPacket.yaw = NULL;
@@ -299,15 +299,10 @@ void NetworkedGame::UpdateAsClient(float dt) {
 }
 
 void NetworkedGame::BroadcastSnapshot(bool deltaFrame) {
-	std::vector<GameObject*>::const_iterator first;
-	std::vector<GameObject*>::const_iterator last;
-
-	world->GetObjectIterators(first, last);
-
-	for (auto i = first; i != last; ++i) {
-		NetworkObject* o = (*i)->GetNetworkObject();
-		if (!o) {
-			continue;
+	gameWorld.OperateOnContents([&](GameObject* object) {
+		NetworkObject* networkObj = object->GetNetworkObject();
+		if (!networkObj) {
+			return;
 		}
 
 		//TODO - you'll need some way of determining
@@ -318,31 +313,26 @@ void NetworkedGame::BroadcastSnapshot(bool deltaFrame) {
 
 		int playerState = stateID;
 		GamePacket* newPacket = nullptr;
-		if (o->WritePacket(&newPacket, deltaFrame, playerState)) {
+		if (networkObj->WritePacket(&newPacket, deltaFrame, playerState)) {
 			thisServer->SendGlobalPacket(newPacket);
 			delete newPacket;
 		}
-	}
+	});
 }
 
 void NetworkedGame::SendSnapshot(bool deltaFrame, int playerID) {
-	std::vector<GameObject*>::const_iterator first;
-	std::vector<GameObject*>::const_iterator last;
-
-	world->GetObjectIterators(first, last);
-
-	for (auto i = first; i != last; ++i) {
-		if ( !(* i)->IsActive() ) {
-			continue;
+	gameWorld.OperateOnContents([&](GameObject* object) {
+		if (!object->IsActive()) {
+			return;
 		}
-		NetworkObject* o = (*i)->GetNetworkObject();
-		if (!o) {
-			continue;
+		NetworkObject* networkObj = object->GetNetworkObject();
+		if (!networkObj) {
+			return;
 		}
 		int playerState = stateIDs[playerID];
 
 		GamePacket* newPacket = nullptr;
-		if (o->WritePacket(&newPacket, deltaFrame, playerState)) {
+		if (networkObj->WritePacket(&newPacket, deltaFrame, playerState)) {
 			thisServer->SendPacket(newPacket, playerID);
 			delete newPacket;
 		}
@@ -352,7 +342,6 @@ void NetworkedGame::SendSnapshot(bool deltaFrame, int playerID) {
 		newPacket.bossAction = static_cast<short int> (boss->GetBossAction());
 		thisServer->SendPacket(static_cast <GamePacket*> (&newPacket), playerID);
 	}
-	
 }
 
 void NetworkedGame::UpdateMinimumState() {
@@ -360,23 +349,19 @@ void NetworkedGame::UpdateMinimumState() {
 	int minID = INT_MAX;
 	int maxID = 0; //we could use this to see if a player is lagging behind?
 
-	for (auto i : stateIDs) {
-		minID = std::min(minID, i.second);
-		maxID = std::max(maxID, i.second);
+	for (auto& idPair : stateIDs) {
+		minID = std::min(minID, idPair.second);
+		maxID = std::max(maxID, idPair.second);
 	}
 	//every client has acknowledged reaching at least state minID
 	//so we can get rid of any old states!
-	std::vector<GameObject*>::const_iterator first;
-	std::vector<GameObject*>::const_iterator last;
-	world->GetObjectIterators(first, last);
-
-	for (auto i = first; i != last; ++i) {
-		NetworkObject* o = (*i)->GetNetworkObject();
-		if (!o) {
-			continue;
-		}
-		o->UpdateStateHistory(minID); //clear out old states so they arent taking up memory...
+	gameWorld.OperateOnContents([&](GameObject* object) {
+		NetworkObject* networkObj = object->GetNetworkObject();
+	if (!networkObj) {
+		return;
 	}
+	networkObj->UpdateStateHistory(minID); //clear out old states so they arent taking up memory...
+		});
 }
 
 PlayerObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
@@ -396,7 +381,7 @@ PlayerObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 	}
 	PlayerObject* newPlayer = AddNetworkPlayerToWorld(Vector3(0, 5, 90), isSelf, playerID);
 	if (isSelf) {
-		world->GetMainCamera()->SetFollow(&(newPlayer->GetNetworkObject()->GetRenderTransform()));
+		gameWorld.GetMainCamera()->SetFollow(&(newPlayer->GetNetworkObject()->GetRenderTransform()));
 		player = newPlayer;
 	}
 	serverPlayers[playerID] = newPlayer;
@@ -411,7 +396,7 @@ void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID
 	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(((ClientPacket*)payload)->buttonstates);
 
 	if (((ClientPacket*)payload)->yaw != NULL) {
-		((NetworkPlayer*)serverPlayers[playerID])->RotateYaw(((ClientPacket*)payload)->yaw*0.001f);
+		((NetworkPlayer*)serverPlayers[playerID])->RotateYaw(((ClientPacket*)payload)->yaw * 0.001f);
 	}
 
 	if (((ClientPacket*)payload)->lastID > stateIDs[playerID]) {
@@ -421,7 +406,7 @@ void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID
 }
 
 void NetworkedGame::ClientProcessNetworkObject(GamePacket* payload, int objID) {
-	std::vector<NetworkObject*> networkObjects = world->GetNetworkObjects();
+	std::vector<NetworkObject*> networkObjects = gameWorld.GetNetworkObjects();
 
 	bool processed = false;
 	for (auto networkObj : networkObjects) {
@@ -530,9 +515,8 @@ void NetworkedGame::HandleBossActionPacket(GamePacket* payload, int source)
 	}
 }
 
-void NetworkedGame::HandleGameStatePacket(GamePacket* payload, int source)
-{
-	GameState currentState = gameStateManager->GetGameState();
+void NetworkedGame::HandleGameStatePacket(GamePacket* payload, int source) {
+	GameState currentState = gameStateManager.GetGameState();
 	GameState newState = static_cast<GameState>(static_cast<GameStatePacket*>(payload)->state);
 	if (currentState == GameState::Lobby && newState == GameState::OnGoing) {
 		StartLevel();
@@ -544,7 +528,7 @@ void NetworkedGame::HandleGameStatePacket(GamePacket* payload, int source)
 		StartLobby();
 	}
 	
-	gameStateManager->SetGameState(static_cast<GameState>(static_cast<GameStatePacket*>(payload)->state));
+	gameStateManager.SetGameState(static_cast<GameState>(static_cast<GameStatePacket*>(payload)->state));
 }
 
 void NetworkedGame::HandleLobbyPacket(GamePacket* payload, int source)
@@ -647,7 +631,7 @@ PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, bo
 		.SetScale(Vector3(1, 1, 1))
 		.SetPosition(position);
 
-	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMesh, nullptr));
+	character->SetRenderObject(new RenderObject(character->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("goat"), nullptr));
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 
 	character->GetRenderObject()->SetColour(Vector4(1, 0.9f, 0.8f, 1));
@@ -655,10 +639,10 @@ PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, bo
 	character->GetPhysicsObject()->SetInverseMass(1);
 	character->GetPhysicsObject()->InitSphereInertia();
 	character->SetNetworkObject(new NetworkObject(*character, playerID));
-	world->AddGameObject(character);
+	gameWorld.AddGameObject(character);
 
 	if (cameraFollow) {
-		world->GetMainCamera()->SetFollow(&character->GetTransform());
+		gameWorld.GetMainCamera()->SetFollow(&character->GetTransform());
 		character->AttachedCamera();
 	}
 
@@ -674,7 +658,7 @@ NetworkBoss* NetworkedGame::AddNetworkBossToWorld(const Vector3& position, Vecto
 		.SetPosition(position)
 		.SetScale(dimensions * 2);
 
-	boss->SetRenderObject(new AnimatedRenderObject(&boss->GetTransform(), AssetLibrary::GetMesh("boss"), AssetLibrary::GetMaterial("boss"), AssetLibrary::GetAnimation("WalkForward")));
+	boss->SetRenderObject(new AnimatedRenderObject(boss->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("boss"), AssetLibrary<MeshMaterial>::GetAsset("boss"), AssetLibrary<MeshAnimation>::GetAsset("WalkForward")));
 
 	boss->GetRenderObject()->SetColour({ 1,1,1,1 });
 	boss->SetPhysicsObject(new PhysicsObject(&boss->GetTransform(), boss->GetBoundingVolume()));
@@ -684,15 +668,15 @@ NetworkBoss* NetworkedGame::AddNetworkBossToWorld(const Vector3& position, Vecto
 
 	int id = BOSSID;
 	boss->SetNetworkObject(new NetworkObject(*boss, id));
-	world->AddNetworkObject(boss->GetNetworkObject());
+	gameWorld.AddNetworkObject(boss->GetNetworkObject());
 
-	world->AddGameObject(boss);
+	gameWorld.AddGameObject(boss);
 
 	return boss;
 }
 
 void NetworkedGame::ProcessState() {
-	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	if (thisServer) {
 		if (keyMap.GetButton(InputType::Start)) {
 			std::cout << "Starting" << std::endl;
@@ -705,6 +689,6 @@ void NetworkedGame::ProcessState() {
 	}
 	
 	if (keyMap.GetButton(InputType::Return)) {
-		gameStateManager->SetGameState(GameState::Quit);
+		gameStateManager.SetGameState(GameState::Quit);
 	}
 }

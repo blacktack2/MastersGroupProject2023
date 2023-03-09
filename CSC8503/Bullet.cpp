@@ -13,7 +13,7 @@ Bullet::Bullet() : GameObject() {
 
 Bullet::Bullet(Bullet& other) : GameObject(other) {
 	lifespan = other.lifespan;
-	inkType = paintHell::InkType::NoInk;
+	inkType = NCL::InkType::NoInk;
 }
 
 Bullet::~Bullet() {

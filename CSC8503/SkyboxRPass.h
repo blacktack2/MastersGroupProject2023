@@ -8,36 +8,52 @@
 #pragma once
 #include "OGLMainRenderPass.h"
 
-#include "GameWorld.h"
+#include "Vector3.h"
 
-namespace NCL::Rendering {
-	class OGLFrameBuffer;
-	class OGLShader;
-	class OGLTexture;
+#include <functional>
+#include <memory>
+#include <optional>
+
+namespace NCL {
+	class MeshGeometry;
 }
 
-using namespace NCL::Rendering;
+namespace NCL::Rendering {
+	class FrameBuffer;
+	class ShaderBase;
+	class TextureBase;
+}
+
+using namespace NCL;
+using namespace Rendering;
+using namespace Maths;
 
 namespace NCL::CSC8503 {
+	class GameTechRenderer;
+	class GameWorld;
+
 	class SkyboxRPass : public OGLMainRenderPass {
 	public:
-		SkyboxRPass(OGLRenderer& renderer, GameWorld& gameWorld);
+		SkyboxRPass();
 		~SkyboxRPass();
 
 		virtual void Render() override;
 
 		void SetSunDir(const Vector3& direction);
 
-		inline OGLTexture* GetOutTex() const {
-			return colourOutTex;
+		inline TextureBase& GetOutTex() const {
+			return *colourOutTex;
 		}
 	private:
+		GameTechRenderer& renderer;
 		GameWorld& gameWorld;
 
-		OGLFrameBuffer* frameBuffer;
-		OGLTexture* colourOutTex;
+		std::shared_ptr<MeshGeometry> quad;
 
-		OGLMesh* quad;
-		OGLShader* shader;
+		std::unique_ptr<FrameBuffer> frameBuffer;
+
+		std::unique_ptr<TextureBase> colourOutTex;
+
+		std::unique_ptr<ShaderBase> shader;
 	};
 }

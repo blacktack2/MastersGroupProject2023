@@ -4,11 +4,6 @@
 namespace NCL {
 	namespace CSC8503 {
 		class GameGridManager {
-		private:
-			GameGridManager();
-			~GameGridManager();
-
-			std::vector<GameGrid*> gameGrids;
 		public:
 			static GameGridManager& instance() {
 				static GameGridManager INSTANCE;
@@ -27,7 +22,12 @@ namespace NCL {
 
 			GameNode* NearestNode(Vector3 position);
 
-			void PaintPosition(Vector3 position, float paintRadius, paintHell::InkType type);
+			void PaintPosition(Vector3 position, float paintRadius, NCL::InkType type);
+		private:
+			GameGridManager();
+			~GameGridManager();
+
+			std::vector<GameGrid*> gameGrids;
 		};
 	}
 }

@@ -14,58 +14,18 @@
 #include "ScreenPause.h"
 
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
 
 class ScreenGame : public PushdownState {
 public:
-	ScreenGame() {
-		game = new TutorialGame();
-		gameStateManager->SetGameState(GameState::OnGoing);
-	}
-	~ScreenGame() {
-		delete game;
-	}
+	ScreenGame();
+	~ScreenGame() = default;
 
-	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
-		keyMap.Update();
-		if (keyMap.GetButton(InputType::ESC)) {
-			*newState = new ScreenPause();
-			return PushdownResult::Push;
-		}
-		if (game->IsQuit()) {
-			menuState = ChangeState::Quit;
-		}
-		else {
-			game->UpdateGame(dt);
-		}
-		if (menuState == ChangeState::Quit) {
-			/*
-			Window::GetWindow()->ShowOSPointer(true);
-			Window::GetWindow()->LockMouseToWindow(false);
-			renderer.EnableOverlayPass("Menu", true);
-			renderer.UpdatePipeline();
-			*/
-			return PushdownResult::Pop;
-		}
+	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 
-
-		return PushdownResult::NoChange;
-	}
-
-	void OnAwake() override {
-		menuState = ChangeState::None;
-		Window::GetWindow()->ShowOSPointer(false);
-		Window::GetWindow()->LockMouseToWindow(true);
-		renderer.EnableRenderScene(true);
-		renderer.EnableOverlayPass("Menu", false);
-		renderer.EnableOverlayPass("Debug", true);
-		renderer.UpdatePipeline();
-	}
+	void OnAwake() override;
 
 private:
-	float time = 0;
-	int count = 0;
-
 	enum class ChangeState {
 		None,
 		OnGoing,
@@ -73,12 +33,15 @@ private:
 		Quit
 	};
 
+	float time = 0;
+	int count = 0;
 	
-	GameStateManager* gameStateManager = &GameStateManager::instance();
+	GameStateManager& gameStateManager = GameStateManager::instance();
 	GameTechRenderer& renderer = GameTechRenderer::instance();
 	MenuManager& menuManager = MenuManager::instance();
-	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
-	TutorialGame* game;
+	InputKeyMap& keyMap = NCL::InputKeyMap::instance();
+
+	std::unique_ptr<TutorialGame> game;
 
 	ChangeState menuState = ChangeState::None;
 };

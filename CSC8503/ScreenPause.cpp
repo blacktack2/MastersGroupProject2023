@@ -11,46 +11,78 @@
 #include "AssetLibrary.h"
 #include "MenuRenderObject.h"
 
+#include <functional>
+#include <optional>
+
 using namespace NCL;
 using namespace CSC8503;
 
-void ScreenPause::initMenu() {
-	ShaderBase* shader = (ShaderBase*)AssetLibrary::GetShader("menu");
+ScreenPause::ScreenPause(TutorialGame* game) {
+	this->game = game;
+	InitMenu();
+}
 
-	TextureBase* texture = AssetLibrary::GetTexture("menuPause");
+ScreenPause::~ScreenPause() {
+	menuManager.RemoveAndEraseMenu(NAME);
+}
 
-	MeshGeometry* quad = (MeshGeometry*)AssetLibrary::GetMesh("quad");
-	Menu* menu = new Menu(Vector2(0, 0), Vector2(0.3f, 0.7f));
-	menu->SetRenderObject(new MenuRenderObject(texture));
-	menuManager.AddMenu(name, menu);
-
-	//Load button
-	vector<Button*> buttons;
-	int num = 4;
-	for (int i = 0; i < num; i++) {
-		char name[8] = { 0 };
-		sprintf_s(name, "button%d", i + 4);
-
-		Button* btn = new Button(0, 0.45f + i * -0.3f, 0.16f, 0.08f, Vector4(0, 0, 0, 1));
-		TextureBase* tex = AssetLibrary::GetTexture(name);
-
-		btn->SetRenderObject(new MenuRenderObject(tex));
-		menu->AddButton(btn);
-		buttons.push_back(btn);
+PushdownState::PushdownResult ScreenPause::OnUpdate(float dt, PushdownState** newState) {
+	menuManager.Update(dt);
+	keyMap.Update();
+	renderer.Render();
+	if (game) {
+		NetworkedGame* netGame = dynamic_cast<NetworkedGame*>(game);
+		if (netGame) {
+			netGame->FreezeSelf();
+		}
+		game->UpdateGame(dt);
 	}
-	buttons[0]->OnClickCallback = [&]() {
-		std::cout << "1 btn clicked" << std::endl;
+	switch (menuState) {
+		case ChangeState::Resume:
+		case ChangeState::Quit:
+			if (game) {
+				NetworkedGame* netGame = dynamic_cast<NetworkedGame*>(game);
+				if (netGame) {
+					netGame->FreezeSelf();
+				}
+			}
+			return PushdownResult::Pop;
+		default:
+			return PushdownResult::NoChange;
+	}
+}
+
+void ScreenPause::OnAwake() {
+	menuState = ChangeState::None;
+
+	menuManager.SetCurrentMenu(NAME);
+
+	renderer.EnableOverlayPass("Menu", true);
+	renderer.EnableOverlayPass("Debug", false);
+	renderer.UpdatePipeline();
+
+	Window::GetWindow()->ShowOSPointer(true);
+	Window::GetWindow()->LockMouseToWindow(false);
+}
+
+void ScreenPause::InitMenu() {
+	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(0.3f, 0.7f), AssetLibrary<TextureBase>::GetAsset("menuPause"));
+
+	menu.AddButton(0.0f, 0.45f, 0.16f, 0.08f, AssetLibrary<TextureBase>::GetAsset("button4"), [&]() {
+		std::cout << "Resume button clicked\n";
 		menuState = ChangeState::Resume;
-	};
-	buttons[1]->OnClickCallback = [&]() {
-		std::cout << "2 btn clicked" << std::endl;
-	};
-	buttons[2]->OnClickCallback = [&]() {
-		std::cout << "3 btn clicked" << std::endl;
-	};
-	buttons[3]->OnClickCallback = [&]() {
-		std::cout << "4 btn clicked" << std::endl;
-		gameStateManager->SetGameState(GameState::Quit);
+	});
+	menu.AddButton(0.0f, 0.15f, 0.16f, 0.08f, AssetLibrary<TextureBase>::GetAsset("button5"), [&]() {
+		std::cout << "Dummy button clicked\n";
+		// TODO - Add functionality
+	});
+	menu.AddButton(0.0f, -0.15f, 0.16f, 0.08f, AssetLibrary<TextureBase>::GetAsset("button6"), [&]() {
+		std::cout << "Dummy button clicked\n";
+		// TODO - Add functionality
+	});
+	menu.AddButton(0.0f, -0.45f, 0.16f, 0.08f, AssetLibrary<TextureBase>::GetAsset("button7"), [&]() {
+		std::cout << "Quit button clicked\n";
+		gameStateManager.SetGameState(GameState::Quit);
 		menuState = ChangeState::Quit;
-	};
+	});
 }

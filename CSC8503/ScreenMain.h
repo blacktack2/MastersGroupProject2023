@@ -3,6 +3,7 @@
  * @brief  A class for defining the main menu.
  *
  * @author Felix Chiu
+ * @author Stuart Lewis
  * @date   February 2023
  */
 #pragma once
@@ -14,69 +15,32 @@
 #include "ScreenMultiplayerOption.h"
 
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
 
 class ScreenMain : public PushdownState {
 public:
-	ScreenMain(){
-		initMenu();
-		OnAwake();
-	}
-	~ScreenMain(){}
+	ScreenMain();
+	~ScreenMain();
 
-	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
-		menuManager.Update(dt);
-		keyMap.Update();
-		renderer.Render();
-		switch (menuState)
-		{
-		case ChangeState::Start:
-			*newState = new ScreenGame();
-			return PushdownResult::Push;
-		case ChangeState::Multiplayer:
-			*newState = new ScreenMultiplayerOption();
-			return PushdownResult::Push;
-		case ChangeState::Option:
-			*newState = new ScreenOption();
-			return PushdownResult::Push;
-		case ChangeState::Quit:
-			return PushdownResult::Pop;
-		default:
-			menuState = ChangeState::OnGoing;
-			return PushdownResult::NoChange;
-		}
-	}
-	void OnAwake() override {
-		menuState = ChangeState::None;
-		menuManager.SetCurrentMenu(name);
-		renderer.EnableOverlayPass("Menu", true);
-		renderer.EnableOverlayPass("Debug", false);
-		renderer.EnableRenderScene(false);
-		renderer.UpdatePipeline();
-		Window::GetWindow()->ShowOSPointer(true);
-		Window::GetWindow()->LockMouseToWindow(false);
-	}
-	
-
-
-	GameTechRenderer& renderer = GameTechRenderer::instance();
-	MenuManager& menuManager = MenuManager::instance();
-	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
-
+	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
+	void OnAwake() override;
 private:
-	void initMenu();
-
 	enum class ChangeState {
 		None,
 		OnGoing,
 		Start,
 		Multiplayer,
 		Option,
-		Quit
+		Quit,
 	};
+
+	void InitMenu();
+
+	GameTechRenderer& renderer = GameTechRenderer::instance();
+	MenuManager& menuManager = MenuManager::instance();
+	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
+
 	ChangeState menuState = ChangeState::None;
 
-	std::string name = "main";
+	const std::string NAME = "main";
 };
-
-

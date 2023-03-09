@@ -8,13 +8,15 @@
  */
 #include "OGLRenderer.h"
 
+#include "OGLBufferObject.h"
+#include "OGLFrameBuffer.h"
 #include "OGLMesh.h"
 #include "OGLRenderPass.h"
 #include "OGLShader.h"
 #include "OGLTexture.h"
 
 #include "SimpleFont.h"
-#include "TextureLoader.h"
+#include "AssetLoader.h"
 
 #include "Vector2.h"
 #include "Vector3.h"
@@ -48,7 +50,14 @@ OGLRenderer::OGLRenderer(Window& w) : RendererBase(w), config(*this) {
 	windowHeight = (int)w.GetScreenSize().y;
 
 	if (initState) {
-		TextureLoader::RegisterAPILoadFunction(OGLTexture::RGBATextureFromFilename);
+		AssetLoader::RegisterMeshLoadFunction(OGLMesh::LoadMesh);
+		AssetLoader::RegisterTextureLoadFunction(OGLTexture::LoadTexture);
+
+		AssetLoader::RegisterBufferObjectCreateFunction(OGLBufferObject::CreateBufferObject);
+		AssetLoader::RegisterFrameBufferCreateFunction(OGLFrameBuffer::CreateFrameBuffer);
+		AssetLoader::RegisterMeshCreateFunction(OGLMesh::CreateMesh);
+		AssetLoader::RegisterShaderCreateFunction(OGLShader::CreateShader);
+		AssetLoader::RegisterTextureCreateFunction(OGLTexture::CreateTexture);
 	}
 
 	forceValidDebugState = false;
