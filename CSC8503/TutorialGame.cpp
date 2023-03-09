@@ -39,7 +39,7 @@
 #include "SoundSource.h"
 #include "SoundSystem.h"
 #include "TestAudio.h"
-
+#include "Hud.h"
 #include "MeshAnimation.h"
 
 #include "Debug.h"
@@ -58,6 +58,7 @@ renderer(GameTechRenderer::instance()), gameWorld(GameWorld::instance()), keyMap
 	sunLight = gameWorld.AddLight(new Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
 
 	physics = std::make_unique<PhysicsSystem>(gameWorld);
+	hud = std::make_unique<Hud>();
 	
 	SoundSystem::Initialize();
 	StartLevel();
@@ -184,7 +185,8 @@ void TutorialGame::UpdateGame(float dt) {
 
 	gameStateManager.Update(dt);
 	ProcessState();
-	
+
+	UpdateHud(dt);
 
 	debugViewPoint.FinishTime("Update");
 	debugViewPoint.MarkTime("Render");
@@ -200,13 +202,6 @@ bool TutorialGame::IsQuit() {
 
 void TutorialGame::UpdateGameCore(float dt) {
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
-
-	if(players[0]) {
-		Debug::Print(std::string("health: ").append(std::to_string((int)players[0]->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
-	}
-	if (boss) {
-		Debug::Print(std::string("Boss health: ").append(std::to_string((int)boss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
-	}
 
 	gameWorld.GetMainCamera()->UpdateCamera(dt);
 
@@ -232,6 +227,18 @@ void TutorialGame::UpdateGameCore(float dt) {
 		gameLevel->SetShelterTimer(0.0f);
 		UpdateLevel();
 	}
+}
+
+void TutorialGame::UpdateHud(float dt)
+{	
+	if (players[0]) {
+		Debug::Print(std::string("health: ").append(std::to_string((int)players[0]->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
+	}
+	if (boss) {
+		Debug::Print(std::string("Boss health: ").append(std::to_string((int)boss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
+	}
+	hud->loadHuds((int)boss->GetHealth()->GetHealth(), (int)players[0]->GetHealth()->GetHealth());
+	(renderer.GetHudRPass()).SetHud(hud->getHuds());
 }
 
 void TutorialGame::ProcessState() {

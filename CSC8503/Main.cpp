@@ -118,8 +118,10 @@ void LoadMenuAsset() {
 	AssetLibrary<TextureBase>::AddAsset("button7", AssetLoader::LoadTexture("button7.jpg"));
 
 	AssetLibrary<TextureBase>::AddAsset("fontAtlas", AssetLoader::LoadTexture("PressStart2P.png"));
-
+	AssetLibrary<TextureBase>::AddAsset("BossHealthBarBorder", AssetLoader::LoadTexture("HP/Borders/Border_Style_2.png"));
+	AssetLibrary<TextureBase>::AddAsset("BossHealthBar", AssetLoader::LoadTexture("HP/Style_2.png"));
 	AssetLibrary<ShaderBase>::AddAsset("menu", std::move(AssetLoader::CreateShader("menuVertex.vert", "menuFragment.frag")));
+
 }
 
 void LoadAnimationAsset() {

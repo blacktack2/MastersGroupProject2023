@@ -230,6 +230,7 @@ void Boss::Update(float dt) {
         ChangeLoseState();
     }
     if (this->transform.GetGlobalPosition().y < -10) {
+        health.SetHealth(0);
         ChangeLoseState();
     }
     if (health.GetHealth() > 0 )

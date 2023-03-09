@@ -59,6 +59,7 @@ void ScreenPause::OnAwake() {
 
 	renderer.EnableOverlayPass("Menu", true);
 	renderer.EnableOverlayPass("Debug", false);
+	renderer.EnableOverlayPass("Hud", false);
 	renderer.UpdatePipeline();
 
 	Window::GetWindow()->ShowOSPointer(true);

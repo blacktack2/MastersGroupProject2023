@@ -66,6 +66,8 @@ set(Render_Files
     "ModelRPass.cpp"
     "MenuRPass.h"
     "MenuRPass.cpp"
+    "HudRPass.h"
+    "HudRPass.cpp"
 )
 
 if(USE_VULKAN)
@@ -154,6 +156,10 @@ set(Menu_Files
     "ScreenMultiplayer.cpp"
     "ScreenMultiplayerOption.h"
     "ScreenMultiplayerOption.cpp"
+    "HealthBar.h"
+    "HealthBar.cpp"
+    "Hud.h"
+    "Hud.cpp"
 )
 source_group("Menu Files" FILES ${Menu_Files})
 

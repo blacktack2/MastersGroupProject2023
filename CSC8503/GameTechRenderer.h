@@ -21,7 +21,7 @@
 #include "DebugRPass.h"
 #include "MenuRPass.h"
 #include "PaintingRPass.h"
-
+#include"HudRPass.h"
 #include "GameWorld.h"
 
 #include <algorithm>
@@ -77,6 +77,9 @@ namespace NCL::CSC8503 {
 		}
 		inline MenuRPass& GetMenuRPass() {
 			return *menuPass;
+		}
+		inline HudRPass& GetHudRPass() {
+			return *hudPass;
 		}
 
 		virtual void Update(float dt) override;
@@ -148,6 +151,7 @@ namespace NCL::CSC8503 {
 		std::unique_ptr<DebugRPass>    debugPass;
 		std::unique_ptr<MenuRPass>     menuPass;
 		std::unique_ptr<PaintingRPass> paintingRPass;
+		std::unique_ptr<HudRPass> hudPass;
 
 		float gamma = 2.2f;
 
