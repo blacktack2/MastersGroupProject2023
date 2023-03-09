@@ -8,25 +8,35 @@
 #pragma once
 #include "OGLMainRenderPass.h"
 
-#include "GameWorld.h"
-#include "Light.h"
+#include "Vector3.h"
 
+#include <functional>
+#include <memory>
+#include <optional>
 #include <random>
 #include <vector>
 
-namespace NCL::Rendering {
-	class OGLBufferObject;
-	class OGLFrameBuffer;
-	class OGLShader;
-	class OGLTexture;
+namespace NCL {
+	class MeshGeometry;
 }
 
-using namespace NCL::Rendering;
+namespace NCL::Rendering {
+	class BufferObjectBase;
+	class FrameBuffer;
+	class ShaderBase;
+	class TextureBase;
+}
+
+using namespace NCL;
+using namespace Rendering;
+using namespace Maths;
 
 namespace NCL::CSC8503 {
+	class GameTechRenderer;
+
 	class SSAORPass : public OGLMainRenderPass {
 	public:
-		SSAORPass(OGLRenderer& renderer, OGLTexture* depthTexIn, OGLTexture* normalTexIn);
+		SSAORPass();
 		~SSAORPass();
 
 		virtual void OnWindowResize(int width, int height) override;
@@ -37,8 +47,16 @@ namespace NCL::CSC8503 {
 		void SetBias(float bias);
 		void SetNumKernels(size_t numKernels);
 
-		inline OGLTexture* GetOutTex() const {
-			return ssaoOutTex;
+		inline TextureBase& GetOutTex() const {
+			return *ssaoOutTex;
+		}
+
+		inline void SetDepthTexIn(TextureBase& tex) {
+			depthTexIn = &tex;
+		}
+
+		inline void SetNormalTexIn(TextureBase& tex) {
+			normalTexIn = &tex;
 		}
 	private:
 		void DrawSSAO();
@@ -47,24 +65,26 @@ namespace NCL::CSC8503 {
 		void GenerateKernels();
 		void GenerateNoiseTex();
 
-		OGLFrameBuffer* ssaoFrameBuffer;
-		OGLTexture* ssaoTex;
+		GameTechRenderer& renderer;
 
-		OGLFrameBuffer* blurFrameBuffer;
-		OGLTexture* ssaoOutTex;
+		std::shared_ptr<MeshGeometry> quad;
 
-		OGLTexture* depthTexIn;
-		OGLTexture* normalTexIn;
-		OGLTexture* noiseTex = nullptr;
+		std::unique_ptr<FrameBuffer> ssaoFrameBuffer;
+		std::unique_ptr<FrameBuffer> blurFrameBuffer;
 
-		OGLMesh* quad;
+		TextureBase* depthTexIn = nullptr;
+		TextureBase* normalTexIn = nullptr;
 
-		OGLShader* ssaoShader;
-		OGLShader* blurShader;
+		std::unique_ptr<TextureBase> noiseTex;
+		std::unique_ptr<TextureBase> ssaoTex;
+		std::unique_ptr<TextureBase> ssaoOutTex;
 
-		OGLBufferObject* kernelSSBO;
+		std::unique_ptr<ShaderBase> ssaoShader;
+		std::unique_ptr<ShaderBase> blurShader;
 
-		GLsizei noiseTexSize = 4;
+		std::unique_ptr<BufferObjectBase> kernelSSBO;
+
+		unsigned int noiseTexSize = 4;
 		size_t numKernels = 64;
 		std::vector<Vector3> kernels{};
 
@@ -72,4 +92,3 @@ namespace NCL::CSC8503 {
 		std::default_random_engine generator;
 	};
 }
-

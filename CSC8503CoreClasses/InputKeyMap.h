@@ -39,7 +39,7 @@ enum AxisInput
 
 using namespace NCL;
 
-namespace paintHell {
+namespace NCL {
 	class InputKeyMap {
 	public:
 		static InputKeyMap& instance() {

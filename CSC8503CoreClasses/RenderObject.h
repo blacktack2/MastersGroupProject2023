@@ -7,56 +7,61 @@
  * @date   February 2023
  */
 #pragma once
-#include "TextureBase.h"
-#include "ShaderBase.h"
+#include <functional>
+#include <optional>
 
 namespace NCL {
-	using namespace NCL::Rendering;
-
 	class MeshMaterial;
 	class MeshGeometry;
-	namespace CSC8503 {
-		class Transform;
-		using namespace Maths;
+}
 
-		class RenderObject {
-		public:
-			RenderObject(Transform* parentTransform, MeshGeometry* mesh, MeshMaterial* material);
-			RenderObject(RenderObject& other, Transform* parentTransform);
-			virtual ~RenderObject();
+namespace NCL::Rendering {
+	class TextureBase;
+	class ShaderBase;
+}
 
-			MeshGeometry* GetMesh() const {
-				return mesh;
-			}
+using namespace NCL::Rendering;
 
+namespace NCL::CSC8503 {
+	class Transform;
+	using namespace Maths;
 
-			void SetTransform(Transform* transform){
-				this->transform = transform;
-			}
+	class RenderObject {
+	public:
+		RenderObject(Transform& parentTransform, std::shared_ptr<MeshGeometry> mesh, std::shared_ptr<MeshMaterial> material);
+		RenderObject(RenderObject& other, Transform& parentTransform);
+		virtual ~RenderObject();
 
-			Transform* GetTransform() const {
-				return transform;
-			}
+		std::shared_ptr<MeshGeometry> GetMesh() const {
+			return mesh;
+		}
 
-			void SetColour(const Vector4& c) {
-				colour = c;
-			}
+		void SetTransform(Transform& transform){
+			this->transform = transform;
+		}
 
-			Vector4 GetColour() const {
-				return colour;
-			}
+		Transform& GetTransform() const {
+			return transform;
+		}
+
+		void SetColour(const Vector4& c) {
+			colour = c;
+		}
+
+		const Vector4& GetColour() const {
+			return colour;
+		}
 			
-			void Draw();
-		protected:
-			virtual void PreDraw(int sublayer);
-			virtual void PreDraw(int sublayer, ShaderBase* shader) {}
+		void Draw();
+	protected:
+		virtual void PreDraw(int sublayer);
+		virtual void PreDraw(int sublayer, ShaderBase& shader) {}
 
-			virtual ShaderBase* GetDefaultShader();
+		virtual ShaderBase& GetDefaultShader();
 
-			Transform*    transform;
-			MeshGeometry* mesh;
-			MeshMaterial* material;
-			Vector4       colour;
-		};
-	}
+		std::reference_wrapper<Transform> transform;
+		std::shared_ptr<MeshGeometry> mesh;
+		std::shared_ptr<MeshMaterial> material;
+		Vector4 colour;
+	};
 }

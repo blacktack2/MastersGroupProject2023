@@ -1,28 +1,40 @@
 #pragma once
 #include "OGLMainRenderPass.h"
 
-#include "GameWorld.h"
+#include <functional>
+#include <memory>
+#include <optional>
 
-#include <vector>
-
-namespace NCL::Rendering {
-	class OGLFrameBuffer;
-	class OGLShader;
-	class OGLTexture;
+namespace NCL {
+	class MeshGeometry;
 }
 
-using namespace NCL::Rendering;
+namespace NCL::Rendering {
+	class FrameBuffer;
+	class ShaderBase;
+	class TextureBase;
+}
+
+using namespace NCL;
+using namespace Rendering;
 
 namespace NCL::CSC8503{
+	class GameTechRenderer;
+	class GameWorld;
+
 	class PaintingRPass : public OGLMainRenderPass {
 	public:
-		PaintingRPass(OGLRenderer& renderer);
+		PaintingRPass();
 		~PaintingRPass();
 
 		void Render() override;
 
 	protected:
-		OGLShader* shader;
-		OGLFrameBuffer* frameBuffer;
+		GameTechRenderer& renderer;
+		GameWorld& gameWorld;
+
+		std::unique_ptr<FrameBuffer> frameBuffer;
+
+		std::unique_ptr<ShaderBase> shader;
 	};
 }

@@ -32,7 +32,7 @@ vec4 mod289(vec4 x) {
 }
 
 vec4 permute(vec4 x) {
-     return mod289(((x*34.0)+10.0)*x);
+     return mod289(((x * 34.0) + 10.0) * x);
 }
 
 vec4 taylorInvSqrt(vec4 r) {
@@ -100,10 +100,10 @@ float simplex(vec3 v) {
 }
 
 float fBm(vec3 pos) {
-	float f = simplex(pos) * 0.5
-			+ simplex(pos * 2.0) * 0.25
-			+ simplex(pos * 4.0) * (1.0 / 6.0)
-			+ simplex(pos * 8.0) * (1.0 / 12.0)
+	float f = simplex(pos       ) *  0.5
+			+ simplex(pos * 2.0 ) *  0.25
+			+ simplex(pos * 4.0 ) * (1.0 / 6.0)
+			+ simplex(pos * 8.0 ) * (1.0 / 12.0)
 			+ simplex(pos * 16.0) * (1.0 / 24.0);
 	return f;
 }

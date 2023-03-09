@@ -64,7 +64,7 @@ namespace NCL {
 			bool isNetwork = false;
 
 			//keymap
-			paintHell::InputKeyMap& keyMap;
+			NCL::InputKeyMap& keyMap;
 			unsigned int lastKey;
 			
 			//gameplay

@@ -18,13 +18,9 @@
 #include "DebugViewPoint.h"
 #include <limits>
 
-
-
-
-    const float offensiveHealthLowerBound = 50;
-    const float bossVision = 80;
-    const float distanceToHaveCloseCombat = 40;
-
+const float offensiveHealthLowerBound = 50;
+const float bossVision = 80;
+const float distanceToHaveCloseCombat = 40;
 
 Boss::Boss() {
     BuildTree();
@@ -152,8 +148,6 @@ void Boss::BuildTree() {
         return Ongoing;
     }));
 
-
-
     //Deffensive Sub tree
     behaviourTree->AddChild(new BehaviourAction("Walk if player to far awway", [&](float dt, BehaviourState state)->BehaviourState {
         switch (state)
@@ -221,13 +215,10 @@ void Boss::BuildTree() {
     }));
 }
 
-
-
-
-
 void Boss::Update(float dt) {
-    paintHell::debug::DebugViewPoint::Instance().MarkTime("Boss Update");
+    NCL::DebugViewPoint::Instance().MarkTime("Boss Update");
     GetTarget();
+    BossAction prevState = bossAction;
     health.Update(dt);
     deltaTime = dt;
     // check if inked
@@ -244,9 +235,14 @@ void Boss::Update(float dt) {
     if (health.GetHealth() > 0 )
     {
         bossAction = NoAction;
-        if (behaviourTree->Execute(dt) != Ongoing) behaviourTree->Reset();
+        if (behaviourTree->Execute(dt) != Ongoing) {
+            behaviourTree->Reset();
+        }
     }
-    paintHell::debug::DebugViewPoint::Instance().FinishTime("Boss Update");
+    if (bossAction != prevState) {
+        ChangeTarget();
+    }
+    NCL::DebugViewPoint::Instance().FinishTime("Boss Update");
 }
 
 void Boss::ChangeLoseState()
@@ -273,7 +269,7 @@ void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
     } else {
         Vector3 closest{ 9999, 9999, 9999 };
         Vector3 forward;
-        for (int n = 0; n < tempSteps.size() - 1; n++) {
+        for (size_t n = 0; n < tempSteps.size() - 1; n++) {
             if ((closest - this->GetTransform().GetGlobalPosition()).Length() > (tempSteps[n] - this->GetTransform().GetGlobalPosition()).Length()) {
                 closest = tempSteps[n];
                 forward = tempSteps[n + 1];
@@ -293,7 +289,7 @@ void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
 
     // Draw the path
     if (tempSteps.size() > 1) {
-        for (int i = 1; i < tempSteps.size(); i++) {
+        for (size_t i = 1; i < tempSteps.size(); i++) {
             Vector3 a = tempSteps[i - 1];
             Vector3 b = tempSteps[i];
 
@@ -303,6 +299,9 @@ void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
 }
 
 BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p) {
+    if (isClient) {
+        return nullptr;
+    }
     BossBullet* ink = BulletInstanceManager::instance().GetBossBullet();
 
     ink->SetLifespan(5.0f);
@@ -327,13 +326,16 @@ BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p) {
 
 }
 
-void Boss::ChangeTarget(){}
+void Boss::ChangeTarget(){
+    if (nextTarget != target) {
+        target = nextTarget;
+    }
+}
 
 bool Boss::RandomWalk() {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (anim->GetAnimation() != AssetLibrary::GetAnimation("WalkForward")) {
-        anim->SetAnimation(AssetLibrary::GetAnimation("WalkForward"));
-        std::cout << "Boss Walk\n";
+    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("WalkForward").get()) {
+        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("WalkForward"));
     }
     float speed = 20.0f;
     float period = 1.0f;    // change direction in period-seconds
@@ -355,9 +357,8 @@ bool Boss::RandomWalk() {
 
 bool Boss::StabPlayer(PlayerObject* player) {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack1")) {
-        anim->SetAnimation(AssetLibrary::GetAnimation("Attack1"));
-        std::cout << "Boss Attack 1\n";
+    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack1").get()) {
+        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack1"));
     }
 
     Vector3 bombScale{ 0.75,0.75,0.75 };
@@ -386,9 +387,8 @@ bool Boss::StabPlayer(PlayerObject* player) {
 
 bool Boss::Spin(PlayerObject* player) {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack2")) {
-        anim->SetAnimation(AssetLibrary::GetAnimation("Attack2"));
-        std::cout << "Boss Attack 2\n";
+    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack2").get()) {
+        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack2"));
     }
     Vector3 bombScale{ 0.75,0.75,0.75 };
     float bombSpeed = 40.0f;
@@ -426,9 +426,8 @@ bool Boss::Spin(PlayerObject* player) {
 
 bool Boss::UseLaserOnPlayer(PlayerObject* player) {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack3")) {
-        anim->SetAnimation(AssetLibrary::GetAnimation("Attack3"));
-        std::cout << "Boss Attack 3\n";
+    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack3").get()) {
+        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack3"));
     }
     Vector3 bombScale{ 2,2,2 };
     float bombSpeed = 40.0f;
@@ -466,9 +465,8 @@ bool Boss::UseLaserOnPlayer(PlayerObject* player) {
 
 bool Boss::JumpTo(PlayerObject* player) {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Jump")) {
-        anim->SetAnimation(AssetLibrary::GetAnimation("Jump"));
-        std::cout << "Boss Jump To\n";
+    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Jump").get()) {
+        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Jump"));
     }
     float hangTime = 5.0f;
     if (jumpToTimer == 0.0f) {
@@ -492,9 +490,8 @@ bool Boss::JumpTo(PlayerObject* player) {
 
 bool Boss::JumpAway(PlayerObject* player) {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Jump")) {
-        anim->SetAnimation(AssetLibrary::GetAnimation("Jump"));
-        std::cout << "Boss Jump Away\n";
+    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Jump").get()) {
+        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Jump"));
     }
     float hangTime = 5.0f;
     if (jumpAwayTimer == 0.0f) {
@@ -545,9 +542,8 @@ bool Boss::SeekHeal(bool& hasHeal) {
 
 bool Boss::InkRain(PlayerObject* player) {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack6")) {
-        anim->SetAnimation(AssetLibrary::GetAnimation("Attack6"));
-        std::cout << "Boss Attack 6\n";
+    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack6").get()) {
+        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack6"));
     }
     float rainPeriod = 0.1f;
     int rainRange = 30;
@@ -569,8 +565,11 @@ bool Boss::InkRain(PlayerObject* player) {
             Vector3 bombPostion{ startingPosition.x + dx, startingPosition.y + dy, startingPosition.z + dz };
             rainBombPositions.push_back(bombPostion);   // we NEED this extra container to store the positions, otherwise it will cause memory violation!
             BossBullet* b = releaseBossBullet({ 0,0,0 }, bombScale, bombPostion);
-            b->SetLifespan(99999.0f);
-            rain[n] = b;
+            if (b) {
+                b->SetLifespan(99999.0f);
+                rain[n] = b;
+            }
+            
         }
         rainIsInitialised = true;
         return false;
@@ -583,7 +582,7 @@ bool Boss::InkRain(PlayerObject* player) {
         return true;
     }
     inkRainTimer += deltaTime;
-    if (inkRainTimer > rainPeriod) {
+    if (inkRainTimer > rainPeriod && !isClient) {
         inkRainTimer = 0.0f;
         rain[currentRainBomb]->SetLifespan(0.0f);
         Vector3 bombDirection = (player->GetTransform().GetGlobalPosition() - rainBombPositions[currentRainBomb]).Normalised();
@@ -598,9 +597,8 @@ bool Boss::InkRain(PlayerObject* player) {
 
 bool Boss::BulletsStorm() {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (anim->GetAnimation() != AssetLibrary::GetAnimation("Attack5")) {
-        anim->SetAnimation(AssetLibrary::GetAnimation("Attack5"));
-        std::cout << "Boss Attack 5\n";
+    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack5").get()) {
+        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack5"));
     }
     float bulletsStormDuration = 5.0f;
     float bulletsStormPeriod = 0.1f;

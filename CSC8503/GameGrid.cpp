@@ -60,7 +60,7 @@ GameNode* GameGrid::NearestNode(Vector3 position)
 	return resultingNode;
 }
 
-void GameGrid::PaintNode(Vector3 position, float radius, paintHell::InkType type) {
+void GameGrid::PaintNode(Vector3 position, float radius, NCL::InkType type) {
 	if (position.y > 8) {
 		return;
 	}
@@ -114,10 +114,10 @@ void GameGrid::DrawDebugGameGrid()
 		{
 			switch (currentNode.inkType)
 			{
-			case paintHell::InkType::BossDamage:
+			case NCL::InkType::BossDamage:
 				Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0, 0.5f, 0 }, Vector4(0, 1, 0.2f, 1), 0.01f);
 				break;
-			case paintHell::InkType::PlayerDamage:
+			case NCL::InkType::PlayerDamage:
 				Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0, 0.5f, 0 }, Vector4(1, 0, 0, 1), 0.01f);
 				break;
 			default:

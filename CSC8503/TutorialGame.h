@@ -1,172 +1,99 @@
+/**
+ * @file   TutorialGame.h
+ * @brief  
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #pragma once
-#include "GameTechRenderer.h"
-#ifdef USEVULKAN
-#include "GameTechVulkanRenderer.h"
-#endif
-#include "PhysicsSystem.h"
-#include "PlayerObject.h"
-#include "StateGameObject.h"
-#include "DebugViewPoint.h"
+#include "Vector3.h"
 
-#include "GameGridManager.h"
-
-#include "Boss.h"	
-#include "Obstacle.h"
-#include "GameLevel.h"
-
-
-#include "GameStateManager.h"
-#include "MenuManager.h"
-
-#include "MeshAnimation.h"
-
+#include <memory>
 
 namespace NCL {
-	namespace CSC8503 {
-		class Bullet;
-		class Maze;
+	class DebugViewPoint;
+	class InputKeyMap;
+}
 
-		class TutorialGame {
-		public:
-			enum class InitMode {
-				EMPTY,
-				MAZE,
-				MIXED_GRID,
-				CUBE_GRID,
-				OBB_GRID,
-				SPHERE_GRID,
-				BRIDGE_TEST,
-				BRIDGE_TEST_ANG,
-				PERFORMANCE_TEST,
-				AUDIO_TEST//added for audio testing
-			};
+using namespace NCL::Maths;
 
-			TutorialGame();
-			~TutorialGame();
+namespace NCL::CSC8503 {
+	class GameGridManager;
+	class GameStateManager;
+	class GameTechRenderer;
+	class GameWorld;
+	class MenuManager;
 
-			virtual void Clear();
-			virtual void StartLevel();
-			void InitWorld();
+	class GameLevel;
+	class PhysicsSystem;
 
-			virtual void UpdateGame(float dt);
+	class GameObject;
 
-			bool IsQuit() {
-				return gameStateManager->GetGameState() == GameState::Quit;
-			}
-		protected:
+	class GameGrid;
+	class Boss;
+	class BossBehaviorTree;
+	class PlayerObject;
 
-			void UpdateGameCore(float dt);
-			virtual void ProcessState();
+	struct Light;
 
-			void SetCameraFollow(PlayerObject* p);
+	class TutorialGame {
+	public:
+		TutorialGame();
+		~TutorialGame();
 
-			void InitialiseAssets();
-			void InitialisePrefabs();
+		virtual void Clear();
+		virtual void StartLevel();
 
-			void InitCamera();
-			void InitGameExamples();
+		void InitWorld();
 
-			void InitMazeWorld(int numRows, int numCols, float size);
-			void InitMixedGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing);
-			void InitCubeGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, const Vector3& cubeDims, bool axisAligned = true);
-			void InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius);
-			void InitBridgeConstraintTestWorld(int numLinks, float cubeDistance, float maxDistance, bool isOrientation);
+		virtual void UpdateGame(float dt);
 
-			void InitDefaultFloor();
+		bool IsQuit();
+	protected:
+		void UpdateGameCore(float dt);
+		virtual void ProcessState();
 
-			GameObject* AddFloorToWorld(const Vector3& position);
-			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
-			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass = 10.0f, bool axisAligned = true);
-			GameObject* AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius, float inverseMass = 10.0f);
-			StateGameObject* AddStateObjectToWorld(const Vector3& position);
+		void SetCameraFollow(PlayerObject* p);
+		
+		void InitCamera();
+		void InitGameExamples();
+
+		void InitDefaultFloor();
+
+		GameObject* AddFloorToWorld(const Vector3& position);
 
 			PlayerObject* AddPlayerToWorld(int playerID, const Vector3& position);
 
-			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
-			void BuildLevel();
-			void UpdateLevel();
-			GameObject* AddBonusToWorld(const Vector3& position);
-			GameObject* AddTriggerToWorld(const Vector3& position, float size);
+		Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
+		void BuildLevel();
+		void UpdateLevel();
 
-			void InitaliseAnimationAssets();
-			MeshMaterial* maleguardMaterial = nullptr;
-			MeshAnimation* maleguardAnim = nullptr;
-			MeshGeometry* maleguardMesh = nullptr;
-			std::vector<OGLTexture*>  maleguardMatTextures;
+		DebugViewPoint&   debugViewPoint;
+		GameGridManager&  gridManager;
+		GameStateManager& gameStateManager;
+		GameTechRenderer& renderer;
+		GameWorld&        gameWorld;
+		InputKeyMap&      keyMap;
+		MenuManager&      menuManager;
 
-			bool SelectObject();
-			void MoveSelectedObject();
-			void DebugObjectMovement();
-			void LockedObjectMovement();
-
-#ifdef USEVULKAN
-			GameTechVulkanRenderer*	renderer;
-#else
-			GameTechRenderer* renderer;
-#endif
-			PhysicsSystem*		physics;
-			GameWorld*			world;
-
-			paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
-
-			Light* sunLight;
-
-			GameStateManager* gameStateManager;
-			MenuManager* menuManager;
-
-			bool inSelectionMode;
-
-			float		forceMagnitude;
-
-			Maze* mazes = nullptr;
-
-			GameObject* selectionObject = nullptr;
-
-			MeshGeometry*	capsuleMesh = nullptr;
-			MeshGeometry*	cubeMesh    = nullptr;
-			MeshGeometry* sphereMesh = nullptr;
-
-			TextureBase*	basicTex    = nullptr;
-			TextureBase*	pillarTex    = nullptr;
-			TextureBase*	healingKitTex = nullptr;
-
-			//Coursework Meshes
-			MeshGeometry*	charMesh = nullptr;
-			MeshGeometry*	enemyMesh = nullptr;
-			MeshGeometry*	npcMesh	  = nullptr;
-			MeshGeometry*	bonusMesh = nullptr;
-
-			//Coursework Additional functionality	
-			GameObject* lockedObject	= nullptr;
-			Vector3 lockedOffset		= Vector3(0, 14, 20);
-			void LockCameraToObject(GameObject* o) {
-				lockedObject = o;
-			}
-
-			GameObject* objClosest = nullptr;
+		std::unique_ptr<PhysicsSystem> physics;
 
 			PlayerObject* player = nullptr;
 			PlayerObject* player2 = nullptr;
 			PlayerObject* player3 = nullptr;
 			PlayerObject* player4 = nullptr;
 
-			int score;
+			Light* sunLight = nullptr;
 
 			paintHell::debug::DebugViewPoint* debugViewPoint;
 
 			GameLevel* gameLevel = nullptr;	/////////
-			float interval = 0.0f;			/////////
-			GameGrid* gameGrid = nullptr;	/////////
-			//GameObject* floor = nullptr;	/////////
-			Boss* testingBoss = nullptr;   /////////
+			Boss* boss = nullptr;   /////////
 
-			//GameGrid stuff
-			GameGridManager* gridManager;
-			float wallTimer = 0.0f;
+		GameGrid* gameGrid = nullptr;
+		Boss* boss = nullptr;
 
-			//menu
-			bool isclicked = false;
-		};
-	}
+		float interval = 0.0f;
+	};
 }
-

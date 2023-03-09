@@ -14,8 +14,8 @@ NetworkObject::NetworkObject(GameObject& o, int id) : object(o), renderTransform
 	else
 		networkID = o.GetWorldID();
 	object.SetNetworkObject(this);
-	renderTransform = Transform(o.GetTransform());
-	(object.GetRenderObject())->SetTransform(&renderTransform);
+	renderTransform = o.GetTransform();
+	(object.GetRenderObject())->SetTransform(renderTransform);
 	lastDeltaState.position = object.GetTransform().GetGlobalPosition();
 	lastDeltaState.orientation = object.GetTransform().GetGlobalOrientation();
 }
@@ -105,8 +105,7 @@ bool NetworkObject::ReadFullPacket(FullPacket &p, float dt) {
 }
 
 bool NetworkObject::ReadItemInitPacket(ItemInitPacket& p, float dt) {
-	object.SetActive(true);
-	static_cast<Bullet*>(&object)->SetLifespan(1.0f);
+	static_cast<Bullet*>(&object)->SetLifespan(5.0f);
 	object.GetTransform().SetPosition(p.position);
 	object.GetTransform().SetOrientation(p.orientation);
 	object.GetTransform().SetScale(p.scale);
@@ -116,6 +115,7 @@ bool NetworkObject::ReadItemInitPacket(ItemInitPacket& p, float dt) {
 	lastDeltaState.orientation = object.GetTransform().GetGlobalOrientation();
 
 	this->SnapRenderToSelf();
+	object.SetActive(true);
 
 	return true;
 }

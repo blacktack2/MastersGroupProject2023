@@ -7,46 +7,32 @@
  */
 #include "CombineRPass.h"
 
-#include "OGLFrameBuffer.h"
-#include "OGLMesh.h"
-#include "OGLShader.h"
-#include "OGLTexture.h"
+#include "GameTechRenderer.h"
 
-using namespace NCL::CSC8503;
+#include "AssetLibrary.h"
+#include "AssetLoader.h"
 
-CombineRPass::CombineRPass(OGLRenderer& renderer,
-	OGLTexture* skyboxTexIn, OGLTexture* diffuseTexIn,
-	OGLTexture* diffuseLightTexIn, OGLTexture* specularLightTexIn, OGLTexture* ssaoTexIn,
-	OGLTexture* normalTexIn, OGLTexture* depthTexIn) :
-OGLCombineRenderPass(renderer), skyboxTexIn(skyboxTexIn), diffuseTexIn(diffuseTexIn),
-diffuseLightTexIn(diffuseLightTexIn), specularLightTexIn(specularLightTexIn), ssaoTexIn(ssaoTexIn),
-normalTexIn(normalTexIn), depthTexIn(depthTexIn) {
-	sceneOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
-	AddScreenTexture(sceneOutTex);
+#include "FrameBuffer.h"
+#include "MeshGeometry.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
 
-	frameBuffer = new OGLFrameBuffer();
+using namespace NCL;
+using namespace CSC8503;
+
+CombineRPass::CombineRPass() : OGLCombineRenderPass(), renderer(GameTechRenderer::instance()) {
+	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
+
+	sceneOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetWidth(), renderer.GetHeight());
+	AddScreenTexture(*sceneOutTex);
+
+	frameBuffer = AssetLoader::CreateFrameBuffer();
 	frameBuffer->Bind();
-	frameBuffer->AddTexture(sceneOutTex);
+	frameBuffer->AddTexture(*sceneOutTex);
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
-	quad = new OGLMesh();
-	quad->SetVertexPositions({
-		Vector3(-1,  1, -1),
-		Vector3(-1, -1, -1),
-		Vector3( 1, -1, -1),
-		Vector3( 1,  1, -1),
-		});
-	quad->SetVertexTextureCoords({
-		Vector2(0, 1),
-		Vector2(0, 0),
-		Vector2(1, 0),
-		Vector2(1, 1),
-		});
-	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
-	quad->UploadToGPU();
-
-	shader = new OGLShader("combine.vert", "combine.frag");
+	shader = AssetLoader::CreateShader("combine.vert", "combine.frag");
 
 	shader->Bind();
 
@@ -65,13 +51,6 @@ normalTexIn(normalTexIn), depthTexIn(depthTexIn) {
 }
 
 CombineRPass::~CombineRPass() {
-	delete sceneOutTex;
-
-	delete frameBuffer;
-
-	delete quad;
-
-	delete shader;
 }
 
 void CombineRPass::Render() {

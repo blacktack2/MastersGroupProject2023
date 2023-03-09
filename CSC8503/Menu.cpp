@@ -3,40 +3,37 @@
  * @brief  See Menu.h.
  *
  * @author Felix Chiu
+ * @author Stuart Lewis
  * @date   February 2023
  */
 #include "Menu.h"
 
 using namespace NCL;
-using namespace CSC8503;
-using namespace Maths;
+using namespace NCL::CSC8503;
+using namespace NCL::Maths;
 
-Menu::Menu(Vector2 screenPos, Vector2 dimension) {
+Menu::Menu(Vector2 screenPos, Vector2 dimension, std::shared_ptr<TextureBase> texture) : UIObject(texture) {
 	this->screenPos = screenPos;
 	this->dimension = dimension;
 }
 
 Menu::~Menu() {
-	for (Button* btn : buttons) {
-		delete btn;
-	}
 	buttons.clear();
 }
 
-void Menu::Draw(OGLShader* menuShader, OGLTexture* menuTexture, OGLMesh* quad){
-	for (Button* btn:buttons) {
-		btn->Draw(Debug::GREEN);
-	}
-}
-
 void Menu::Update(float dt) {
-	UIObject::Update(dt);
-	for (Button* btn : buttons) {
+	for (auto& btn : buttons) {
 		btn->Update(dt);
 	}
 }
 
-Vector4 Menu::GetDimension(){
+Vector4 Menu::GetDimension() const {
 	return Vector4(screenPos, dimension);
 }
 
+Button& Menu::AddButton(float x, float y, float width, float height, std::shared_ptr<TextureBase> texture, Button::overlap_func onclick) {
+	buttons.push_back(std::move(std::make_unique<Button>(x, y, width, height, texture, onclick)));
+	Button& button = *buttons.back();
+	AddChild(button);
+	return button;
+}

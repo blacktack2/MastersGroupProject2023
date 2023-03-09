@@ -5,7 +5,6 @@ set(PROJECT_NAME CSC8503)
 ################################################################################
 
 set(Header_Files
-	"Bonus.h"
     "DebugViewPoint.h"
     "GameLevel.h"
     "GameGrid.h"
@@ -21,7 +20,6 @@ set(Header_Files
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
-	"Bonus.cpp"
     "DebugViewPoint.cpp"
     "GameLevel.cpp"
     "GameGrid.cpp"
