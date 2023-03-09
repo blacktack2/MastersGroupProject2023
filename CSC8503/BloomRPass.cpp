@@ -21,7 +21,7 @@ using namespace NCL;
 using namespace CSC8503;
 
 BloomRPass::BloomRPass() : OGLPostRenderPass(), renderer(GameTechRenderer::instance()) {
-	quad = AssetLibrary::GetMesh("quad");
+	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
 	SetBloomDepth(bloomDepth);
 	colourOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA16F, renderer.GetWidth(), renderer.GetHeight());

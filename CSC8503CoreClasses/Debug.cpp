@@ -70,7 +70,7 @@ void Debug::UpdateRenderables(float dt) {
 
 SimpleFont* Debug::GetDebugFont() {
 	if (!debugFont) {
-		debugFont = new SimpleFont("PressStart2P.fnt", *AssetLibrary::GetTexture("fontAtlas"));
+		debugFont = new SimpleFont("PressStart2P.fnt", *AssetLibrary<TextureBase>::GetAsset("fontAtlas"));
 	}
 	return debugFont;
 }

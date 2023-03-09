@@ -22,7 +22,7 @@ using namespace CSC8503;
 
 SkyboxRPass::SkyboxRPass() : OGLMainRenderPass(),
 gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
-	quad = AssetLibrary::GetMesh("quad");
+	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
 	colourOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetWidth(), renderer.GetHeight());
 	AddScreenTexture(*colourOutTex);

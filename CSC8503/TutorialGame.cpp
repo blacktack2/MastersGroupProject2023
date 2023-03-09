@@ -232,7 +232,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 		.SetScale(floorSize * 2)
 		.SetPosition(position);
 	
-	PaintRenderObject* render = new PaintRenderObject(floor->GetTransform(), AssetLibrary::GetMesh("cube"), nullptr);
+	PaintRenderObject* render = new PaintRenderObject(floor->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("cube"), nullptr);
 	floor->SetRenderObject(render);
 
 	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));
@@ -258,7 +258,7 @@ GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius
 		.SetScale(sphereSize)
 		.SetPosition(position);
 
-	sphere->SetRenderObject(new RenderObject(sphere->GetTransform(), AssetLibrary::GetMesh("sphere"), nullptr));
+	sphere->SetRenderObject(new RenderObject(sphere->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("sphere"), nullptr));
 	sphere->SetPhysicsObject(new PhysicsObject(&sphere->GetTransform(), sphere->GetBoundingVolume()));
 
 	sphere->GetPhysicsObject()->SetInverseMass(inverseMass);
@@ -279,7 +279,7 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 		.SetPosition(position)
 		.SetScale(dimensions * 2);
 
-	cube->SetRenderObject(new RenderObject(cube->GetTransform(), AssetLibrary::GetMesh("cube"), nullptr));
+	cube->SetRenderObject(new RenderObject(cube->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("cube"), nullptr));
 	cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
 
 	cube->GetPhysicsObject()->SetInverseMass(inverseMass);
@@ -311,7 +311,7 @@ GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfH
 		.SetScale(capsuleSize)
 		.SetPosition(position);
 
-	capsule->SetRenderObject(new RenderObject(capsule->GetTransform(), AssetLibrary::GetMesh("capsule"), nullptr));
+	capsule->SetRenderObject(new RenderObject(capsule->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("capsule"), nullptr));
 	capsule->SetPhysicsObject(new PhysicsObject(&capsule->GetTransform(), capsule->GetBoundingVolume()));
 
 	capsule->GetPhysicsObject()->SetInverseMass(inverseMass);
@@ -328,7 +328,7 @@ StateGameObject* TutorialGame::AddStateObjectToWorld(const Vector3& position) {
 	SphereVolume* volume = new SphereVolume(1.0f);
 
 	sgo->SetBoundingVolume((CollisionVolume*)volume);
-	sgo->SetRenderObject(new RenderObject(sgo->GetTransform(), AssetLibrary::GetMesh("sphere"), nullptr));
+	sgo->SetRenderObject(new RenderObject(sgo->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("sphere"), nullptr));
 	sgo->SetPhysicsObject(new PhysicsObject(&sgo->GetTransform(), sgo->GetBoundingVolume()));
 
 	sgo->GetTransform().SetPosition(position);
@@ -353,7 +353,7 @@ PlayerObject* TutorialGame::AddPlayerToWorld(const Vector3& position, bool camer
 		.SetScale(Vector3(1, 1, 1))
 		.SetPosition(position);
 
-	character->SetRenderObject(new RenderObject(character->GetTransform(), AssetLibrary::GetMesh("goat"), nullptr));
+	character->SetRenderObject(new RenderObject(character->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("goat"), nullptr));
 	
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 
@@ -381,7 +381,7 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 		.SetPosition(position)
 		.SetScale(dimensions * 2);
 
-	boss->SetRenderObject(new AnimatedRenderObject(boss->GetTransform(), AssetLibrary::GetMesh("boss"), AssetLibrary::GetMaterial("boss"), AssetLibrary::GetAnimation("WalkForward")));
+	boss->SetRenderObject(new AnimatedRenderObject(boss->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("boss"), AssetLibrary<MeshMaterial>::GetAsset("boss"), AssetLibrary<MeshAnimation>::GetAsset("WalkForward")));
 
 	boss->GetRenderObject()->SetColour({ 1,1,1,1 });
 	boss->SetPhysicsObject(new PhysicsObject(&boss->GetTransform(), boss->GetBoundingVolume()));
@@ -419,9 +419,9 @@ void TutorialGame::UpdateLevel()
 				pillar->GetTransform()
 					.SetPosition(object->worldPos + Vector3{ 0,20,0 })
 					.SetScale(dimensions * 2);
-				//pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), AssetLibrary::GetMesh("pillar"), healingKitTex, nullptr));
+				//pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("pillar"), healingKitTex, nullptr));
 				
-				PaintRenderObject* render = new PaintRenderObject(pillar->GetTransform(), AssetLibrary::GetMesh("pillar"), AssetLibrary::GetMaterial("pillar"));
+				PaintRenderObject* render = new PaintRenderObject(pillar->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("pillar"), AssetLibrary<MeshMaterial>::GetAsset("pillar"));
 				pillar->SetRenderObject(render);
 				
 				pillar->SetPhysicsObject(new PhysicsObject(&pillar->GetTransform(), pillar->GetBoundingVolume()));
@@ -437,9 +437,9 @@ void TutorialGame::UpdateLevel()
 				fenceX->GetTransform()
 					.SetPosition(object->worldPos + Vector3{ 0,2,0 })
 					.SetScale(dimensions * 2);
-				//fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), AssetLibrary::GetMesh("fenceX"), basicTex, nullptr));		// TODO: change to the right Mesh
+				//fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), basicTex, nullptr));		// TODO: change to the right Mesh
 				
-				PaintRenderObject* render = new PaintRenderObject(fenceX->GetTransform(), AssetLibrary::GetMesh("fenceX"), nullptr);
+				PaintRenderObject* render = new PaintRenderObject(fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), nullptr);
 				fenceX->SetRenderObject(render);
 
 				fenceX->SetPhysicsObject(new PhysicsObject(&fenceX->GetTransform(), fenceX->GetBoundingVolume()));
@@ -455,9 +455,9 @@ void TutorialGame::UpdateLevel()
 				fenceY->GetTransform()
 					.SetPosition(object->worldPos + Vector3{ 0,2,0 })
 					.SetScale(dimensions * 2);
-				//fenceY->SetRenderObject(new RenderObject(&fenceY->GetTransform(), AssetLibrary::GetMesh("fenceY"), basicTex, nullptr));		// TODO: change to the right Mesh
+				//fenceY->SetRenderObject(new RenderObject(&fenceY->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceY"), basicTex, nullptr));		// TODO: change to the right Mesh
 				
-				PaintRenderObject* render = new PaintRenderObject(fenceY->GetTransform(), AssetLibrary::GetMesh("fenceY"), nullptr);
+				PaintRenderObject* render = new PaintRenderObject(fenceY->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceY"), nullptr);
 				fenceY->SetRenderObject(render);
 				
 				fenceY->SetPhysicsObject(new PhysicsObject(&fenceY->GetTransform(), fenceY->GetBoundingVolume()));
@@ -473,9 +473,9 @@ void TutorialGame::UpdateLevel()
 				shelter->GetTransform()
 					.SetPosition(object->worldPos + Vector3{ 0.0f, 2.2f, 0.0f })
 					.SetScale(dimensions);
-				//shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary::GetMesh("shelter"), basicTex, nullptr));
+				//shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("shelter"), basicTex, nullptr));
 
-				PaintRenderObject* render = new PaintRenderObject(shelter->GetTransform(), AssetLibrary::GetMesh("shelter"), nullptr);
+				PaintRenderObject* render = new PaintRenderObject(shelter->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("shelter"), nullptr);
 				shelter->SetRenderObject(render);
 
 				shelter->SetPhysicsObject(new PhysicsObject(&shelter->GetTransform(), shelter->GetBoundingVolume()));
@@ -496,7 +496,7 @@ GameObject* TutorialGame::AddTriggerToWorld(const Vector3& position, float size)
 		.SetScale(Vector3(size))
 		.SetPosition(position);
 
-	trigger->SetRenderObject(new RenderObject(trigger->GetTransform(), AssetLibrary::GetMesh("sphere"), nullptr));
+	trigger->SetRenderObject(new RenderObject(trigger->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("sphere"), nullptr));
 	trigger->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.5f, 0.5f));
 
 	trigger->SetPhysicsObject(new PhysicsObject(&trigger->GetTransform(), trigger->GetBoundingVolume(), true));

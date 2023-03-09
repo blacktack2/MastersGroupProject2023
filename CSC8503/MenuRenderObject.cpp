@@ -19,8 +19,8 @@ using namespace NCL::Maths;
 using namespace NCL::Rendering;
 
 MenuRenderObject::MenuRenderObject(std::shared_ptr<TextureBase> texture) : texture(texture) {
-	shader = AssetLibrary::GetShader("menu");
-	quad   = AssetLibrary::GetMesh("quad");
+	shader = AssetLibrary<ShaderBase>::GetAsset("menu");
+	quad   = AssetLibrary<MeshGeometry>::GetAsset("quad");
 }
 
 MenuRenderObject::~MenuRenderObject() {

@@ -62,21 +62,21 @@ void ScreenPause::OnAwake() {
 }
 
 void ScreenPause::InitMenu() {
-	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(0.3f, 0.7f), AssetLibrary::GetTexture("menuPause"));
+	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(0.3f, 0.7f), AssetLibrary<TextureBase>::GetAsset("menuPause"));
 
-	menu.AddButton(0.0f, 0.45f, 0.16f, 0.08f, AssetLibrary::GetTexture("button4"), [&]() {
+	menu.AddButton(0.0f, 0.45f, 0.16f, 0.08f, AssetLibrary<TextureBase>::GetAsset("button4"), [&]() {
 		std::cout << "Resume button clicked\n";
 		menuState = ChangeState::Resume;
 	});
-	menu.AddButton(0.0f, 0.15f, 0.16f, 0.08f, AssetLibrary::GetTexture("button5"), [&]() {
+	menu.AddButton(0.0f, 0.15f, 0.16f, 0.08f, AssetLibrary<TextureBase>::GetAsset("button5"), [&]() {
 		std::cout << "Dummy button clicked\n";
 		// TODO - Add functionality
 	});
-	menu.AddButton(0.0f, -0.15f, 0.16f, 0.08f, AssetLibrary::GetTexture("button6"), [&]() {
+	menu.AddButton(0.0f, -0.15f, 0.16f, 0.08f, AssetLibrary<TextureBase>::GetAsset("button6"), [&]() {
 		std::cout << "Dummy button clicked\n";
 		// TODO - Add functionality
 	});
-	menu.AddButton(0.0f, -0.45f, 0.16f, 0.08f, AssetLibrary::GetTexture("button7"), [&]() {
+	menu.AddButton(0.0f, -0.45f, 0.16f, 0.08f, AssetLibrary<TextureBase>::GetAsset("button7"), [&]() {
 		std::cout << "Quit button clicked\n";
 		gameStateManager.SetGameState(GameState::Quit);
 		menuState = ChangeState::Quit;
