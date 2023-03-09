@@ -8,51 +8,62 @@
 #pragma once
 #include "OGLMainRenderPass.h"
 
-#include "GameWorld.h"
-
+#include <functional>
+#include <memory>
+#include <optional>
 #include <vector>
 
-namespace NCL::Rendering {
-	class OGLFrameBuffer;
-	class OGLShader;
-	class OGLTexture;
+namespace NCL {
+	class MeshGeometry;
 }
 
-using namespace NCL::Rendering;
+namespace NCL::Rendering {
+	class FrameBuffer;
+	class ShaderBase;
+	class TextureBase;
+}
+
+using namespace NCL;
+using namespace Rendering;
 
 namespace NCL::CSC8503 {
+	class GameTechRenderer;
+	class GameWorld;
+
 	class ModelRPass : public OGLMainRenderPass {
 	public:
-		ModelRPass(OGLRenderer& renderer, GameWorld& gameWorld);
+		ModelRPass();
 		~ModelRPass();
 
 		virtual void Render() override;
 
-		void AddModelShader(OGLShader* shader);
+		void AddModelShader(std::shared_ptr<ShaderBase> shader);
 
 		inline void SetGamma(float g) {
 			gamma = g;
 		}
 
-		inline OGLTexture* GetDiffuseOutTex() const {
-			return diffuseOutTex;
+		inline TextureBase& GetDiffuseOutTex() const {
+			return *diffuseOutTex;
 		}
-		inline OGLTexture* GetNormalOutTex() const {
-			return normalOutTex;
+		inline TextureBase& GetNormalOutTex() const {
+			return *normalOutTex;
 		}
-		inline OGLTexture* GetDepthOutTex() const {
-			return depthOutTex;
+		inline TextureBase& GetDepthOutTex() const {
+			return *depthOutTex;
 		}
 	private:
+		GameTechRenderer& renderer;
 		GameWorld& gameWorld;
 
-		OGLFrameBuffer* frameBuffer;
-		OGLTexture* diffuseOutTex;
-		OGLTexture* normalOutTex;
-		OGLTexture* depthOutTex;
+		std::unique_ptr<FrameBuffer> frameBuffer;
+
+		std::unique_ptr<TextureBase> diffuseOutTex;
+		std::unique_ptr<TextureBase> normalOutTex;
+		std::unique_ptr<TextureBase> depthOutTex;
+
+		std::vector<std::shared_ptr<ShaderBase>> modelShaders{};
 
 		float gamma = 2.2f;
-
-		std::vector<OGLShader*> modelShaders{};
 	};
 }

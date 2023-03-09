@@ -14,7 +14,11 @@ namespace NCL {
 				return health;
 			}
 			void Damage(float damage) {
+				if (health <= 0)
+					return;
 				health -= damage;
+				if (health < 0)
+					health = 0;
 			}
 			void Heal(float heal) {
 				health += heal;
@@ -24,6 +28,10 @@ namespace NCL {
 					Damage(damage);
 					overTimeTimer = time;
 				}
+			}
+
+			void SetHealth(float health) {
+				this->health = health;
 			}
 		protected:
 			float health;

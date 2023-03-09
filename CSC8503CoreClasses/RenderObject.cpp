@@ -11,23 +11,20 @@
 #include "AssetLibrary.h"
 #include "MeshGeometry.h"
 #include "MeshMaterial.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
 #include "Transform.h"
 
 using namespace NCL;
 using namespace CSC8503;
+using namespace Rendering;
 
-RenderObject::RenderObject(Transform* parentTransform, MeshGeometry* mesh, MeshMaterial* material) {
-	this->transform = parentTransform;
-	this->mesh      = mesh;
-	this->material  = material;
-	this->colour    = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+RenderObject::RenderObject(Transform& parentTransform, std::shared_ptr<MeshGeometry> mesh, std::shared_ptr<MeshMaterial> material) :
+transform(parentTransform), mesh(mesh), material(material), colour(1.0f, 1.0f, 1.0f, 1.0f) {
 }
 
-RenderObject::RenderObject(RenderObject& other, Transform* parentTransform) {
-	transform = parentTransform;
-	mesh      = other.mesh;
-	material  = other.material;
-	colour    = other.colour;
+RenderObject::RenderObject(RenderObject& other, Transform& parentTransform) :
+transform(parentTransform), mesh(other.mesh), material(other.material), colour(other.colour) {
 }
 
 RenderObject::~RenderObject() {
@@ -45,36 +42,36 @@ void RenderObject::Draw() {
 }
 
 void RenderObject::PreDraw(int sublayer) {
-	MeshMaterial* mat = material ? material : AssetLibrary::GetMaterial("default");
+	MeshMaterial& mat = material ? *material : *AssetLibrary<MeshMaterial>::GetAsset("default");
 
-	const MeshMaterialEntry* entry = mat->GetMaterialForLayer(sublayer);
-	entry = entry ? entry : mat->GetMaterialForLayer(0);
+	const MeshMaterialEntry* entry = mat.GetMaterialForLayer(sublayer);
+	entry = entry ? entry : mat.GetMaterialForLayer(0);
 
 	ShaderBase* shader = entry->GetShader();
-	shader = shader ? shader : GetDefaultShader();
+	shader = shader ? shader : &GetDefaultShader();
 
 	shader->Bind();
 
-	Matrix4 modelMatrix = transform->GetGlobalMatrix();
+	Matrix4 modelMatrix = transform.get().GetGlobalMatrix();
 	shader->SetUniformMatrix("modelMatrix", modelMatrix);
 
 	shader->SetUniformFloat("modelColour", colour);
 
 	TextureBase* diffuse = entry->GetTexture("Diffuse");
-	diffuse = diffuse ? diffuse : AssetLibrary::GetTexture("defaultDiffuse");
+	diffuse = diffuse ? diffuse : AssetLibrary<TextureBase>::GetAsset("defaultDiffuse").get();
 	diffuse->Bind(0);
 
 	TextureBase* bump = entry->GetTexture("Bump");
-	bump = bump ? bump : AssetLibrary::GetTexture("defaultBump");
+	bump = bump ? bump : AssetLibrary<TextureBase>::GetAsset("defaultBump").get();
 	bump->Bind(1);
 
 	TextureBase* spec = entry->GetTexture("Spec");
-	spec = spec ? spec : AssetLibrary::GetTexture("defaultSpec");
+	spec = spec ? spec : AssetLibrary<TextureBase>::GetAsset("defaultSpec").get();
 	spec->Bind(2);
 
-	PreDraw(sublayer, shader);
+	PreDraw(sublayer, *shader);
 }
 
-ShaderBase* RenderObject::GetDefaultShader() {
-	return AssetLibrary::GetShader("modelDefault");
+ShaderBase& RenderObject::GetDefaultShader() {
+	return *AssetLibrary<ShaderBase>::GetAsset("modelDefault");
 }

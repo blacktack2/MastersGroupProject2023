@@ -9,7 +9,13 @@
 
 using namespace NCL::Rendering;
 
-TextureBase::TextureBase() {
+TextureBase::TextureBase(TextureType type) : type(type) {
+	switch (type) {
+		default: bufferType = BufferType::ColourAttachment; break;
+		case TextureType::Depth:
+		case TextureType::Shadow : bufferType = BufferType::DepthAttachment; break;
+		case TextureType::Stencil: bufferType = BufferType::StencilAttachment; break;
+	}
 }
 
 

@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "Maths.h"
 #include "Window.h"
+#include "../CSC8503CoreClasses/InputKeyMap.h"
 
 #include <algorithm>
 
@@ -93,12 +94,27 @@ void Camera::UpdateCamera(float dt) {
 		pitch -= (Window::GetMouse()->GetRelativePosition().y);
 		yaw -= (Window::GetMouse()->GetRelativePosition().x);
 
+		// Controller Right Thumb:
+		NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
+		Vector2 orientationThumbData{ 0,0 };
+		if (keyMap.GetAxisData(2, AxisInput::Axis3, orientationThumbData.x) && keyMap.GetAxisData(2, AxisInput::Axis4, orientationThumbData.y))
+		{
+			if (!(orientationThumbData.x == 0 && orientationThumbData.y == 0))
+			{
+				float sensitivity = 1.5f;
+				pitch += (orientationThumbData.y * sensitivity);
+				yaw -= (orientationThumbData.x * sensitivity);
+			}
+		}
+
 		pitch = std::clamp(pitch, -90.0f, 90.0f);
 		yaw += (yaw < 0) ? 360.0f : ((yaw > 360.0f) ? -360.0f : 0.0f);
 
 		followDistance = std::clamp(followDistance - (float)Window::GetMouse()->GetWheelMovement(), 5.0f, 40.0f);
 
 		position = followPos - Vector3(std::cos(-Maths::DegreesToRadians(90.0f + yaw)), Maths::DegreesToRadians(pitch), std::sin(-Maths::DegreesToRadians(90.0f + yaw))) * followDistance;
+
+
 	}
 }
 

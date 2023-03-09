@@ -1,12 +1,6 @@
 #pragma once
 #include "GameObject.h"
-#include "GameClient.h"
 #include "PlayerObject.h"
-
-enum NetworkInstanceType {
-	Projectile,
-	AI
-};
 
 namespace NCL {
 	namespace CSC8503 {
@@ -19,6 +13,8 @@ namespace NCL {
 			~NetworkPlayer();
 
 			void Update(float dt);
+			void ChangeLoseState() override;
+
 			void OnCollisionBegin(GameObject* otherObject) override;
 
 			void RotateYaw(float yaw) {
@@ -26,29 +22,41 @@ namespace NCL {
 			}
 
 			void MoveInput(unsigned int keyPress) {
-				Vector3 dir = Vector3(0, 0, 0);
-				GetInput(dir, keyPress);
-				Move(dir);
-				MoveCamera();
+				if (health.GetHealth() > 0) {
+					Vector3 dir = Vector3(0, 0, 0);
+					GetInput(dir, keyPress);
+					Move(dir);
+					MoveCamera();
+				}
+				
 			}
 
-			void Test() {
+			void ServerSideMovement() {
 				RotateToCamera();
 				Vector3 dir = Vector3(0, 0, 0);
 				lastKey = keyMap.GetButtonState();
 				keyMap.Update();
-				GetInput(dir, keyMap.GetButtonState());
-				Move(dir);
-				MoveCamera();
+				if (health.GetHealth() > 0) {
+					GetInput(dir, keyMap.GetButtonState());
+					Move(dir);
+					MoveCamera();
+				}
 			}
 
 			int GetPlayerNum() const {
 				return playerID;
 			}
 
+			void Shoot();
+
+			void SetHealth(float hp) {
+				health.SetHealth(hp);
+			}
+
+			bool isFrozen;
 		protected:
 			NetworkedGame* game;
-			int playerID;
+		
 		};
 	}
 }

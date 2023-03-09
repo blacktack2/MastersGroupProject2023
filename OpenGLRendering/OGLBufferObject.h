@@ -5,10 +5,12 @@
  * @author Stuart Lewis
  * @date   February 2023
  */
+#pragma once
 #include "BufferObjectBase.h"
 
 #include <glad/gl.h>
 
+#include <memory>
 #include <vector>
 
 namespace NCL::Rendering {
@@ -17,7 +19,7 @@ namespace NCL::Rendering {
 	 */
 	class OGLBufferObject : public BufferObjectBase {
 	public:
-		OGLBufferObject(size_t size, GLuint binding);
+		OGLBufferObject(size_t size, unsigned int binding);
 		~OGLBufferObject();
 
 		virtual void Read(void* dataOut, int offset = 0, int amount = 0) override;
@@ -25,6 +27,8 @@ namespace NCL::Rendering {
 
 		virtual void Bind() override;
 		virtual void Unbind() override;
+
+		static std::unique_ptr<BufferObjectBase> CreateBufferObject(size_t size, unsigned int binding);
 	protected:
 		virtual void OnResize() override;
 	private:

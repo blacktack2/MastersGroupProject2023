@@ -5,19 +5,14 @@ set(PROJECT_NAME CSC8503)
 ################################################################################
 
 set(Header_Files
-    "AnimatedRenderObject.h"
-	"Bonus.h"
     "DebugViewPoint.h"
-	"EnemyObject.h"
     "GameLevel.h"
     "GameGrid.h"
     "GameGridManager.h"
     "GameStateManager.h"
 	"Maze.h"
     "MenuRenderObject.h"
-    "NetworkedGame.h"
-    "NetworkPlayer.h"
-	"NPCObject.h"
+
     "Obstacle.h"
     "StateGameObject.h"
     "TutorialGame.h"
@@ -25,10 +20,7 @@ set(Header_Files
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
-    "AnimatedRenderObject.cpp"
-	"Bonus.cpp"
     "DebugViewPoint.cpp"
-	"EnemyObject.cpp"
     "GameLevel.cpp"
     "GameGrid.cpp"
     "GameGridManager.cpp"
@@ -36,14 +28,14 @@ set(Source_Files
     "Main.cpp"
 	"Maze.cpp"
     "MenuRenderObject.cpp"
-    "NetworkedGame.cpp"
-    "NetworkPlayer.cpp"
-	"NPCObject.cpp"
+
     "StateGameObject.cpp"
     "TutorialGame.cpp"
 )
 
 set(Render_Files
+    "AnimatedRenderObject.h"
+    "AnimatedRenderObject.cpp"
     "GameTechRenderer.h"
     "GameTechRenderer.cpp"
     "SkyboxRPass.h"
@@ -74,8 +66,6 @@ set(Render_Files
     "ModelRPass.cpp"
     "MenuRPass.h"
     "MenuRPass.cpp"
-    "Billboard.h"
-    "Billboard.cpp"
 )
 
 if(USE_VULKAN)
@@ -96,10 +86,6 @@ set(Audio_Files
     "SoundSystem.cpp"
     "Sound.h"
     "Sound.cpp"
-    "SoundObject.h"
-    "SoundObject.cpp"
-    "SoundManager.h"
-    "SoundManager.cpp"
     "SoundSource.h"
     "SoundSource.cpp"
     "SoundDevice.h"
@@ -164,9 +150,22 @@ set(Menu_Files
     "ScreenPause.cpp"
     "ScreenOption.h"
     "ScreenOption.cpp"
-
+    "ScreenMultiplayer.h"
+    "ScreenMultiplayer.cpp"
+    "ScreenMultiplayerOption.h"
+    "ScreenMultiplayerOption.cpp"
 )
 source_group("Menu Files" FILES ${Menu_Files})
+
+set(network_Files 
+    "NetworkedGame.h"
+    "NetworkedGame.cpp"
+    "NetworkPlayer.h"
+    "NetworkPlayer.cpp"
+    "NetworkBoss.h"
+    "NetworkBoss.cpp"
+)
+source_group("Network Files" FILES ${network_Files})
 
 set(ALL_FILES
     ${Header_Files}
@@ -178,6 +177,7 @@ set(ALL_FILES
 	${Player_Files}
     ${Enemy_Files}
     ${Menu_Files}
+    ${network_Files}
 )
 
 if(USE_VULKAN)
@@ -191,6 +191,7 @@ if(USE_VULKAN)
 	    ${Player_Files}
         ${Enemy_Files}
         ${Menu_Files}
+        ${network_Files}
     )
 
 foreach (file ${SHADER_FILES})

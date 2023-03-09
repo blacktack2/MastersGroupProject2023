@@ -13,7 +13,7 @@ Bullet::Bullet() : GameObject() {
 
 Bullet::Bullet(Bullet& other) : GameObject(other) {
 	lifespan = other.lifespan;
-	inkType = paintHell::InkType::NoInk;
+	inkType = NCL::InkType::NoInk;
 }
 
 Bullet::~Bullet() {
@@ -34,7 +34,7 @@ void Bullet::OnCollisionBegin(GameObject* other) {
 	{
 		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
 		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), paintRadius, colour));
-		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), inkType);
+		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), paintRadius, inkType);
 	}
 	boundingVolume = (CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer);
 	lifespan = -1;
@@ -45,7 +45,7 @@ void Bullet::OnTriggerBegin(GameObject* other) {
 	{
 		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
 		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), paintRadius, colour));
-		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), inkType);
+		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), paintRadius, inkType);
 	}
 	boundingVolume = (CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer);
 	lifespan = -1;

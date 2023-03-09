@@ -7,26 +7,9 @@
 namespace NCL::CSC8503 {
 	class GameObject;
 
-	struct HandshakePacket : public GamePacket {
-		int		objectID = -1;
-
-		HandshakePacket() {
-			type = Handshake_Message;
-			size = sizeof(HandshakePacket) - sizeof(GamePacket);
-		}
-	};
-	struct HandshakeAckPacket : public GamePacket {
-		int		objectID = -1;
-
-		HandshakeAckPacket() {
-			type = Handshake_Ack;
-			size = sizeof(HandshakeAckPacket) - sizeof(GamePacket);
-		}
-	};
-
 	struct ItemInitPacket : public GamePacket {
 		int		objectID = -1;
-		char	itemType;
+		short int index = 0;
 		Vector3		position;
 		Vector3		scale;
 		Quaternion	orientation;
@@ -41,7 +24,7 @@ namespace NCL::CSC8503 {
 	struct FullPacket : public GamePacket {
 		int		objectID = -1;
 		NetworkState fullState;
-		int score = 0;
+		int health = 0;
 
 		FullPacket() {
 			type = Full_State;
@@ -52,8 +35,8 @@ namespace NCL::CSC8503 {
 	struct DeltaPacket : public GamePacket {
 		int			fullID		= -1;
 		int			objectID	= -1;
-		int			pos[3];
-		int			orientation[4];
+		int			pos[3] = {0};
+		int			orientation[4] = {0};
 
 		DeltaPacket() {
 			type = Delta_State;
@@ -62,9 +45,9 @@ namespace NCL::CSC8503 {
 	};
 
 	struct ClientPacket : public GamePacket {
-		int		lastID;
-		unsigned int buttonstates;
-		int yaw;
+		int		lastID = -1;
+		unsigned int buttonstates = 0;
+		int yaw = 0;
 
 		ClientPacket() {
 			type = Received_State;
@@ -101,6 +84,10 @@ namespace NCL::CSC8503 {
 			renderTransform = object.GetTransform();
 		}
 
+		bool isActive() {
+			return object.IsActive();
+		}
+
 	protected:
 		Transform renderTransform;
 
@@ -110,6 +97,7 @@ namespace NCL::CSC8503 {
 
 		virtual bool ReadDeltaPacket(DeltaPacket &p, float dt);
 		virtual bool ReadFullPacket(FullPacket &p, float dt);
+		virtual bool ReadItemInitPacket(ItemInitPacket &p, float dt);
 
 		virtual bool WriteDeltaPacket(GamePacket**p, int stateID);
 		virtual bool WriteFullPacket(GamePacket**p);
@@ -118,7 +106,7 @@ namespace NCL::CSC8503 {
 
 		NetworkState lastFullState;
 
-		NetworkState lastDeltaState;
+		NetworkState lastDeltaState = NetworkState();
 
 		std::vector<NetworkState> stateHistory;
 

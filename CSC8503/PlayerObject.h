@@ -4,6 +4,7 @@
 #include "InputKeyMap.h"
 #include "GameStateManager.h"
 #include "Health.h"
+#include "PlayerBullet.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -11,10 +12,12 @@ namespace NCL {
 
 		class PlayerObject : public GameObject {
 		public:
-			PlayerObject(int id);
+			PlayerObject(int playerID);
 			~PlayerObject();
 
 			void Update(float dt);
+
+			virtual void ChangeLoseState();
 
 			void CollisionWith(GameObject* other);
 
@@ -34,7 +37,9 @@ namespace NCL {
 		protected:
 			void MoveTo(Vector3 position);
 			void Move(Vector3 dir);
+			void MoveByPosition(float dt, Vector3 dir);
 			void GetInput(Vector3& dir, unsigned int keyPress = InputType::Empty);
+			void GetControllerInput(unsigned int controllerNum, Vector3& movingDir3D);
 
 			void RotateYaw(float yaw);
 			void RotateToCamera();
@@ -42,19 +47,29 @@ namespace NCL {
 			void MoveCamera();
 
 			void CheckGround();
-			void Shoot();
 
-			int id;
+			PlayerBullet* PrepareBullet();
+			virtual void Shoot();
+			void BulletModification(PlayerBullet* bullet){};
+
+			int playerID;
 
 			//network
 			bool isNetwork = false;
 
 			//keymap
-			paintHell::InputKeyMap& keyMap;
+			NCL::InputKeyMap& keyMap;
 			unsigned int lastKey;
 			
 			//gameplay
 			Health health = Health(100);
+
+			//shooting related
+			float projectileForce = 10;
+			const Vector3 projectileSpawnPoint = Vector3(0.0f, 0.9f, -1.0f);
+			float projectileLifespan = 5.0f;
+			float projectileFireRate = 0.1f;
+			float projectileFireRateTimer = 0;
 
 		private:
 
@@ -77,13 +92,6 @@ namespace NCL {
 			bool isFreeLook = false;
 			float camTurnSpeed = 0.5f;
 			Vector3 cameraOffset = Vector3(0.5f, 5.0f, 2.0f);
-
-			//shooting related
-			float projectileForce = 10;
-			const Vector3 projectileSpawnPoint = Vector3(0.0f, 0.9f, -1.0f);
-			float projectileLifespan = 5.0f;
-			float projectileFireRate = 0.1f;
-			float projectileFireRateTimer = 0;
 
 			//instantiated objs
 			std::vector<GameObject*> lastInstancedObjects;

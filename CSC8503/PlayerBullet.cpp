@@ -14,12 +14,12 @@ using namespace NCL;
 using namespace CSC8503;
 
 PlayerBullet::PlayerBullet() : Bullet() {
-	inkType = paintHell::InkType::PlayerDamage;
+	inkType = NCL::InkType::PlayerDamage;
 	UpdateColour();
 }
 
 PlayerBullet::PlayerBullet(PlayerBullet& other) : Bullet(other) {
-	inkType = paintHell::InkType::PlayerDamage;
+	inkType = NCL::InkType::PlayerDamage;
 	UpdateColour();
 }
 

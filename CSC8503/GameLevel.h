@@ -61,7 +61,7 @@ namespace NCL
 
             void AddStuff(Vector3 localPos, ObjectType t)
             {
-                stuffs.push_back(GameStuff{ localPos + origin, t });
+                stuffs.push_back(new GameStuff{ localPos + origin, t });
             }
 
             void AddRectanglarLevel(const std::string& filename, Vector3 o, float interval)
@@ -106,7 +106,7 @@ namespace NCL
                 }
             }
 
-            std::vector<GameStuff>& GetGameStuffs()
+            std::vector<GameStuff*>& GetGameStuffs()
             {
                 return stuffs;
             }
@@ -123,7 +123,7 @@ namespace NCL
 
         protected:
             Vector3 origin{ 0,0,0 };
-            std::vector<GameStuff> stuffs;
+            std::vector<GameStuff*> stuffs;
             float shelterTimer = 0.0f;
         };
     }

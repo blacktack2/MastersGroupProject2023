@@ -19,6 +19,6 @@ namespace NCL::Rendering {
 	 */
 	class ICombineRenderPass : public IRenderPass {
 	public:
-		virtual TextureBase* GetOutTex() const = 0;
+		virtual TextureBase& GetOutTex() const = 0;
 	};
 }

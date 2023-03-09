@@ -1,8 +1,15 @@
 /**
+ * @file   Button.cpp
+ * @brief  See Button.h.
+ * 
  * @author Yifei Hu
+ * @author Stuart Lewis
  * @date   February 2023
  */
 #include "Button.h"
+
+#include "GameTechRenderer.h"
+
 #include "Debug.h"
 
 using namespace NCL;
@@ -10,72 +17,52 @@ using namespace CSC8503;
 using namespace Maths;
 
 
-Button::Button(float PosX, float PosY, float Width, float Height, Vector4 colour): keyMap(paintHell::InputKeyMap::instance()) {
-    m_fPosX = PosX;
-    m_fPosY = PosY;
-    m_fWidth = Width;
-    m_fHeight = Height;
-    btncolour = colour;
+Button::Button(float PosX, float PosY, float Width, float Height, std::shared_ptr<TextureBase> texture, overlap_func onclick): UIObject(texture),
+keyMap(NCL::InputKeyMap::instance()), renderer(GameTechRenderer::instance()), OnClickCallback(onclick) {
+    posX = PosX;
+    posY = PosY;
+    width = Width;
+    height = Height;
+    isMouseHover = false;
 }
 
 Button::~Button() {
 }
 
 void Button::Update(float dt){
-    UIObject::Update(dt);
     isMouseHover = false;
-    if (keyMap.HasMouse()) {
-        Vector2 mousePos = keyMap.GetMousePosition();
-        CheckMousePosition(mousePos);
-
-        if (isMouseHover && keyMap.GetButton(InputType::MouseLeftClick)) {
-            this->GetColour();
-            this->OnClickCallback();
-        }
+    if (!keyMap.HasMouse()) {
+        return;
     }
-    
+    Vector2 mousePos = keyMap.GetMousePosition();
+    CheckMousePosition(mousePos);
+
+    if (isMouseHover && keyMap.GetButton(InputType::Confirm)) {
+        OnClick();
+    }
 }
 
-void Button::Draw(Vector4 colour) {
-    Debug::Print("[]", Vector2(m_fPosX, m_fPosY), colour, 1.0f);
-    Debug::Print("[]", Vector2(m_fPosX + m_fWidth, m_fPosY + m_fHeight), colour, 1.0f);
+Vector4 Button::GetDimension() const {
+    constexpr float movement = 0.003f;
+    return isMouseHover ? Vector4(posX + movement, posY - movement, width, height) : Vector4(posX, posY, width, height);
 }
 
-Button* Button::CheckMousePosition(Vector2 mousePos)
-{
-    mousePos.x = mousePos.x * 2 / (float)renderer.GetWidth() - 1;
+void Button::OnClick() {
+    if (!OnClickCallback) {
+        std::cout << "Button has no OnClick callback!\n";
+        return;
+    }
+    OnClickCallback();
+}
+
+void Button::DrawExtras() {
+    Debug::Print("[]", Vector2(posX, posY), btncolour, 1.0f);
+    Debug::Print("[]", Vector2(posX + width, posY + height), btncolour, 1.0f);
+}
+
+void Button::CheckMousePosition(Vector2 mousePos) {
+    mousePos.x = (mousePos.x * 2 / (float)renderer.GetWidth() - 1);
     mousePos.y = -(mousePos.y * 2 / (float)renderer.GetHeight() - 1);
-    if (mousePos.x < (m_fPosX - m_fWidth)) {
-        return nullptr;
-    }
-    if (mousePos.x > (m_fPosX + m_fWidth)) {
-        return nullptr;
-    }
-    if (mousePos.y < (m_fPosY - m_fHeight)) {
-        return nullptr;
-    }
-    if (mousePos.y > (m_fPosY + m_fHeight)) {
-        return nullptr;
-    }
-    isMouseHover = true;
-    return this;
-}
-
-Vector4 Button::GetDimension(){
-    if (isMouseHover) {
-        float movement = 0.003f;
-
-        return Vector4(
-            m_fPosX + movement,
-            m_fPosY + -movement,
-            m_fWidth,
-            m_fHeight
-        );
-    }
-    return Vector4(
-        m_fPosX,
-        m_fPosY,
-        m_fWidth,
-        m_fHeight
-    );
+    isMouseHover = !(mousePos.x < (posX - width ) || mousePos.x > (posX + width) ||
+                     mousePos.y < (posY - height) || mousePos.y > (posY + height));
 }

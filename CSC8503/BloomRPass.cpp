@@ -7,51 +7,40 @@
  */
 #include "BloomRPass.h"
 
-#include "OGLFrameBuffer.h"
-#include "OGLMesh.h"
-#include "OGLShader.h"
-#include "OGLTexture.h"
+#include "GameTechRenderer.h"
 
-#include <algorithm>
+#include "AssetLibrary.h"
+#include "AssetLoader.h"
 
-using namespace NCL::CSC8503;
+#include "FrameBuffer.h"
+#include "MeshGeometry.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
 
-BloomRPass::BloomRPass(OGLRenderer& renderer) :
-	OGLPostRenderPass(renderer) {
+using namespace NCL;
+using namespace CSC8503;
+
+BloomRPass::BloomRPass() : OGLPostRenderPass(), renderer(GameTechRenderer::instance()) {
+	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
+
 	SetBloomDepth(bloomDepth);
-	colourOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGBA16F);
-	AddScreenTexture(colourOutTex);
+	colourOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA16F, renderer.GetWidth(), renderer.GetHeight());
+	AddScreenTexture(*colourOutTex);
 
-	bloomFrameBuffer = new OGLFrameBuffer();
+	bloomFrameBuffer = AssetLoader::CreateFrameBuffer();
 	bloomFrameBuffer->Bind();
 	bloomFrameBuffer->DrawBuffers(1);
 	bloomFrameBuffer->Unbind();
 
-	combineFrameBuffer = new OGLFrameBuffer();
+	combineFrameBuffer = AssetLoader::CreateFrameBuffer();
 	combineFrameBuffer->Bind();
-	combineFrameBuffer->AddTexture(colourOutTex);
+	combineFrameBuffer->AddTexture(*colourOutTex);
 	combineFrameBuffer->DrawBuffers();
 	combineFrameBuffer->Unbind();
 
-	quad = new OGLMesh();
-	quad->SetVertexPositions({
-		Vector3(-1,  1, -1),
-		Vector3(-1, -1, -1),
-		Vector3( 1, -1, -1),
-		Vector3( 1,  1, -1),
-		});
-	quad->SetVertexTextureCoords({
-		Vector2(0, 1),
-		Vector2(0, 0),
-		Vector2(1, 0),
-		Vector2(1, 1),
-		});
-	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
-	quad->UploadToGPU();
-
-	downsampleShader = new OGLShader("downsample.vert", "downsample.frag");
-	upsampleShader   = new OGLShader("upsample.vert", "upsample.frag");
-	combineShader    = new OGLShader("bloomCombine.vert", "bloomCombine.frag");
+	downsampleShader = AssetLoader::CreateShader("downsample.vert", "downsample.frag");
+	upsampleShader   = AssetLoader::CreateShader("upsample.vert", "upsample.frag");
+	combineShader    = AssetLoader::CreateShader("bloomCombine.vert", "bloomCombine.frag");
 
 	downsampleShader->Bind();
 
@@ -70,20 +59,6 @@ BloomRPass::BloomRPass(OGLRenderer& renderer) :
 }
 
 BloomRPass::~BloomRPass() {
-	for (auto& mip : mipChain) {
-		delete mip.texture;
-	}
-	mipChain.clear();
-	delete colourOutTex;
-
-	delete bloomFrameBuffer;
-	delete combineFrameBuffer;
-
-	delete quad;
-
-	delete downsampleShader;
-	delete upsampleShader;
-	delete combineShader;
 }
 
 void BloomRPass::OnWindowResize(int width, int height) {
@@ -103,12 +78,8 @@ void BloomRPass::Render() {
 
 void BloomRPass::SetBloomDepth(size_t depth) {
 	bloomDepth = depth;
-	if (!mipChain.empty()) {
-		for (auto& mip : mipChain) {
-			delete mip.texture;
-		}
-		mipChain.clear();
-	}
+	mipChain.clear();
+
 	float mipWidth  = (float)renderer.GetWidth();
 	float mipHeight = (float)renderer.GetHeight();
 	for (size_t i = 0; i < bloomDepth; i++) {
@@ -117,13 +88,13 @@ void BloomRPass::SetBloomDepth(size_t depth) {
 
 		BloomMip mip{
 			mipWidth, mipHeight,
-			new OGLTexture(mipWidth, mipHeight, GL_R11F_G11F_B10F, GL_RGB, GL_FLOAT)
+			AssetLoader::CreateTexture(TextureType::ColourRGBF, (unsigned int)mipWidth, (unsigned int)mipHeight)
 		};
 		mip.texture->Bind();
-		mip.texture->SetEdgeClamp();
-		mip.texture->SetFilters(GL_LINEAR, GL_LINEAR);
+		mip.texture->SetEdgeWrap(EdgeWrap::ClampToEdge);
+		mip.texture->SetFilters(MinFilter::Linear, MagFilter::Linear);
 
-		mipChain.emplace_back(mip);
+		mipChain.emplace_back(std::move(mip));
 	}
 }
 
@@ -141,8 +112,8 @@ void BloomRPass::Downsample() {
 	sceneTexIn->Bind(0);
 
 	for (auto mip = mipChain.begin(); mip != mipChain.end(); mip++) {
-		renderer.GetConfig().SetViewport(0, 0, mip->width, mip->height);
-		bloomFrameBuffer->AddTexture(mip->texture, 0);
+		renderer.GetConfig().SetViewport(0, 0, (unsigned int)mip->width, (unsigned int)mip->height);
+		bloomFrameBuffer->AddTexture(*mip->texture, 0);
 
 		quad->Draw();
 
@@ -163,8 +134,8 @@ void BloomRPass::Upsample() {
 
 		mip->texture->Bind(0);
 
-		renderer.GetConfig().SetViewport(0, 0, nextMip->width, nextMip->height);
-		bloomFrameBuffer->AddTexture(nextMip->texture, 0);
+		renderer.GetConfig().SetViewport(0, 0, (unsigned int)nextMip->width, (unsigned int)nextMip->height);
+		bloomFrameBuffer->AddTexture(*nextMip->texture, 0);
 
 		quad->Draw();
 	}
@@ -179,7 +150,7 @@ void BloomRPass::Combine() {
 	combineShader->Bind();
 
 	sceneTexIn->Bind(0);
-	std::prev(mipChain.end())->texture->Bind(1);
+	mipChain.back().texture->Bind(1);
 
 	quad->Draw();
 

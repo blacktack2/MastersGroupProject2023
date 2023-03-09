@@ -10,41 +10,18 @@
 #include "Window.h"
 #include "MenuManager.h"
 #include "GameStateManager.h"
+#include "NetworkedGame.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
 class ScreenPause : public PushdownState {
 public:
-	ScreenPause() {
-		initMenu();
-	}
-	~ScreenPause() {}
-	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
-		menuManager.Update(dt);
-		keyMap.Update();
-		renderer.Render();
-		if (menuState == ChangeState::Resume) {
-			return PushdownResult::Pop;
-		}
-		if (menuState == ChangeState::Quit) {
-			return PushdownResult::Pop;
-		}
-		return PushdownResult::NoChange;
-	}
-	void OnAwake() override {
-		menuState = ChangeState::None;
-		menuManager.SetCurrentMenu(name);
-		renderer.EnableOverlayPass("Menu", true);
-		renderer.EnableOverlayPass("Debug", false);
-		renderer.UpdatePipeline();
-		Window::GetWindow()->ShowOSPointer(true);
-		Window::GetWindow()->LockMouseToWindow(false);
-	}
-
+	ScreenPause(TutorialGame* game = nullptr);
+	~ScreenPause();
+	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
+	void OnAwake() override;
 private:
-	void initMenu();
-
 	enum class ChangeState {
 		None,
 		OnGoing,
@@ -53,12 +30,16 @@ private:
 		Quit
 	};
 
-	GameStateManager* gameStateManager = &GameStateManager::instance();
+	void InitMenu();
+
+	TutorialGame* game;
+
+	GameStateManager& gameStateManager = GameStateManager::instance();
 	GameTechRenderer& renderer = GameTechRenderer::instance();
 	MenuManager& menuManager = MenuManager::instance();
-	paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 
 	ChangeState menuState = ChangeState::None;
 
-	std::string name = "pause";
+	std::string NAME = "pause";
 };

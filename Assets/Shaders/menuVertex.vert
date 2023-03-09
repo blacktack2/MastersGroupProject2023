@@ -18,7 +18,7 @@ out Vertex {
 } OUT;
 
 void main() {
-	gl_Position = vec4(textureMatrix * position, 1.0);
+	gl_Position = vec4(textureMatrix * (position * vec3(1.0, -1.0, 1.0)), 1.0);
 
 	OUT.texCoord = texCoord;
 }

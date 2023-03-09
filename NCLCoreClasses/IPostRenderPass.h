@@ -19,7 +19,7 @@ namespace NCL::Rendering {
 	 */
 	class IPostRenderPass : public IRenderPass {
 	public:
-		virtual void SetSceneTexIn(TextureBase* sceneTex) = 0;
-		virtual TextureBase* GetOutTex() const = 0;
+		virtual void SetSceneTexIn(TextureBase& sceneTex) = 0;
+		virtual TextureBase& GetOutTex() const = 0;
 	};
 }

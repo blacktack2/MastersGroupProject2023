@@ -8,14 +8,25 @@
 #include "UIObject.h"
 
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Rendering;
 
-UIObject::UIObject() {
-	
+UIObject::UIObject(std::shared_ptr<TextureBase> texture) {
+	renderObject = std::make_unique<MenuRenderObject>(texture);
 }
 
-UIObject::~UIObject() {
-	delete renderObject;
+void UIObject::Draw() {
+	renderObject->Draw(GetDimension());
+	DrawExtras();
+	for (UIObject& child : children) {
+		child.Draw();
+	}
 }
 
+MenuRenderObject& UIObject::GetRenderObject() const {
+	return *renderObject;
+}
 
+bool UIObject::HasRenderObject() const {
+	return renderObject != nullptr;
+}
