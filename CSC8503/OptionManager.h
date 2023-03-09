@@ -1,3 +1,10 @@
+/**
+ * @file   OptionManager.h
+ * @brief  A manager for game options.
+ *
+ * @author Yifei Hu
+ * @date   February 2023
+ */
 #pragma once
 
 namespace NCL {
@@ -14,6 +21,10 @@ namespace NCL {
 			bool isVolumeDown;
 
 			bool isDebugMode;
+
+			int upTimes;
+			int downTimes;
+
 
 		public:
 			static OptionManager& instance() {
@@ -36,6 +47,12 @@ namespace NCL {
 
 			void SetVolumeDown(bool flag) { isVolumeDown = flag; };
 			bool GetVolumeDown() { return isVolumeDown; };
+
+			void SetUpTimes(int num) { upTimes = num; };
+			int GetUpTimes() { return upTimes; };
+
+			void SetDownTimes(int num) { downTimes = num; };
+			int GetDownTimes() { return downTimes; };
 		};
 	}
 }

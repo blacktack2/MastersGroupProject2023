@@ -87,10 +87,16 @@ void ScreenOption::InitMenu() {
 	menu.AddButton(0.66f, -0.69f, 0.02f, 0.04f, AssetLibrary::GetTexture("plus"), [&](Button& button) {
 		std::cout << "plus button clicked\n";
 		optionManager.SetVolumeUp(!optionManager.GetVolumeUp());
+		up = optionManager.GetUpTimes();
+		up++;
+		optionManager.SetUpTimes(up);
 	});
 
 	menu.AddButton(0.73f, -0.69f, 0.02f, 0.04f, AssetLibrary::GetTexture("minus"), [&](Button& button) {
 		std::cout << "minus button clicked\n";
 		optionManager.SetVolumeDown(!optionManager.GetVolumeDown());
+		down = optionManager.GetDownTimes();
+		down++;
+		optionManager.SetDownTimes(down);
 	});
 }

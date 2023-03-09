@@ -147,6 +147,14 @@ void TutorialGame::UpdateGame(float dt) {
 		SoundSystem::GetSoundSystem()->SetMasterVolume(0.5);
 		SoundSystem::GetSoundSystem()->Update(dt);
 	}
+	if (optionManager->GetVolumeUp()) {
+		int i = optionManager->GetUpTimes();
+		SoundSystem::GetSoundSystem()->SetMasterVolume(0.5 + i * 0.1);
+	}
+	if (optionManager->GetVolumeDown()) {
+		int i = optionManager->GetDownTimes();
+		SoundSystem::GetSoundSystem()->SetMasterVolume(0.5 - i * 0.1);
+	}
 
 	UpdateGameCore(dt);
 
