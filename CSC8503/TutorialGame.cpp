@@ -12,15 +12,21 @@
 #include "AssetLoader.h"
 #include "PrefabLibrary.h"
 
-#include "Debug.h"
-
-#include "GameWorld.h"
+#include "DebugViewPoint.h"
 #include "GameGridManager.h"
-#include "InkEffectManager.h"
+#include "GameStateManager.h"
+#include "GameTechRenderer.h"
+#include "GameWorld.h"
+#include "InputKeyMap.h"
+#include "MenuManager.h"
 
-#include "obstacle.h"
+#include "Boss.h"
+
 #include "BulletInstanceManager.h"
 #include "PlayerBullet.h"
+
+#include "GameLevel.h"
+#include "PhysicsSystem.h"
 
 #include "AnimatedRenderObject.h"
 #include "PaintRenderObject.h"
@@ -35,6 +41,8 @@
 
 #include "MeshAnimation.h"
 
+#include "Debug.h"
+
 #include "./stb/stb_image.h"
 
 #include <string>
@@ -42,36 +50,24 @@
 using namespace NCL;
 using namespace CSC8503;
 
-TutorialGame::TutorialGame() {
-	gameStateManager = &GameStateManager::instance();
-	menuManager = &MenuManager::instance();
+TutorialGame::TutorialGame() :
+debugViewPoint(DebugViewPoint::Instance()), gridManager(GameGridManager::instance()), gameStateManager(GameStateManager::instance()),
+renderer(GameTechRenderer::instance()), gameWorld(GameWorld::instance()), keyMap(InputKeyMap::instance()), menuManager(MenuManager::instance()) {
+	sunLight = gameWorld.AddLight(new Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
 
-	world = &GameWorld::instance();
-	sunLight = world->AddLight(new Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
-	world->AddLight(new Light({ 0.0f, 5.0f, -10.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, 10.0f));
-#ifdef USEVULKAN
-	renderer = new GameTechVulkanRenderer(*world);
-#else 
-	renderer = &GameTechRenderer::instance();
-#endif
-
-	physics = new PhysicsSystem(*world);
-
-	debugViewPoint = &NCL::DebugViewPoint::Instance();
+	physics = std::make_unique<PhysicsSystem>(gameWorld);
 	
 	SoundSystem::Initialize();
-	gridManager = &GameGridManager::instance();
 	StartLevel();
 }
 
 TutorialGame::~TutorialGame() {
-	world->ClearAndErase();
+	gameWorld.ClearAndErase();
 	BulletInstanceManager::instance().NullifyArray();
-	gridManager->Clear();
-	delete testingBossBehaviorTree;
-	delete physics;
-
+	gridManager.Clear();
 	SoundSystem::Destroy();
+
+	delete testingBossBehaviorTree;
 }
 
 void TutorialGame::StartLevel() {
@@ -84,11 +80,11 @@ void TutorialGame::StartLevel() {
 }
 
 void TutorialGame::Clear() {
-	gameStateManager->SetGameState(GameState::OnGoing);
-	world->ClearAndErase();
+	gameStateManager.SetGameState(GameState::OnGoing);
+	gameWorld.ClearAndErase();
 	BulletInstanceManager::instance().ObjectIntiation();
 	physics->Clear();
-	gridManager->Clear();
+	gridManager.Clear();
 	testingBoss = nullptr;
 	delete testingBossBehaviorTree;
 	testingBossBehaviorTree = nullptr;
@@ -97,31 +93,31 @@ void TutorialGame::Clear() {
 void TutorialGame::InitWorld() {
 	Clear();
 
-	gridManager->AddGameGrid(new GameGrid({ 0,0,0 }, 300, 300, 2));
+	gridManager.AddGameGrid(new GameGrid({ 0,0,0 }, 300, 300, 2));
 	BuildLevel();
 
 	InitGameExamples();
 
-	world->UpdateStaticTree();
+	gameWorld.UpdateStaticTree();
 
 	InitCamera();
 }
 
 void TutorialGame::UpdateGame(float dt) {
-	GameState gameState = gameStateManager->GetGameState();
+	GameState gameState = gameStateManager.GetGameState();
 	keyMap.Update();
 
-	debugViewPoint->BeginFrame();
-	debugViewPoint->MarkTime("Update");
+	debugViewPoint.BeginFrame();
+	debugViewPoint.MarkTime("Update");
 	
 	static bool moveSun = false;
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM0)) {
 		moveSun = !moveSun;
 	}
 	if (moveSun) {
-		float runtime = world->GetRunTime();
+		float runtime = gameWorld.GetRunTime();
 		sunLight->direction = Vector3(std::sin(runtime), std::cos(runtime), 0.0f);
-		renderer->GetSkyboxPass().SetSunDir(sunLight->direction);
+		renderer.GetSkyboxPass().SetSunDir(sunLight->direction);
 	}
 
 
@@ -129,16 +125,20 @@ void TutorialGame::UpdateGame(float dt) {
 
 	UpdateGameCore(dt);
 
-	gameStateManager->Update(dt);
+	gameStateManager.Update(dt);
 	ProcessState();
 	
 
-	debugViewPoint->FinishTime("Update");
-	debugViewPoint->MarkTime("Render");
-	renderer->Render();
+	debugViewPoint.FinishTime("Update");
+	debugViewPoint.MarkTime("Render");
+	renderer.Render();
 	
 	Debug::UpdateRenderables(dt);
-	debugViewPoint->FinishTime("Render");
+	debugViewPoint.FinishTime("Render");
+}
+
+bool TutorialGame::IsQuit() {
+	return gameStateManager.GetGameState() == GameState::Quit;
 }
 
 void TutorialGame::UpdateGameCore(float dt) {
@@ -150,17 +150,17 @@ void TutorialGame::UpdateGameCore(float dt) {
 	if (testingBoss) {
 		Debug::Print(std::string("Boss health: ").append(std::to_string((int)testingBoss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
 	}
-	world->GetMainCamera()->UpdateCamera(dt);
-	Vector3 crossPos = CollisionDetection::Unproject(Vector3(screenSize * 0.5f, 0.99f), *world->GetMainCamera());
+	gameWorld.GetMainCamera()->UpdateCamera(dt);
+	Vector3 crossPos = CollisionDetection::Unproject(Vector3(screenSize * 0.5f, 0.99f), *gameWorld.GetMainCamera());
 	Debug::DrawAxisLines(Matrix4::Translation(crossPos), 1.0f);
 
-	world->PreUpdateWorld();
+	gameWorld.PreUpdateWorld();
 
-	world->UpdateWorld(dt);
-	renderer->Update(dt);
+	gameWorld.UpdateWorld(dt);
+	renderer.Update(dt);
 	physics->Update(dt);
 
-	world->PostUpdateWorld();
+	gameWorld.PostUpdateWorld();
 
 	if (testingBossBehaviorTree) {
 		testingBossBehaviorTree->update();
@@ -178,18 +178,18 @@ void TutorialGame::ProcessState() {
 		this->StartLevel();
 	}
 	if (keyMap.GetButton(InputType::Return)) {
-		gameStateManager->SetGameState(GameState::Quit);
+		gameStateManager.SetGameState(GameState::Quit);
 	}
 }
 
 void TutorialGame::InitCamera() {
-	world->GetMainCamera()->SetNearPlane(0.1f);
-	world->GetMainCamera()->SetFarPlane(1000.0f);
-	world->GetMainCamera()->SetPitch(-15.0f);
-	world->GetMainCamera()->SetYaw(315.0f);
-	world->GetMainCamera()->SetPosition(Vector3(-60, 40, 60));
+	gameWorld.GetMainCamera()->SetNearPlane(0.1f);
+	gameWorld.GetMainCamera()->SetFarPlane(1000.0f);
+	gameWorld.GetMainCamera()->SetPitch(-15.0f);
+	gameWorld.GetMainCamera()->SetYaw(315.0f);
+	gameWorld.GetMainCamera()->SetPosition(Vector3(-60, 40, 60));
 
-	world->GetMainCamera()->SetFollow(nullptr);
+	gameWorld.GetMainCamera()->SetFollow(nullptr);
 }
 
 void TutorialGame::InitGameExamples() {
@@ -220,7 +220,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 	floor->GetPhysicsObject()->SetInverseMass(0);
 	floor->GetPhysicsObject()->InitCubeInertia();
 
-	world->AddGameObject(floor);
+	gameWorld.AddGameObject(floor);
 
 	return floor;
 }
@@ -246,10 +246,10 @@ PlayerObject* TutorialGame::AddPlayerToWorld(const Vector3& position, bool camer
 	character->GetPhysicsObject()->SetInverseMass(1);
 	character->GetPhysicsObject()->InitSphereInertia();
 
-	world->AddGameObject(character);
+	gameWorld.AddGameObject(character);
 
 	if (cameraFollow) {
-		world->GetMainCamera()->SetFollow(&character->GetTransform());
+		gameWorld.GetMainCamera()->SetFollow(&character->GetTransform());
 		character->AttachedCamera();
 	}
 
@@ -267,35 +267,30 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 
 	boss->SetRenderObject(new AnimatedRenderObject(boss->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("boss"), AssetLibrary<MeshMaterial>::GetAsset("boss"), AssetLibrary<MeshAnimation>::GetAsset("WalkForward")));
 
-	boss->GetRenderObject()->SetColour({ 1,1,1,1 });
+	boss->GetRenderObject()->SetColour({ 1, 1, 1, 1 });
 	boss->SetPhysicsObject(new PhysicsObject(&boss->GetTransform(), boss->GetBoundingVolume()));
 
 	boss->GetPhysicsObject()->SetInverseMass(inverseMass);
 	boss->GetPhysicsObject()->InitCubeInertia();
 
-	world->AddGameObject(boss);
+	gameWorld.AddGameObject(boss);
 
 	return boss;
 }
 
-void TutorialGame::BuildLevel()
-{
+void TutorialGame::BuildLevel() {
 	interval = 5.0f;
-	gameLevel = new GameLevel{};
+	gameLevel = new GameLevel();
 	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -100, 0, -70 }, interval);
-	world->AddGameObject(gameLevel);
+	gameWorld.AddGameObject(gameLevel);
 	UpdateLevel();
 }
 
-void TutorialGame::UpdateLevel()
-{
-	for (auto& object : gameLevel->GetGameStuffs())
-	{
-		if (object->HasDestroyed())
-		{
+void TutorialGame::UpdateLevel() {
+	for (auto& object : gameLevel->GetGameStuffs()){
+		if (object->HasDestroyed()){
 			object->Destroy(false);
-			if (object->objectType == ObjectType::Pillar)
-			{
+			if (object->objectType == ObjectType::Pillar){
 				Vector3 dimensions{ interval / 2.0f, 10, interval / 2.0f };
 				Obstacle* pillar = new Obstacle{ object, true };
 				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3f, 2.0f, 1.3f }, CollisionLayer::PaintAble));
@@ -311,10 +306,9 @@ void TutorialGame::UpdateLevel()
 				pillar->SetPhysicsObject(new PhysicsObject(&pillar->GetTransform(), pillar->GetBoundingVolume()));
 				pillar->GetPhysicsObject()->SetInverseMass(0);
 				pillar->GetPhysicsObject()->InitCubeInertia();
-				world->AddGameObject(pillar);
+				gameWorld.AddGameObject(pillar);
 			}
-			if (object->objectType == ObjectType::FenceX)
-			{
+			if (object->objectType == ObjectType::FenceX){
 				Vector3 dimensions{ interval / 4.0f, 0.5f, interval / 5.0f };
 				Obstacle* fenceX = new Obstacle{ object, true };
 				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
@@ -329,10 +323,9 @@ void TutorialGame::UpdateLevel()
 				fenceX->SetPhysicsObject(new PhysicsObject(&fenceX->GetTransform(), fenceX->GetBoundingVolume()));
 				fenceX->GetPhysicsObject()->SetInverseMass(0);
 				fenceX->GetPhysicsObject()->InitCubeInertia();
-				world->AddGameObject(fenceX);
+				gameWorld.AddGameObject(fenceX);
 			}
-			if (object->objectType == ObjectType::FenceY)
-			{
+			if (object->objectType == ObjectType::FenceY) {
 				Vector3 dimensions{ interval / 5.0f, 0.5f, interval / 4.0f };
 				Obstacle* fenceY = new Obstacle{ object, true };
 				fenceY->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
@@ -347,10 +340,9 @@ void TutorialGame::UpdateLevel()
 				fenceY->SetPhysicsObject(new PhysicsObject(&fenceY->GetTransform(), fenceY->GetBoundingVolume()));
 				fenceY->GetPhysicsObject()->SetInverseMass(0);
 				fenceY->GetPhysicsObject()->InitCubeInertia();
-				world->AddGameObject(fenceY);
+				gameWorld.AddGameObject(fenceY);
 			}
-			if (object->objectType == ObjectType::Shelter)
-			{
+			if (object->objectType == ObjectType::Shelter) {
 				Vector3 dimensions{ interval / 5.0f, 2.0f, interval / 2.0f };
 				Obstacle* shelter = new Obstacle{ object, false };
 				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
@@ -365,7 +357,7 @@ void TutorialGame::UpdateLevel()
 				shelter->SetPhysicsObject(new PhysicsObject(&shelter->GetTransform(), shelter->GetBoundingVolume()));
 				shelter->GetPhysicsObject()->SetInverseMass(0);
 				shelter->GetPhysicsObject()->InitCubeInertia();
-				world->AddGameObject(shelter);
+				gameWorld.AddGameObject(shelter);
 			}
 		}
 	}

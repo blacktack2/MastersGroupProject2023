@@ -7,27 +7,35 @@
  * @date   March 2023
  */
 #pragma once
-#include "GameTechRenderer.h"
-#ifdef USEVULKAN
-#include "GameTechVulkanRenderer.h"
-#endif
-#include "PhysicsSystem.h"
-#include "PlayerObject.h"
-#include "StateGameObject.h"
-#include "DebugViewPoint.h"
+#include "Vector3.h"
 
-#include "GameGridManager.h"
+#include <memory>
 
-#include "Boss.h"	
-#include "Obstacle.h"
-#include "GameLevel.h"
+namespace NCL {
+	class DebugViewPoint;
+	class InputKeyMap;
+}
 
-#include "GameStateManager.h"
-#include "MenuManager.h"
+using namespace NCL::Maths;
 
 namespace NCL::CSC8503 {
-	class Bullet;
-	class Maze;
+	class GameGridManager;
+	class GameStateManager;
+	class GameTechRenderer;
+	class GameWorld;
+	class MenuManager;
+
+	class GameLevel;
+	class PhysicsSystem;
+
+	class GameObject;
+
+	class GameGrid;
+	class Boss;
+	class BossBehaviorTree;
+	class PlayerObject;
+
+	class Light;
 
 	class TutorialGame {
 	public:
@@ -41,9 +49,7 @@ namespace NCL::CSC8503 {
 
 		virtual void UpdateGame(float dt);
 
-		bool IsQuit() {
-			return gameStateManager->GetGameState() == GameState::Quit;
-		}
+		bool IsQuit();
 	protected:
 		void UpdateGameCore(float dt);
 		virtual void ProcessState();
@@ -61,31 +67,24 @@ namespace NCL::CSC8503 {
 		void BuildLevel();
 		void UpdateLevel();
 
-#ifdef USEVULKAN
-		GameTechVulkanRenderer* renderer;
-#else
-		GameTechRenderer* renderer;
-#endif
-		PhysicsSystem* physics;
-		GameWorld* world;
+		DebugViewPoint&   debugViewPoint;
+		GameGridManager&  gridManager;
+		GameStateManager& gameStateManager;
+		GameTechRenderer& renderer;
+		GameWorld&        gameWorld;
+		InputKeyMap&      keyMap;
+		MenuManager&      menuManager;
 
-		InputKeyMap& keyMap = InputKeyMap::instance();
+		std::unique_ptr<PhysicsSystem> physics;
 
-		Light* sunLight;
-
-		GameStateManager* gameStateManager;
-		MenuManager* menuManager;
-
+		Light* sunLight = nullptr;
 		PlayerObject* player = nullptr;
-
-		DebugViewPoint* debugViewPoint;
-
 		GameLevel* gameLevel = nullptr;
-		float interval = 0.0f;
+
 		GameGrid* gameGrid = nullptr;
 		Boss* testingBoss = nullptr;
 		BossBehaviorTree* testingBossBehaviorTree = nullptr;
 
-		GameGridManager* gridManager;
+		float interval = 0.0f;
 	};
 }
