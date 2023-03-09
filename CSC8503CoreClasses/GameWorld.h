@@ -60,6 +60,22 @@ namespace NCL {
 			Camera* GetMainCamera() const {
 				return mainCamera;
 			}
+			void InitCameras() const {
+				InitCamera(playerCamera1);
+				InitCamera(playerCamera2);
+				InitCamera(playerCamera3);
+				InitCamera(playerCamera4);
+
+			}
+			void InitCamera(Camera* cam) const {
+				if (!cam)
+					return;
+				cam->SetNearPlane(0.1f);
+				cam->SetFarPlane(1000.0f);
+				cam->SetPitch(-15.0f);
+				cam->SetYaw(315.0f);
+				cam->SetPosition(Vector3(-60, 40, 60));
+			}
 
 			Camera* GetCamera(int n) const {
 				switch (n)

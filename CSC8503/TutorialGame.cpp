@@ -20,6 +20,7 @@
 #include "InputKeyMap.h"
 #include "MenuManager.h"
 
+#include "Camera.h"
 #include "Boss.h"
 
 #include "BulletInstanceManager.h"
@@ -233,13 +234,7 @@ void TutorialGame::ProcessState() {
 }
 
 void TutorialGame::InitCamera() {
-	gameWorld.GetMainCamera()->SetNearPlane(0.1f);
-	gameWorld.GetMainCamera()->SetFarPlane(1000.0f);
-	gameWorld.GetMainCamera()->SetPitch(-15.0f);
-	gameWorld.GetMainCamera()->SetYaw(315.0f);
-	gameWorld.GetMainCamera()->SetPosition(Vector3(-60, 40, 60));
-
-	gameWorld.GetMainCamera()->SetFollow(nullptr);
+	gameWorld.InitCameras();
 }
 
 void TutorialGame::InitGameExamples() {
