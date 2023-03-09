@@ -25,7 +25,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-PlayerObject::PlayerObject(int playerID) : GameObject(), playerID(playerID), keyMap(paintHell::InputKeyMap::instance()) {
+PlayerObject::PlayerObject(int playerID) : GameObject(), playerID(playerID), keyMap(NCL::InputKeyMap::instance()) {
 	OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
 	};

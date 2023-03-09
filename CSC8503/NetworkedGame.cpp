@@ -107,7 +107,7 @@ void NetworkedGame::StartLobby()
 	int id = OBJECTID_START;
 	BulletInstanceManager::instance().AddNetworkObject(id);
 
-	gameStateManager->SetGameState(GameState::Lobby);
+	gameStateManager.SetGameState(GameState::Lobby);
 	BroadcastGameStateChange();
 }
 
@@ -122,7 +122,7 @@ void NetworkedGame::StartLevel() {
 	boss = AddNetworkBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	boss->SetNextTarget(player);
 
-	gameStateManager->SetGameState(GameState::OnGoing);
+	gameStateManager.SetGameState(GameState::OnGoing);
 	BroadcastGameStateChange();
 }
 
@@ -220,7 +220,7 @@ void NetworkedGame::UpdateAsServer(float dt) {
 		health += static_cast<NetworkPlayer*>(player.second)->GetHealth()->GetHealth();
 	}
 	if (health <= 0) {
-		gameStateManager->SetGameState(GameState::Lose);
+		gameStateManager.SetGameState(GameState::Lose);
 		BroadcastGameStateChange();
 	}
 
@@ -336,7 +336,7 @@ void NetworkedGame::SendSnapshot(bool deltaFrame, int playerID) {
 			thisServer->SendPacket(newPacket, playerID);
 			delete newPacket;
 		}
-	}
+	});
 	if (boss) {
 		BossActionPacket newPacket;
 		newPacket.bossAction = static_cast<short int> (boss->GetBossAction());
@@ -431,7 +431,7 @@ void NetworkedGame::HandleFullPacket(GamePacket* payload, int source){
 }
 
 void NetworkedGame::HandlePlayerConnectedPacket(GamePacket* payload, int source) {
-	if (gameStateManager->GetGameState() != GameState::Lobby) {
+	if (gameStateManager.GetGameState() != GameState::Lobby) {
 		LobbyPacket newPacket;
 		newPacket.status = LobbyState::Started;
 		thisServer->SendPacket(&newPacket, source, true);
@@ -542,7 +542,7 @@ void NetworkedGame::HandleLobbyPacket(GamePacket* payload, int source)
 	case LobbyState::Full:
 	case LobbyState::Started:
 		std::cout << "Quit due to lobby" << std::endl;
-		gameStateManager->SetGameState(GameState::Quit);
+		gameStateManager.SetGameState(GameState::Quit);
 		break;
 	default:
 		break;
@@ -597,7 +597,7 @@ void NetworkedGame::PlayerJoinedServer(int playerID) {
 void NetworkedGame::PlayerLeftServer(int playerID) {
 	if (serverPlayers.contains(playerID)) {
 		std::cout << name << " " << selfID << " deleting player " << playerID << std::endl;
-		if (gameStateManager->GetGameState() == GameState::Lobby) {
+		if (gameStateManager.GetGameState() == GameState::Lobby) {
 			serverPlayers[playerID]->SetActive(false);
 		}
 		serverPlayers.erase(playerID);
