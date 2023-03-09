@@ -26,6 +26,8 @@ namespace NCL {
 		public:
 			constexpr Vector2(void) : x(0.0f), y(0.0f) {}
 
+			explicit constexpr Vector2(float val) : x(val), y(val) {}
+
 			constexpr Vector2(float xVal, float yVal) : x(xVal), y(yVal){}
 
 			Vector2(const Vector3& v3);
