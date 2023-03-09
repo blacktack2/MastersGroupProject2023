@@ -94,7 +94,9 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 void NetworkedGame::Clear()
 {
 	TutorialGame::Clear();
-	player = NULL;
+	for (int i = 0; i <= 4; i++) {
+		players[0] = nullptr;
+	}
 	localPlayer = NULL;
 }
 
@@ -120,7 +122,7 @@ void NetworkedGame::StartLevel() {
 	BulletInstanceManager::instance().AddNetworkObject(id);
 
 	boss = AddNetworkBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
-	boss->SetNextTarget(player);
+	boss->SetNextTarget(players[0]);
 
 	gameStateManager.SetGameState(GameState::OnGoing);
 	BroadcastGameStateChange();
@@ -382,7 +384,7 @@ PlayerObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 	PlayerObject* newPlayer = AddNetworkPlayerToWorld(Vector3(0, 5, 90), isSelf, playerID);
 	if (isSelf) {
 		gameWorld.GetMainCamera()->SetFollow(&(newPlayer->GetNetworkObject()->GetRenderTransform()));
-		player = newPlayer;
+		players[0] = newPlayer;
 	}
 	serverPlayers[playerID] = newPlayer;
 	stateIDs[playerID] = -1;
@@ -497,7 +499,7 @@ void NetworkedGame::HandlePlayerSyncPacket(GamePacket* payload, int source) {
 	if (thisClient && localPlayer == nullptr) {
 		std::cout << name << " " << selfID << " Creating localhost player " << selfID << std::endl;
 		localPlayer = SpawnPlayer(selfID, true);
-		player = static_cast<PlayerObject*> (localPlayer);
+		players[0] = static_cast<PlayerObject*> (localPlayer);
 	}
 }
 

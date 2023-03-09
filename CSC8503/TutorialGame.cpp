@@ -76,9 +76,14 @@ void TutorialGame::StartLevel() {
 	InitWorld();
 
 	XboxControllerManager::GetXboxController().CheckPorts();
-	int n = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
-	//std::cout << "controller connected " << n << std::endl;
-	switch (n)
+	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
+
+	players[0] = AddPlayerToWorld(0, Vector3(0, 5, 90));
+	for (int i = 1; i <= numOfPlayers; i++) {
+		players[i] = AddPlayerToWorld(i, Vector3(0, 5, 90));
+	}
+	/*
+	switch (numOfController)
 	{
 	case 4:
 		player4 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player4"), Vector3(0, 5, 90));
@@ -111,10 +116,12 @@ void TutorialGame::StartLevel() {
 		}
 		break;
 	}
-	SetCameraFollow(player4);
+	*/
+
+	SetCameraFollow(players[0]);
 
 	boss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
-	boss->SetNextTarget(player);
+	boss->SetNextTarget(players[0]);
 }
 
 void TutorialGame::Clear() {
@@ -146,11 +153,12 @@ void TutorialGame::UpdateGame(float dt) {
 	//temp change player
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::P))
 	{
-		SetCameraFollow(player4);
+		if(players[1])
+			SetCameraFollow(players[1]);
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::O))
 	{
-		SetCameraFollow(player);
+		SetCameraFollow(players[0]);
 	}
 
 	debugViewPoint.BeginFrame();
@@ -190,8 +198,8 @@ bool TutorialGame::IsQuit() {
 void TutorialGame::UpdateGameCore(float dt) {
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 
-	if(player){
-		Debug::Print(std::string("health: ").append(std::to_string((int)player->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
+	if(players[0]) {
+		Debug::Print(std::string("health: ").append(std::to_string((int)players[0]->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
 	}
 	if (boss) {
 		Debug::Print(std::string("Boss health: ").append(std::to_string((int)boss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));

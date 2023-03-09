@@ -23,23 +23,23 @@ void InputKeyMap::Update() {
 	Vector2 thumbRight;
 	float rightTriggerDepth;
 	float leftTriggerDepth;
-	for (int i = 0; i < 4; i++)
+	for (int i = 1; i <= 4; i++)
 	{
-		if (XboxControllerManager::GetXboxController().GetThumbLeft(i+1, thumbLeft))
+		if (XboxControllerManager::GetXboxController().GetThumbLeft(i, thumbLeft))
 		{
 			AxisDataArray[i][AxisInput::Axis1] = thumbLeft.x;
 			AxisDataArray[i][AxisInput::Axis2] = thumbLeft.y;
 		}
-		if (XboxControllerManager::GetXboxController().GetThumbRight(i+1, thumbRight))
+		if (XboxControllerManager::GetXboxController().GetThumbRight(i, thumbRight))
 		{
 			AxisDataArray[i][AxisInput::Axis3] = thumbRight.x;
 			AxisDataArray[i][AxisInput::Axis4] = thumbRight.y;
 		}
-		if (XboxControllerManager::GetXboxController().GetRightTrigger(i+1, rightTriggerDepth))
+		if (XboxControllerManager::GetXboxController().GetRightTrigger(i, rightTriggerDepth))
 		{
 			AxisDataArray[i][AxisInput::Axis5] = rightTriggerDepth;
 		}
-		if (XboxControllerManager::GetXboxController().GetLeftTrigger(i+1, leftTriggerDepth))
+		if (XboxControllerManager::GetXboxController().GetLeftTrigger(i, leftTriggerDepth))
 		{
 			AxisDataArray[i][AxisInput::Axis6] = leftTriggerDepth;
 		}
@@ -50,27 +50,27 @@ void InputKeyMap::Update() {
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W))
 	{
 		buttonstates |= InputType::Foward;
-		AxisDataArray[4][AxisInput::Axis2] = 1;
+		AxisDataArray[0][AxisInput::Axis2] = 1;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S))
 	{
 		buttonstates |= InputType::Backward;
-		AxisDataArray[4][AxisInput::Axis2] = -1;
+		AxisDataArray[0][AxisInput::Axis2] = -1;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A))
 	{
 		buttonstates |= InputType::Left;
-		AxisDataArray[4][AxisInput::Axis1] = -1;
+		AxisDataArray[0][AxisInput::Axis1] = -1;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D))
 	{
 		buttonstates |= InputType::Right;
-		AxisDataArray[4][AxisInput::Axis1] = 1;
+		AxisDataArray[0][AxisInput::Axis1] = 1;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SPACE))
 	{
 		buttonstates |= InputType::Jump;
-		AxisDataArray[4][AxisInput::Axis6] = 1;
+		AxisDataArray[0][AxisInput::Axis6] = 1;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::C))
 	{
@@ -84,7 +84,7 @@ void InputKeyMap::Update() {
 		if (Window::GetMouse()->ButtonDown(MouseButtons::LEFT))
 		{
 			buttonstates |= InputType::Action1;
-			AxisDataArray[4][AxisInput::Axis5] = 1;
+			AxisDataArray[0][AxisInput::Axis5] = 1;
 		}
 		if (Window::GetMouse()->ButtonPressed(MouseButtons::RIGHT))
 		{
@@ -96,8 +96,8 @@ void InputKeyMap::Update() {
 			buttonstates |= InputType::Confirm;
 		}
 
-		AxisDataArray[4][AxisInput::Axis4] = -1.0f * Window::GetMouse()->GetRelativePosition().y;
-		AxisDataArray[4][AxisInput::Axis3] = Window::GetMouse()->GetRelativePosition().x;
+		AxisDataArray[0][AxisInput::Axis4] = -1.0f * Window::GetMouse()->GetRelativePosition().y;
+		AxisDataArray[0][AxisInput::Axis3] = Window::GetMouse()->GetRelativePosition().x;
 
 		mousePosition = Window::GetMouse()->GetAbsolutePosition();
 	}

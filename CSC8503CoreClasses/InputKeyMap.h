@@ -59,14 +59,13 @@ namespace NCL {
 			return state & key;
 		}
 
-		bool GetAxisData(unsigned int controllerNum, AxisInput axis, float& data)		// controllerNum == 1,2,3,4,5
+		bool GetAxisData(unsigned int playerNum, AxisInput axis, float& data)		// controllerNum == 1,2,3,4,5
 		{
-			if ((controllerNum == 0) || (controllerNum > 5))
+			if ((playerNum > 4))
 			{
 				return false;
 			}
-			controllerNum--;
-			data = AxisDataArray[controllerNum][axis];
+			data = AxisDataArray[playerNum][axis];
 			return true;
 		}
 

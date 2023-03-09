@@ -20,19 +20,6 @@ namespace NCL {
 		Perspective
 	};
 
-	enum ControlType
-	{
-		None,
-
-		Controller_1,
-		Controller_2,
-		Controller_3,
-		Controller_4,
-
-		KeyboardMouse
-
-	};
-
 	class Camera {
 	public:
 		Camera(void);
@@ -45,14 +32,14 @@ namespace NCL {
 
 		void UpdateCamera(float dt);
 
-		ControlType GetControlType()
+		int GetPlayerID()
 		{
-			return controlledBy;
+			return playerID;
 		}
 
-		void SetControlType(ControlType type)
+		void SetPlayerID(int playerID)
 		{
-			controlledBy = type;
+			this->playerID = playerID;
 		}
 
 		float GetFieldOfVision() const {
@@ -126,6 +113,6 @@ namespace NCL {
 		float followLon;
 		Vector3 lookat;
 
-		ControlType controlledBy = KeyboardMouse;
+		int playerID = 0;
 	};
 }
