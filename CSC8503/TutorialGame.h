@@ -22,93 +22,70 @@
 #include "Obstacle.h"
 #include "GameLevel.h"
 
-
 #include "GameStateManager.h"
 #include "MenuManager.h"
 
-#include "MeshAnimation.h"
+namespace NCL::CSC8503 {
+	class Bullet;
+	class Maze;
 
+	class TutorialGame {
+	public:
+		TutorialGame();
+		~TutorialGame();
 
+		virtual void Clear();
+		virtual void StartLevel();
 
+		void InitWorld();
 
-namespace NCL {
-	namespace CSC8503 {
-		class Bullet;
-		class Maze;
+		virtual void UpdateGame(float dt);
 
-		class TutorialGame {
-		public:
-			TutorialGame();
-			~TutorialGame();
+		bool IsQuit() {
+			return gameStateManager->GetGameState() == GameState::Quit;
+		}
+	protected:
+		void UpdateGameCore(float dt);
+		virtual void ProcessState();
 
-			virtual void Clear();
-			virtual void StartLevel();
+		void InitCamera();
+		void InitGameExamples();
 
-			void InitWorld();
+		void InitDefaultFloor();
 
-			virtual void UpdateGame(float dt);
+		GameObject* AddFloorToWorld(const Vector3& position);
 
-			bool IsQuit() {
-				return gameStateManager->GetGameState() == GameState::Quit;
-			}
-		protected:
-			void UpdateGameCore(float dt);
-			virtual void ProcessState();
+		PlayerObject* AddPlayerToWorld(const Vector3& position, bool cameraFollow = true);
 
-			void InitCamera();
-			void InitGameExamples();
-
-			void InitDefaultFloor();
-
-			GameObject* AddFloorToWorld(const Vector3& position);
-			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
-			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass = 10.0f, bool axisAligned = true);
-			GameObject* AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius, float inverseMass = 10.0f);
-			StateGameObject* AddStateObjectToWorld(const Vector3& position);
-
-			PlayerObject* AddPlayerToWorld(const Vector3& position, bool cameraFollow = true);
-
-			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
-			void BuildLevel();
-			void UpdateLevel();
-			GameObject* AddTriggerToWorld(const Vector3& position, float size);
+		Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
+		void BuildLevel();
+		void UpdateLevel();
 
 #ifdef USEVULKAN
-			GameTechVulkanRenderer*	renderer;
+		GameTechVulkanRenderer* renderer;
 #else
-			GameTechRenderer* renderer;
+		GameTechRenderer* renderer;
 #endif
-			PhysicsSystem*		physics;
-			GameWorld*			world;
+		PhysicsSystem* physics;
+		GameWorld* world;
 
-			NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
+		InputKeyMap& keyMap = InputKeyMap::instance();
 
-			Light* sunLight;
+		Light* sunLight;
 
-			GameStateManager* gameStateManager;
-			MenuManager* menuManager;
+		GameStateManager* gameStateManager;
+		MenuManager* menuManager;
 
-			bool inSelectionMode;
+		PlayerObject* player = nullptr;
 
-			float		forceMagnitude;
+		DebugViewPoint* debugViewPoint;
 
-			Maze* mazes = nullptr;
+		GameLevel* gameLevel = nullptr;
+		float interval = 0.0f;
+		GameGrid* gameGrid = nullptr;
+		Boss* testingBoss = nullptr;
+		BossBehaviorTree* testingBossBehaviorTree = nullptr;
 
-			PlayerObject* player = nullptr;
-
-			int score;
-
-			NCL::DebugViewPoint* debugViewPoint;
-
-			GameLevel* gameLevel = nullptr;
-			float interval = 0.0f;
-			GameGrid* gameGrid = nullptr;
-			Boss* testingBoss = nullptr;
-			BossBehaviorTree* testingBossBehaviorTree = nullptr;
-
-			GameGridManager* gridManager;
-			float wallTimer = 0.0f;
-		};
-	}
+		GameGridManager* gridManager;
+	};
 }
-

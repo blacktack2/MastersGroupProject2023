@@ -12,39 +12,32 @@
 #include "AssetLoader.h"
 #include "PrefabLibrary.h"
 
-#include "PlayerBullet.h"
 #include "Debug.h"
 
 #include "GameWorld.h"
 #include "GameGridManager.h"
 #include "InkEffectManager.h"
-#include "Maze.h"
-#include "OrientationConstraint.h"
-#include "PhysicsObject.h"
-#include "PlayerObject.h"
-#include "PositionConstraint.h"
-#include "RenderObject.h"
-#include "StateGameObject.h"
 
 #include "obstacle.h"
-#include "PaintRenderObject.h"
 #include "BulletInstanceManager.h"
+#include "PlayerBullet.h"
 
-// testing animation
 #include "AnimatedRenderObject.h"
-#include "./stb/stb_image.h"
-
-//Audio Testing
+#include "PaintRenderObject.h"
+#include "PhysicsObject.h"
+#include "PlayerObject.h"
+#include "RenderObject.h"
 
 #include "Sound.h"
 #include "SoundSource.h"
 #include "SoundSystem.h"
 #include "TestAudio.h"
 
+#include "MeshAnimation.h"
+
+#include "./stb/stb_image.h"
 
 #include <string>
-
-#include "XboxController.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -62,10 +55,8 @@ TutorialGame::TutorialGame() {
 	renderer = &GameTechRenderer::instance();
 #endif
 
-	physics		= new PhysicsSystem(*world);
+	physics = new PhysicsSystem(*world);
 
-	forceMagnitude	= 10.0f;
-	inSelectionMode = false;
 	debugViewPoint = &NCL::DebugViewPoint::Instance();
 	
 	SoundSystem::Initialize();
@@ -79,8 +70,6 @@ TutorialGame::~TutorialGame() {
 	gridManager->Clear();
 	delete testingBossBehaviorTree;
 	delete physics;
-
-	delete[] mazes;
 
 	SoundSystem::Destroy();
 }
@@ -96,8 +85,6 @@ void TutorialGame::StartLevel() {
 
 void TutorialGame::Clear() {
 	gameStateManager->SetGameState(GameState::OnGoing);
-	delete[] mazes;
-	mazes = nullptr;
 	world->ClearAndErase();
 	BulletInstanceManager::instance().ObjectIntiation();
 	physics->Clear();
@@ -123,12 +110,6 @@ void TutorialGame::InitWorld() {
 void TutorialGame::UpdateGame(float dt) {
 	GameState gameState = gameStateManager->GetGameState();
 	keyMap.Update();
-
-	/*XboxController c;
-	float v;
-	bool b = c.GetRightTrigger(1, v);
-	if (b) std::cout << v << "\n";
-	else std::cout << "No displacement\n";*/
 
 	debugViewPoint->BeginFrame();
 	debugViewPoint->MarkTime("Update");
@@ -169,9 +150,7 @@ void TutorialGame::UpdateGameCore(float dt) {
 	if (testingBoss) {
 		Debug::Print(std::string("Boss health: ").append(std::to_string((int)testingBoss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
 	}
-	if (!inSelectionMode) {
-		world->GetMainCamera()->UpdateCamera(dt);
-	}
+	world->GetMainCamera()->UpdateCamera(dt);
 	Vector3 crossPos = CollisionDetection::Unproject(Vector3(screenSize * 0.5f, 0.99f), *world->GetMainCamera());
 	Debug::DrawAxisLines(Matrix4::Translation(crossPos), 1.0f);
 
@@ -244,101 +223,6 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 	world->AddGameObject(floor);
 
 	return floor;
-}
-
-GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius, float inverseMass) {
-	static int id = 0;
-	GameObject* sphere = new GameObject( std::string("Sphere").append(std::to_string(id++)));
-
-	Vector3 sphereSize = Vector3(radius, radius, radius);
-	SphereVolume* volume = new SphereVolume(radius);
-	sphere->SetBoundingVolume((CollisionVolume*)volume);
-
-	sphere->GetTransform()
-		.SetScale(sphereSize)
-		.SetPosition(position);
-
-	sphere->SetRenderObject(new RenderObject(sphere->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("sphere"), nullptr));
-	sphere->SetPhysicsObject(new PhysicsObject(&sphere->GetTransform(), sphere->GetBoundingVolume()));
-
-	sphere->GetPhysicsObject()->SetInverseMass(inverseMass);
-	sphere->GetPhysicsObject()->InitSphereInertia();
-
-	world->AddGameObject(sphere);
-
-	return sphere;
-}
-
-GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass, bool axisAligned) {
-	static int id = 0;
-	GameObject* cube = new GameObject( std::string("Cube").append(std::to_string(id++)));
-
-	cube->SetBoundingVolume(axisAligned ? ((CollisionVolume*)new AABBVolume(dimensions)) : ((CollisionVolume*)new OBBVolume(dimensions)));
-
-	cube->GetTransform()
-		.SetPosition(position)
-		.SetScale(dimensions * 2);
-
-	cube->SetRenderObject(new RenderObject(cube->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("cube"), nullptr));
-	cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
-
-	cube->GetPhysicsObject()->SetInverseMass(inverseMass);
-	if (axisAligned) {
-		cube->GetPhysicsObject()->InitAxisAlignedInertia();
-		cube->GetRenderObject()->SetColour(Vector4(0.8f, 0.8f, 1, 1));
-	} else {
-		cube->GetPhysicsObject()->InitCubeInertia();
-	}
-	if (inverseMass == 0) {
-		cube->GetPhysicsObject()->SetStatic();
-		cube->GetRenderObject()->SetColour(Vector4(1, 0.8f, 0.8f, 1));
-	}
-
-	world->AddGameObject(cube);
-
-	return cube;
-}
-
-GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius, float inverseMass) {
-	static int id = 0;
-	GameObject* capsule = new GameObject( std::string("Capsule").append(std::to_string(id++)));
-
-	Vector3 capsuleSize = Vector3(radius, halfHeight, radius);
-	CapsuleVolume* volume = new CapsuleVolume(halfHeight, radius);
-	capsule->SetBoundingVolume((CollisionVolume*)volume);
-
-	capsule->GetTransform()
-		.SetScale(capsuleSize)
-		.SetPosition(position);
-
-	capsule->SetRenderObject(new RenderObject(capsule->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("capsule"), nullptr));
-	capsule->SetPhysicsObject(new PhysicsObject(&capsule->GetTransform(), capsule->GetBoundingVolume()));
-
-	capsule->GetPhysicsObject()->SetInverseMass(inverseMass);
-	capsule->GetPhysicsObject()->InitCapsuleInertia();
-
-	world->AddGameObject(capsule);
-
-	return capsule;
-}
-
-StateGameObject* TutorialGame::AddStateObjectToWorld(const Vector3& position) {
-	static int id = 0;
-	StateGameObject* sgo = new StateGameObject(std::string("StateGameObject").append(std::to_string(id++)));
-	SphereVolume* volume = new SphereVolume(1.0f);
-
-	sgo->SetBoundingVolume((CollisionVolume*)volume);
-	sgo->SetRenderObject(new RenderObject(sgo->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("sphere"), nullptr));
-	sgo->SetPhysicsObject(new PhysicsObject(&sgo->GetTransform(), sgo->GetBoundingVolume()));
-
-	sgo->GetTransform().SetPosition(position);
-
-	sgo->GetPhysicsObject()->SetInverseMass(5.0f);
-	sgo->GetPhysicsObject()->InitSphereInertia();
-
-	world->AddGameObject(sgo);
-
-	return sgo;
 }
 
 PlayerObject* TutorialGame::AddPlayerToWorld(const Vector3& position, bool cameraFollow) {
@@ -485,26 +369,4 @@ void TutorialGame::UpdateLevel()
 			}
 		}
 	}
-}
-
-GameObject* TutorialGame::AddTriggerToWorld(const Vector3& position, float size) {
-	GameObject* trigger = new GameObject("Trigger");
-
-	SphereVolume* volume = new SphereVolume(size);
-	trigger->SetBoundingVolume((CollisionVolume*)volume);
-	trigger->GetTransform()
-		.SetScale(Vector3(size))
-		.SetPosition(position);
-
-	trigger->SetRenderObject(new RenderObject(trigger->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("sphere"), nullptr));
-	trigger->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.5f, 0.5f));
-
-	trigger->SetPhysicsObject(new PhysicsObject(&trigger->GetTransform(), trigger->GetBoundingVolume(), true));
-	trigger->GetPhysicsObject()->SetInverseMass(0);
-	trigger->GetPhysicsObject()->InitAxisAlignedInertia();
-	trigger->GetPhysicsObject()->SetStatic();
-
-	world->AddGameObject(trigger);
-
-	return trigger;
 }
