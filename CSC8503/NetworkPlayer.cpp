@@ -43,6 +43,7 @@ void NCL::CSC8503::NetworkPlayer::MoveInput(unsigned int keyPress, short int axi
 		GetButtonInput(keyPress);
 		Move(dir);
 		MoveCamera();
+		RotateToCamera();
 	}
 }
 
@@ -58,7 +59,14 @@ void NCL::CSC8503::NetworkPlayer::ServerSideMovement()
 		GetButtonInput(keyMap.GetButtonState());
 		Move(dir);
 		MoveCamera();
+		RotateToCamera();
 	}
+}
+
+void NCL::CSC8503::NetworkPlayer::ClientUpdateCamera()
+{
+	keyMap.Update();
+	MoveCamera();
 }
 
 void NCL::CSC8503::NetworkPlayer::SetAxis(short int axis[AxisInput::AxisInputDataMax])
@@ -67,6 +75,14 @@ void NCL::CSC8503::NetworkPlayer::SetAxis(short int axis[AxisInput::AxisInputDat
 		float input;
 		input = static_cast<float>(axis[i] / 10000);
 		this->axis[i] = input;
+	}
+}
+
+void NCL::CSC8503::NetworkPlayer::GetNetworkAxis(short int axis[])
+{
+	GetAxisInput();
+	for (int i = 0; i < AxisInput::AxisInputDataMax; i++) {
+		axis[i] = static_cast<short int>(this->axis[i] * 10000);
 	}
 }
 

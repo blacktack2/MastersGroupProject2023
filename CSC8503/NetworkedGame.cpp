@@ -288,17 +288,11 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	newPacket.lastID = stateID;
 	if (localPlayer) {
 		NetworkPlayer* player = static_cast<NetworkPlayer*>(localPlayer);
-		if (player->isFrozen) {
+		if (!player->isFrozen) {
+			player->ClientUpdateCamera();
 			keyMap.Update();
 			newPacket.buttonstates = keyMap.GetButtonState();
-			if (!keyMap.GetButton(InputType::FreeLook, localPlayer->GetPlayerID())) {
-				for (int i = 0; i < AxisInput::AxisInputDataMax; i++) {
-					float axis;
-					keyMap.GetAxisData(localPlayer->GetPlayerID(), static_cast<AxisInput>(i), axis);
-					newPacket.axis[i] = static_cast<short int> (axis * 10000);
-
-				}
-			}
+			player->GetNetworkAxis(newPacket.axis);
 		}
 	}
 	
@@ -403,6 +397,9 @@ void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID
 		return;
 	
 	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(((ClientPacket*)payload)->buttonstates, ((ClientPacket*)payload)->axis);
+	for (int i = 0; i < AxisInput::AxisInputDataMax; i++) {
+		std::cout << "server received " << i << " " << ((ClientPacket*)payload)->axis[i] << std::endl;
+	}
 
 	if (((ClientPacket*)payload)->lastID > stateIDs[playerID]) {
 		stateIDs[playerID] = ((ClientPacket*)payload)->lastID;

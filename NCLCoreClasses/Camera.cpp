@@ -92,6 +92,7 @@ void Camera::UpdateCamera(float dt) {
 		followPos = Vector3::Lerp(LastPos, followPos, std::min(smoothFactor * dt, 1.0f));
 		LastPos = followPos;
 
+		/*
 		NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 		Vector2 orientationData{ 0,0 };
 		if (keyMap.GetAxisData(playerID, AxisInput::Axis3, orientationData.x) && keyMap.GetAxisData(playerID, AxisInput::Axis4, orientationData.y))
@@ -103,14 +104,11 @@ void Camera::UpdateCamera(float dt) {
 				yaw -= (orientationData.x * sensitivity);
 			}
 		}
-
-		pitch = std::clamp(pitch, -90.0f, 90.0f);
-		yaw += (yaw < 0) ? 360.0f : ((yaw > 360.0f) ? -360.0f : 0.0f);
+		*/
 
 		followDistance = std::clamp(followDistance - (float)Window::GetMouse()->GetWheelMovement(), 5.0f, 40.0f);
 
 		position = followPos - Vector3(std::cos(-Maths::DegreesToRadians(90.0f + yaw)), Maths::DegreesToRadians(pitch), std::sin(-Maths::DegreesToRadians(90.0f + yaw))) * followDistance;
-
 
 	}
 }

@@ -43,6 +43,9 @@ bool InputKeyMap::CheckButtonPressed(unsigned int state, InputType key, int Play
 
 bool InputKeyMap::GetAxisData(unsigned int playerNum, AxisInput axis, float& data)
 {
+	if (axis == AxisInputDataMax) {
+		return false;
+	}
 	if ((playerNum > 4))
 	{
 		return false;

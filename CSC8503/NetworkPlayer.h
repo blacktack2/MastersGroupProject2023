@@ -25,7 +25,11 @@ namespace NCL {
 
 			void ServerSideMovement();
 
+			void ClientUpdateCamera();
+
 			void SetAxis(short int axis[AxisInput::AxisInputDataMax]);
+
+			void GetNetworkAxis(short int axis[]);
 
 			int GetPlayerNum() const {
 				return playerID;

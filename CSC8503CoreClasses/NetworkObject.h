@@ -48,7 +48,7 @@ namespace NCL::CSC8503 {
 	struct ClientPacket : public GamePacket {
 		int		lastID = -1;
 		unsigned int buttonstates = 0;
-		short int axis[AxisInput::AxisInputDataMax];
+		short int axis[AxisInput::AxisInputDataMax] = {0};
 		
 
 		ClientPacket() {

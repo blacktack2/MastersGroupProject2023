@@ -7,6 +7,7 @@
 #include "PlayerBullet.h"
 
 namespace NCL {
+	class Camera;
 	namespace CSC8503 {
 		class Bullet;
 
@@ -52,6 +53,7 @@ namespace NCL {
 			void RotateYaw(float yaw);
 			void RotateToCamera();
 			void RotateByAxis();
+			void RotatePlayer();
 
 			void MoveCamera();
 
@@ -98,11 +100,14 @@ namespace NCL {
 			Vector3 lastDir = Vector3(0,0,0);
 			
 			//camera related
-			//Camera& camera;
+			Camera* camera;
 			int hasCamera = 0;		// 0 means no camera; 1,2,3,4 indicates which playerCamera it is attached to.
 			bool isFreeLook = false;
 			float camTurnSpeed = 0.5f;
 			Vector3 cameraOffset = Vector3(0.5f, 5.0f, 2.0f);
+
+			float pitch = 0.0f;
+			float yaw = 0.0f;
 
 			//instantiated objs
 			std::vector<GameObject*> lastInstancedObjects;

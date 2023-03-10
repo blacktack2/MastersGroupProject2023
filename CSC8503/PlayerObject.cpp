@@ -20,20 +20,21 @@
 #include "Sound.h"
 #include "SoundSystem.h"
 #include "BulletInstanceManager.h"
+
 #include <iostream>
 
 using namespace NCL;
 using namespace CSC8503;
 
-PlayerObject::PlayerObject(int playerID) : GameObject(), playerID(playerID), keyMap(NCL::InputKeyMap::instance()) {
+PlayerObject::PlayerObject(int playerID) : GameObject(), playerID(playerID), keyMap(NCL::InputKeyMap::instance()), camera(gameWorld.GetCamera(playerID)) {
 	OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
 	};
 	SetupAudio();
 
 	AttachCamera(playerID);
-	gameWorld.GetCamera(playerID)->SetPlayerID(playerID);
-	gameWorld.GetCamera(playerID)->SetFollow(&this->GetTransform());
+	camera->SetPlayerID(playerID);
+	camera->SetFollow(&this->GetTransform());
 
 }
 
@@ -82,17 +83,17 @@ void PlayerObject::ChangeLoseState()
 void NCL::CSC8503::PlayerObject::Movement()
 {
 	isFreeLook = false;
-	RotateToCamera();
 	Vector3 dir = Vector3(0, 0, 0);
 	lastKey = keyMap.GetButtonState();
 	keyMap.Update();
+	RotatePlayer();
+	MoveCamera();
 
 	GetAxisInput();
 	GetDir(dir);
 
 	GetButtonInput(keyMap.GetButtonState());
 	Move(dir);
-	MoveCamera();
 }
 
 void PlayerObject::MoveTo(Vector3 position) {
@@ -130,16 +131,17 @@ void PlayerObject::Move(Vector3 dir) {
 }
 
 void PlayerObject::MoveCamera() {
-	if (hasCamera) {
-		//gameWorld.GetMainCamera()->SetPosition(transform.GetGlobalPosition() + cameraOffset);
-	}
+	//rotate camera
+	camera->SetPitch(pitch);
+	camera->SetYaw(yaw);
 }
 
 void PlayerObject::GetAxisInput()
 {
+
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	for (int i = 0; i < AxisInput::AxisInputDataMax; i++) {
-		float input;
+		float input = 0;
 		keyMap.GetAxisData(playerID, static_cast<AxisInput>(i), input);
 		axis[i] = input;
 	}
@@ -228,6 +230,18 @@ void PlayerObject::RotateByAxis() {
 	//add yaw 
 	RotateYaw(yaw * 100);
 
+}
+
+void NCL::CSC8503::PlayerObject::RotatePlayer()
+{
+	float sensitivity = 1.5f;
+	pitch += axis[Axis4] * sensitivity;
+	yaw -= axis[Axis3] * sensitivity;
+	pitch = std::clamp(pitch, -90.0f, 90.0f);
+	yaw += (yaw < 0) ? 360.0f : ((yaw > 360.0f) ? -360.0f : 0.0f);
+
+	std::cout << "yaw " << yaw << std::endl;
+	RotateYaw(yaw);
 }
 
 void PlayerObject::CollisionWith(GameObject* other) {
