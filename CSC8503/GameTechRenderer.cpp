@@ -78,7 +78,8 @@ void GameTechRenderer::InitPipeline() {
 
 	debugPass = std::make_unique<DebugRPass>();
 	AddOverlayPass(*debugPass, "Debug");
-
+	hudPass = std::make_unique<HudRPass>();
+	AddOverlayPass(*hudPass, "Hud");
 	UpdatePipeline();
 }
 

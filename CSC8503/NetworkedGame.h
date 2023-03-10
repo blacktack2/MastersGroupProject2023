@@ -18,24 +18,6 @@ namespace NCL {
 		class GameClient;
 		class NetworkPlayer;
 
-		struct GameStatePacket : public GamePacket {
-			GameState state = GameState::Invalid;
-
-			GameStatePacket() {
-				type = GameState_Message;
-				size = sizeof(GameStatePacket) - sizeof(GamePacket);
-			}
-			~GameStatePacket(){}
-		};
-		struct PlayerSyncPacket : public GamePacket {
-			int		objectID = -1;
-
-			PlayerSyncPacket() {
-				type = PlayerSync_Message;
-				size = sizeof(PlayerSyncPacket) - sizeof(GamePacket);
-			}
-		};
-
 		class NetworkedGame : public TutorialGame, public PacketReceiver {
 		public:
 			NetworkedGame(bool isServer = true);
@@ -44,7 +26,7 @@ namespace NCL {
 			void StartAsServer();
 			void StartAsClient(char a, char b, char c, char d);
 			void Clear() override;
-			void LobbyLevel();
+			void StartLobby();
 			void StartLevel() override;
 			void SpawnPlayers();
 
@@ -70,6 +52,8 @@ namespace NCL {
 
 			GameServer* GetServer();
 
+			void Disconnect();
+
 		protected:
 			void UpdateAsServer(float dt);
 			void UpdateAsClient(float dt);
@@ -93,11 +77,12 @@ namespace NCL {
 			void HandleItemInitPacket(GamePacket* payload, int source);
 			void HandleBossActionPacket(GamePacket* payload, int source);
 			void HandleGameStatePacket(GamePacket* payload, int source);
+			void HandleLobbyPacket(GamePacket* payload, int source);
 
-
-			PlayerObject* AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID);
+			PlayerObject* AddNetworkPlayerToWorld(const Vector3& position, int playerID);
 			NetworkBoss* AddNetworkBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
-
+			
+			void UpdateHud(float dt) override;
 			void ProcessState() override;
 
 			std::map<int, int> stateIDs;
@@ -123,6 +108,48 @@ namespace NCL {
 			int fullPacketToDeltaRate = 30;
 
 			bool canJoin;
+		};
+
+
+		enum class LobbyState {
+			Lobby,
+			Full,
+			Started
+		};
+
+		struct MessagePacket : public GamePacket {
+			short playerID;
+			short messageID;
+
+			MessagePacket() {
+				type = Message;
+				size = sizeof(short) * 2;
+			}
+		};
+		struct GameStatePacket : public GamePacket {
+			GameState state;
+
+			GameStatePacket() {
+				type = GameState_Message;
+				size = sizeof(GameStatePacket) - sizeof(GamePacket);
+			}
+			~GameStatePacket() {}
+		};
+		struct PlayerSyncPacket : public GamePacket {
+			int		objectID = -1;
+
+			PlayerSyncPacket() {
+				type = PlayerSync_Message;
+				size = sizeof(PlayerSyncPacket) - sizeof(GamePacket);
+			}
+		};
+		struct LobbyPacket : public GamePacket {
+			LobbyState	status = LobbyState::Lobby;
+
+			LobbyPacket() {
+				type = Lobby_Message;
+				size = sizeof(LobbyPacket) - sizeof(GamePacket);
+			}
 		};
 	}
 }

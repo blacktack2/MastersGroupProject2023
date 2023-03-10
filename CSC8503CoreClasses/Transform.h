@@ -14,7 +14,6 @@ namespace NCL {
 		{
 		public:
 			Transform(GameObject* gameoOject);
-			Transform(GameObject* gameoOject, Transform& other);
 			~Transform();
 
 			Transform& SetPosition(const Vector3& worldPos);

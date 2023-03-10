@@ -119,7 +119,7 @@ void LightingRPass::DrawShadowMap(const Light& light, const Matrix4& shadowMatri
 			return;
 		}
 
-		//renderObject->DrawToShadowMap();
+		renderObject->DrawToShadowMap();
 	});
 
 	renderer.GetConfig().SetDepthTest();

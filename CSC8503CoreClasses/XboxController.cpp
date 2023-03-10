@@ -22,6 +22,25 @@ XboxController::~XboxController()
 
 }
 
+void XboxController::CheckPorts()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        ZeroMemory(&state, sizeof(XINPUT_STATE));
+        ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
+        dwResult = XInputGetState(i, &state);
+        if (dwResult == ERROR_SUCCESS)
+        {
+            connectedControllers.push_back(i+1);
+        }
+    }
+}
+
+int XboxController::GetActiveControllerNumber()
+{
+    return connectedControllers.size();
+}
+
 bool XboxController::UpdateConnection(unsigned int controllerNum)   // controllerNum == 1,2,3,4
 {
     controllerNum--;

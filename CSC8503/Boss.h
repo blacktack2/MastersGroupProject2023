@@ -71,8 +71,11 @@ namespace NCL::CSC8503 {
         PlayerObject* GetTarget() {
             return target;
         }
-        void SetTarget(PlayerObject* player) {
-            target = player;
+        void SetNextTarget(PlayerObject* player) {
+            if (target == nullptr) {
+                target = player;
+            }    
+            nextTarget = player;
         }
 
         bool RandomWalk();
@@ -108,6 +111,7 @@ namespace NCL::CSC8503 {
         float DistToTarget();
 
         float deltaTime = 0.0f;
+        bool isClient = false;
 
         Health health = Health(100);
 
@@ -131,10 +135,12 @@ namespace NCL::CSC8503 {
         float inkRainTimer = 0.0f;
         bool rainIsInitialised = false;
         int currentRainBomb = 0;
+
         std::vector<BossBullet*> rain;
         std::vector<Vector3> rainBombPositions;
 
         PlayerObject* target;
+        PlayerObject* nextTarget;
 
         BehaviourNodeWithChildren* behaviourTree;
         BossAction bossAction = NoAction;

@@ -14,6 +14,8 @@
 NetworkBoss::NetworkBoss(NetworkedGame* game) : Boss()
 {
 	this->game = game;
+	if(!this->game->GetServer())
+		isClient = true;
 }
 
 NetworkBoss::~NetworkBoss()
@@ -27,6 +29,7 @@ void NetworkBoss::ChangeLoseState()
 
 	if (game->GetServer())
 		game->GetServer()->SendGlobalPacket(static_cast<GamePacket*>(&packet));
+	Boss::ChangeLoseState();
 }
 
 void NetworkBoss::BulletModification(BossBullet* bullet)
@@ -41,10 +44,5 @@ void NetworkBoss::BulletModification(BossBullet* bullet)
 
 	if (game->GetServer())
 		game->GetServer()->SendGlobalPacket(&newObj);
-}
-
-void NetworkBoss::ChangeTarget()
-{
-	//game.
 }
 

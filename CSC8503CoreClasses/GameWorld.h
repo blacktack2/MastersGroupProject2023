@@ -57,9 +57,66 @@ namespace NCL {
 			SpotLight&        AddSpotLight(const Vector3& position, const Vector4& direction, const Vector4& colour, float radius, float angle);
 			DirectionalLight& AddDirectionalLight(const Vector3& direction, const Vector4& colour);
 			void RemoveLight(LightIterator l);
+			void ClearLight();
 
 			Camera* GetMainCamera() const {
 				return mainCamera;
+			}
+			void InitCameras() const {
+				InitCamera(playerCamera1);
+				InitCamera(playerCamera2);
+				InitCamera(playerCamera3);
+				InitCamera(playerCamera4);
+
+			}
+			void InitCamera(Camera* cam) const {
+				if (!cam)
+					return;
+				cam->SetNearPlane(0.1f);
+				cam->SetFarPlane(1000.0f);
+				cam->SetPitch(-15.0f);
+				cam->SetYaw(315.0f);
+				cam->SetPosition(Vector3(-60, 40, 60));
+				cam->SetFollow(nullptr);
+			}
+
+			Camera* GetCamera(int n) const {
+				switch (n)
+				{
+				case 0:
+					return playerCamera4;	// this is HARDCODED! fix this later!
+				case 1:
+					return playerCamera1;
+				case 2:
+					return playerCamera2;
+				case 3:
+					return playerCamera3;
+				case 4:
+					return playerCamera4;
+				default:
+					return nullptr;		// wrong input
+				}
+			}
+
+			Camera* SetMainCamera(int n)
+			{
+				switch (n)
+				{
+				case 1:
+					mainCamera = playerCamera1;
+					return mainCamera;
+				case 2:
+					mainCamera = playerCamera2;
+					return mainCamera;
+				case 3:
+					mainCamera = playerCamera3;
+					return mainCamera;
+				case 4:
+					mainCamera = playerCamera4;
+					return mainCamera;
+				default:
+					return nullptr;		// wrong input
+				}
 			}
 
 			void ShuffleConstraints(bool state) {
@@ -111,6 +168,10 @@ namespace NCL {
 			QuadTree staticQuadTree;
 
 			Camera* mainCamera;
+			Camera* playerCamera1 = nullptr;
+			Camera* playerCamera2 = nullptr;
+			Camera* playerCamera3 = nullptr;
+			Camera* playerCamera4 = nullptr;
 
 			bool shuffleConstraints;
 			bool shuffleObjects;
