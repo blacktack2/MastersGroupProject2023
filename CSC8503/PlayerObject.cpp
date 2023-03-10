@@ -78,7 +78,9 @@ void PlayerObject::Update(float dt) {
 			Move(movingDir);
 		}*/
 		GetControllerInput(dir);
+		MoveAnimation(dir);
 		Move(dir);
+
 		MoveCamera();
 
 		
@@ -322,4 +324,47 @@ void NCL::CSC8503::PlayerObject::SetupAudio()
 
 	SoundSystem::GetSoundSystem()->SetListener(this);
 
+}
+void  NCL::CSC8503::PlayerObject::MoveAnimation(Vector3 dir) {
+	if (this->GetPhysicsObject()->GetLinearVelocity().y > 0.01) {
+		//jump
+		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerJump").get()) {
+			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerJump"));
+		}
+	}
+	else if (this->GetPhysicsObject()->GetLinearVelocity().x<0.2 && this->GetPhysicsObject()->GetLinearVelocity().x>-0.2 && this->GetPhysicsObject()->GetLinearVelocity().z<0.2 && this->GetPhysicsObject()->GetLinearVelocity().z>-0.2) {
+		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle").get()) {
+			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle"));
+		}
+	}
+	else if ((dir.z < 0) && (dir.x * dir.x < dir.z * dir.z)) {
+		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerForward").get()) {
+			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerForward"));
+		}
+		//forward
+	}
+	else if ((dir.z > 0) && (dir.x * dir.x < dir.z * dir.z)) {
+		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerBackward").get()) {
+			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerBackward"));
+		}
+		//backward
+	}
+	else if ((dir.x > 0) && (dir.x * dir.x > dir.z * dir.z)) {
+		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerRight").get()) {
+			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerRight"));
+		}
+		//right
+	}
+	else if ((dir.x < 0) && (dir.x * dir.x > dir.z * dir.z)) {
+		//left
+		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerLeft").get()) {
+			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerLeft"));
+		}
+	}
 }

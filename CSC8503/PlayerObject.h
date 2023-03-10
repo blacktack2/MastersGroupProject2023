@@ -5,7 +5,7 @@
 #include "GameStateManager.h"
 #include "Health.h"
 #include "PlayerBullet.h"
-
+#include"AnimatedRenderObject.h"
 namespace NCL {
 	namespace CSC8503 {
 		class Bullet;
@@ -76,7 +76,7 @@ namespace NCL {
 			float projectileLifespan = 5.0f;
 			float projectileFireRate = 0.1f;
 			float projectileFireRateTimer = 0;
-
+			void MoveAnimation(Vector3 dir);
 		private:
 
 			void SetupAudio();
