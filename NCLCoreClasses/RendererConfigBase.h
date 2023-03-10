@@ -82,6 +82,7 @@ namespace NCL::Rendering {
 	class RendererConfigBase {
 	public:
 		RendererConfigBase(RendererBase& renderer);
+		virtual ~RendererConfigBase() = default;
 
 		/**
 		 * @brief Set all settings to their default values.

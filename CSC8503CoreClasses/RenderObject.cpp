@@ -30,13 +30,24 @@ transform(parentTransform), mesh(other.mesh), material(other.material), colour(o
 RenderObject::~RenderObject() {
 }
 
-void RenderObject::Draw() {
+void RenderObject::DrawToGBuffer() {
 	if (!mesh) {
 		return;
 	}
 
 	for (unsigned int l = 0; l < mesh->GetSubMeshCount(); l++) {
 		PreDraw(l);
+		mesh->Draw(l);
+	}
+}
+
+void RenderObject::DrawToShadowMap() {
+	if (!mesh) {
+		return;
+	}
+
+	for (unsigned int l = 0; l < mesh->GetSubMeshCount(); l++) {
+		PreShadow(l);
 		mesh->Draw(l);
 	}
 }
@@ -72,6 +83,27 @@ void RenderObject::PreDraw(int sublayer) {
 	PreDraw(sublayer, *shader);
 }
 
+void RenderObject::PreShadow(int sublayer) {
+	MeshMaterial& mat = material ? *material : *AssetLibrary<MeshMaterial>::GetAsset("default");
+
+	const MeshMaterialEntry* entry = mat.GetMaterialForLayer(sublayer);
+	entry = entry ? entry : mat.GetMaterialForLayer(0);
+
+	ShaderBase* shader = entry->GetShadowShader();
+	shader = shader ? shader : &GetDefaultShadowShader();
+
+	shader->Bind();
+
+	Matrix4 modelMatrix = transform.get().GetGlobalMatrix();
+	shader->SetUniformMatrix("modelMatrix", modelMatrix);
+
+	PreShadow(sublayer, *shader);
+}
+
 ShaderBase& RenderObject::GetDefaultShader() {
 	return *AssetLibrary<ShaderBase>::GetAsset("modelDefault");
+}
+
+ShaderBase& RenderObject::GetDefaultShadowShader() {
+	return *AssetLibrary<ShaderBase>::GetAsset("shadowDefault");
 }

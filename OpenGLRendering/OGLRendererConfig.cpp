@@ -89,7 +89,7 @@ void OGLRendererConfig::SetBlend(bool enabled, BlendFuncSrc srcFactor, BlendFunc
 }
 
 void OGLRendererConfig::SetColourMask(bool red, bool green, bool blue, bool alpha) {
-	glColorMask(red, green, blue, alpha);
+//	glColorMask(red, green, blue, alpha);
 }
 
 void OGLRendererConfig::SetCullFace(bool enabled, CullFace mode) {

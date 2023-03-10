@@ -40,6 +40,8 @@ namespace NCL::CSC8503 {
 
 		virtual void Render() override;
 
+		void AddShadowShader(std::shared_ptr<ShaderBase> shader);
+
 		inline TextureBase& GetDiffuseOutTex() const {
 			return *lightDiffuseOutTex;
 		}
@@ -55,7 +57,8 @@ namespace NCL::CSC8503 {
 			normalTexIn = &tex;
 		}
 	private:
-		void DrawLight(const Light& light);
+		void DrawShadowMap(const Light& light, const Matrix4& shadowMatrix);
+		void DrawLight(const Light& light, const Matrix4& shadowMatrix);
 
 		GameTechRenderer& renderer;
 		GameWorld& gameWorld;
@@ -63,14 +66,19 @@ namespace NCL::CSC8503 {
 		std::shared_ptr<MeshGeometry> sphere;
 		std::shared_ptr<MeshGeometry> quad;
 
-		std::unique_ptr<FrameBuffer> frameBuffer;
+		std::unique_ptr<FrameBuffer> shadowFrameBuffer;
+		std::unique_ptr<FrameBuffer> lightFrameBuffer;
 
 		TextureBase* depthTexIn = nullptr;
 		TextureBase* normalTexIn = nullptr;
 
+		std::unique_ptr<TextureBase> shadowMapTex;
+
 		std::unique_ptr<TextureBase> lightDiffuseOutTex;
 		std::unique_ptr<TextureBase> lightSpecularOutTex;
 
-		std::unique_ptr<ShaderBase> shader;
+		std::unique_ptr<ShaderBase> lightShader;
+
+		std::vector<std::shared_ptr<ShaderBase>> shadowShaders{};
 	};
 }

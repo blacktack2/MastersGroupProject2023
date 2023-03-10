@@ -8,6 +8,7 @@
 #pragma once
 #include "Vector3.h"
 #include "Vector4.h"
+#include "Matrix4.h"
 
 #include <memory>
 
@@ -24,7 +25,12 @@ namespace NCL::CSC8503 {
 		virtual ~Light() = default;
 
 		virtual void Upload(ShaderBase& shader) const = 0;
+
+		inline const Matrix4& GetShadowMatrix() const {
+			return shadowMatrix;
+		}
 	protected:
+		Matrix4 shadowMatrix;
 	};
 
 	class PointLight : public Light {
@@ -36,6 +42,7 @@ namespace NCL::CSC8503 {
 
 		inline void SetPosition(const Vector3& position) {
 			this->position = position;
+			UpdateShadowMatrix();
 		}
 		inline const Vector3& GetPosition() {
 			return position;
@@ -55,6 +62,11 @@ namespace NCL::CSC8503 {
 			return radius;
 		}
 	private:
+		inline void UpdateShadowMatrix() {
+			shadowMatrix = Matrix4::Perspective(1.0f, 100.0f, 1.0f, 170.0f) *
+						   Matrix4::BuildViewMatrix(position, Vector3(0.0f), Vector3(0.0f, 1.0f, 0.0f));
+		}
+
 		Vector3 position;
 		Vector4 colour;
 		float radius;
@@ -69,6 +81,7 @@ namespace NCL::CSC8503 {
 
 		inline void SetPosition(const Vector3& position) {
 			this->position = position;
+			UpdateShadowMatrix();
 		}
 		inline const Vector3& GetPosition() {
 			return position;
@@ -102,6 +115,11 @@ namespace NCL::CSC8503 {
 			return angle;
 		}
 	private:
+		inline void UpdateShadowMatrix() {
+			shadowMatrix = Matrix4::Perspective(1.0f, 100.0f, 1.0f, 170.0f) *
+						   Matrix4::BuildViewMatrix(position, Vector3(0.0f), Vector3(0.0f, 1.0f, 0.0f));
+		}
+
 		Vector3 position;
 		Vector3 direction;
 		Vector4 colour;
@@ -118,6 +136,7 @@ namespace NCL::CSC8503 {
 
 		inline void SetDirection(const Vector3& direction) {
 			this->direction = direction;
+			UpdateShadowMatrix();
 		}
 		inline const Vector3& GetDirection() {
 			return direction;
@@ -130,6 +149,11 @@ namespace NCL::CSC8503 {
 			return colour;
 		}
 	private:
+		inline void UpdateShadowMatrix() {
+			shadowMatrix = Matrix4::Orthographic(-300.0f, 300.0f, -300.0f, 300.0f, -1.0f, 300.0f) *
+						   Matrix4::BuildViewMatrix(direction * 150.0f, Vector3(0.0f), Vector3(0.0f, 1.0f, 0.0f));
+		}
+
 		Vector3 direction;
 		Vector4 colour;
 	};

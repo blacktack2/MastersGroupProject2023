@@ -75,7 +75,7 @@ void ModelRPass::Render() {
 			return;
 		}
 
-		renderObject->Draw();
+		renderObject->DrawToGBuffer();
 	});
 
 	renderer.GetConfig().SetDepthTest();

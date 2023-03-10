@@ -13,6 +13,7 @@ using namespace NCL::CSC8503;
 
 PointLight::PointLight(const Vector3& position, const Vector4& colour, float radius) : Light(),
 position(position), colour(colour), radius(radius) {
+	UpdateShadowMatrix();
 }
 
 void PointLight::Upload(ShaderBase& shader) const {
@@ -24,6 +25,7 @@ void PointLight::Upload(ShaderBase& shader) const {
 
 SpotLight::SpotLight(const Vector3& position, const Vector3& direction, const Vector4& colour, float radius, float angle) : Light(),
 position(position), direction(direction), colour(colour), radius(radius), angle(angle) {
+	UpdateShadowMatrix();
 }
 
 void SpotLight::Upload(ShaderBase& shader) const {
@@ -35,6 +37,7 @@ void SpotLight::Upload(ShaderBase& shader) const {
 
 DirectionalLight::DirectionalLight(const Vector3& direction, const Vector4& colour) : Light(),
 direction(direction), colour(colour) {
+	UpdateShadowMatrix();
 }
 
 void DirectionalLight::Upload(ShaderBase& shader) const {
