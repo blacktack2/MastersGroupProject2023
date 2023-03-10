@@ -74,6 +74,8 @@ namespace NCL {
 	public:
 		virtual ~MeshGeometry();
 
+		virtual void Initilize() = 0;
+
 		virtual void Draw() = 0;
 		virtual void Draw(unsigned int subLayer) = 0;
 

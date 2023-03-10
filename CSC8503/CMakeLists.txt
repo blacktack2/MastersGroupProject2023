@@ -12,7 +12,6 @@ set(Header_Files
     "GameStateManager.h"
 	"Maze.h"
     "MenuRenderObject.h"
-
     "Obstacle.h"
     "StateGameObject.h"
     "TutorialGame.h"

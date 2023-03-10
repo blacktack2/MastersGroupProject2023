@@ -38,7 +38,7 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
-	shader = AssetLoader::CreateShader("light.vert", "light.frag");
+	shader = AssetLoader::CreateShaderAndInit("light.vert", "light.frag");
 
 	shader->Bind();
 

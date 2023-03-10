@@ -61,9 +61,12 @@ namespace NCL::Rendering {
 		}
 
 		static std::unique_ptr<ShaderBase> CreateShader(const std::string& vertex, const std::string& fragment);
+		static std::unique_ptr<ShaderBase> CreateShaderAndInit(const std::string& vertex, const std::string& fragment);
 
 		static void PrintCompileLog(GLuint object);
 		static void PrintLinkLog(GLuint program);
+
+		void Initilize();
 	protected:
 		void LoadPass(const GLchar* code, ShaderStage type);
 		void Clear();

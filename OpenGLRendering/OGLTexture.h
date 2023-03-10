@@ -33,6 +33,8 @@ namespace NCL::Rendering {
 		void Resize(unsigned int width, unsigned int height) override;
 		void Upload(void* data, PixelDataFormat format = PixelDataFormat::RGBA, PixelDataType type = PixelDataType::UnsignedByte) override;
 
+		virtual void Initilize() override {}
+
 		void Bind() const override;
 		void Bind(int slot) const override;
 		void Bind(int slot, int uniform) const override;

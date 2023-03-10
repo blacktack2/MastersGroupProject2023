@@ -34,6 +34,9 @@
 #include "ScreenMain.h"
 
 #include "AssetLibrary.h"
+#include "OGLLoadingManager.h"
+
+
 #include "AssetLoader.h"
 #include "PrefabLibrary.h"
 
@@ -202,7 +205,6 @@ void LoadAsset() {
 	LoadPrefabs();
 }
 
-
 void StartPushdownAutomata(Window* w) {
 	PushdownMachine machine(new ScreenMain());
 	while (w->UpdateWindow()) {
@@ -218,12 +220,14 @@ void StartPushdownAutomata(Window* w) {
 }
 
 int main() {
+
 	Window* w = Window::CreateGameWindow("CSC8507 Game technology!", 1280, 720);
+	GameTechRenderer& renderer = GameTechRenderer::instance();
+	OGLLoadingManager loadingScreen = OGLLoadingManager(w, &renderer);
 
 	std::cout << "loading\n";
-	GameTechRenderer& renderer = GameTechRenderer::instance();
 	
-	LoadAsset();
+	loadingScreen.Load(LoadAsset);
 	renderer.InitPipeline();
 	
 	if (!w->HasInitialised()) {

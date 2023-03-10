@@ -132,6 +132,7 @@ namespace NCL::CSC8503 {
 		inline float GetSSAOBias() {
 			return ssaoBias;
 		}
+
 	protected:
 		GameTechRenderer();
 		~GameTechRenderer();
