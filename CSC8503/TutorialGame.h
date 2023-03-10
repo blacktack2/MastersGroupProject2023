@@ -1,7 +1,7 @@
 /**
  * @file   TutorialGame.h
- * @brief  
- * 
+ * @brief
+ *
  * @author Rich Davidson
  * @author Stuart Lewis
  * @date   March 2023
@@ -23,6 +23,7 @@ namespace NCL::CSC8503 {
 	class GameTechRenderer;
 	class GameWorld;
 	class MenuManager;
+	class OptionManager;
 	class Hud;
 	class GameLevel;
 	class PhysicsSystem;
@@ -64,7 +65,7 @@ namespace NCL::CSC8503 {
 
 		GameObject* AddFloorToWorld(const Vector3& position);
 
-			PlayerObject* AddPlayerToWorld(int playerID, const Vector3& position);
+		PlayerObject* AddPlayerToWorld(int playerID, const Vector3& position);
 
 		Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
 		void BuildLevel();
@@ -77,6 +78,7 @@ namespace NCL::CSC8503 {
 		GameWorld&        gameWorld;
 		InputKeyMap&      keyMap;
 		MenuManager&      menuManager;
+		OptionManager&	  optionManager;
 		
 		std::unique_ptr<Hud> hud;
 		std::unique_ptr<PhysicsSystem> physics;
