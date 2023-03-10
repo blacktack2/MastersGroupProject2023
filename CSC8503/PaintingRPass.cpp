@@ -22,7 +22,7 @@ PaintingRPass::PaintingRPass() : OGLMainRenderPass(),
 gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	frameBuffer = AssetLoader::CreateFrameBuffer();
 
-	shader = AssetLoader::CreateShader("paintStencil.vert", "paintStencil.frag");
+	shader = AssetLoader::CreateShaderAndInit("paintStencil.vert", "paintStencil.frag");
 }
 
 PaintingRPass::~PaintingRPass() {

@@ -130,7 +130,6 @@ namespace NCL::CSC8503 {
 			return ssaoBias;
 		}
 
-		void LoadingRender(float dt, ShaderBase* shader, MeshGeometry* mesh);
 	protected:
 		GameTechRenderer();
 		~GameTechRenderer();

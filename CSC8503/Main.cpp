@@ -205,8 +205,8 @@ int main() {
 	OGLLoadingManager loadingScreen = OGLLoadingManager(w, &renderer);
 
 	std::cout << "loading\n";
-	return 0;
-	//loadingScreen.Load(LoadAsset);
+	
+	loadingScreen.Load(LoadAsset);
 	renderer.InitPipeline();
 	
 	if (!w->HasInitialised()) {

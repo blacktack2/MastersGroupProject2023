@@ -25,8 +25,8 @@ using namespace CSC8503;
 
 DebugRPass::DebugRPass() :
 OGLOverlayRenderPass(), gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
-	lineShader = AssetLoader::CreateShader("debugLines.vert", "debugLines.frag");
-	textShader = AssetLoader::CreateShader("debugText.vert" , "debugText.frag" );
+	lineShader = AssetLoader::CreateShaderAndInit("debugLines.vert", "debugLines.frag");
+	textShader = AssetLoader::CreateShaderAndInit("debugText.vert" , "debugText.frag" );
 
 	textShader->Bind();
 
@@ -36,9 +36,9 @@ OGLOverlayRenderPass(), gameWorld(GameWorld::instance()), renderer(GameTechRende
 
 	textShader->Unbind();
 
-	lineMesh = AssetLoader::CreateMesh();
+	lineMesh = AssetLoader::CreateMeshAndInit();
 	lineMesh->SetPrimitiveType(GeometryPrimitive::Lines);
-	textMesh = AssetLoader::CreateMesh();
+	textMesh = AssetLoader::CreateMeshAndInit();
 }
 
 DebugRPass::~DebugRPass() {

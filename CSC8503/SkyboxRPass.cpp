@@ -33,7 +33,7 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
-	shader = AssetLoader::CreateShader("skybox.vert", "skybox.frag");
+	shader = AssetLoader::CreateShaderAndInit("skybox.vert", "skybox.frag");
 
 	shader->Bind();
 

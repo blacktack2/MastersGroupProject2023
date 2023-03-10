@@ -33,7 +33,9 @@ TextureLoadFunction AssetLoader::textureLoad = nullptr;
 BufferObjectCreateFunction AssetLoader::bufferObjectCreate = nullptr;
 FrameBufferCreateFunction  AssetLoader::frameBufferCreate  = nullptr;
 MeshCreateFunction         AssetLoader::meshCreate         = nullptr;
+MeshCreateFunction         AssetLoader::meshCreateAndInit  = nullptr;
 ShaderCreateFunction       AssetLoader::shaderCreate       = nullptr;
+ShaderCreateFunction       AssetLoader::shaderCreateAndInit = nullptr;
 TextureCreateFunction      AssetLoader::textureCreate      = nullptr;
 
 void AssetLoader::RegisterTextureDataLoadFunction(TextureDataLoadFunction f, const std::string& fileExtension) {
@@ -81,11 +83,25 @@ void AssetLoader::RegisterMeshCreateFunction(MeshCreateFunction f) {
 	meshCreate = f;
 }
 
+void AssetLoader::RegisterMeshCreateAndInitFunction(MeshCreateFunction f) {
+	if (meshCreateAndInit) {
+		std::cout << __FUNCTION__ << " replacing previously defined Mesh Create and init Function.\n";
+	}
+	meshCreateAndInit = f;
+}
+
 void AssetLoader::RegisterShaderCreateFunction(ShaderCreateFunction f) {
 	if (shaderCreate) {
 		std::cout << __FUNCTION__ << " replacing previously defined Shader Create Function.\n";
 	}
 	shaderCreate = f;
+}
+
+void AssetLoader::RegisterShaderCreateAndInitFunction(ShaderCreateFunction f) {
+	if (shaderCreateAndInit) {
+		std::cout << __FUNCTION__ << " replacing previously defined Shader Create and init Function.\n";
+	}
+	shaderCreateAndInit = f;
 }
 
 void AssetLoader::RegisterTextureCreateFunction(TextureCreateFunction f) {
@@ -165,12 +181,28 @@ std::unique_ptr<MeshGeometry> AssetLoader::CreateMesh() {
 	return meshCreate();
 }
 
+std::unique_ptr<MeshGeometry> AssetLoader::CreateMeshAndInit() {
+	if (meshCreateAndInit == nullptr) {
+		std::cout << __FUNCTION__ << " no Mesh Create Function has been defined!\n";
+		return nullptr;
+	}
+	return meshCreateAndInit();
+}
+
 std::unique_ptr<ShaderBase> AssetLoader::CreateShader(const std::string& vertex, const std::string& fragment) {
 	if (shaderCreate == nullptr) {
-		std::cout << __FUNCTION__ << " no Create Function has been defined!\n";
+		std::cout << __FUNCTION__ << " no Shader Create Function has been defined!\n";
 		return nullptr;
 	}
 	return shaderCreate(vertex, fragment);
+}
+
+std::unique_ptr<ShaderBase> AssetLoader::CreateShaderAndInit(const std::string& vertex, const std::string& fragment) {
+	if (shaderCreateAndInit == nullptr) {
+		std::cout << __FUNCTION__ << " no Shader Create And Init Function has been defined!\n";
+		return nullptr;
+	}
+	return shaderCreateAndInit(vertex, fragment);
 }
 
 std::unique_ptr<TextureBase> AssetLoader::CreateTexture(TextureType type, unsigned int width, unsigned int height) {

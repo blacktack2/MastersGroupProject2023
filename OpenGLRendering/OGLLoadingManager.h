@@ -17,10 +17,12 @@ namespace NCL {
 		OGLLoadingManager(Window* w, RendererBase* base);
 		~OGLLoadingManager();
 
+		void RunFunc(std::function<void()> func);
 
-		virtual void Load(std::function<void()> func) override {}
+
+		virtual void Load(std::function<void()> func) override;
 	protected:
-		virtual void DisplayLoadingScreen() override {}
+		virtual void DisplayLoadingScreen() override;
 	private:
 		OGLMesh* quad;
 		OGLShader* shader;

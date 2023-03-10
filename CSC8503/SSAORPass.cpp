@@ -41,8 +41,8 @@ SSAORPass::SSAORPass() : OGLMainRenderPass(), renderer(GameTechRenderer::instanc
 	blurFrameBuffer->DrawBuffers();
 	blurFrameBuffer->Unbind();
 
-	ssaoShader = AssetLoader::CreateShader("ssao.vert", "ssao.frag");
-	blurShader = AssetLoader::CreateShader("ssaoBlur.vert", "ssaoBlur.frag");
+	ssaoShader = AssetLoader::CreateShaderAndInit("ssao.vert", "ssao.frag");
+	blurShader = AssetLoader::CreateShaderAndInit("ssaoBlur.vert", "ssaoBlur.frag");
 
 	ssaoShader->Bind();
 

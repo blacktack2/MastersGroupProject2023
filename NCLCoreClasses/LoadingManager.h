@@ -7,6 +7,9 @@
 
 namespace NCL {
 	class LoadingMangerBase{
+	public:
+		virtual ~LoadingMangerBase() {};
+		virtual void Load(std::function<void()> func) = 0;
 	protected:
 
 		virtual void DisplayLoadingScreen() = 0;		
@@ -14,11 +17,7 @@ namespace NCL {
 		LoadingMangerBase(Window* w) {
 			loadingComplete = false;
 			window = w;
-		}
-		~LoadingMangerBase() {
-		}
-	public:
-		virtual void Load(std::function<void()> func) = 0;
+		}	
 	protected:
 		bool loadingComplete;
 		Window* window;
