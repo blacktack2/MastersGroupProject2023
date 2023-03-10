@@ -14,7 +14,7 @@
 #endif // x64
 
 #ifdef _ORBIS
-
+#include"Boss.h"
 #endif // _ORBIS
 
 using namespace NCL;
