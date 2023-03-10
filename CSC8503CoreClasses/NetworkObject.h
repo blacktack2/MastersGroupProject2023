@@ -3,6 +3,7 @@
 #include "PhysicsObject.h"
 #include "NetworkBase.h"
 #include "NetworkState.h"
+#include "InputKeyMap.h"
 
 namespace NCL::CSC8503 {
 	class GameObject;
@@ -47,7 +48,8 @@ namespace NCL::CSC8503 {
 	struct ClientPacket : public GamePacket {
 		int		lastID = -1;
 		unsigned int buttonstates = 0;
-		int yaw = 0;
+		short int axis[AxisInput::AxisInputDataMax];
+		
 
 		ClientPacket() {
 			type = Received_State;

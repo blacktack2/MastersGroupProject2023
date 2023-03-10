@@ -40,11 +40,14 @@ namespace NCL {
 			}
 
 		protected:
+			void Movement();
+
 			void MoveTo(Vector3 position);
 			void Move(Vector3 dir);
 			void MoveByPosition(float dt, Vector3 dir);
-			void GetInput(Vector3& dir, unsigned int keyPress = InputType::Empty);
-			void GetControllerInput(Vector3& movingDir3D);
+			void GetButtonInput(unsigned int keyPress);
+			void GetAxisInput();
+			void GetDir(Vector3& movingDir3D);
 
 			void RotateYaw(float yaw);
 			void RotateToCamera();
@@ -56,6 +59,7 @@ namespace NCL {
 
 			PlayerBullet* PrepareBullet();
 			virtual void Shoot();
+			void Jump();
 			void BulletModification(PlayerBullet* bullet){};
 
 			int playerID = -1;
@@ -66,6 +70,7 @@ namespace NCL {
 			//keymap
 			NCL::InputKeyMap& keyMap;
 			unsigned int lastKey;
+			float axis[AxisInput::AxisInputDataMax];
 			
 			//gameplay
 			Health health = Health(100);

@@ -21,27 +21,11 @@ namespace NCL {
 				PlayerObject::RotateYaw(yaw);
 			}
 
-			void MoveInput(unsigned int keyPress) {
-				if (health.GetHealth() > 0) {
-					Vector3 dir = Vector3(0, 0, 0);
-					GetInput(dir, keyPress);
-					Move(dir);
-					MoveCamera();
-				}
-				
-			}
+			void MoveInput(unsigned int keyPress, short int axis[AxisInput::AxisInputDataMax]);
 
-			void ServerSideMovement() {
-				RotateToCamera();
-				Vector3 dir = Vector3(0, 0, 0);
-				lastKey = keyMap.GetButtonState();
-				keyMap.Update();
-				if (health.GetHealth() > 0) {
-					GetInput(dir, keyMap.GetButtonState());
-					Move(dir);
-					MoveCamera();
-				}
-			}
+			void ServerSideMovement();
+
+			void SetAxis(short int axis[AxisInput::AxisInputDataMax]);
 
 			int GetPlayerNum() const {
 				return playerID;

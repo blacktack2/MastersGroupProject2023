@@ -282,21 +282,23 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	
 	//*/
 	//send self data to server
+
+
 	ClientPacket newPacket;
 	newPacket.lastID = stateID;
-	keyMap.Update();
-	newPacket.buttonstates = keyMap.GetButtonState();
-	if (!Window::GetKeyboard()->KeyDown(KeyboardKeys::C)) {
-		newPacket.yaw = (int) gameWorld.GetMainCamera()->GetYaw() * 1000;
-	}
-	else {
-		newPacket.yaw = NULL;
-	}
 	if (localPlayer) {
 		NetworkPlayer* player = static_cast<NetworkPlayer*>(localPlayer);
 		if (player->isFrozen) {
-			newPacket.buttonstates = 0;
-			newPacket.yaw = NULL;
+			keyMap.Update();
+			newPacket.buttonstates = keyMap.GetButtonState();
+			if (!keyMap.GetButton(InputType::FreeLook, localPlayer->GetPlayerID())) {
+				for (int i = 0; i < AxisInput::AxisInputDataMax; i++) {
+					float axis;
+					keyMap.GetAxisData(localPlayer->GetPlayerID(), static_cast<AxisInput>(i), axis);
+					newPacket.axis[i] = static_cast<short int> (axis * 10000);
+
+				}
+			}
 		}
 	}
 	
@@ -399,12 +401,8 @@ PlayerObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID) {
 	if (!serverPlayers.contains(playerID))
 		return;
-	//rotation
-	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(((ClientPacket*)payload)->buttonstates);
-
-	if (((ClientPacket*)payload)->yaw != NULL) {
-		((NetworkPlayer*)serverPlayers[playerID])->RotateYaw(((ClientPacket*)payload)->yaw * 0.001f);
-	}
+	
+	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(((ClientPacket*)payload)->buttonstates, ((ClientPacket*)payload)->axis);
 
 	if (((ClientPacket*)payload)->lastID > stateIDs[playerID]) {
 		stateIDs[playerID] = ((ClientPacket*)payload)->lastID;

@@ -62,26 +62,7 @@ void PlayerObject::Update(float dt) {
 	projectileFireRateTimer -= dt;
 	CheckGround();
 	if (!isNetwork) {
-		RotateToCamera();
-		Vector3 dir = Vector3(0, 0, 0);
-		lastKey = keyMap.GetButtonState();
-		keyMap.Update();
-		/*
-		if (playerID == 0)		// Keyboard&Mouse user
-		{
-			GetInput(dir, keyMap.GetButtonState());
-			Move(dir);
-		}
-		else {
-			Vector3 movingDir;
-			GetControllerInput(movingDir);
-			Move(movingDir);
-		}*/
-		GetControllerInput(dir);
-		Move(dir);
-		MoveCamera();
-
-		
+		Movement();
 	}
 
 	//If on ink
@@ -96,6 +77,22 @@ void PlayerObject::Update(float dt) {
 void PlayerObject::ChangeLoseState()
 {
 	gameStateManager->SetGameState(GameState::Lose);
+}
+
+void NCL::CSC8503::PlayerObject::Movement()
+{
+	isFreeLook = false;
+	RotateToCamera();
+	Vector3 dir = Vector3(0, 0, 0);
+	lastKey = keyMap.GetButtonState();
+	keyMap.Update();
+
+	GetAxisInput();
+	GetDir(dir);
+
+	GetButtonInput(keyMap.GetButtonState());
+	Move(dir);
+	MoveCamera();
 }
 
 void PlayerObject::MoveTo(Vector3 position) {
@@ -126,6 +123,9 @@ void PlayerObject::Move(Vector3 dir) {
 		}
 
 	}
+	if(dir != Vector3(0)){
+		playerSource->Play(Sound::AddSound("footstep06.wav"));
+	}
 	lastDir = dir;
 }
 
@@ -135,98 +135,62 @@ void PlayerObject::MoveCamera() {
 	}
 }
 
-void PlayerObject::GetControllerInput(Vector3& movingDir3D)		// controllerNum == 1,2,3,4
-/*
-This is a temporary member function used for testing controller's input. Feel free to merge this into PlayerObject::GetInput when necessary.
-*/
+void PlayerObject::GetAxisInput()
 {
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
-	isFreeLook = false;
-	
-	// Thumb for movement:
-	Vector3 cameraForwardDirection = gameWorld.GetCamera(playerID)->GetPosition() - this->GetTransform().GetGlobalPosition();
-	Vector2 movementData{ 0,0 };
-	float rightTriggerDepth = 0;
-	float leftTriggerDepth = 0;
-	movingDir3D = Vector3{ 0,0,0 };
-	keyMap.GetAxisData(playerID, AxisInput::Axis1, movementData.x);
-	if (keyMap.GetAxisData(playerID, AxisInput::Axis1, movementData.x) && keyMap.GetAxisData(playerID, AxisInput::Axis2, movementData.y))
-	{
-		if (!(movementData.x == 0 && movementData.y == 0))
-		{
-			Vector2 unitForwardDir{ 0,1 };
-			float angle = atan2(unitForwardDir.x * movementData.y - movementData.x * unitForwardDir.y, unitForwardDir.x * movementData.x + unitForwardDir.y * movementData.y);
-			Vector2 movingDir2D;
-			movingDir2D.x = cameraForwardDirection.x * cos(angle) - (-cameraForwardDirection.z) * sin(angle);
-			movingDir2D.y = (-cameraForwardDirection.z) * cos(angle) + cameraForwardDirection.x * sin(angle);
-			movingDir3D = -(Vector3{ movingDir2D.x,0,-movingDir2D.y }).Normalised();
-		}
-	}
-	if (keyMap.GetAxisData(playerID, AxisInput::Axis5, rightTriggerDepth))
-	{
-		if (rightTriggerDepth > 0.5f)
-		{
-			Shoot();
-		}
-	}
-	if (keyMap.GetAxisData(playerID, AxisInput::Axis6, leftTriggerDepth))
-	{
-		if (leftTriggerDepth > 0.5f && onGround && jumpTimer <= 0.0f)
-		{
-			Vector3 upDir = this->GetTransform().GetGlobalOrientation() * Vector3(0, 1, 0);
-			jumpTimer = jumpCooldown;
-			this->GetPhysicsObject()->ApplyLinearImpulse(upDir * jumpSpeed);
-		}
+	for (int i = 0; i < AxisInput::AxisInputDataMax; i++) {
+		float input;
+		keyMap.GetAxisData(playerID, static_cast<AxisInput>(i), input);
+		axis[i] = input;
 	}
 }
 
-void PlayerObject::GetInput(Vector3& dir, unsigned int keyPress) {
+void NCL::CSC8503::PlayerObject::GetDir(Vector3& movingDir3D)
+{
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
-
-	Vector3 fwdAxis = this->GetTransform().GetGlobalOrientation() * Vector3(0, 0, -1);
-
-	Vector3 leftAxis = this->GetTransform().GetGlobalOrientation() * Vector3(-1, 0, 0);
-
-	Vector3 upAxis = this->GetTransform().GetGlobalOrientation() * Vector3(0, 1, 0);
-
-	isFreeLook = false;
-
-	if (keyMap.CheckButtonPressed(keyPress, InputType::Foward))
+	
+	// Thumb for movement:
+	Vector3 cameraForwardDirection = gameWorld.GetCamera(playerID)->GetPosition() - this->GetTransform().GetGlobalPosition();
+	Vector2 movementData{ axis[Axis1], axis[Axis2] };
+	float rightTriggerDepth = axis[Axis5];
+	float leftTriggerDepth = axis[Axis6];
+	movingDir3D = Vector3{ 0,0,0 };
+	
+	if (!(movementData.x == 0 && movementData.y == 0))
 	{
-		dir += fwdAxis;
-		playerSource->Play(Sound::AddSound("footstep06.wav"));
+		Vector2 unitForwardDir{ 0,1 };
+		float angle = atan2(unitForwardDir.x * movementData.y - movementData.x * unitForwardDir.y, unitForwardDir.x * movementData.x + unitForwardDir.y * movementData.y);
+		Vector2 movingDir2D;
+		movingDir2D.x = cameraForwardDirection.x * cos(angle) - (-cameraForwardDirection.z) * sin(angle);
+		movingDir2D.y = (-cameraForwardDirection.z) * cos(angle) + cameraForwardDirection.x * sin(angle);
+		movingDir3D = -(Vector3{ movingDir2D.x,0,-movingDir2D.y }).Normalised();
 	}
-	if (keyMap.CheckButtonPressed(keyPress, InputType::Backward))
-	{
-		dir -= fwdAxis;
-		playerSource->Play(Sound::AddSound("footstep06.wav"));
-	}
-	if (keyMap.CheckButtonPressed(keyPress, InputType::Left))
-	{
-		dir += leftAxis;
-		playerSource->Play(Sound::AddSound("footstep06.wav"));
-	}
-	if (keyMap.CheckButtonPressed(keyPress, InputType::Right))
-	{
-		dir -= leftAxis;
-		playerSource->Play(Sound::AddSound("footstep06.wav"));
-	}
-	if (keyMap.CheckButtonPressed(keyPress, InputType::Jump) && onGround && jumpTimer <= 0.0f)
-	{
-		jumpTimer = jumpCooldown;
-		this->GetPhysicsObject()->ApplyLinearImpulse(upAxis * jumpSpeed);
-		//playerSource->Play(Sound::AddSound("swing3.wav"));
-	}
-	if (keyMap.CheckButtonPressed(keyPress, InputType::Action1))
+	if (rightTriggerDepth > 0.5f)
 	{
 		Shoot();
-		attackSource->Play(Sound::AddSound("magic1.wav"));
 	}
-	if (keyMap.CheckButtonPressed(keyPress, InputType::FreeLook))
+
+	if (leftTriggerDepth > 0.5f)
+	{
+		Jump();
+	}
+}
+
+
+void PlayerObject::GetButtonInput(unsigned int keyPress) {
+	isFreeLook = false;
+	if (keyMap.CheckButtonPressed(keyPress, InputType::Jump, playerID))
+	{
+		Jump();
+	}
+	if (keyMap.CheckButtonPressed(keyPress, InputType::Action1, playerID))
+	{
+		Shoot();
+	}
+	if (keyMap.CheckButtonPressed(keyPress, InputType::FreeLook, playerID))
 	{
 		isFreeLook = true;
 	}
-	dir.Normalise();
 }
 
 void PlayerObject::CheckGround() {
@@ -295,10 +259,20 @@ PlayerBullet* PlayerObject::PrepareBullet()
 }
 
 void PlayerObject::Shoot() {
+	attackSource->Play(Sound::AddSound("magic1.wav"));
 	if (projectileFireRateTimer > 0)
 		return;
 	projectileFireRateTimer = projectileFireRate;
 	PlayerBullet* bullet = PrepareBullet();
+}
+
+void NCL::CSC8503::PlayerObject::Jump()
+{
+	if (onGround && jumpTimer <= 0.0f) {
+		Vector3 upDir = this->GetTransform().GetGlobalOrientation() * Vector3(0, 1, 0);
+		jumpTimer = jumpCooldown;
+		this->GetPhysicsObject()->ApplyLinearImpulse(upDir * jumpSpeed);
+	}
 }
 
 
