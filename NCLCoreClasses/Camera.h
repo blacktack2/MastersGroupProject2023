@@ -32,6 +32,16 @@ namespace NCL {
 
 		void UpdateCamera(float dt);
 
+		int GetPlayerID()
+		{
+			return playerID;
+		}
+
+		void SetPlayerID(int playerID)
+		{
+			this->playerID = playerID;
+		}
+
 		float GetFieldOfVision() const {
 			return fov;
 		}
@@ -102,5 +112,7 @@ namespace NCL {
 		float followLat;
 		float followLon;
 		Vector3 lookat;
+
+		int playerID = 0;
 	};
 }

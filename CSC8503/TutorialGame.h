@@ -1,14 +1,13 @@
 /**
  * @file   TutorialGame.h
- * @brief  
- * 
+ * @brief
+ *
  * @author Rich Davidson
  * @author Stuart Lewis
  * @date   March 2023
  */
 #pragma once
 #include "Vector3.h"
-
 #include <memory>
 
 namespace NCL {
@@ -24,7 +23,8 @@ namespace NCL::CSC8503 {
 	class GameTechRenderer;
 	class GameWorld;
 	class MenuManager;
-
+	class OptionManager;
+	class Hud;
 	class GameLevel;
 	class PhysicsSystem;
 
@@ -52,8 +52,12 @@ namespace NCL::CSC8503 {
 		bool IsQuit();
 	protected:
 		void UpdateGameCore(float dt);
+		virtual void UpdateHud(float dt);
+
 		virtual void ProcessState();
 
+		void SetCameraFollow(PlayerObject* p);
+		
 		void InitCamera();
 		void InitGameExamples();
 
@@ -61,7 +65,7 @@ namespace NCL::CSC8503 {
 
 		GameObject* AddFloorToWorld(const Vector3& position);
 
-		PlayerObject* AddPlayerToWorld(const Vector3& position, bool cameraFollow = true);
+		PlayerObject* AddPlayerToWorld(int playerID, const Vector3& position);
 
 		Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
 		void BuildLevel();
@@ -74,15 +78,18 @@ namespace NCL::CSC8503 {
 		GameWorld&        gameWorld;
 		InputKeyMap&      keyMap;
 		MenuManager&      menuManager;
-
+		OptionManager&	  optionManager;
+		
+		std::unique_ptr<Hud> hud;
 		std::unique_ptr<PhysicsSystem> physics;
+		
+		PlayerObject* players[4];
 
 		Light* sunLight = nullptr;
-		PlayerObject* player = nullptr;
-		GameLevel* gameLevel = nullptr;
 
-		GameGrid* gameGrid = nullptr;
-		Boss* testingBoss = nullptr;
+		GameLevel* gameLevel = nullptr;
+		Boss* boss = nullptr;
+
 
 		float interval = 0.0f;
 	};

@@ -44,8 +44,8 @@ namespace NCL::CSC8503 {
 
 		Bullet* GetBullet(int firstIndex);
 
-		Bullet* bullets[BULLETTYPECOUNT][BULLETCOUNT] = {nullptr};
-		int indexs[BULLETTYPECOUNT] = {0};
+		Bullet* bullets[2][BULLETCOUNT] = {nullptr};
+		int indexs[2] = {0};
 	};
 
 }

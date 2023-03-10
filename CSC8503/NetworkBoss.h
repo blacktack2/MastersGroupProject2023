@@ -17,7 +17,6 @@ namespace NCL::CSC8503 {
 
 		void ChangeLoseState() override;
 		void BulletModification(BossBullet* bullet);
-		void ChangeTarget() override;
 	private:
 		NetworkedGame* game;
 	};

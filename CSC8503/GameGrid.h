@@ -77,7 +77,7 @@ namespace NCL
 				parent = nullptr;
 			}
 
-			~GameNode() {	}		// uncomment when the contents of the destructor should not be empty
+			//~GameNode() {	}		// uncomment when the contents of the destructor should not be empty
 
 			int row;
 			int column;

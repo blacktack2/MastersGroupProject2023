@@ -91,19 +91,16 @@ void Camera::UpdateCamera(float dt) {
 		Vector3 followPos = follow->GetGlobalPosition();
 		followPos = Vector3::Lerp(LastPos, followPos, std::min(smoothFactor * dt, 1.0f));
 		LastPos = followPos;
-		pitch -= (Window::GetMouse()->GetRelativePosition().y);
-		yaw -= (Window::GetMouse()->GetRelativePosition().x);
 
-		// Controller Right Thumb:
 		NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
-		Vector2 orientationThumbData{ 0,0 };
-		if (keyMap.GetAxisData(2, AxisInput::Axis3, orientationThumbData.x) && keyMap.GetAxisData(2, AxisInput::Axis4, orientationThumbData.y))
+		Vector2 orientationData{ 0,0 };
+		if (keyMap.GetAxisData(playerID, AxisInput::Axis3, orientationData.x) && keyMap.GetAxisData(playerID, AxisInput::Axis4, orientationData.y))
 		{
-			if (!(orientationThumbData.x == 0 && orientationThumbData.y == 0))
+			if (!(orientationData.x == 0 && orientationData.y == 0))
 			{
 				float sensitivity = 1.5f;
-				pitch += (orientationThumbData.y * sensitivity);
-				yaw -= (orientationThumbData.x * sensitivity);
+				pitch += (orientationData.y * sensitivity);
+				yaw -= (orientationData.x * sensitivity);
 			}
 		}
 
