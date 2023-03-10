@@ -37,6 +37,9 @@ namespace NCL::CSC8503 {
 			return currentMenu;
 		}
 
+		void RemoveAndEraseMenu(const std::string& name);
+
+
 		void SetCurrentMenu(std::string name) {
 			if (menus.contains(name)) {
 				currentMenu = name;

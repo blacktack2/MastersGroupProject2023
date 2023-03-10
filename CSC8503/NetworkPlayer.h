@@ -56,7 +56,6 @@ namespace NCL {
 			bool isFrozen;
 		protected:
 			NetworkedGame* game;
-			int playerID;
 		
 		};
 	}

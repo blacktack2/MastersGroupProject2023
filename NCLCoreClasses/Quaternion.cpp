@@ -74,9 +74,9 @@ Quaternion::Quaternion(const Matrix3& m) {
 	float qrFour = 4.0f * w;
 	float qrFourRecip = 1.0f / qrFour;
 
-	x = (m.array[5] - m.array[7]) * qrFourRecip;
-	y = (m.array[6] - m.array[2]) * qrFourRecip;
-	z = (m.array[1] - m.array[3]) * qrFourRecip;
+	x = (m.array[1][2] - m.array[2][1]) * qrFourRecip;
+	y = (m.array[2][0] - m.array[0][2]) * qrFourRecip;
+	z = (m.array[0][1] - m.array[1][0]) * qrFourRecip;
 }
 
 float Quaternion::Dot(const Quaternion &a,const Quaternion &b){

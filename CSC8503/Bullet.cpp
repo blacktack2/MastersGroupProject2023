@@ -34,13 +34,10 @@ void Bullet::OnCollisionBegin(GameObject* other) {
 	{
 		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
 		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), paintRadius, colour));
-		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), inkType);
+		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), paintRadius, inkType);
 	}
-	if (lifespan > 0)
-	{
-		boundingVolume = (CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer);
-		lifespan = -1;
-	}
+	boundingVolume = (CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer);
+	lifespan = -1;
 }
 
 void Bullet::OnTriggerBegin(GameObject* other) {
@@ -48,13 +45,10 @@ void Bullet::OnTriggerBegin(GameObject* other) {
 	{
 		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
 		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), paintRadius, colour));
-		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), inkType);
+		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), paintRadius, inkType);
 	}
-	if (lifespan > 0)
-	{
-		boundingVolume = (CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer);
-		lifespan = -1;
-	}
+	boundingVolume = (CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer);
+	lifespan = -1;
 }
 
 void Bullet::UpdateColour() {

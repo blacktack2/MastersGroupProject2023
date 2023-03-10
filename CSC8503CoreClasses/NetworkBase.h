@@ -19,6 +19,7 @@ enum BasicNetworkMessages {
 	PlayerSync_Message,
 	BossAction_Message,
 	GameState_Message,
+	Lobby_Message
 };
 
 struct GamePacket {
@@ -61,7 +62,7 @@ struct PlayerConnectionPacket : public GamePacket {
 	}
 };
 struct BossActionPacket : public GamePacket {
-	short int bossAction;
+	short int bossAction = 0;
 
 	BossActionPacket() {
 		type = BossAction_Message;

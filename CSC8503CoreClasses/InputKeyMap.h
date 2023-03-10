@@ -20,7 +20,7 @@ enum InputType : unsigned int {
 	Return = (1u << 30),
 	Confirm = (1u << 31),
 
-	All = -1
+	All = UINT_MAX
 }; 
 
 enum AxisInput
@@ -35,6 +35,12 @@ enum AxisInput
 	Axis6,
 
 	AxisInputDataMax
+};
+
+enum ControllerType {
+	KeyboardMouse,
+	Xbox,
+	PS4
 };
 
 using namespace NCL;
@@ -59,14 +65,13 @@ namespace NCL {
 			return state & key;
 		}
 
-		bool GetAxisData(unsigned int controllerNum, AxisInput axis, float& data)		// controllerNum == 1,2,3,4
+		bool GetAxisData(unsigned int playerNum, AxisInput axis, float& data)		// controllerNum == 1,2,3,4,5
 		{
-			if ((controllerNum == 0) || (controllerNum > 4))
+			if ((playerNum > 4))
 			{
 				return false;
 			}
-			controllerNum--;
-			data = AxisDataArray[controllerNum][axis];
+			data = AxisDataArray[playerNum][axis];
 			return true;
 		}
 
@@ -79,21 +84,32 @@ namespace NCL {
 
 		void Update();
 
+		void ChangePlayerControlTypeMap(int playerID, ControllerType type);
+
 	private:
 		InputKeyMap(){
 			buttonstates = InputType::Empty;
 			movementAxis = Vector2(0);
 			cameraAxis = Vector2(0);
 			mousePosition = Vector2(0);
+			ChangePlayerControlTypeMap(0, ControllerType::KeyboardMouse);
 		}
 		~InputKeyMap(){}
 
 		void UpdateGameStateDependant();
 
+		void UpdatePlayer(int playerID);
+
+		void UpdateWindows(int playerID);
+
+		void UpdateXbox(int playerID);
+
 		unsigned int buttonstates;
-		float AxisDataArray[4][AxisInput::AxisInputDataMax] = { 0 };
+		float AxisDataArray[5][AxisInput::AxisInputDataMax] = { 0 };
 		Vector2 movementAxis;
 		Vector2 cameraAxis;
 		Vector2 mousePosition;
+
+		std::map<int, ControllerType> playerControlTypeMap;
 	};
 }

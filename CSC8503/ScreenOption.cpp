@@ -19,6 +19,10 @@ ScreenOption::ScreenOption() {
 	OnAwake();
 }
 
+ScreenOption::~ScreenOption() {
+	menuManager.RemoveAndEraseMenu(NAME);
+}
+
 PushdownState::PushdownResult ScreenOption::OnUpdate(float dt, PushdownState** newState) {
 	menuManager.Update(dt);
 	keyMap.Update();
@@ -44,7 +48,7 @@ void ScreenOption::OnAwake() {
 }
 
 void ScreenOption::InitMenu() {
-	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(1.0f), AssetLibrary::GetTexture("menuOption"));
+	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(1.0f), AssetLibrary<TextureBase>::GetAsset("menuOption"));
 
 	menu.AddButton(0.88f, -0.8f, 0.06f, 0.12f, AssetLibrary::GetTexture("return"), [&](Button& button) {
 		std::cout << "Resume button clicked\n";

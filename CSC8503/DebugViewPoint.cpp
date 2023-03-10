@@ -19,7 +19,7 @@ void DebugViewPoint::BeginFrame() {
 	if (state)
 	{
 		auto endFrame = std::chrono::high_resolution_clock::now();
-		auto startFrame = startingPoints["FrameStart"];
+		auto& startFrame = startingPoints["FrameStart"];
 		startingPoints["FrameStart"] = endFrame;
 		if (!state) return;
 		if (optionManager->GetDebugMode()) {
@@ -52,7 +52,7 @@ void DebugViewPoint::FinishTime(std::string name) {
 
 size_t DebugViewPoint::CalculateMemory() {
 #if WIN32
-	PROCESS_MEMORY_COUNTERS_EX pmc;
+	PROCESS_MEMORY_COUNTERS_EX pmc{};
 	GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
 	return pmc.PrivateUsage;
 #endif

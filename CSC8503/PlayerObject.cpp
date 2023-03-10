@@ -25,17 +25,21 @@
 using namespace NCL;
 using namespace CSC8503;
 
-PlayerObject::PlayerObject(int id) : GameObject(), id(id), keyMap(NCL::InputKeyMap::instance()) {
+PlayerObject::PlayerObject(int playerID) : GameObject(), playerID(playerID), keyMap(NCL::InputKeyMap::instance()) {
 	OnCollisionBeginCallback = [&](GameObject* other) {
 		CollisionWith(other);
 	};
 	SetupAudio();
 
+	AttachCamera(playerID);
+	gameWorld.GetCamera(playerID)->SetPlayerID(playerID);
+	gameWorld.GetCamera(playerID)->SetFollow(&this->GetTransform());
+
 }
 
 PlayerObject::~PlayerObject() {
-	/*alDeleteSources(1, &(*playerSource->GetSource()).source);
-	alDeleteSources(1, &(*attackSource->GetSource()).source);*/
+	alDeleteSources(1, &(*playerSource->GetSource()).source);
+	alDeleteSources(1, &(*attackSource->GetSource()).source);
 	SoundSystem::GetSoundSystem()->SetListener(nullptr);
 	delete playerSource;
 	delete attackSource;
@@ -62,20 +66,29 @@ void PlayerObject::Update(float dt) {
 		Vector3 dir = Vector3(0, 0, 0);
 		lastKey = keyMap.GetButtonState();
 		keyMap.Update();
-		GetInput(dir, keyMap.GetButtonState());
+		/*
+		if (playerID == 0)		// Keyboard&Mouse user
+		{
+			GetInput(dir, keyMap.GetButtonState());
+			Move(dir);
+		}
+		else {
+			Vector3 movingDir;
+			GetControllerInput(movingDir);
+			Move(movingDir);
+		}*/
+		GetControllerInput(dir);
 		Move(dir);
 		MoveCamera();
 
-		// testing (Xbox) controller input:
-		Vector3 movingDir;
-		GetControllerInput(1, movingDir);
-		MoveByPosition(dt, movingDir);
+		
 	}
 
 	//If on ink
 	if (onGround) {
 		GameNode* node = GameGridManager::instance().NearestNode(this->GetTransform().GetGlobalPosition());
-		InkEffectManager::instance().ApplyInkEffect(node->inkType, &health, 0);
+		if(node)
+			InkEffectManager::instance().ApplyInkEffect(node->inkType, &health, 0);
 	}
 	
 }
@@ -100,7 +113,7 @@ void PlayerObject::MoveByPosition(float dt, Vector3 dir)
 This is a temporary member function. Feel free to merge this into PlayerObject::Move when necessary.
 */
 {
-	this->GetTransform().SetPosition(this->GetTransform().GetGlobalPosition() + dir * 20 * dt);
+	this->GetTransform().SetPosition(this->GetTransform().GetGlobalPosition() + dir * 10 * dt);
 }
 
 void PlayerObject::Move(Vector3 dir) {
@@ -122,7 +135,7 @@ void PlayerObject::MoveCamera() {
 	}
 }
 
-void PlayerObject::GetControllerInput(unsigned int controllerNum, Vector3& movingDir3D)		// controllerNum == 1,2,3,4
+void PlayerObject::GetControllerInput(Vector3& movingDir3D)		// controllerNum == 1,2,3,4
 /*
 This is a temporary member function used for testing controller's input. Feel free to merge this into PlayerObject::GetInput when necessary.
 */
@@ -131,32 +144,34 @@ This is a temporary member function used for testing controller's input. Feel fr
 	isFreeLook = false;
 	
 	// Thumb for movement:
-	Vector3 cameraForwardDirection = gameWorld.GetMainCamera()->GetPosition() - this->GetTransform().GetGlobalPosition();
-	Vector2 movementThumbData{ 0,0 };
+	Vector3 cameraForwardDirection = gameWorld.GetCamera(playerID)->GetPosition() - this->GetTransform().GetGlobalPosition();
+	Vector2 movementData{ 0,0 };
 	float rightTriggerDepth = 0;
+	float leftTriggerDepth = 0;
 	movingDir3D = Vector3{ 0,0,0 };
-	if (keyMap.GetAxisData(2, AxisInput::Axis1, movementThumbData.x) && keyMap.GetAxisData(2, AxisInput::Axis2, movementThumbData.y))
+	keyMap.GetAxisData(playerID, AxisInput::Axis1, movementData.x);
+	if (keyMap.GetAxisData(playerID, AxisInput::Axis1, movementData.x) && keyMap.GetAxisData(playerID, AxisInput::Axis2, movementData.y))
 	{
-		if (!(movementThumbData.x == 0 && movementThumbData.y == 0))
+		if (!(movementData.x == 0 && movementData.y == 0))
 		{
 			Vector2 unitForwardDir{ 0,1 };
-			float angle = atan2(unitForwardDir.x * movementThumbData.y - movementThumbData.x * unitForwardDir.y, unitForwardDir.x * movementThumbData.x + unitForwardDir.y * movementThumbData.y);
+			float angle = atan2(unitForwardDir.x * movementData.y - movementData.x * unitForwardDir.y, unitForwardDir.x * movementData.x + unitForwardDir.y * movementData.y);
 			Vector2 movingDir2D;
 			movingDir2D.x = cameraForwardDirection.x * cos(angle) - (-cameraForwardDirection.z) * sin(angle);
 			movingDir2D.y = (-cameraForwardDirection.z) * cos(angle) + cameraForwardDirection.x * sin(angle);
 			movingDir3D = -(Vector3{ movingDir2D.x,0,-movingDir2D.y }).Normalised();
 		}
 	}
-	if (keyMap.GetAxisData(2, AxisInput::Axis5, rightTriggerDepth))
+	if (keyMap.GetAxisData(playerID, AxisInput::Axis5, rightTriggerDepth))
 	{
 		if (rightTriggerDepth > 0.5f)
 		{
 			Shoot();
 		}
 	}
-	if (keyMap.GetAxisData(2, AxisInput::Axis6, rightTriggerDepth))
+	if (keyMap.GetAxisData(playerID, AxisInput::Axis6, leftTriggerDepth))
 	{
-		if (rightTriggerDepth > 0.5f && onGround && jumpTimer <= 0.0f)
+		if (leftTriggerDepth > 0.5f && onGround && jumpTimer <= 0.0f)
 		{
 			Vector3 upDir = this->GetTransform().GetGlobalOrientation() * Vector3(0, 1, 0);
 			jumpTimer = jumpCooldown;
@@ -166,7 +181,6 @@ This is a temporary member function used for testing controller's input. Feel fr
 }
 
 void PlayerObject::GetInput(Vector3& dir, unsigned int keyPress) {
-	GameObject* proj;
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 
 	Vector3 fwdAxis = this->GetTransform().GetGlobalOrientation() * Vector3(0, 0, -1);
@@ -237,9 +251,18 @@ void PlayerObject::RotateYaw(float yaw) {
 }
 
 void PlayerObject::RotateToCamera() {
-	if (hasCamera && !isFreeLook) {
-		RotateYaw(gameWorld.GetMainCamera()->GetYaw());
+	if (!isFreeLook) {
+		RotateYaw(gameWorld.GetCamera(hasCamera)->GetYaw());
 	}
+
+}
+
+void PlayerObject::RotateByAxis() {
+	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
+	float yaw;
+	keyMap.GetAxisData(playerID, AxisInput::Axis4, yaw);
+	//add yaw 
+	RotateYaw(yaw * 100);
 
 }
 
@@ -265,7 +288,7 @@ PlayerBullet* PlayerObject::PrepareBullet()
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
 	ink->GetPhysicsObject()->SetInverseMass(2.0f);
 	ink->GetPhysicsObject()->SetLinearVelocity(this->physicsObject->GetLinearVelocity() * Vector3(1, 0, 1));
-	Quaternion dir = transform.GetGlobalOrientation() * Quaternion::EulerAnglesToQuaternion((rand() % 100 - 50) / 20, (rand() % 100 - 50) / 20, (rand() % 100 - 50) / 20);
+	Quaternion dir = transform.GetGlobalOrientation() * Quaternion::EulerAnglesToQuaternion((float)(rand() % 100 - 50) / 20, (float)(rand() % 100 - 50) / 20, (float)(rand() % 100 - 50) / 20);
 	ink->GetPhysicsObject()->ApplyLinearImpulse(dir * Vector3(0, 0, -1) * projectileForce);
 	ink->SetActive(true);
 	return ink;

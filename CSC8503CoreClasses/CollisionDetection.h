@@ -19,29 +19,30 @@ namespace NCL {
 	{
 	public:
 		struct ContactPoint {
-			Vector3 localA = Vector3();
-			Vector3 localB = Vector3();
-			Vector3 contactPoint = Vector3();
-			Vector3 normal = Vector3();
-			float	penetration = 0;
+			Vector3 localA;
+			Vector3 localB;
+			Vector3 contactPoint;
+			Vector3 normal;
+			float	penetration;
 		};
 
 		struct CollisionInfo {
-			GameObject* a = nullptr;
-			GameObject* b = nullptr;		
-			int framesLeft = 0;
-			bool isEntered = false;
+			GameObject* a;
+			GameObject* b;		
+			int framesLeft;
+			bool isEntered;
 
 			std::vector<ContactPoint> point;
 
 			CollisionInfo() {
+
 			}
 
 			void AddContactPoint(const Vector3& normal, float p, const Vector3& localA = Vector3(), const Vector3& localB = Vector3()) {
 				if (point.empty()) {
 					point.resize(1);
 				}
-				int pSize = point.size() - 1;
+				size_t pSize = point.size() - 1;
 				if (pSize != 0) {
 					point.resize(point.size() + 1);
 					pSize++;

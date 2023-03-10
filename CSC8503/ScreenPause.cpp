@@ -23,6 +23,10 @@ ScreenPause::ScreenPause(TutorialGame* game) {
 	InitMenu();
 }
 
+ScreenPause::~ScreenPause() {
+	menuManager.RemoveAndEraseMenu(NAME);
+}
+
 PushdownState::PushdownResult ScreenPause::OnUpdate(float dt, PushdownState** newState) {
 	menuManager.Update(dt);
 	keyMap.Update();
@@ -62,6 +66,7 @@ void ScreenPause::OnAwake() {
 
 	renderer.EnableOverlayPass("Menu", true);
 	renderer.EnableOverlayPass("Debug", false);
+	renderer.EnableOverlayPass("Hud", false);
 	renderer.UpdatePipeline();
 
 	Window::GetWindow()->ShowOSPointer(true);
@@ -69,7 +74,7 @@ void ScreenPause::OnAwake() {
 }
 
 void ScreenPause::InitMenu() {
-	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(0.3f, 0.7f), AssetLibrary::GetTexture("menuPause"));
+	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(0.3f, 0.7f), AssetLibrary<TextureBase>::GetAsset("menuPause"));
 
 	menu.AddButton(0.0f, 0.45f, 0.16f, 0.08f, AssetLibrary::GetTexture("button4"), [&](Button& button) {
 		std::cout << "Resume button clicked\n";

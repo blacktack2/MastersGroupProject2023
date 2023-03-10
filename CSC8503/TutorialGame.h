@@ -7,110 +7,88 @@
  * @date   March 2023
  */
 #pragma once
-#include "GameTechRenderer.h"
-#ifdef USEVULKAN
-#include "GameTechVulkanRenderer.h"
-#endif
-#include "PhysicsSystem.h"
-#include "PlayerObject.h"
-#include "StateGameObject.h"
-#include "DebugViewPoint.h"
-
-#include "GameGridManager.h"
-
-#include "Boss.h"	
-#include "Obstacle.h"
-#include "GameLevel.h"
-
-
-#include "GameStateManager.h"
-#include "MenuManager.h"
-#include "OptionManager.h"
-
-#include "MeshAnimation.h"
-
-
-
+#include "Vector3.h"
+#include <memory>
 
 namespace NCL {
-	namespace CSC8503 {
-		class Bullet;
-		class Maze;
-
-		class TutorialGame {
-		public:
-			TutorialGame();
-			~TutorialGame();
-
-			virtual void Clear();
-			virtual void StartLevel();
-
-			void InitWorld();
-
-			virtual void UpdateGame(float dt);
-
-			bool IsQuit() {
-				return gameStateManager->GetGameState() == GameState::Quit;
-			}
-		protected:
-			void UpdateGameCore(float dt);
-			virtual void ProcessState();
-
-			void InitCamera();
-			void InitGameExamples();
-
-			void InitDefaultFloor();
-
-			GameObject* AddFloorToWorld(const Vector3& position);
-			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
-			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass = 10.0f, bool axisAligned = true);
-			GameObject* AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius, float inverseMass = 10.0f);
-			StateGameObject* AddStateObjectToWorld(const Vector3& position);
-
-			PlayerObject* AddPlayerToWorld(const Vector3& position, bool cameraFollow = true);
-
-			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
-			void BuildLevel();
-			void UpdateLevel();
-			GameObject* AddTriggerToWorld(const Vector3& position, float size);
-
-#ifdef USEVULKAN
-			GameTechVulkanRenderer* renderer;
-#else
-			GameTechRenderer* renderer;
-#endif
-			PhysicsSystem* physics;
-			GameWorld* world;
-
-			NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
-
-			Light* sunLight;
-
-			GameStateManager* gameStateManager;
-			MenuManager* menuManager;
-
-			bool inSelectionMode;
-
-			float		forceMagnitude;
-
-			Maze* mazes = nullptr;
-
-			PlayerObject* player = nullptr;
-
-			int score;
-
-			NCL::DebugViewPoint* debugViewPoint;
-
-			GameLevel* gameLevel = nullptr;
-			float interval = 0.0f;
-			GameGrid* gameGrid = nullptr;
-			Boss* testingBoss = nullptr;
-			BossBehaviorTree* testingBossBehaviorTree = nullptr;
-
-			GameGridManager* gridManager;
-			float wallTimer = 0.0f;
-			OptionManager* optionManager;
-		};
-	}
+	class DebugViewPoint;
+	class InputKeyMap;
 }
 
+using namespace NCL::Maths;
+
+namespace NCL::CSC8503 {
+	class GameGridManager;
+	class GameStateManager;
+	class GameTechRenderer;
+	class GameWorld;
+	class MenuManager;
+	class Hud;
+	class GameLevel;
+	class PhysicsSystem;
+
+	class GameObject;
+
+	class GameGrid;
+	class Boss;
+	class BossBehaviorTree;
+	class PlayerObject;
+
+	struct Light;
+
+	class TutorialGame {
+	public:
+		TutorialGame();
+		~TutorialGame();
+
+		virtual void Clear();
+		virtual void StartLevel();
+
+		void InitWorld();
+
+		virtual void UpdateGame(float dt);
+
+		bool IsQuit();
+	protected:
+		void UpdateGameCore(float dt);
+		virtual void UpdateHud(float dt);
+
+		virtual void ProcessState();
+
+		void SetCameraFollow(PlayerObject* p);
+		
+		void InitCamera();
+		void InitGameExamples();
+
+		void InitDefaultFloor();
+
+		GameObject* AddFloorToWorld(const Vector3& position);
+
+			PlayerObject* AddPlayerToWorld(int playerID, const Vector3& position);
+
+		Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
+		void BuildLevel();
+		void UpdateLevel();
+
+		DebugViewPoint&   debugViewPoint;
+		GameGridManager&  gridManager;
+		GameStateManager& gameStateManager;
+		GameTechRenderer& renderer;
+		GameWorld&        gameWorld;
+		InputKeyMap&      keyMap;
+		MenuManager&      menuManager;
+		
+		std::unique_ptr<Hud> hud;
+		std::unique_ptr<PhysicsSystem> physics;
+		
+		PlayerObject* players[4];
+
+		Light* sunLight = nullptr;
+
+		GameLevel* gameLevel = nullptr;
+		Boss* boss = nullptr;
+
+
+		float interval = 0.0f;
+	};
+}

@@ -78,23 +78,9 @@ void GameTechRenderer::InitPipeline() {
 
 	debugPass = std::make_unique<DebugRPass>();
 	AddOverlayPass(*debugPass, "Debug");
-
+	hudPass = std::make_unique<HudRPass>();
+	AddOverlayPass(*hudPass, "Hud");
 	UpdatePipeline();
-}
-
-void GameTechRenderer::BuildObjectList() {
-	activeObjects.clear();
-
-	gameWorld.OperateOnContents(
-		[&](GameObject* o) {
-			if (o->IsActive()) {
-				const RenderObject* g = o->GetRenderObject();
-				if (g) {
-					activeObjects.emplace_back(g);
-				}
-			}
-		}
-	);
 }
 
 void GameTechRenderer::SortObjectList() {

@@ -19,6 +19,10 @@ ScreenMultiplayerOption::ScreenMultiplayerOption() {
 	InitMenu();
 }
 
+ScreenMultiplayerOption::~ScreenMultiplayerOption() {
+	menuManager.RemoveAndEraseMenu(NAME);
+}
+
 PushdownState::PushdownResult ScreenMultiplayerOption::OnUpdate(float dt, PushdownState** newState) {
 	menuManager.Update(dt);
 	keyMap.Update();
@@ -45,6 +49,7 @@ void ScreenMultiplayerOption::OnAwake() {
 
 	renderer.EnableOverlayPass("Menu", true);
 	renderer.EnableOverlayPass("Debug", false);
+	renderer.EnableOverlayPass("Hud", false);
 	renderer.EnableRenderScene(false);
 	renderer.UpdatePipeline();
 
@@ -53,7 +58,7 @@ void ScreenMultiplayerOption::OnAwake() {
 }
 
 void ScreenMultiplayerOption::InitMenu() {
-	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(1.0f), AssetLibrary::GetTexture("menuMain"));
+	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(1.0f), AssetLibrary<TextureBase>::GetAsset("menuMain"));
 
 	menu.AddButton(0.5f, 0.0f, 0.2f, 0.1f, AssetLibrary::GetTexture("button0"), [&](Button& button) {
 		std::cout << "Start server button clicked\n";

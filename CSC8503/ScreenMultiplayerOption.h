@@ -18,7 +18,7 @@ using namespace CSC8503;
 class ScreenMultiplayerOption : public PushdownState {
 public:
 	ScreenMultiplayerOption();
-	~ScreenMultiplayerOption() = default;
+	~ScreenMultiplayerOption();
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 	void OnAwake() override;
 
