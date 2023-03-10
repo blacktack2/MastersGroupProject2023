@@ -237,8 +237,17 @@ void TutorialGame::UpdateHud(float dt)
 	if (boss) {
 		Debug::Print(std::string("Boss health: ").append(std::to_string((int)boss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
 	}
-	hud->loadHuds((int)boss->GetHealth()->GetHealth(), (int)players[0]->GetHealth()->GetHealth());
-	(renderer.GetHudRPass()).SetHud(hud->getHuds());
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (gameWorld.GetMainCamera() == gameWorld.GetCamera(i))
+		{
+			hud->loadHuds((int)boss->GetHealth()->GetHealth(), (int)players[i]->GetHealth()->GetHealth());
+			break;
+		}
+	}
+
+	renderer.GetHudRPass().SetHud(hud->getHuds());
 }
 
 void TutorialGame::ProcessState() {
