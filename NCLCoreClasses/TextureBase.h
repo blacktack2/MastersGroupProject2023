@@ -7,7 +7,7 @@
  * @date   February 2023
  */
 #pragma once
-constexpr unsigned int SHADOWSIZE = 2048;
+constexpr unsigned int SHADOWSIZE = 4096;
 
 namespace NCL::Rendering {
 	enum class TextureType {

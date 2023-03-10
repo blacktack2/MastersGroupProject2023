@@ -150,8 +150,8 @@ namespace NCL::CSC8503 {
 		}
 	private:
 		inline void UpdateShadowMatrix() {
-			shadowMatrix = Matrix4::Orthographic(-300.0f, 300.0f, -300.0f, 300.0f, -1.0f, 300.0f) *
-						   Matrix4::BuildViewMatrix(direction * 150.0f, Vector3(0.0f), Vector3(0.0f, 1.0f, 0.0f));
+			shadowMatrix = Matrix4::Orthographic(-100.0f, 100.0f, -100.0f, 100.0f, -1.0f, 500.0f) *
+						   Matrix4::BuildViewMatrix(direction * 250.0f, Vector3(0.0f), Vector3(0.0f, 1.0f, 0.0f));
 		}
 
 		Vector3 direction;
