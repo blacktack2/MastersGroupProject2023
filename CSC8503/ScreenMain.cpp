@@ -62,21 +62,21 @@ void ScreenMain::OnAwake() {
 }
 
 void ScreenMain::InitMenu() {
-	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(1.0f), AssetLibrary::GetTexture("menuMain"));
+	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(1.0f), AssetLibrary<TextureBase>::GetAsset("menuMain"));
 
-	menu.AddButton(0.5f, 0.3f, 0.2f, 0.1f, AssetLibrary::GetTexture("button0"), [&](Button& button) {
+	menu.AddButton(0.5f, 0.3f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button0"), [&](Button& button) {
 		std::cout << "Start button clicked\n";
 		menuState = ChangeState::Start;
 		});
-	menu.AddButton(0.5f, 0.0f, 0.2f, 0.1f, AssetLibrary::GetTexture("button1"), [&](Button& button) {
+	menu.AddButton(0.5f, 0.0f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button1"), [&](Button& button) {
 		std::cout << "Multiplayer button clicked\n";
 		menuState = ChangeState::Multiplayer;
 		});
-	menu.AddButton(0.5f, -0.3f, 0.2f, 0.1f, AssetLibrary::GetTexture("button2"), [&](Button& button) {
+	menu.AddButton(0.5f, -0.3f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button2"), [&](Button& button) {
 		std::cout << "Option button clicked\n";
 		menuState = ChangeState::Option;
 		});
-	menu.AddButton(0.5f, -0.6f, 0.2f, 0.1f, AssetLibrary::GetTexture("button3"), [&](Button& button) {
+	menu.AddButton(0.5f, -0.6f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button3"), [&](Button& button) {
 		std::cout << "Quit button clicked\n";
 		menuState = ChangeState::Quit;
 		});

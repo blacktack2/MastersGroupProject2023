@@ -40,7 +40,6 @@ void ScreenOption::OnAwake() {
 	menuManager.SetCurrentMenu(NAME);
 
 	renderer.EnableOverlayPass("Menu", true);
-	renderer.EnableRenderScene(false);
 	renderer.UpdatePipeline();
 
 	Window::GetWindow()->ShowOSPointer(true);
@@ -50,42 +49,42 @@ void ScreenOption::OnAwake() {
 void ScreenOption::InitMenu() {
 	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(1.0f), AssetLibrary<TextureBase>::GetAsset("menuOption"));
 
-	menu.AddButton(0.88f, -0.8f, 0.06f, 0.12f, AssetLibrary::GetTexture("return"), [&](Button& button) {
+	menu.AddButton(0.88f, -0.8f, 0.06f, 0.12f, AssetLibrary<TextureBase>::GetAsset("return"), [&](Button& button) {
 		std::cout << "Resume button clicked\n";
 		menuState = ChangeState::Resume;
 	});
 
 	std::shared_ptr<TextureBase> SunMoveTex = !optionManager.GetSunMove() ?
-		AssetLibrary::GetTexture("checkbox0") : AssetLibrary::GetTexture("checkbox1");
+		AssetLibrary<TextureBase>::GetAsset("checkbox0") : AssetLibrary<TextureBase>::GetAsset("checkbox1");
 	menu.AddButton(0.693f, 0.45f, 0.02f, 0.04f, SunMoveTex, [&](Button& button) {
 		std::cout << "sun move button clicked\n";
 		optionManager.SetSunMove(!optionManager.GetSunMove());
 		button.SetTexture(
-			!optionManager.GetSunMove() ? AssetLibrary::GetTexture("checkbox0") : AssetLibrary::GetTexture("checkbox1")
+			!optionManager.GetSunMove() ? AssetLibrary<TextureBase>::GetAsset("checkbox0") : AssetLibrary<TextureBase>::GetAsset("checkbox1")
 		);
 	});
 
 	std::shared_ptr<TextureBase> DebugModeTex = !optionManager.GetDebugMode() ?
-		AssetLibrary::GetTexture("checkbox0") : AssetLibrary::GetTexture("checkbox1");
+		AssetLibrary<TextureBase>::GetAsset("checkbox0") : AssetLibrary<TextureBase>::GetAsset("checkbox1");
 	menu.AddButton(0.693f, -0.085f, 0.02f, 0.04f, DebugModeTex, [&](Button& button) {
 		std::cout << "debug mode button clicked\n";
 		optionManager.SetDebugMode(!optionManager.GetDebugMode());
 		button.SetTexture(
-			!optionManager.GetDebugMode() ? AssetLibrary::GetTexture("checkbox0") : AssetLibrary::GetTexture("checkbox1")
+			!optionManager.GetDebugMode() ? AssetLibrary<TextureBase>::GetAsset("checkbox0") : AssetLibrary<TextureBase>::GetAsset("checkbox1")
 		);
 	});
 
 	std::shared_ptr<TextureBase> SoundTex = !optionManager.GetSound() ?
-		AssetLibrary::GetTexture("checkbox0") : AssetLibrary::GetTexture("checkbox1");
+		AssetLibrary<TextureBase>::GetAsset("checkbox0") : AssetLibrary<TextureBase>::GetAsset("checkbox1");
 	menu.AddButton(0.693f, -0.595f, 0.02f, 0.04f, SoundTex, [&](Button& button) {
 		std::cout << "sound button clicked\n";
 		optionManager.SetSound(!optionManager.GetSound());
 		button.SetTexture(
-			!optionManager.GetSound() ? AssetLibrary::GetTexture("checkbox0") : AssetLibrary::GetTexture("checkbox1")
+			!optionManager.GetSound() ? AssetLibrary<TextureBase>::GetAsset("checkbox0") : AssetLibrary<TextureBase>::GetAsset("checkbox1")
 		);
 	});
 
-	menu.AddButton(0.66f, -0.69f, 0.02f, 0.04f, AssetLibrary::GetTexture("plus"), [&](Button& button) {
+	menu.AddButton(0.66f, -0.69f, 0.02f, 0.04f, AssetLibrary<TextureBase>::GetAsset("plus"), [&](Button& button) {
 		std::cout << "plus button clicked\n";
 		optionManager.SetVolumeUp(!optionManager.GetVolumeUp());
 		up = optionManager.GetUpTimes();
@@ -93,7 +92,7 @@ void ScreenOption::InitMenu() {
 		optionManager.SetUpTimes(up);
 	});
 
-	menu.AddButton(0.73f, -0.69f, 0.02f, 0.04f, AssetLibrary::GetTexture("minus"), [&](Button& button) {
+	menu.AddButton(0.73f, -0.69f, 0.02f, 0.04f, AssetLibrary<TextureBase>::GetAsset("minus"), [&](Button& button) {
 		std::cout << "minus button clicked\n";
 		optionManager.SetVolumeDown(!optionManager.GetVolumeDown());
 		down = optionManager.GetDownTimes();

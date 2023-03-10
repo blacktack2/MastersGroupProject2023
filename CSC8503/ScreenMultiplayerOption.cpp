@@ -60,15 +60,15 @@ void ScreenMultiplayerOption::OnAwake() {
 void ScreenMultiplayerOption::InitMenu() {
 	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(1.0f), AssetLibrary<TextureBase>::GetAsset("menuMain"));
 
-	menu.AddButton(0.5f, 0.0f, 0.2f, 0.1f, AssetLibrary::GetTexture("button0"), [&](Button& button) {
+	menu.AddButton(0.5f, 0.0f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button0"), [&](Button& button) {
 		std::cout << "Start server button clicked\n";
 		menuState = ChangeState::StartServer;
 		});
-	menu.AddButton(0.5f, -0.3f, 0.2f, 0.1f, AssetLibrary::GetTexture("button1"), [&](Button& button) {
+	menu.AddButton(0.5f, -0.3f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button1"), [&](Button& button) {
 		std::cout << "Start client button clicked\n";
 		menuState = ChangeState::StartClient;
 		});
-	menu.AddButton(0.5f, -0.6f, 0.2f, 0.1f, AssetLibrary::GetTexture("button3"), [&](Button& button) {
+	menu.AddButton(0.5f, -0.6f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button3"), [&](Button& button) {
 		std::cout << "Quit button clicked\n";
 		menuState = ChangeState::Quit;
 		});
