@@ -3,6 +3,7 @@
  * @brief  A class for defining the main menu.
  *
  * @author Felix Chiu
+ * @author Yifei Hu
  * @author Stuart Lewis
  * @date   February 2023
  */
