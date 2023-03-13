@@ -147,6 +147,9 @@ namespace NCL::Rendering {
 		 */
 		virtual void ClearBuffers(ClearBit mask) = 0;
 		virtual RendererConfigBase& GetConfig() = 0;
+
+		virtual void SetGameWorldMainCamera(int num) = 0;
+		virtual int GetGameWorldMainCamera() = 0;
 	protected:
 		/**
 		 * @brief Add main render pass. Meant to add to, or modify, the GBuffer
@@ -236,6 +239,7 @@ namespace NCL::Rendering {
 		virtual void SwapBuffers() = 0;
 		virtual void ClearBackbuffer() = 0;
 
+
 		Window& hostWindow;
 
 		int windowWidth;
@@ -258,7 +262,7 @@ namespace NCL::Rendering {
 		void RenderPresent();
 		void RenderOverlay();
 
-		unsigned int numPlayers = 4;
+		unsigned int numPlayers = 2;
 		int splitWidth = 1, splitHeight = 1;
 
 		bool doRenderScene = true;

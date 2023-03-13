@@ -133,6 +133,13 @@ namespace NCL::CSC8503 {
 			return ssaoBias;
 		}
 
+		void SetGameWorldMainCamera(int num) override {
+			gameWorld.SetMainCamera(num);
+		}
+
+		int GetGameWorldMainCamera() override {
+			return gameWorld.GetMainCameraIndex();
+		}
 	protected:
 		GameTechRenderer();
 		~GameTechRenderer();

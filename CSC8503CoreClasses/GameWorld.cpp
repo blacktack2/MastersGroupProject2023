@@ -224,6 +224,7 @@ Camera* GameWorld::GetCamera(int n) const {
 }
 
 Camera* GameWorld::SetMainCamera(int n) {
+	mainCameraIndex = n;
 	switch (n) {
 	case 1:
 		mainCamera = playerCamera1.get();

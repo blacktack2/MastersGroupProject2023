@@ -67,6 +67,9 @@ namespace NCL {
 			Camera* GetCamera(int n) const;
 
 			Camera* SetMainCamera(int n);
+			int GetMainCameraIndex() {
+				return mainCameraIndex;
+			}
 
 			void ShuffleConstraints(bool state) {
 				shuffleConstraints = state;
@@ -117,6 +120,7 @@ namespace NCL {
 			QuadTree dynamicQuadTree;
 			QuadTree staticQuadTree;
 
+			int mainCameraIndex = 1;
 			Camera* mainCamera = nullptr;
 			std::unique_ptr<Camera> playerCamera1 = nullptr;
 			std::unique_ptr<Camera> playerCamera2 = nullptr;

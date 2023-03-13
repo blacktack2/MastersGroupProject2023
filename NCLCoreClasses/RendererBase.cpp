@@ -122,15 +122,19 @@ void RendererBase::RenderFrame() {
 	};
 	std::vector<float>& viewports = numPlayers > 2 ? viewports4 : (numPlayers > 1 ? viewports2 : viewports1);
 	ClearBackbuffer();
+	int mainCamera = GetGameWorldMainCamera();
 	for (size_t i = 0; i < numPlayers; i++) {
 		size_t index = i * 4;
 		GetConfig().SetDefaultViewport(0, 0, viewports[index + 2], viewports[index + 3]);
-		// TODO - Set main camera to index
+		
+		SetGameWorldMainCamera(i);
+
 		RenderScene();
 		GetConfig().SetDefaultViewport(viewports[index], viewports[index + 1], viewports[index + 2], viewports[index + 3]);
 		RenderPresent();
 		RenderOverlay();
 	}
+	SetGameWorldMainCamera(mainCamera);
 	GetConfig().SetDefaultViewport();
 }
 

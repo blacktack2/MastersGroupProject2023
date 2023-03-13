@@ -83,7 +83,7 @@ void TutorialGame::StartLevel() {
 	players[0] = AddPlayerToWorld(0, Vector3(0, 5, 90));
 	keyMap.ChangePlayerControlTypeMap(0, ControllerType::KeyboardMouse);
 	for (int i = 1; i <= numOfPlayers; i++) {
-		players[i] = AddPlayerToWorld(i, Vector3(0, 5, 90));
+		players[i] = AddPlayerToWorld(i, Vector3(0, 5, 90));		// TODO: access violation if 4 controllers are connected
 		keyMap.ChangePlayerControlTypeMap(i, ControllerType::Xbox);
 	}
 
@@ -297,7 +297,7 @@ void TutorialGame::SetCameraFollow(PlayerObject* p)
 	int id = p->GetPlayerID();
 	if (id == 0) gameWorld.SetMainCamera(4);
 	else gameWorld.SetMainCamera(id);
-	gameWorld.GetMainCamera()->SetFollow(&(p->GetTransform()));
+	//gameWorld.GetMainCamera()->SetFollow(&(p->GetTransform()));
 }
 
 Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
