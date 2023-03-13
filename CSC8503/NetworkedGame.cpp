@@ -247,7 +247,7 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	//move main player
 	NetworkPlayer* player = static_cast<NetworkPlayer*>(localPlayer);
 	if (!player->isFrozen) {
-		player->ServerSideMovement();
+		player->ServerSideMovement(dt);
 	}
 	localPlayer->GetNetworkObject()->SnapRenderToSelf();
 	std::vector<NetworkObject*> networkObjects = gameWorld.GetNetworkObjects();
@@ -283,16 +283,17 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	//*/
 	//send self data to server
 
-
 	ClientPacket newPacket;
 	newPacket.lastID = stateID;
 	if (localPlayer) {
 		NetworkPlayer* player = static_cast<NetworkPlayer*>(localPlayer);
 		if (!player->isFrozen) {
-			player->ClientUpdateCamera();
+			player->ClientUpdateCamera(dt);
 			keyMap.Update();
 			newPacket.buttonstates = keyMap.GetButtonState();
 			player->GetNetworkAxis(newPacket.axis);
+			newPacket.yaw = static_cast<int>(gameWorld.GetMainCamera()->GetYaw() * 1000);
+			std::cout << "Sending Yaw " << newPacket.yaw << std::endl;
 		}
 	}
 	
@@ -396,10 +397,7 @@ void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID
 	if (!serverPlayers.contains(playerID))
 		return;
 	
-	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(((ClientPacket*)payload)->buttonstates, ((ClientPacket*)payload)->axis);
-	for (int i = 0; i < AxisInput::AxisInputDataMax; i++) {
-		std::cout << "server received " << i << " " << ((ClientPacket*)payload)->axis[i] << std::endl;
-	}
+	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(((ClientPacket*)payload)->buttonstates, ((ClientPacket*)payload)->axis, Vector2(((ClientPacket*)payload)->yaw * 0.001f, ((ClientPacket*)payload)->pitch * 0.001f));
 
 	if (((ClientPacket*)payload)->lastID > stateIDs[playerID]) {
 		stateIDs[playerID] = ((ClientPacket*)payload)->lastID;

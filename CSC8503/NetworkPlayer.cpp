@@ -34,7 +34,7 @@ void NetworkPlayer::OnCollisionBegin(GameObject* otherObject) {
 	}
 }
 
-void NCL::CSC8503::NetworkPlayer::MoveInput(unsigned int keyPress, short int axis[AxisInput::AxisInputDataMax])
+void NCL::CSC8503::NetworkPlayer::MoveInput(unsigned int keyPress, short int axis[AxisInput::AxisInputDataMax], Vector2 rotationAxis)
 {
 	if (health.GetHealth() > 0) {
 		Vector3 dir = Vector3(0, 0, 0);
@@ -42,31 +42,37 @@ void NCL::CSC8503::NetworkPlayer::MoveInput(unsigned int keyPress, short int axi
 		GetDir(dir);
 		GetButtonInput(keyPress);
 		Move(dir);
-		MoveCamera();
-		RotateToCamera();
+		this->yaw = rotationAxis.x;
+		this->pitch = rotationAxis.y;
+		std::cout << "Received Yaw " << yaw << std::endl;
+		RotateYaw(yaw);
+		MoveCamera(0.05f);
 	}
 }
 
-void NCL::CSC8503::NetworkPlayer::ServerSideMovement()
+void NCL::CSC8503::NetworkPlayer::ServerSideMovement(float dt)
 {
 	RotateToCamera();
 	Vector3 dir = Vector3(0, 0, 0);
 	lastKey = keyMap.GetButtonState();
 	keyMap.Update();
 	if (health.GetHealth() > 0) {
+		RotatePlayer();
+		MoveCamera(dt);
+
 		GetAxisInput();
 		GetDir(dir);
+
 		GetButtonInput(keyMap.GetButtonState());
 		Move(dir);
-		MoveCamera();
-		RotateToCamera();
 	}
 }
 
-void NCL::CSC8503::NetworkPlayer::ClientUpdateCamera()
+void NCL::CSC8503::NetworkPlayer::ClientUpdateCamera(float dt)
 {
 	keyMap.Update();
-	MoveCamera();
+	RotatePlayer();
+	MoveCamera(dt);
 }
 
 void NCL::CSC8503::NetworkPlayer::SetAxis(short int axis[AxisInput::AxisInputDataMax])

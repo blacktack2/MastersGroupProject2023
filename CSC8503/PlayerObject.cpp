@@ -57,13 +57,12 @@ void PlayerObject::Update(float dt) {
 		
 	health.Update(dt);
 
-
 	lastInstancedObjects.clear();
 	jumpTimer -= dt;
 	projectileFireRateTimer -= dt;
 	CheckGround();
 	if (!isNetwork) {
-		Movement();
+		Movement(dt);
 	}
 
 	//If on ink
@@ -80,14 +79,14 @@ void PlayerObject::ChangeLoseState()
 	gameStateManager->SetGameState(GameState::Lose);
 }
 
-void NCL::CSC8503::PlayerObject::Movement()
+void NCL::CSC8503::PlayerObject::Movement(float dt)
 {
 	isFreeLook = false;
 	Vector3 dir = Vector3(0, 0, 0);
 	lastKey = keyMap.GetButtonState();
 	keyMap.Update();
 	RotatePlayer();
-	MoveCamera();
+	MoveCamera(dt);
 
 	GetAxisInput();
 	GetDir(dir);
@@ -130,10 +129,11 @@ void PlayerObject::Move(Vector3 dir) {
 	lastDir = dir;
 }
 
-void PlayerObject::MoveCamera() {
+void PlayerObject::MoveCamera(float dt) {
 	//rotate camera
 	camera->SetPitch(pitch);
 	camera->SetYaw(yaw);
+	camera->UpdateCamera(dt);
 }
 
 void PlayerObject::GetAxisInput()

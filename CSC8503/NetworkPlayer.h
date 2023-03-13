@@ -21,11 +21,11 @@ namespace NCL {
 				PlayerObject::RotateYaw(yaw);
 			}
 
-			void MoveInput(unsigned int keyPress, short int axis[AxisInput::AxisInputDataMax]);
+			void MoveInput(unsigned int keyPress, short int axis[AxisInput::AxisInputDataMax], Vector2);
 
-			void ServerSideMovement();
+			void ServerSideMovement(float dt);
 
-			void ClientUpdateCamera();
+			void ClientUpdateCamera(float dt);
 
 			void SetAxis(short int axis[AxisInput::AxisInputDataMax]);
 
@@ -39,6 +39,20 @@ namespace NCL {
 
 			void SetHealth(float hp) {
 				health.SetHealth(hp);
+			}
+
+			float GetYaw() {
+				return yaw;
+			}
+			void SetYaw(float yaw) {
+				this->yaw = yaw;
+			}
+
+			float GetPitch() {
+				return pitch;
+			}
+			void SetPitch(float pitch){
+				this->pitch = pitch;
 			}
 
 			bool isFrozen;

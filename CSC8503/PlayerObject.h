@@ -41,7 +41,7 @@ namespace NCL {
 			}
 
 		protected:
-			void Movement();
+			void Movement(float dt);
 
 			void MoveTo(Vector3 position);
 			void Move(Vector3 dir);
@@ -55,7 +55,7 @@ namespace NCL {
 			void RotateByAxis();
 			void RotatePlayer();
 
-			void MoveCamera();
+			void MoveCamera(float dt);
 
 			void CheckGround();
 
@@ -84,6 +84,9 @@ namespace NCL {
 			float projectileFireRate = 0.1f;
 			float projectileFireRateTimer = 0;
 
+			float pitch = 0.0f;
+			float yaw = 0.0f;
+
 		private:
 
 			void SetupAudio();
@@ -105,9 +108,6 @@ namespace NCL {
 			bool isFreeLook = false;
 			float camTurnSpeed = 0.5f;
 			Vector3 cameraOffset = Vector3(0.5f, 5.0f, 2.0f);
-
-			float pitch = 0.0f;
-			float yaw = 0.0f;
 
 			//instantiated objs
 			std::vector<GameObject*> lastInstancedObjects;
