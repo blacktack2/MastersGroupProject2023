@@ -32,7 +32,7 @@ HDRRPass::HDRRPass() : OGLPostRenderPass(), renderer(GameTechRenderer::instance(
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
-	shader = AssetLoader::CreateShader("hdr.vert", "hdr.frag");
+	shader = AssetLoader::CreateShaderAndInit("hdr.vert", "hdr.frag");
 
 	shader->Bind();
 

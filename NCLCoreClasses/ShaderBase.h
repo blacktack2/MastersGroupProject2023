@@ -63,6 +63,8 @@ namespace NCL::Rendering {
 		virtual void SetUniformMatrix(const std::string& uniform, const std::vector<Matrix4>& m) = 0;
 
 		virtual int GetUniformLocation(const std::string& uniform) = 0;
+
+		virtual void Initialize() = 0;
 	protected:
 		std::string shaderFiles[(size_t)ShaderStage::Max];
 	};

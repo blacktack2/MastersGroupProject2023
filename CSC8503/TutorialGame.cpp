@@ -19,6 +19,7 @@
 #include "GameWorld.h"
 #include "InputKeyMap.h"
 #include "MenuManager.h"
+#include "OptionManager.h"
 
 #include "Camera.h"
 #include "Boss.h"
@@ -47,7 +48,7 @@
 
 #include "Debug.h"
 
-#include "./stb/stb_image.h"
+//#include "./stb/stb_image.h"
 #include "XboxControllerManager.h"
 
 #include <string>
@@ -57,7 +58,7 @@ using namespace CSC8503;
 
 TutorialGame::TutorialGame() :
 debugViewPoint(DebugViewPoint::Instance()), gridManager(GameGridManager::instance()), gameStateManager(GameStateManager::instance()),
-renderer(GameTechRenderer::instance()), gameWorld(GameWorld::instance()), keyMap(InputKeyMap::instance()), menuManager(MenuManager::instance()) {
+renderer(GameTechRenderer::instance()), gameWorld(GameWorld::instance()), keyMap(InputKeyMap::instance()), menuManager(MenuManager::instance()), optionManager(OptionManager::instance()) {
 	sunLight = &gameWorld.AddDirectionalLight(Vector3(0.9f, 0.4f, 0.1f), Vector4(1.0f));
 
 	physics = std::make_unique<PhysicsSystem>(gameWorld);
@@ -89,41 +90,6 @@ void TutorialGame::StartLevel() {
 		keyMap.ChangePlayerControlTypeMap(i, ControllerType::Xbox);
 	}
 
-	/*
-	switch (numOfController)
-	{
-	case 4:
-		player4 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player4"), Vector3(0, 5, 90));
-		player4->AttachCamera(4);
-		gameWorld.GetCamera(4)->SetControlType(ControlType::Controller_4);
-		gameWorld.GetCamera(4)->SetFollow(&(player4->GetTransform()));
-	case 3:
-		player3 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player3"), Vector3(0, 5, 90));
-		player3->AttachCamera(3);
-		gameWorld.GetCamera(3)->SetControlType(ControlType::Controller_3);
-		gameWorld.GetCamera(3)->SetFollow(&(player3->GetTransform()));
-	case 2:
-		player2 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player2"), Vector3(0, 5, 90));
-		player2->AttachCamera(2);
-		gameWorld.GetCamera(2)->SetControlType(ControlType::Controller_2);
-		gameWorld.GetCamera(2)->SetFollow(&(player2->GetTransform()));
-	case 1:
-		player = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player1"), Vector3(0, 5, 90));
-		player->AttachCamera(1);
-		gameWorld.GetCamera(1)->SetControlType(ControlType::Controller_1);
-		gameWorld.GetCamera(1)->SetFollow(&(player->GetTransform()));
-	default:
-		// NOT using keyboard if there are already 4 controllers connected
-		if (player4 == nullptr)
-		{
-			player4 = AddPlayerToWorld(0, Vector3(0, 5, 90));	// playerID == 0 indicating player using keyboard
-			player4->AttachCamera(4);
-			gameWorld.GetCamera(4)->SetControlType(ControlType::KeyboardMouse);
-			gameWorld.GetCamera(4)->SetFollow(&(player4->GetTransform()));
-		}
-		break;
-	}
-	*/
 
 	SetCameraFollow(players[0]);
 
@@ -171,17 +137,27 @@ void TutorialGame::UpdateGame(float dt) {
 	debugViewPoint.BeginFrame();
 	debugViewPoint.MarkTime("Update");
 	
-	static bool moveSun = false;
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM0)) {
-		moveSun = !moveSun;
-	}
-	if (moveSun) {
+	if (optionManager.GetSunMove()) {
 		float runtime = gameWorld.GetRunTime();
 		sunLight->SetDirection(Vector3(std::sin(runtime), std::cos(runtime), 0.0f));
 		renderer.GetSkyboxPass().SetSunDir(sunLight->GetDirection());
 	}
 
-	SoundSystem::GetSoundSystem()->Update(dt);
+	if (!optionManager.GetSound()) {
+		SoundSystem::GetSoundSystem()->SetMasterVolume(0.0);
+	}
+	if (optionManager.GetSound()) {
+		SoundSystem::GetSoundSystem()->SetMasterVolume(0.5);
+		SoundSystem::GetSoundSystem()->Update(dt);
+	}
+	if (optionManager.GetVolumeUp()) {
+		int i = optionManager.GetUpTimes();
+		SoundSystem::GetSoundSystem()->SetMasterVolume(0.5 + i * 0.1);
+	}
+	if (optionManager.GetVolumeDown()) {
+		int i = optionManager.GetDownTimes();
+		SoundSystem::GetSoundSystem()->SetMasterVolume(0.5 - i * 0.1);
+	}
 
 	UpdateGameCore(dt);
 
@@ -239,8 +215,11 @@ void TutorialGame::UpdateHud(float dt)
 	if (boss) {
 		Debug::Print(std::string("Boss health: ").append(std::to_string((int)boss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
 	}
-	hud->loadHuds((int)boss->GetHealth()->GetHealth(), (int)players[0]->GetHealth()->GetHealth());
-	(renderer.GetHudRPass()).SetHud(hud->getHuds());
+
+
+	hud->loadHuds((int)boss->GetHealth()->GetHealth(), (int)players[gameWorld.GetMainCamera()->GetPlayerID()]->GetHealth()->GetHealth());	
+
+	renderer.GetHudRPass().SetHud(hud->getHuds());
 }
 
 void TutorialGame::ProcessState() {

@@ -38,9 +38,9 @@ BloomRPass::BloomRPass() : OGLPostRenderPass(), renderer(GameTechRenderer::insta
 	combineFrameBuffer->DrawBuffers();
 	combineFrameBuffer->Unbind();
 
-	downsampleShader = AssetLoader::CreateShader("downsample.vert", "downsample.frag");
-	upsampleShader   = AssetLoader::CreateShader("upsample.vert", "upsample.frag");
-	combineShader    = AssetLoader::CreateShader("bloomCombine.vert", "bloomCombine.frag");
+	downsampleShader = AssetLoader::CreateShaderAndInit("downsample.vert", "downsample.frag");
+	upsampleShader   = AssetLoader::CreateShaderAndInit("upsample.vert", "upsample.frag");
+	combineShader    = AssetLoader::CreateShaderAndInit("bloomCombine.vert", "bloomCombine.frag");
 
 	downsampleShader->Bind();
 

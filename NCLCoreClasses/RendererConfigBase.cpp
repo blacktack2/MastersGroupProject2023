@@ -20,7 +20,7 @@ void RendererConfigBase::ResetAll() {
 	SetClearColour();
 	SetAlphaTest();
 	SetBlend();
-	//SetColourMask();
+	SetColourMask();
 	SetCullFace();
 	SetDepthTest();
 	SetDepthMask();

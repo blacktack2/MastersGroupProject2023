@@ -24,6 +24,8 @@ namespace NCL::Rendering {
 		OGLMesh(const std::string& filename);
 		~OGLMesh();
 
+		virtual void Initilize() { UploadToGPU(); };
+
 		virtual void Draw() override;
 		virtual void Draw(unsigned int subLayer) override;
 

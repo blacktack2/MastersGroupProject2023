@@ -3,6 +3,7 @@
  * @brief  A class for defining the main menu.
  *
  * @author Felix Chiu
+ * @author Yifei Hu
  * @author Stuart Lewis
  * @date   February 2023
  */
@@ -28,20 +29,20 @@ PushdownState::PushdownResult ScreenMain::OnUpdate(float dt, PushdownState** new
 	keyMap.Update();
 	renderer.Render();
 	switch (menuState) {
-		case ChangeState::Start:
-			*newState = new ScreenGame();
-			return PushdownResult::Push;
-		case ChangeState::Multiplayer:
-			*newState = new ScreenMultiplayerOption();
-			return PushdownResult::Push;
-		case ChangeState::Option:
-			*newState = new ScreenOption();
-			return PushdownResult::Push;
-		case ChangeState::Quit:
-			return PushdownResult::Pop;
-		default:
-			menuState = ChangeState::OnGoing;
-			return PushdownResult::NoChange;
+	case ChangeState::Start:
+		*newState = new ScreenGame();
+		return PushdownResult::Push;
+	case ChangeState::Multiplayer:
+		*newState = new ScreenMultiplayerOption();
+		return PushdownResult::Push;
+	case ChangeState::Option:
+		*newState = new ScreenOption();
+		return PushdownResult::Push;
+	case ChangeState::Quit:
+		return PushdownResult::Pop;
+	default:
+		menuState = ChangeState::OnGoing;
+		return PushdownResult::NoChange;
 	}
 }
 
@@ -62,21 +63,21 @@ void ScreenMain::OnAwake() {
 
 void ScreenMain::InitMenu() {
 	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(1.0f), AssetLibrary<TextureBase>::GetAsset("menuMain"));
-	
-	menu.AddButton(0.5f, 0.3f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button1"), [&]() {
+
+	menu.AddButton(0.5f, 0.3f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button0"), [&](Button& button) {
 		std::cout << "Start button clicked\n";
 		menuState = ChangeState::Start;
-	});
-	menu.AddButton(0.5f, 0.0f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button2"), [&]() {
+		});
+	menu.AddButton(0.5f, 0.0f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button1"), [&](Button& button) {
 		std::cout << "Multiplayer button clicked\n";
 		menuState = ChangeState::Multiplayer;
-	});
-	menu.AddButton(0.5f, -0.3f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button2"), [&]() {
+		});
+	menu.AddButton(0.5f, -0.3f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button2"), [&](Button& button) {
 		std::cout << "Option button clicked\n";
 		menuState = ChangeState::Option;
-	});
-	menu.AddButton(0.5f, -0.6f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button3"), [&]() {
+		});
+	menu.AddButton(0.5f, -0.6f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button3"), [&](Button& button) {
 		std::cout << "Quit button clicked\n";
 		menuState = ChangeState::Quit;
-	});
+		});
 }

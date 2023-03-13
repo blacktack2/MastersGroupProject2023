@@ -12,7 +12,6 @@ set(Header_Files
     "GameStateManager.h"
 	"Maze.h"
     "MenuRenderObject.h"
-
     "Obstacle.h"
     "StateGameObject.h"
     "TutorialGame.h"
@@ -156,6 +155,8 @@ set(Menu_Files
     "ScreenMultiplayer.cpp"
     "ScreenMultiplayerOption.h"
     "ScreenMultiplayerOption.cpp"
+    "OptionManager.h"
+    "OptionManager.cpp"
     "HealthBar.h"
     "HealthBar.cpp"
     "Hud.h"

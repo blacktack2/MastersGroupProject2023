@@ -19,6 +19,7 @@ source_group("Asset Handling" FILES ${Asset_Handling})
 
 set(Header_Files
     "Camera.h"
+    "LoadingManager.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
