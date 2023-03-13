@@ -10,10 +10,10 @@ OGLLoadingManager::OGLLoadingManager(Window* w, RendererBase& renderer) : Loadin
 renderer(static_cast<OGLRenderer&>(renderer)) {
 	quad = std::make_unique<OGLMesh>();
 	quad->SetVertexPositions({
-			Vector3(-1, 1, -1),
+			Vector3(-1,  1, -1),
 			Vector3(-1, -1, -1),
-			Vector3(1, -1, -1),
-			Vector3(1, 1, -1),
+			Vector3( 1, -1, -1),
+			Vector3( 1,  1, -1),
 	});
 	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
 	quad->UploadToGPU();
@@ -32,8 +32,9 @@ void OGLLoadingManager::Load(std::function<void()> func) {
 	std::thread t(&OGLLoadingManager::RunFunc, this, func);
 	DisplayLoadingScreen();
 	t.join();
-	AssetLibrary<MeshGeometry>::RunOnAssets([](MeshGeometry& item)->void { item.UploadToGPU(); });
-	AssetLibrary<ShaderBase>::RunOnAssets([](ShaderBase& item)->void { item.Initialize(); });
+	AssetLibrary<MeshGeometry>::RunOnAssets([](MeshGeometry& asset)->void { asset.UploadToGPU(); });
+	AssetLibrary<ShaderBase>  ::RunOnAssets([](ShaderBase&   asset)->void { asset.Initialize() ; });
+	AssetLibrary<TextureBase> ::RunOnAssets([](TextureBase&  asset)->void { asset.Initialize() ; });
 }
 
 void OGLLoadingManager::RunFunc(std::function<void()> func) {
@@ -62,5 +63,4 @@ void OGLLoadingManager::DisplayLoadingScreen() {
 
 		if (loadingComplete) break;
 	}
-	
 }

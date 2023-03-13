@@ -80,8 +80,7 @@ namespace NCL::Rendering {
 			return bufferType;
 		}
 
-		virtual void Initilize() = 0;
-
+		virtual void Initialize() = 0;
 
 		/**
 		 * @brief Resize the texture.
@@ -100,6 +99,17 @@ namespace NCL::Rendering {
 		 * @param type Data type of the source data.
 		 */
 		virtual void Upload(void* data, PixelDataFormat format = PixelDataFormat::RGBA, PixelDataType type = PixelDataType::UnsignedByte) = 0;
+		/**
+		 * @brief Temporarily store the data on the CPU, to be uploaded later using
+		 * the alternate overload during TextureBase::Initialize().
+		 * @brief See TextureBase::Upload().
+		 * 
+		 * @param data Source data to upload.
+		 * @param amount Size (in bytes) of the data.
+		 * @param format Channel information of the source data.
+		 * @param type Data type of the source data.
+		 */
+		virtual void SoftUpload(void* data, size_t amount, PixelDataFormat format = PixelDataFormat::RGBA, PixelDataType type = PixelDataType::UnsignedByte) = 0;
 
 		/**
 		 * @brief Bind to texture buffer.
@@ -143,8 +153,9 @@ namespace NCL::Rendering {
 		virtual void SetEdgeWrap(EdgeWrap edgeWrap) = 0;
 	protected:
 		TextureBase(TextureType type);
-	private:
+
 		TextureType type;
+	private:
 		BufferType bufferType;
 	};
 }

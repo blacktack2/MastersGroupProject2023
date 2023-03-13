@@ -91,12 +91,11 @@ void LoadGlobalAssets() {
 	AssetLibrary<MeshGeometry>::AddAsset("shelter", AssetLoader::LoadMesh("shelterCube.msh"));
 	AssetLibrary<MeshGeometry>::AddAsset("pillar", AssetLoader::LoadMesh("pillarMsh.msh"));
 
-	AssetLibrary<TextureBase>::AddAsset("defaultAlbedo", AssetLoader::LoadTexture("DefaultAlbedo.png"));
-	AssetLibrary<TextureBase>::AddAsset("defaultBump", AssetLoader::LoadTexture("DefaultBump.png"));
-	AssetLibrary<TextureBase>::AddAsset("defaultSpec", AssetLoader::LoadTexture("DefaultSpec.png"));
-	AssetLibrary<TextureBase>::AddAsset("basic", AssetLoader::LoadTexture("checkerboard.png"));
-	AssetLibrary<TextureBase>::AddAsset("healingKitTex", AssetLoader::LoadTexture("shelterTex.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("pillarTex", AssetLoader::LoadTexture("pillarTex.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("defaultAlbedo", std::move(AssetLoader::LoadTexture("DefaultAlbedo.png")));
+	AssetLibrary<TextureBase>::AddAsset("defaultBump", std::move(AssetLoader::LoadTexture("DefaultBump.png")));
+	AssetLibrary<TextureBase>::AddAsset("defaultSpec", std::move(AssetLoader::LoadTexture("DefaultSpec.png")));
+	AssetLibrary<TextureBase>::AddAsset("basic", std::move(AssetLoader::LoadTexture("checkerboard.png")));
+	AssetLibrary<TextureBase>::AddAsset("pillarTex", std::move(AssetLoader::LoadTexture("pillarTex.jpg")));
 
 	AssetLibrary<MeshMaterial>::AddAsset("default", std::make_shared<MeshMaterial>("Default.mat"));
 	AssetLibrary<MeshMaterial>::AddAsset("pillar", std::make_shared<MeshMaterial>("pillar.mat"));
@@ -109,39 +108,39 @@ void LoadGlobalAssets() {
 
 void LoadMenuAsset() {
 	std::cout << "Loading menu assets\n";
-	AssetLibrary<TextureBase>::AddAsset("menuMain", AssetLoader::LoadTexture("defaultMain.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("menuPause", AssetLoader::LoadTexture("defaultpause.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("menuOption", AssetLoader::LoadTexture("defaultOption.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("menuMain", std::move(AssetLoader::LoadTexture("defaultMain.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("menuPause", std::move(AssetLoader::LoadTexture("defaultpause.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("menuOption", std::move(AssetLoader::LoadTexture("defaultOption.jpg")));
 
-	AssetLibrary<TextureBase>::AddAsset("button0", AssetLoader::LoadTexture("button0.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("button1", AssetLoader::LoadTexture("button1.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("button2", AssetLoader::LoadTexture("button2.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("button3", AssetLoader::LoadTexture("button3.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("button4", AssetLoader::LoadTexture("button4.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("button5", AssetLoader::LoadTexture("button5.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("button6", AssetLoader::LoadTexture("button6.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("button7", AssetLoader::LoadTexture("button7.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button0", std::move(AssetLoader::LoadTexture("button0.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("button1", std::move(AssetLoader::LoadTexture("button1.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("button2", std::move(AssetLoader::LoadTexture("button2.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("button3", std::move(AssetLoader::LoadTexture("button3.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("button4", std::move(AssetLoader::LoadTexture("button4.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("button5", std::move(AssetLoader::LoadTexture("button5.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("button6", std::move(AssetLoader::LoadTexture("button6.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("button7", std::move(AssetLoader::LoadTexture("button7.jpg")));
 
-	AssetLibrary<TextureBase>::AddAsset("checkbox0", AssetLoader::LoadTexture("checkbox.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("checkbox1", AssetLoader::LoadTexture("checkboxmark.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("plus", AssetLoader::LoadTexture("plus.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("minus", AssetLoader::LoadTexture("minus.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("return", AssetLoader::LoadTexture("return.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("checkbox0", std::move(AssetLoader::LoadTexture("checkbox.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("checkbox1", std::move(AssetLoader::LoadTexture("checkboxmark.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("plus", std::move(AssetLoader::LoadTexture("plus.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("minus", std::move(AssetLoader::LoadTexture("minus.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("return", std::move(AssetLoader::LoadTexture("return.jpg")));
 
-	AssetLibrary<TextureBase>::AddAsset("num0", AssetLoader::LoadTexture("num0.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("num1", AssetLoader::LoadTexture("num1.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("num2", AssetLoader::LoadTexture("num2.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("num3", AssetLoader::LoadTexture("num3.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("num4", AssetLoader::LoadTexture("num4.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("num5", AssetLoader::LoadTexture("num5.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("num6", AssetLoader::LoadTexture("num6.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("num7", AssetLoader::LoadTexture("num7.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("num8", AssetLoader::LoadTexture("num8.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("num9", AssetLoader::LoadTexture("num9.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num0", std::move(AssetLoader::LoadTexture("num0.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("num1", std::move(AssetLoader::LoadTexture("num1.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("num2", std::move(AssetLoader::LoadTexture("num2.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("num3", std::move(AssetLoader::LoadTexture("num3.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("num4", std::move(AssetLoader::LoadTexture("num4.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("num5", std::move(AssetLoader::LoadTexture("num5.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("num6", std::move(AssetLoader::LoadTexture("num6.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("num7", std::move(AssetLoader::LoadTexture("num7.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("num8", std::move(AssetLoader::LoadTexture("num8.jpg")));
+	AssetLibrary<TextureBase>::AddAsset("num9", std::move(AssetLoader::LoadTexture("num9.jpg")));
 
-	AssetLibrary<TextureBase>::AddAsset("fontAtlas", AssetLoader::LoadTexture("PressStart2P.png"));
-	AssetLibrary<TextureBase>::AddAsset("BossHealthBarBorder", AssetLoader::LoadTexture("HP/Borders/Border_Style_2.png"));
-	AssetLibrary<TextureBase>::AddAsset("BossHealthBar", AssetLoader::LoadTexture("HP/Style_2.png"));
+	AssetLibrary<TextureBase>::AddAsset("fontAtlas", std::move(AssetLoader::LoadTexture("PressStart2P.png")));
+	AssetLibrary<TextureBase>::AddAsset("BossHealthBarBorder", std::move(AssetLoader::LoadTexture("HP/Borders/Border_Style_2.png")));
+	AssetLibrary<TextureBase>::AddAsset("BossHealthBar", std::move(AssetLoader::LoadTexture("HP/Style_2.png")));
 
 	AssetLibrary<ShaderBase>::AddAsset("menu", std::move(AssetLoader::CreateShader("menuVertex.vert", "menuFragment.frag")));
 	AssetLibrary<ShaderBase>::AddAsset("button", std::move(AssetLoader::CreateShader("buttonVertex.vert", "buttonFragment.frag")));

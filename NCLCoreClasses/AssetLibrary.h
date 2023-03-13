@@ -6,14 +6,10 @@
  * @date   February 2023
  */
 #pragma once
-#include "MeshGeometry.h"
-
 #include <unordered_map>
 #include <memory>
 #include <string>
 #include <functional>
-
-using namespace NCL::Rendering;
 
 namespace NCL {
 	template<typename T>
@@ -44,7 +40,7 @@ namespace NCL {
 
 	template<typename T>
 	inline void AssetLibrary<T>::RunOnAssets(std::function<void(T&)> func) {
-		for (auto& it : assets) {
+		for (std::pair<const std::string, std::shared_ptr<T>>& it : assets) {
 			func(*it.second);
 		}
 	}
