@@ -292,8 +292,8 @@ void NetworkedGame::UpdateAsClient(float dt) {
 			keyMap.Update();
 			newPacket.buttonstates = keyMap.GetButtonState();
 			player->GetNetworkAxis(newPacket.axis);
-			newPacket.yaw = static_cast<int>(gameWorld.GetMainCamera()->GetYaw() * 1000);
-			std::cout << "Sending Yaw " << newPacket.yaw << std::endl;
+			newPacket.yaw = static_cast<int>(player->GetYaw() * 1000);
+			std::cout << "Sending Yaw " << player->GetYaw() << " " << newPacket.yaw << std::endl;
 		}
 	}
 	
