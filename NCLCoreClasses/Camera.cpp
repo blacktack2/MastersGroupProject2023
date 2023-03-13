@@ -120,7 +120,8 @@ void Camera::UpdateCamera(float dt) {
 			std::sin(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch))
 		) * followDistance;
 		position.y += 1.0f;
-		position.x += 1.0f;
+		//position = Vector3::Lerp(position, position + follow->GetGlobalOrientation() * Vector3(1.0f, 0, 0) * 1.5f, std::min(smoothFactor * dt, 1.0f));
+		position.x += 2.0f;
 		position.y = std::max(position.y, 0.1f);
 
 	}

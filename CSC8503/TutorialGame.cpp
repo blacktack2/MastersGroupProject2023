@@ -189,7 +189,7 @@ void TutorialGame::UpdateGameCore(float dt) {
 	//gameWorld.GetCamera(4)->UpdateCamera(dt);
 
 	Vector3 crossPos = CollisionDetection::Unproject(Vector3(screenSize * 0.5f, 0.99f), *gameWorld.GetMainCamera());
-	Debug::DrawAxisLines(Matrix4::Translation(crossPos), 1.0f);
+	//Debug::DrawAxisLines(Matrix4::Translation(crossPos), 1.0f);
 
 	gameWorld.PreUpdateWorld();
 
@@ -207,13 +207,14 @@ void TutorialGame::UpdateGameCore(float dt) {
 
 void TutorialGame::UpdateHud(float dt)
 {	
+	/*
 	if (players[0]) {
 		Debug::Print(std::string("health: ").append(std::to_string((int)players[0]->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
 	}
 	if (boss) {
 		Debug::Print(std::string("Boss health: ").append(std::to_string((int)boss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
 	}
-
+	*/
 
 	hud->loadHuds((int)boss->GetHealth()->GetHealth(), (int)players[gameWorld.GetMainCamera()->GetPlayerID()]->GetHealth()->GetHealth());	
 

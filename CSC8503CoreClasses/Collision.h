@@ -12,7 +12,7 @@ namespace NCL {
 		MAX_LAYER,
 
 
-		InteractionDefault_    = 1 << (int)Default | 1 << (int)Player | 1 << (int)Enemy                        | 1 << (int)EnemyProj | 1 << (int)PlayerTrig | 1 << (int)PaintAble,
+		InteractionDefault_    = 1 << (int)Default | 1 << (int)Player | 1 << (int)Enemy                                              | 1 << (int)PlayerTrig | 1 << (int)PaintAble,
 		InteractionPlayer_     = 1 << (int)Default | 1 << (int)Player | 1 << (int)Enemy                        | 1 << (int)EnemyProj						| 1 << (int)PaintAble,
 		InteractionEnemy_      = 1 << (int)Default | 1 << (int)Player | 1 << (int)Enemy 																	| 1 << (int)PaintAble,
 		InteractionPlayerProj_ =									    1 << (int)Enemy																	    | 1 << (int)PaintAble,
