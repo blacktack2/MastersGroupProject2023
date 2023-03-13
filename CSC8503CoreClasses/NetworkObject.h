@@ -49,8 +49,8 @@ namespace NCL::CSC8503 {
 		int		lastID = -1;
 		unsigned int buttonstates = 0;
 		short int axis[AxisInput::AxisInputDataMax] = {0};
-		short int yaw = 0;
-		short int pitch = 0;
+		int yaw = 0;
+		int pitch = 0;
 
 		ClientPacket() {
 			type = Received_State;
