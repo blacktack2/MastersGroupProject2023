@@ -36,8 +36,6 @@ namespace NCL::CSC8503 {
 		LightingRPass();
 		~LightingRPass();
 
-		virtual void OnWindowResize(int width, int height) override;
-
 		virtual void Render() override;
 
 		inline TextureBase& GetDiffuseOutTex() const {
@@ -54,6 +52,8 @@ namespace NCL::CSC8503 {
 		inline void SetNormalTexIn(TextureBase& tex) {
 			normalTexIn = &tex;
 		}
+	protected:
+		virtual void OnWindowResize() override;
 	private:
 		void DrawLight(const Light& light);
 

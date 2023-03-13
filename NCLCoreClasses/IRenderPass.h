@@ -15,7 +15,7 @@ namespace NCL::Rendering {
 	 */
 	class IRenderPass {
 	public:
-		virtual void OnWindowResize(int width, int height) = 0;
+		virtual void WindowResize(int width, int height) = 0;
 		virtual void Render() = 0;
 	};
 }

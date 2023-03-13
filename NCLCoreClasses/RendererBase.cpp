@@ -8,6 +8,8 @@
  */
 #include "RendererBase.h"
 
+#include "RendererConfigBase.h"
+
 #include <optional>
 
 using namespace NCL;
@@ -74,38 +76,76 @@ void RendererBase::UpdatePipeline() {
 		} else {
 			presentPass->SetSceneTexIn(combinePass->GetOutTex());
 		}
-		renderPipeline.push_back(*presentPass);
 	}
+	overlayPipeline.clear();
 	if (doRenderOver) {
 		for (auto& pass : overlayRenderPasses) {
 			if (pass.enabled) {
-				renderPipeline.push_back(pass.pass);
+				overlayPipeline.push_back(pass.pass);
 			}
 		}
 	}
 }
 
 void RendererBase::OnWindowResize(int width, int height) {
+	SetNumPlayers(numPlayers);
 	for (auto& pass : mainRenderPasses) {
-		pass.pass.OnWindowResize(width, height);
+		pass.pass.WindowResize(splitWidth, splitHeight);
 	}
 	if (combinePass) {
-		combinePass->OnWindowResize(width, height);
+		combinePass->WindowResize(splitWidth, splitHeight);
 	}
 	for (auto& pass : postRenderPasses) {
-		pass.pass.OnWindowResize(width, height);
+		pass.pass.WindowResize(splitWidth, splitHeight);
 	}
 	if (presentPass) {
-		presentPass->OnWindowResize(width, height);
+		presentPass->WindowResize(splitWidth, splitHeight);
 	}
 	for (auto& pass : overlayRenderPasses) {
-		pass.pass.OnWindowResize(width, height);
+		pass.pass.WindowResize(splitWidth, splitHeight);
 	}
 }
 
 void RendererBase::RenderFrame() {
+	static std::vector<float> viewports1 = {
+		0.0f, 0.0f, 1.0f, 1.0f,
+	};
+	static std::vector<float> viewports2 = {
+		0.0f, 0.0f, 0.5f, 1.0f,
+		0.5f, 0.0f, 0.5f, 1.0f,
+	};
+	static std::vector<float> viewports4 = {
+		0.0f, 0.0f, 0.5f, 0.5f,
+		0.0f, 0.5f, 0.5f, 0.5f,
+		0.5f, 0.0f, 0.5f, 0.5f,
+		0.5f, 0.5f, 0.5f, 0.5f,
+	};
+	std::vector<float>& viewports = numPlayers > 2 ? viewports4 : (numPlayers > 1 ? viewports2 : viewports1);
 	ClearBackbuffer();
+	for (size_t i = 0; i < numPlayers; i++) {
+		size_t index = i * 4;
+		GetConfig().SetDefaultViewport(0, 0, viewports[index + 2], viewports[index + 3]);
+		// TODO - Set main camera to index
+		RenderScene();
+		GetConfig().SetDefaultViewport(viewports[index], viewports[index + 1], viewports[index + 2], viewports[index + 3]);
+		RenderPresent();
+		RenderOverlay();
+	}
+	GetConfig().SetDefaultViewport();
+}
+
+void RendererBase::RenderScene() {
 	for (auto& pass : renderPipeline) {
+		pass.get().Render();
+	}
+}
+
+void RendererBase::RenderPresent() {
+	presentPass->Render();
+}
+
+void RendererBase::RenderOverlay() {
+	for (auto& pass : overlayPipeline) {
 		pass.get().Render();
 	}
 }

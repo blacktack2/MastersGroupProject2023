@@ -24,7 +24,7 @@ SkyboxRPass::SkyboxRPass() : OGLMainRenderPass(),
 gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
-	colourOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetWidth(), renderer.GetHeight());
+	colourOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetSplitWidth(), renderer.GetSplitHeight());
 	AddScreenTexture(*colourOutTex);
 
 	frameBuffer = AssetLoader::CreateFrameBuffer();

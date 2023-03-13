@@ -26,8 +26,8 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	sphere = AssetLibrary<MeshGeometry>::GetAsset("sphere");
 	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
-	lightDiffuseOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetWidth(), renderer.GetHeight());
-	lightSpecularOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetWidth(), renderer.GetHeight());
+	lightDiffuseOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	lightSpecularOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetSplitWidth(), renderer.GetSplitHeight());
 	AddScreenTexture(*lightDiffuseOutTex);
 	AddScreenTexture(*lightSpecularOutTex);
 
@@ -42,7 +42,7 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 
 	shader->Bind();
 
-	shader->SetUniformFloat("pixelSize", 1.0f / (float)renderer.GetWidth(), 1.0f / (float)renderer.GetHeight());
+	shader->SetUniformFloat("pixelSize", 1.0f / (float)renderer.GetSplitWidth(), 1.0f / (float)renderer.GetSplitHeight());
 
 	shader->SetUniformInt("depthTex", 0);
 	shader->SetUniformInt("normalTex", 1);
@@ -51,15 +51,6 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 }
 
 LightingRPass::~LightingRPass() {
-}
-
-void LightingRPass::OnWindowResize(int width, int height) {
-	RenderPassBase::OnWindowResize(width, height);
-	shader->Bind();
-
-	shader->SetUniformFloat("pixelSize", 1.0f / (float)width, 1.0f / (float)height);
-
-	shader->Unbind();
 }
 
 void LightingRPass::Render() {
@@ -72,6 +63,14 @@ void LightingRPass::Render() {
 	gameWorld.OperateOnLights([&](const Light& light) {
 		DrawLight(light);
 	});
+}
+
+void LightingRPass::OnWindowResize() {
+	shader->Bind();
+
+	shader->SetUniformFloat("pixelSize", 1.0f / (float)renderer.GetSplitWidth(), 1.0f / (float)renderer.GetSplitHeight());
+
+	shader->Unbind();
 }
 
 void LightingRPass::DrawLight(const Light& light) {

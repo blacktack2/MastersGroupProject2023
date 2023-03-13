@@ -23,7 +23,7 @@ using namespace CSC8503;
 HDRRPass::HDRRPass() : OGLPostRenderPass(), renderer(GameTechRenderer::instance()) {
 	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
-	sceneOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA16F, renderer.GetWidth(), renderer.GetHeight());
+	sceneOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA16F, renderer.GetSplitWidth(), renderer.GetSplitHeight());
 	AddScreenTexture(*sceneOutTex);
 
 	frameBuffer = AssetLoader::CreateFrameBuffer();

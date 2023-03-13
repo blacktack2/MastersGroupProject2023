@@ -39,7 +39,7 @@ namespace NCL::CSC8503 {
 		SSAORPass();
 		~SSAORPass();
 
-		virtual void OnWindowResize(int width, int height) override;
+		virtual void OnWindowResize() override;
 
 		virtual void Render() override;
 

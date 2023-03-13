@@ -19,9 +19,10 @@ void RenderPassBase::AddScreenTexture(TextureBase& tex) {
 RenderPassBase::~RenderPassBase() {
 }
 
-void RenderPassBase::OnWindowResize(int width, int height) {
+void RenderPassBase::WindowResize(int width, int height) {
 	for (auto tex : textures) {
 		tex.get().Bind();
 		tex.get().Resize(width, height);
 	}
+	OnWindowResize();
 }

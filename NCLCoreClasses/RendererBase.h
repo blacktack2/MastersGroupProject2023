@@ -17,6 +17,8 @@
 #include "IOverlayRenderPass.h"
 #include "RenderPassBase.h"
 
+#include "Camera.h"
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -68,6 +70,19 @@ namespace NCL::Rendering {
 			return false;
 		}
 
+		inline void SetNumPlayers(unsigned int numPlayers) {
+			this->numPlayers = numPlayers;
+			switch (numPlayers) {
+			default:
+			case 1:
+				splitWidth = GetWidth(); splitHeight = GetHeight(); break;
+			case 2:
+				splitWidth = GetWidth() * 0.5f; splitHeight = GetHeight(); break;
+			case 3: case 4:
+				splitWidth = GetWidth() * 0.5f; splitHeight = GetHeight() * 0.5f; break;
+			}
+		}
+
 		/**
 		 * @brief Enable or disable general scene rendering and post-processing.
 		 * Must be followed by a call to UpdatePipeline() to take effect.
@@ -117,6 +132,12 @@ namespace NCL::Rendering {
 		}
 		inline int GetHeight() const {
 			return windowHeight;
+		}
+		inline int GetSplitWidth() const {
+			return splitWidth;
+		}
+		inline int GetSplitHeight() const {
+			return splitHeight;
 		}
 
 		/**
@@ -233,6 +254,12 @@ namespace NCL::Rendering {
 		};
 
 		void RenderFrame();
+		void RenderScene();
+		void RenderPresent();
+		void RenderOverlay();
+
+		unsigned int numPlayers = 4;
+		int splitWidth = 1, splitHeight = 1;
 
 		bool doRenderScene = true;
 		bool doRenderPost  = true;
@@ -248,5 +275,6 @@ namespace NCL::Rendering {
 		std::unordered_map<std::string, size_t> overlayMap;
 
 		std::vector<std::reference_wrapper<IRenderPass>> renderPipeline;
+		std::vector<std::reference_wrapper<IRenderPass>> overlayPipeline;
 	};
 }

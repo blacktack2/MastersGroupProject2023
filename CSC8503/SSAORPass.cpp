@@ -24,8 +24,8 @@ using namespace CSC8503;
 SSAORPass::SSAORPass() : OGLMainRenderPass(), renderer(GameTechRenderer::instance()) {
 	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
-	ssaoTex    = AssetLoader::CreateTexture(TextureType::ColourRGB8, renderer.GetWidth(), renderer.GetHeight());
-	ssaoOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB8, renderer.GetWidth(), renderer.GetHeight());
+	ssaoTex    = AssetLoader::CreateTexture(TextureType::ColourRGB8, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	ssaoOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB8, renderer.GetSplitWidth(), renderer.GetSplitHeight());
 	AddScreenTexture(*ssaoTex);
 	AddScreenTexture(*ssaoOutTex);
 
@@ -50,7 +50,7 @@ SSAORPass::SSAORPass() : OGLMainRenderPass(), renderer(GameTechRenderer::instanc
 	ssaoShader->SetUniformInt("normalTex", 1);
 	ssaoShader->SetUniformInt("noiseTex" , 2);
 
-	ssaoShader->SetUniformFloat("noiseScale", (float)renderer.GetWidth() / (float)noiseTexSize, (float)renderer.GetHeight() / (float)noiseTexSize);
+	ssaoShader->SetUniformFloat("noiseScale", (float)renderer.GetSplitWidth() / (float)noiseTexSize, (float)renderer.GetSplitHeight() / (float)noiseTexSize);
 
 	blurShader->Bind();
 
@@ -66,10 +66,10 @@ SSAORPass::SSAORPass() : OGLMainRenderPass(), renderer(GameTechRenderer::instanc
 SSAORPass::~SSAORPass() {
 }
 
-void SSAORPass::OnWindowResize(int width, int height) {
+void SSAORPass::OnWindowResize() {
 	ssaoShader->Bind();
 
-	ssaoShader->SetUniformFloat("noiseScale", (float)width / (float)noiseTexSize, (float)height / (float)noiseTexSize);
+	ssaoShader->SetUniformFloat("noiseScale", (float)renderer.GetSplitWidth() / (float)noiseTexSize, (float)renderer.GetSplitHeight() / (float)noiseTexSize);
 
 	ssaoShader->Unbind();
 }
@@ -111,7 +111,7 @@ void SSAORPass::DrawSSAO() {
 
 	Matrix4 viewMatrix = GameWorld::instance().GetMainCamera()->BuildViewMatrix();
 	ssaoShader->SetUniformMatrix("viewMatrix", viewMatrix);
-	float aspect = (float)renderer.GetWidth() / (float)renderer.GetHeight();
+	float aspect = (float)renderer.GetSplitWidth() / (float)renderer.GetSplitHeight();
 	Matrix4 projMatrix = GameWorld::instance().GetMainCamera()->BuildProjectionMatrix(aspect);
 	ssaoShader->SetUniformMatrix("projMatrix", projMatrix);
 

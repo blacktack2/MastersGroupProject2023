@@ -34,8 +34,6 @@ namespace NCL::CSC8503 {
 		BloomRPass();
 		~BloomRPass();
 
-		virtual void OnWindowResize(int width, int height) override;
-
 		virtual void Render() override;
 
 		TextureBase& GetOutTex() const override {
@@ -48,6 +46,8 @@ namespace NCL::CSC8503 {
 		void SetBloomDepth(size_t depth);
 
 		void SetBias(float bias);
+	protected:
+		virtual void OnWindowResize() override;
 	private:
 		struct BloomMip {
 			float width, height;

@@ -21,11 +21,13 @@ namespace NCL::Rendering {
 	public:
 		virtual ~RenderPassBase();
 
-		virtual void OnWindowResize(int width, int height);
+		virtual void WindowResize(int width, int height);
 
 		virtual void Render() = 0;
 	protected:
 		RenderPassBase();
+
+		virtual void OnWindowResize() {}
 
 		void AddScreenTexture(TextureBase& tex);
 	private:

@@ -16,8 +16,11 @@ namespace NCL::Rendering {
 	public:
 		OGLPresentRenderPass() : OGLRenderPass() {}
 
-		virtual void OnWindowResize(int width, int height) override {
-			OGLRenderPass::OnWindowResize(width, height);
+		void WindowResize(int width, int height) override {
+			OGLRenderPass::WindowResize(width, height);
+		}
+	protected:
+		void OnWindowResize() override {
 		}
 	};
 }

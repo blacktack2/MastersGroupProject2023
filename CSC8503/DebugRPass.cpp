@@ -59,9 +59,8 @@ void DebugRPass::RenderLines() {
 		return;
 	}
 
-	float screenAspect = (float)renderer.GetWidth() / (float)renderer.GetHeight();
 	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetAspect());
 	
 	Matrix4 viewProjMatrix  = projMatrix * viewMatrix;
 
