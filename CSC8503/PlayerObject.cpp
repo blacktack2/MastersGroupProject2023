@@ -135,8 +135,6 @@ void PlayerObject::MoveCamera(float dt) {
 	camera->SetPitch(pitch);
 	camera->SetYaw(yaw);
 	camera->UpdateCamera(dt);
-	//float followDistance = 7.0f;
-	//camera->SetPosition(this->GetTransform().GetGlobalPosition() - this->GetTransform().GetGlobalOrientation() * Vector3(0, 0, -1) * followDistance + Vector3(0,2,0));
 }
 
 void PlayerObject::GetAxisInput()
@@ -263,14 +261,26 @@ void PlayerObject::CollisionWith(GameObject* other) {
 
 PlayerBullet* PlayerObject::PrepareBullet()
 {
+	Ray ray = CollisionDetection::BuildRayFromMouse(*camera);
+	Vector3 dir;
+	RayCollision closestCollision;
+	if (gameWorld.Raycast(ray, closestCollision, true, this)) {
+		dir = closestCollision.collidedAt - transform.GetGlobalPosition();
+
+		Debug::DrawLine(closestCollision.collidedAt, closestCollision.collidedAt + Vector3(0, 1, 0), Debug::BLUE, 0.01f);
+	}
+
 	PlayerBullet* ink = BulletInstanceManager::instance().GetPlayerBullet();
 	ink->SetLifespan(projectileLifespan);
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
 	ink->GetPhysicsObject()->SetInverseMass(2.0f);
 	ink->GetPhysicsObject()->SetLinearVelocity(this->physicsObject->GetLinearVelocity() * Vector3(1, 0, 1));
+	/*
 	Quaternion dir = transform.GetGlobalOrientation() * Quaternion::AxisAngleToQuaterion(Vector3(1, 0, 0), pitch);
 	dir = dir * Quaternion::EulerAnglesToQuaternion((float)(rand() % 100 - 50) / 20, (float)(rand() % 100 - 50) / 20, (float)(rand() % 100 - 50) / 20); // add randomness
 	ink->GetPhysicsObject()->ApplyLinearImpulse(dir * Vector3(0, 0, -1) * projectileForce);
+	*/
+	ink->GetPhysicsObject()->ApplyLinearImpulse(dir.Normalised() * projectileForce);
 	ink->SetActive(true);
 	return ink;
 }
