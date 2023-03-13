@@ -14,7 +14,7 @@ namespace NCL {
 
 	class OGLLoadingManager : LoadingMangerBase {
 	public:
-		OGLLoadingManager(Window* w, RendererBase* base);
+		OGLLoadingManager(Window* w, RendererBase& base);
 		~OGLLoadingManager();
 
 		void RunFunc(std::function<void()> func);
@@ -24,9 +24,9 @@ namespace NCL {
 	protected:
 		virtual void DisplayLoadingScreen() override;
 	private:
-		OGLMesh* quad;
-		OGLShader* shader;
-		OGLRenderer* renderer;
+		std::unique_ptr<OGLMesh> quad;
+		std::unique_ptr<OGLShader> shader;
+		OGLRenderer& renderer;
 #ifdef _WIN32
 		HGLRC loadingContext;
 #endif

@@ -40,7 +40,10 @@
 #include "SoundSource.h"
 #include "SoundSystem.h"
 #include "TestAudio.h"
+
+#include "Light.h"
 #include "Hud.h"
+
 #include "MeshAnimation.h"
 
 #include "Debug.h"
@@ -56,7 +59,7 @@ using namespace CSC8503;
 TutorialGame::TutorialGame() :
 debugViewPoint(DebugViewPoint::Instance()), gridManager(GameGridManager::instance()), gameStateManager(GameStateManager::instance()),
 renderer(GameTechRenderer::instance()), gameWorld(GameWorld::instance()), keyMap(InputKeyMap::instance()), menuManager(MenuManager::instance()), optionManager(OptionManager::instance()) {
-	sunLight = gameWorld.AddLight(new Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
+	sunLight = &gameWorld.AddDirectionalLight(Vector3(0.9f, 0.4f, 0.1f), Vector4(1.0f));
 
 	physics = std::make_unique<PhysicsSystem>(gameWorld);
 	hud = std::make_unique<Hud>();
@@ -136,8 +139,8 @@ void TutorialGame::UpdateGame(float dt) {
 	
 	if (optionManager.GetSunMove()) {
 		float runtime = gameWorld.GetRunTime();
-		sunLight->direction = Vector3(std::sin(runtime), std::cos(runtime), 0.0f);
-		renderer.GetSkyboxPass().SetSunDir(sunLight->direction);
+		sunLight->SetDirection(Vector3(std::sin(runtime), std::cos(runtime), 0.0f));
+		renderer.GetSkyboxPass().SetSunDir(sunLight->GetDirection());
 	}
 
 	if (!optionManager.GetSound()) {

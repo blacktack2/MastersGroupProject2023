@@ -66,7 +66,7 @@ namespace NCL::Rendering {
 		static void PrintCompileLog(GLuint object);
 		static void PrintLinkLog(GLuint program);
 
-		void Initilize();
+		void Initialize() override;
 	protected:
 		void LoadPass(const GLchar* code, ShaderStage type);
 		void Clear();

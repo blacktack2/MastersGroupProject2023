@@ -23,7 +23,6 @@ out Vertex {
 	vec3 normal;
 	vec3 tangent;
 	vec3 binormal;
-	vec3 worldPos;
 } OUT;
 
 void main() {
@@ -39,9 +38,5 @@ void main() {
 	OUT.tangent  = worldTangent;
 	OUT.binormal = cross(worldTangent, worldNormal) * tangent.w;
 
-	vec4 worldPos = modelMatrix * vec4(position, 1.0);
-
-	OUT.worldPos = worldPos.xyz;
-
-	gl_Position = projMatrix * viewMatrix * worldPos;
+	gl_Position = projMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
 }

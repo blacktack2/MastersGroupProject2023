@@ -82,6 +82,7 @@ namespace NCL::Rendering {
 	class RendererConfigBase {
 	public:
 		RendererConfigBase(RendererBase& renderer);
+		virtual ~RendererConfigBase() = default;
 
 		/**
 		 * @brief Set all settings to their default values.
@@ -128,6 +129,12 @@ namespace NCL::Rendering {
 		 * @param dstFactor How the rgba destination blending factors are scaled.
 		 */
 		virtual void SetBlend(bool enabled = false, BlendFuncSrc srcFactor = BlendFuncSrc::Default, BlendFuncDst dstFactor = BlendFuncDst::Default) = 0;
+		/**
+		 * @brief Configure settings for colour masking.
+		 * @brief Enable or disable specific colour components (rgba) from
+		 * being written to.
+		 */
+		virtual void SetColourMask(bool red = true, bool green = true, bool blue = true, bool alpha = true) = 0;
 		/**
 		 * @brief Configure settings for facet culling.
 		 * @brief Facet culling determines whether front/back facing facets

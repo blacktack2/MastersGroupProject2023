@@ -40,9 +40,9 @@ CombineRPass::CombineRPass() : OGLCombineRenderPass(), renderer(GameTechRenderer
 	shader->SetUniformFloat("ambienceColour", 0.1f, 0.1f, 0.1f);
 
 	shader->SetUniformInt("skyboxTex", 0);
-	shader->SetUniformInt("diffuseTex", 1);
-	shader->SetUniformInt("diffuseLightTex", 2);
-	shader->SetUniformInt("specularLightTex", 3);
+	shader->SetUniformInt("albedoTex", 1);
+	shader->SetUniformInt("diffuseTex", 2);
+	shader->SetUniformInt("specularTex", 3);
 	shader->SetUniformInt("ssaoTex", 4);
 	shader->SetUniformInt("normalTex", 5);
 	shader->SetUniformInt("depthTex", 6);
@@ -59,9 +59,9 @@ void CombineRPass::Render() {
 	shader->Bind();
 
 	skyboxTexIn->Bind(0);
-	diffuseTexIn->Bind(1);
-	diffuseLightTexIn->Bind(2);
-	specularLightTexIn->Bind(3);
+	albedoTexIn->Bind(1);
+	diffuseTexIn->Bind(2);
+	specularTexIn->Bind(3);
 	ssaoTexIn->Bind(4);
 	normalTexIn->Bind(5);
 	depthTexIn->Bind(6);

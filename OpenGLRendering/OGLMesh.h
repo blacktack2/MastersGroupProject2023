@@ -36,7 +36,6 @@ namespace NCL::Rendering {
 
 		static std::unique_ptr<MeshGeometry> LoadMesh(const std::string& filename);
 		static std::unique_ptr<MeshGeometry> CreateMesh();
-		static std::unique_ptr<MeshGeometry> CreateMeshAndInit();
 	protected:
 		GLuint GetVAO() const { return vao; }
 		void BindVertexAttribute(int attribSlot, int bufferID, int bindingID, int elementCount, int elementSize, int elementOffset);

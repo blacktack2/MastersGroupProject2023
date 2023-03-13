@@ -39,8 +39,6 @@ std::string ShaderNames[(size_t)ShaderStage::Max] = {
 
 OGLShader::OGLShader(const std::string& vert, const std::string& frag, const std::string& tesc, const std::string& tese, const std::string& geom) :
 ShaderBase(vert, frag, tesc, tese, geom) {
-	//Clear();
-	//ReloadShader();
 }
 
 OGLShader::~OGLShader() {
@@ -208,11 +206,11 @@ std::unique_ptr<ShaderBase> OGLShader::CreateShader(const std::string& vertex, c
 
 std::unique_ptr<ShaderBase> OGLShader::CreateShaderAndInit(const std::string& vertex, const std::string& fragment) {
 	std::unique_ptr<ShaderBase> shader = std::make_unique<OGLShader>(vertex, fragment);
-	((OGLShader*)shader.get())->Initilize();
+	((OGLShader*)shader.get())->Initialize();
 	return shader;
 }
 
-void OGLShader::Initilize() {
+void OGLShader::Initialize() {
 	Clear();
 	ReloadShader();
 }

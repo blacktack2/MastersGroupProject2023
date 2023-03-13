@@ -33,7 +33,6 @@ TextureLoadFunction AssetLoader::textureLoad = nullptr;
 BufferObjectCreateFunction AssetLoader::bufferObjectCreate = nullptr;
 FrameBufferCreateFunction  AssetLoader::frameBufferCreate  = nullptr;
 MeshCreateFunction         AssetLoader::meshCreate         = nullptr;
-MeshCreateFunction         AssetLoader::meshCreateAndInit  = nullptr;
 ShaderCreateFunction       AssetLoader::shaderCreate       = nullptr;
 ShaderCreateFunction       AssetLoader::shaderCreateAndInit = nullptr;
 TextureCreateFunction      AssetLoader::textureCreate      = nullptr;
@@ -81,13 +80,6 @@ void AssetLoader::RegisterMeshCreateFunction(MeshCreateFunction f) {
 		std::cout << __FUNCTION__ << " replacing previously defined Mesh Create Function.\n";
 	}
 	meshCreate = f;
-}
-
-void AssetLoader::RegisterMeshCreateAndInitFunction(MeshCreateFunction f) {
-	if (meshCreateAndInit) {
-		std::cout << __FUNCTION__ << " replacing previously defined Mesh Create and init Function.\n";
-	}
-	meshCreateAndInit = f;
 }
 
 void AssetLoader::RegisterShaderCreateFunction(ShaderCreateFunction f) {
@@ -179,14 +171,6 @@ std::unique_ptr<MeshGeometry> AssetLoader::CreateMesh() {
 		return nullptr;
 	}
 	return meshCreate();
-}
-
-std::unique_ptr<MeshGeometry> AssetLoader::CreateMeshAndInit() {
-	if (meshCreateAndInit == nullptr) {
-		std::cout << __FUNCTION__ << " no Mesh Create Function has been defined!\n";
-		return nullptr;
-	}
-	return meshCreateAndInit();
 }
 
 std::unique_ptr<ShaderBase> AssetLoader::CreateShader(const std::string& vertex, const std::string& fragment) {

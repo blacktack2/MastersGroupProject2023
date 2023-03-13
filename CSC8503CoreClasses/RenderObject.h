@@ -52,12 +52,17 @@ namespace NCL::CSC8503 {
 			return colour;
 		}
 			
-		void Draw();
+		void DrawToGBuffer();
+		void DrawToShadowMap();
 	protected:
 		virtual void PreDraw(int sublayer);
 		virtual void PreDraw(int sublayer, ShaderBase& shader) {}
 
+		virtual void PreShadow(int sublayer);
+		virtual void PreShadow(int sublayer, ShaderBase& shader) {}
+
 		virtual ShaderBase& GetDefaultShader();
+		virtual ShaderBase& GetDefaultShadowShader();
 
 		std::reference_wrapper<Transform> transform;
 		std::shared_ptr<MeshGeometry> mesh;

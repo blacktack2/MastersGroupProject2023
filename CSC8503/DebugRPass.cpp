@@ -36,9 +36,9 @@ OGLOverlayRenderPass(), gameWorld(GameWorld::instance()), renderer(GameTechRende
 
 	textShader->Unbind();
 
-	lineMesh = AssetLoader::CreateMeshAndInit();
+	lineMesh = AssetLoader::CreateMesh();
 	lineMesh->SetPrimitiveType(GeometryPrimitive::Lines);
-	textMesh = AssetLoader::CreateMeshAndInit();
+	textMesh = AssetLoader::CreateMesh();
 }
 
 DebugRPass::~DebugRPass() {

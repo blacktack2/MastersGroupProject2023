@@ -46,7 +46,6 @@ namespace NCL {
 		static void RegisterBufferObjectCreateFunction(BufferObjectCreateFunction f);
 		static void RegisterFrameBufferCreateFunction(FrameBufferCreateFunction f);
 		static void RegisterMeshCreateFunction(MeshCreateFunction f);
-		static void RegisterMeshCreateAndInitFunction(MeshCreateFunction f);
 		static void RegisterShaderCreateFunction(ShaderCreateFunction f);
 		static void RegisterShaderCreateAndInitFunction(ShaderCreateFunction f);
 		static void RegisterTextureCreateFunction(TextureCreateFunction f);
@@ -60,7 +59,6 @@ namespace NCL {
 		static std::unique_ptr<FrameBuffer>      CreateFrameBuffer();
 		static std::unique_ptr<MeshGeometry>     CreateMesh();
 		static std::unique_ptr<ShaderBase>       CreateShader(const std::string& vertex, const std::string& fragment);
-		static std::unique_ptr<MeshGeometry>     CreateMeshAndInit();
 		static std::unique_ptr<ShaderBase>       CreateShaderAndInit(const std::string& vertex, const std::string& fragment);
 		static std::unique_ptr<TextureBase>      CreateTexture(TextureType type, unsigned int width, unsigned int height);
 	protected:
@@ -75,7 +73,6 @@ namespace NCL {
 		static BufferObjectCreateFunction bufferObjectCreate;
 		static FrameBufferCreateFunction  frameBufferCreate;
 		static MeshCreateFunction         meshCreate;
-		static MeshCreateFunction		  meshCreateAndInit;
 		static ShaderCreateFunction       shaderCreate;
 		static ShaderCreateFunction       shaderCreateAndInit;
 		static TextureCreateFunction      textureCreate;

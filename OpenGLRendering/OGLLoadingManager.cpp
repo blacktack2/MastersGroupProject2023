@@ -6,28 +6,24 @@
 
 using namespace NCL;
 
-OGLLoadingManager::OGLLoadingManager(Window* w, RendererBase* renderer) : LoadingMangerBase(w) {
-	quad = new OGLMesh();
+OGLLoadingManager::OGLLoadingManager(Window* w, RendererBase& renderer) : LoadingMangerBase(w),
+renderer(static_cast<OGLRenderer&>(renderer)) {
+	quad = std::make_unique<OGLMesh>();
 	quad->SetVertexPositions({
-			Vector3(-1, 1, -1),
+			Vector3(-1,  1, -1),
 			Vector3(-1, -1, -1),
-			Vector3(1, -1, -1),
-			Vector3(1, 1, -1),
+			Vector3( 1, -1, -1),
+			Vector3( 1,  1, -1),
 	});
 	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
 	quad->UploadToGPU();
-	shader = new OGLShader("loading.vert", "loading.frag");
-	shader->Initilize();
+	shader = std::make_unique<OGLShader>("loading.vert", "loading.frag");
+	shader->Initialize();
 
-	this->renderer = (OGLRenderer*)renderer;
-
-	loadingContext = this->renderer->CreateContext();
+	loadingContext = this->renderer.CreateContext();
 }
 
 OGLLoadingManager::~OGLLoadingManager() {
-	delete quad;
-	delete shader;
-
 	wglDeleteContext(loadingContext);
 }
 
@@ -36,12 +32,13 @@ void OGLLoadingManager::Load(std::function<void()> func) {
 	std::thread t(&OGLLoadingManager::RunFunc, this, func);
 	DisplayLoadingScreen();
 	t.join();
-	AssetLibrary<MeshGeometry>::RunOnAssets([](std::shared_ptr<MeshGeometry> item)->void {((OGLMesh*)item.get())->UploadToGPU(); });
-	AssetLibrary<ShaderBase>::RunOnAssets([](std::shared_ptr<ShaderBase> item)->void {((OGLShader*)item.get())->Initilize(); });
+	AssetLibrary<MeshGeometry>::RunOnAssets([](MeshGeometry& asset)->void { asset.UploadToGPU(); });
+	AssetLibrary<ShaderBase>  ::RunOnAssets([](ShaderBase&   asset)->void { asset.Initialize() ; });
+	AssetLibrary<TextureBase> ::RunOnAssets([](TextureBase&  asset)->void { asset.Initialize() ; });
 }
 
 void OGLLoadingManager::RunFunc(std::function<void()> func) {
-	renderer->MakeCurrent(loadingContext);
+	renderer.MakeCurrent(loadingContext);
 	func();
 	loadingComplete = true;
 }
@@ -49,24 +46,21 @@ void OGLLoadingManager::RunFunc(std::function<void()> func) {
 void OGLLoadingManager::DisplayLoadingScreen() {
 	float time = 0;
 	//renderer->MakeCurrent(renderer->renderContext);
-	while (window->UpdateWindow())
-	{
+	while (window->UpdateWindow()) {
 		time += window->GetTimer()->GetTimeDeltaSeconds();
-		while (time > 1)
-		{
+		while (time > 1) {
 			time -= 1;
 		}
-		renderer->BeginFrame();
-		renderer->ClearBuffers(ClearBit::ColorDepth);
+		renderer.BeginFrame();
+		renderer.ClearBuffers(ClearBit::ColorDepth);
 		shader->Bind();
 		shader->SetUniformFloat("screenSize", window->GetScreenSize());
 		shader->SetUniformFloat("time", time);
 		quad->Draw();
 
-		renderer->EndFrame();
-		renderer->SwapBuffers();
+		renderer.EndFrame();
+		renderer.SwapBuffers();
 
 		if (loadingComplete) break;
 	}
-	
 }

@@ -12,6 +12,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace NCL::Rendering {
 	/**
@@ -32,8 +33,9 @@ namespace NCL::Rendering {
 
 		void Resize(unsigned int width, unsigned int height) override;
 		void Upload(void* data, PixelDataFormat format = PixelDataFormat::RGBA, PixelDataType type = PixelDataType::UnsignedByte) override;
+		void SoftUpload(void* data, size_t amount, PixelDataFormat format = PixelDataFormat::RGBA, PixelDataType type = PixelDataType::UnsignedByte) override;
 
-		virtual void Initilize() override {}
+		virtual void Initialize() override;
 
 		void Bind() const override;
 		void Bind(int slot) const override;
@@ -56,6 +58,8 @@ namespace NCL::Rendering {
 		GLenum dummyFormat, dummyType;
 
 		unsigned int width, height;
+
+		std::vector<char> data{};
 	};
 }
 

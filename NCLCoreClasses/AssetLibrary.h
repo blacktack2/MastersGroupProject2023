@@ -6,14 +6,10 @@
  * @date   February 2023
  */
 #pragma once
-#include "MeshGeometry.h"
-
 #include <unordered_map>
 #include <memory>
 #include <string>
 #include <functional>
-
-using namespace NCL::Rendering;
 
 namespace NCL {
 	template<typename T>
@@ -22,7 +18,7 @@ namespace NCL {
 		static void AddAsset(const std::string& name, std::shared_ptr<T> asset);
 		static std::shared_ptr<T> GetAsset(const std::string& name);
 		static bool HasAsset(const std::string& name);
-		static void RunOnAssets(std::function<void(std::shared_ptr<T>)> func);
+		static void RunOnAssets(std::function<void(T&)> func);
 	private:
 		static std::unordered_map<std::string, std::shared_ptr<T>> assets;
 	};
@@ -43,9 +39,9 @@ namespace NCL {
 	}
 
 	template<typename T>
-	inline void AssetLibrary<T>::RunOnAssets(std::function<void(std::shared_ptr<T>)> func) {
-		for (auto& it : assets) {
-			func(it.second);
+	inline void AssetLibrary<T>::RunOnAssets(std::function<void(T&)> func) {
+		for (std::pair<const std::string, std::shared_ptr<T>>& it : assets) {
+			func(*it.second);
 		}
 	}
 }

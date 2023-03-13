@@ -35,7 +35,7 @@ namespace NCL::CSC8503 {
 	class BossBehaviorTree;
 	class PlayerObject;
 
-	struct Light;
+	struct DirectionalLight;
 
 	class TutorialGame {
 	public:
@@ -85,7 +85,7 @@ namespace NCL::CSC8503 {
 		
 		PlayerObject* players[4];
 
-		Light* sunLight = nullptr;
+		DirectionalLight* sunLight = nullptr;
 
 		GameLevel* gameLevel = nullptr;
 		Boss* boss = nullptr;

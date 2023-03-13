@@ -189,19 +189,12 @@ void OGLMesh::UpdateGPUBuffers(unsigned int startVertex, unsigned int vertexCoun
 }
 
 std::unique_ptr<MeshGeometry> OGLMesh::LoadMesh(const std::string& filename) {
-	std::unique_ptr<MeshGeometry> mesh = std::make_unique<OGLMesh>(filename);
-	return mesh;
+	return std::make_unique<OGLMesh>(filename);
 }
 
 std::unique_ptr<MeshGeometry> OGLMesh::CreateMesh() {
 	return std::make_unique<OGLMesh>();
 }
-std::unique_ptr<MeshGeometry> OGLMesh::CreateMeshAndInit() {
-	std::unique_ptr<MeshGeometry> mesh = std::make_unique<OGLMesh>();
-	mesh->UploadToGPU();
-	return mesh;
-}
-
 
 void OGLMesh::RecalculateNormals() {
 	normals.clear();
