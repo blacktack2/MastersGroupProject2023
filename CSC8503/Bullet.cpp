@@ -4,6 +4,7 @@
 #include "Debug.h"
 #include "GameGridManager.h"
 #include "SphereVolume.h"
+#include "PhysicsObject.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -23,6 +24,9 @@ void Bullet::Update(float dt) {
 	lifespan -= dt;
 	if (lifespan <= 0) {
 		isActive = false;
+		GetPhysicsObject()->SetAngularVelocity(Vector3(0));
+		GetPhysicsObject()->SetLinearVelocity(Vector3(0));
+		GetPhysicsObject()->ClearForces();
 		return;
 	}
 

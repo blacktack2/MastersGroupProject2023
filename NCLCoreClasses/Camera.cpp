@@ -114,11 +114,12 @@ void Camera::UpdateCamera(float dt) {
 			std::sin(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch))
 		) * followDistance;
 		*/
-		position = followPos - Vector3(
+		Vector3 newPos = followPos - Vector3(
 			std::cos(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch)),
 			std::sin(Maths::DegreesToRadians(pitch)),
 			std::sin(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch))
 		) * followDistance;
+		position = Vector3::Lerp(position, newPos, std::min(smoothFactor * dt, 1.0f));
 		position.y += 1.0f;
 		//position = Vector3::Lerp(position, position + follow->GetGlobalOrientation() * Vector3(1.0f, 0, 0) * 1.5f, std::min(smoothFactor * dt, 1.0f));
 		position.x += 2.0f;
