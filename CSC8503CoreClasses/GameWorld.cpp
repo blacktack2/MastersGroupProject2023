@@ -10,12 +10,12 @@ using namespace NCL::CSC8503;
 
 GameWorld::GameWorld() : staticQuadTree(Vector2(1024, 1024), 7, 6), dynamicQuadTree(Vector2(1024, 1024), 7, 6) {
 	
-	playerCamera1 = new Camera();
-	playerCamera2 = new Camera();
-	playerCamera3 = new Camera();
-	playerCamera4 = new Camera();
+	playerCamera1 = std::make_unique<Camera>();
+	playerCamera2 = std::make_unique<Camera>();
+	playerCamera3 = std::make_unique<Camera>();
+	playerCamera4 = std::make_unique<Camera>();
 	
-	mainCamera = playerCamera1;
+	SetMainCamera(1);
 
 	shuffleConstraints	= false;
 	shuffleObjects		= false;
@@ -24,11 +24,6 @@ GameWorld::GameWorld() : staticQuadTree(Vector2(1024, 1024), 7, 6), dynamicQuadT
 }
 
 GameWorld::~GameWorld()	{
-	//delete mainCamera;
-	delete playerCamera1;
-	delete playerCamera2;
-	delete playerCamera3;
-	delete playerCamera4;
 }
 
 void GameWorld::Clear() {
@@ -211,6 +206,42 @@ void GameWorld::OperateOnDynamicTree(QuadTreeNode::QuadTreeFunc func, const Vect
 	}
 }
 
+Camera* GameWorld::GetCamera(int n) const {
+	switch (n) {
+	case 0:
+		return playerCamera4.get(); // TODO this is HARDCODED! fix this later!
+	case 1:
+		return playerCamera1.get();
+	case 2:
+		return playerCamera2.get();
+	case 3:
+		return playerCamera3.get();
+	case 4:
+		return playerCamera4.get();
+	default:
+		return nullptr;
+	}
+}
+
+Camera* GameWorld::SetMainCamera(int n) {
+	switch (n) {
+	case 1:
+		mainCamera = playerCamera1.get();
+		return mainCamera;
+	case 2:
+		mainCamera = playerCamera2.get();
+		return mainCamera;
+	case 3:
+		mainCamera = playerCamera3.get();
+		return mainCamera;
+	case 4:
+		mainCamera = playerCamera4.get();
+		return mainCamera;
+	default:
+		return nullptr;
+	}
+}
+
 bool GameWorld::Raycast(Ray& r, RayCollision& closestCollision, bool closestObject, GameObject* ignoreThis) {
 	//The simplest raycast just goes through each object and sees if there's a collision
 	RayCollision collision;
@@ -307,3 +338,18 @@ void GameWorld::ClearLight() {
 	lights.clear();
 }
 
+void GameWorld::InitCameras() const {
+	InitCamera(*playerCamera1);
+	InitCamera(*playerCamera2);
+	InitCamera(*playerCamera3);
+	InitCamera(*playerCamera4);
+}
+
+void GameWorld::InitCamera(Camera& cam) const {
+	cam.SetNearPlane(0.1f);
+	cam.SetFarPlane(1000.0f);
+	cam.SetPitch(-15.0f);
+	cam.SetYaw(315.0f);
+	cam.SetPosition(Vector3(-60, 40, 60));
+	cam.SetFollow(nullptr);
+}
