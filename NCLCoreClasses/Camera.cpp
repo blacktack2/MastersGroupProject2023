@@ -89,7 +89,7 @@ void Camera::UpdateCamera(float dt) {
 		}
 	} else {
 		Vector3 followPos = follow->GetGlobalPosition();
-		followPos = Vector3::Lerp(LastPos, followPos, std::min(smoothFactor * dt, 1.0f));
+		//followPos = Vector3::Lerp(LastPos, followPos, std::min(smoothFactor * dt, 1.0f));
 		LastPos = followPos;
 
 		/*
@@ -108,7 +108,7 @@ void Camera::UpdateCamera(float dt) {
 
 		followDistance = std::clamp(followDistance - (float)Window::GetMouse()->GetWheelMovement(), 5.0f, 40.0f);
 
-		position = followPos - Vector3(std::cos(-Maths::DegreesToRadians(90.0f + yaw)), Maths::DegreesToRadians(pitch), std::sin(-Maths::DegreesToRadians(90.0f + yaw))) * followDistance;
+		position = followPos - Vector3(std::cos(-Maths::DegreesToRadians(90.0f + yaw)), std::sin(Maths::DegreesToRadians(pitch)), std::sin(-Maths::DegreesToRadians(90.0f + yaw))) * followDistance;
 
 	}
 }

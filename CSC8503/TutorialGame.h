@@ -64,7 +64,7 @@ namespace NCL::CSC8503 {
 
 		GameObject* AddFloorToWorld(const Vector3& position);
 
-			PlayerObject* AddPlayerToWorld(int playerID, const Vector3& position);
+		PlayerObject* AddPlayerToWorld(int playerID, const Vector3& position);
 
 		Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
 		void BuildLevel();

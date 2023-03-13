@@ -44,7 +44,6 @@ void NCL::CSC8503::NetworkPlayer::MoveInput(unsigned int keyPress, short int axi
 		Move(dir);
 		this->yaw = rotationAxis.x;
 		this->pitch = rotationAxis.y;
-		std::cout << "Received Yaw " << yaw << std::endl;
 		RotateYaw(yaw);
 		MoveCamera(0.05f);
 	}

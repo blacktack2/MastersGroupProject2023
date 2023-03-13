@@ -50,6 +50,7 @@ PlayerObject::~PlayerObject() {
 
 void PlayerObject::Update(float dt) {
 	//Change game state
+	MoveCamera(dt);
 	if (health.GetHealth() <= 0) {
 		ChangeLoseState();
 		return;
@@ -71,7 +72,7 @@ void PlayerObject::Update(float dt) {
 		if(node)
 			InkEffectManager::instance().ApplyInkEffect(node->inkType, &health, 0);
 	}
-	
+	MoveCamera(dt);
 }
 
 void PlayerObject::ChangeLoseState()
@@ -85,14 +86,14 @@ void NCL::CSC8503::PlayerObject::Movement(float dt)
 	Vector3 dir = Vector3(0, 0, 0);
 	lastKey = keyMap.GetButtonState();
 	keyMap.Update();
-	RotatePlayer();
-	MoveCamera(dt);
 
 	GetAxisInput();
 	GetDir(dir);
 
 	GetButtonInput(keyMap.GetButtonState());
 	Move(dir);
+
+	RotatePlayer();
 }
 
 void PlayerObject::MoveTo(Vector3 position) {
@@ -134,6 +135,8 @@ void PlayerObject::MoveCamera(float dt) {
 	camera->SetPitch(pitch);
 	camera->SetYaw(yaw);
 	camera->UpdateCamera(dt);
+	//float followDistance = 7.0f;
+	//camera->SetPosition(this->GetTransform().GetGlobalPosition() - this->GetTransform().GetGlobalOrientation() * Vector3(0, 0, -1) * followDistance + Vector3(0,2,0));
 }
 
 void PlayerObject::GetAxisInput()
@@ -152,7 +155,7 @@ void NCL::CSC8503::PlayerObject::GetDir(Vector3& movingDir3D)
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	
 	// Thumb for movement:
-	Vector3 cameraForwardDirection = gameWorld.GetCamera(playerID)->GetPosition() - this->GetTransform().GetGlobalPosition();
+	Vector3 cameraForwardDirection = camera->GetPosition() - this->GetTransform().GetGlobalPosition();
 	Vector2 movementData{ axis[Axis1], axis[Axis2] };
 	float rightTriggerDepth = axis[Axis5];
 	float leftTriggerDepth = axis[Axis6];
@@ -240,7 +243,6 @@ void NCL::CSC8503::PlayerObject::RotatePlayer()
 	pitch = std::clamp(pitch, -90.0f, 90.0f);
 	yaw += (yaw < 0) ? 360.0f : ((yaw > 360.0f) ? -360.0f : 0.0f);
 
-	std::cout << "yaw " << yaw << std::endl;
 	RotateYaw(yaw);
 }
 
@@ -266,7 +268,8 @@ PlayerBullet* PlayerObject::PrepareBullet()
 	ink->GetTransform().SetPosition(transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition());
 	ink->GetPhysicsObject()->SetInverseMass(2.0f);
 	ink->GetPhysicsObject()->SetLinearVelocity(this->physicsObject->GetLinearVelocity() * Vector3(1, 0, 1));
-	Quaternion dir = transform.GetGlobalOrientation() * Quaternion::EulerAnglesToQuaternion((float)(rand() % 100 - 50) / 20, (float)(rand() % 100 - 50) / 20, (float)(rand() % 100 - 50) / 20);
+	Quaternion dir = transform.GetGlobalOrientation() * Quaternion::AxisAngleToQuaterion(Vector3(1, 0, 0), pitch);
+	dir = dir * Quaternion::EulerAnglesToQuaternion((float)(rand() % 100 - 50) / 20, (float)(rand() % 100 - 50) / 20, (float)(rand() % 100 - 50) / 20); // add randomness
 	ink->GetPhysicsObject()->ApplyLinearImpulse(dir * Vector3(0, 0, -1) * projectileForce);
 	ink->SetActive(true);
 	return ink;
