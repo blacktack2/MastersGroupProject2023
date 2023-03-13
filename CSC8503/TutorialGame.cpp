@@ -49,9 +49,11 @@
 #include "XboxControllerManager.h"
 
 #include <string>
+#include <chrono>
 
 using namespace NCL;
 using namespace CSC8503;
+using namespace std::chrono;
 
 TutorialGame::TutorialGame() :
 debugViewPoint(DebugViewPoint::Instance()), gridManager(GameGridManager::instance()), gameStateManager(GameStateManager::instance()),
@@ -195,6 +197,7 @@ void TutorialGame::UpdateGameCore(float dt) {
 	gameWorld.UpdateWorld(dt);
 	renderer.Update(dt);
 	physics->Update(dt);
+	
 
 	gameWorld.PostUpdateWorld();
 	

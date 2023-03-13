@@ -113,7 +113,7 @@ namespace NCL::CSC8503 {
         float deltaTime = 0.0f;
         bool isClient = false;
 
-        Health health = Health(100);
+        Health health = Health(40);
 
         GameStateManager* gameStateManager = &GameStateManager::instance();
 

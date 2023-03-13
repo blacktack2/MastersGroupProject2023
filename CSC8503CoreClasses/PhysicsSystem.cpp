@@ -9,6 +9,9 @@
 #include "Window.h"
 
 #include <functional>
+#include <chrono>
+
+using namespace std::chrono;
 using namespace NCL;
 using namespace CSC8503;
 
@@ -87,9 +90,17 @@ void PhysicsSystem::Update(float dt) {
 	int iteratorCount = 0;
 	while(dTOffset > realDT) {
 		IntegrateAccel(realDT); //Update accelerations from external forces
-
+		
+		auto start = high_resolution_clock::now();
 		BroadPhase();
+		auto stop = high_resolution_clock::now();
+		auto duration = duration_cast<microseconds>(stop - start);
+		Debug::Print(std::string("BroadPhase = ").append(std::to_string((int)duration.count())), Vector2(5, 35), Vector4(1, 1, 0, 1), 40.0f);
+		start = high_resolution_clock::now();
 		NarrowPhase();
+		stop = high_resolution_clock::now();
+		duration = duration_cast<microseconds>(stop - start);
+		Debug::Print(std::string("NarrowPhase = ").append(std::to_string((int)duration.count())), Vector2(5, 40), Vector4(1, 1, 0, 1), 40.0f);
 
 		//This is our simple iterative solver - 
 		//we just run things multiple times, slowly moving things forward
@@ -224,6 +235,7 @@ void PhysicsSystem::BasicCollisionDetection() {
 			if (CollisionDetection::ObjectIntersection(*i, *j, info)) {
 				for (auto k = 0; k < info.point.size(); k++) {
 					ImpulseResolveCollision(*info.a, *info.b, info.point[k]);
+					
 				}
 				info.framesLeft = numCollisionFrames;
 				allCollisions.insert(info);
@@ -292,14 +304,6 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 	physB->ApplyAngularImpulse(Vector3::Cross(relativeB,  fullImpulse));
 }
 
-/*
-
-Later, we replace the BasicCollisionDetection method with a broadphase
-and a narrowphase collision detection method. In the broad phase, we
-split the world up using an acceleration structure, so that we can only
-compare the collisions that we absolutely need to. 
-
-*/
 void PhysicsSystem::BroadPhase() {
 	broadphaseCollisions.clear();
 	broadphaseTriggers.clear();
@@ -344,11 +348,6 @@ void PhysicsSystem::BroadPhase() {
 	);
 }
 
-/*
-
-The broadphase will now only give us likely collisions, so we can now go through them,
-and work out if they are truly colliding, and if so, add them into the main collision list
-*/
 void PhysicsSystem::NarrowPhase() {
 	for (auto i = broadphaseCollisions.begin(); i != broadphaseCollisions.end(); i++) {
 		auto info = *i;
