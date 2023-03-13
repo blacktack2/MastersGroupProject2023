@@ -188,8 +188,6 @@ void NetworkedGame::UpdateGame(float dt) {
 	}
 
 	TutorialGame::UpdateGame(dt);
-
-	gameWorld.GetMainCamera()->UpdateCamera(dt);
 }
 
 void NetworkedGame::FreezeSelf()

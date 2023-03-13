@@ -93,7 +93,7 @@ void TutorialGame::StartLevel() {
 
 	SetCameraFollow(players[0]);
 
-	boss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
+	boss = AddBossToWorld({ 0, 5, -20 }, Vector3( 4 ), 2);
 	boss->SetNextTarget(players[0]);
 }
 
@@ -182,11 +182,6 @@ void TutorialGame::UpdateGameCore(float dt) {
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 
 	GameGridManager::instance().Update(dt);
-
-	//gameWorld.GetCamera(1)->UpdateCamera(dt);
-	//gameWorld.GetCamera(2)->UpdateCamera(dt);
-	//gameWorld.GetCamera(3)->UpdateCamera(dt);
-	//gameWorld.GetCamera(4)->UpdateCamera(dt);
 
 	Vector3 crossPos = CollisionDetection::Unproject(Vector3(screenSize * 0.5f, 0.99f), *gameWorld.GetMainCamera());
 	//Debug::DrawAxisLines(Matrix4::Translation(crossPos), 1.0f);
@@ -309,7 +304,7 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 
 	boss->GetTransform()
 		.SetPosition(position)
-		.SetScale(dimensions * 2);
+		.SetScale(dimensions);
 
 	boss->SetRenderObject(new AnimatedRenderObject(boss->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("boss"), AssetLibrary<MeshMaterial>::GetAsset("boss"), AssetLibrary<MeshAnimation>::GetAsset("WalkForward")));
 
