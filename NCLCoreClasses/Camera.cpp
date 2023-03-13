@@ -119,7 +119,8 @@ void Camera::UpdateCamera(float dt) {
 			std::sin(Maths::DegreesToRadians(pitch)),
 			std::sin(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch))
 		) * followDistance;
-		position.y += 1.0f,
+		position.y += 1.0f;
+		position.x += 1.0f;
 		position.y = std::max(position.y, 0.1f);
 
 	}

@@ -78,7 +78,7 @@ namespace NCL {
 			Health health = Health(100);
 
 			//shooting related
-			float projectileForce = 10;
+			float projectileForce = 15;
 			const Vector3 projectileSpawnPoint = Vector3(0.0f, 0.9f, -1.0f);
 			float projectileLifespan = 5.0f;
 			float projectileFireRate = 0.1f;
@@ -107,7 +107,8 @@ namespace NCL {
 			int hasCamera = 0;		// 0 means no camera; 1,2,3,4 indicates which playerCamera it is attached to.
 			bool isFreeLook = false;
 			float camTurnSpeed = 0.5f;
-			Vector3 cameraOffset = Vector3(0.5f, 5.0f, 2.0f);
+			Vector3 lookingAt = Vector3(0);
+
 
 			//instantiated objs
 			std::vector<GameObject*> lastInstancedObjects;

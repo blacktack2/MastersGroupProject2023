@@ -261,14 +261,18 @@ void PlayerObject::CollisionWith(GameObject* other) {
 
 PlayerBullet* PlayerObject::PrepareBullet()
 {
-	Ray ray = CollisionDetection::BuildRayFromMouse(*camera);
+	Ray ray = CollisionDetection::BuildRayFromCamera(*camera);
 	Vector3 dir;
 	RayCollision closestCollision;
 	if (gameWorld.Raycast(ray, closestCollision, true, this)) {
 		dir = closestCollision.collidedAt - transform.GetGlobalPosition();
-
-		Debug::DrawLine(closestCollision.collidedAt, closestCollision.collidedAt + Vector3(0, 1, 0), Debug::BLUE, 0.01f);
+		lookingAt = closestCollision.collidedAt;
 	}
+	else {
+		dir = ray.GetDirection() * 100;
+		lookingAt = closestCollision.collidedAt;
+	}
+	dir = Quaternion::EulerAnglesToQuaternion((float)(rand() % 100 - 50) / 20, (float)(rand() % 100 - 50) / 20, (float)(rand() % 100 - 50) / 20) * dir; // add randomness
 
 	PlayerBullet* ink = BulletInstanceManager::instance().GetPlayerBullet();
 	ink->SetLifespan(projectileLifespan);
