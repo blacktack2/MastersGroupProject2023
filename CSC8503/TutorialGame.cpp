@@ -181,14 +181,12 @@ bool TutorialGame::IsQuit() {
 void TutorialGame::UpdateGameCore(float dt) {
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 
-	gameWorld.GetMainCamera()->UpdateCamera(dt);
-
 	GameGridManager::instance().Update(dt);
 
-	gameWorld.GetCamera(1)->UpdateCamera(dt);
-	gameWorld.GetCamera(2)->UpdateCamera(dt);
-	gameWorld.GetCamera(3)->UpdateCamera(dt);
-	gameWorld.GetCamera(4)->UpdateCamera(dt);
+	//gameWorld.GetCamera(1)->UpdateCamera(dt);
+	//gameWorld.GetCamera(2)->UpdateCamera(dt);
+	//gameWorld.GetCamera(3)->UpdateCamera(dt);
+	//gameWorld.GetCamera(4)->UpdateCamera(dt);
 
 	Vector3 crossPos = CollisionDetection::Unproject(Vector3(screenSize * 0.5f, 0.99f), *gameWorld.GetMainCamera());
 	Debug::DrawAxisLines(Matrix4::Translation(crossPos), 1.0f);
