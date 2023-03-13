@@ -9,7 +9,7 @@
 
 uniform sampler2D depthTex;
 uniform sampler2D normalTex;
-uniform sampler2D shadowTex;
+uniform sampler2DShadow shadowTex;
 
 uniform mat4 shadowMatrix;
 uniform mat4 inverseProjView;
@@ -49,9 +49,7 @@ void GetShadow(inout float shadow, vec3 worldPos, vec3 normal, vec3 viewDir) {
 
 	vec3 shadowNDC = shadowProj.xyz / shadowProj.w;
 	vec3 biasCoord = shadowNDC * 0.5 + 0.5;
-	float shadowZ = texture(shadowTex, biasCoord.xy).r;
-
-	shadow = (shadowZ < biasCoord.z) ? 0.0 : 1.0;
+	shadow = texture(shadowTex, biasCoord).r;
 }
 
 out vec4 diffuseOutput;

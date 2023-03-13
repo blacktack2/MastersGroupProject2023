@@ -41,7 +41,7 @@ width(width), height(height) {
 		case TextureType::Stencil       :
 			pixComponents = GL_RGBA             ; dummyFormat = GL_STENCIL_INDEX  ; dummyType = GL_UNSIGNED_BYTE; break;
 		case TextureType::Shadow        :
-			pixComponents = GL_DEPTH_COMPONENT  ; dummyFormat = GL_DEPTH_COMPONENT; dummyType = GL_UNSIGNED_BYTE; break;
+			pixComponents = GL_DEPTH_COMPONENT  ; dummyFormat = GL_DEPTH_COMPONENT; dummyType = GL_FLOAT        ; break;
 	}
 }
 
