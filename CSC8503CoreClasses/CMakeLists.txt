@@ -226,3 +226,17 @@ if(MSVC)
     target_link_libraries(${PROJECT_NAME} PRIVATE "ws2_32.lib")
     target_link_libraries(${PROJECT_NAME} LINK_PUBLIC  "Xinput.lib")
 endif()
+
+################################################################################
+# PS4 config
+################################################################################
+if(USE_ORBIS)
+ set_property(SOURCE ${ALL_FILES} PROPERTY COMPILE_OPTIONS "-Wall")
+ set_property(TARGET ${PROJECT_NAME} PROPERTY VS_SOURCE_SETTINGS_WavePsslc "FileType=Document")
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+) 
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17" FORCE)
+endif()

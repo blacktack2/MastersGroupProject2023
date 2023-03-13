@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.18.0 FATAL_ERROR)
 
 set(CMAKE_SYSTEM_VERSION 10.0 CACHE STRING "" FORCE)
 
@@ -12,7 +12,7 @@ if(NOT CMAKE_VS_PLATFORM_NAME)
 endif()
 message("${CMAKE_VS_PLATFORM_NAME} architecture in use")
 
-if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64"))
+if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64") AND SCE_ROOT_DIR AND  (NOT("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "ORBIS")))
     message(FATAL_ERROR "${CMAKE_VS_PLATFORM_NAME} arch is not supported!")
 endif()
 
@@ -29,8 +29,13 @@ set(CMAKE_CONFIGURATION_TYPES
 # Global compiler options
 ################################################################################
 #set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD 23)
+if(SCE_ROOT_DIR)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_EXTENSION OFF)
 
+else()
+set(CMAKE_CXX_STANDARD 23)
+endif()
 ################################################################################
 # Nuget packages function stub.
 ################################################################################
@@ -65,6 +70,14 @@ if(USE_VULKAN)
     add_compile_definitions("USEVULKAN") 
 endif() 
 add_compile_definitions(NOMINMAX)
+set(USE_ORBIS BOOL false FORCE)
+if(SCE_ROOT_DIR)
+set(USE_ORBIS BOOL true FORCE)
+add_compile_definitions(_ORBIS)
+message("ORBIS in use")
+else()
+add_compile_definitions("x64")  
+endif()
 ################################################################################
 # Sub-projects
 ################################################################################
@@ -72,6 +85,10 @@ add_subdirectory(NCLCoreClasses)
 add_subdirectory(CSC8503CoreClasses)
 add_subdirectory(OpenGLRendering)
 add_subdirectory(CSC8503)
+
+if(USE_ORBIS)
+add_subdirectory(Plugins/PlayStation4)
+endif()
 
 set(OPENAL_LIBRARY "${CMAKE_SOURCE_DIR}/lib/Debug/OpenAL/" CACHE STRING "" FORCE)
 set(OPENAL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include" CACHE STRING "" FORCE)
