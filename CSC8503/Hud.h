@@ -1,6 +1,18 @@
+/**
+ * @file   Hud.h
+ * @brief  
+ *
+ * @author Shantao Liu
+ * @author Xiaoyang Liu
+ * @date   March 2023
+ */
+
 #pragma once
-#include"HealthBar.h"
+
+#include "HealthBar.h"
 #include "Assetlibrary.h"
+#include "HudBase.h"
+
 namespace NCL {
 	namespace CSC8503 {
 		using namespace Maths;

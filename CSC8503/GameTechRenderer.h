@@ -21,7 +21,8 @@
 #include "DebugRPass.h"
 #include "MenuRPass.h"
 #include "PaintingRPass.h"
-#include"HudRPass.h"
+#include "HudRPass.h"
+#include "Hud.h"
 #include "GameWorld.h"
 
 #include <algorithm>
@@ -133,18 +134,33 @@ namespace NCL::CSC8503 {
 			return ssaoBias;
 		}
 
-		void SetGameWorldMainCamera(int num) override {
-			gameWorld.SetMainCamera(num);
+		void SetGameWorldMainCamera(int cameraNum) override {
+			gameWorld.SetMainCamera(cameraNum);
 		}
 
 		int GetGameWorldMainCamera() override {
 			return gameWorld.GetMainCameraIndex();
 		}
+
+		void SetBossHP(int hp) {
+			bossHP = hp;
+		}
+
+		void SetPlayerHp(int id, int hp) {
+			playersHP[id] = hp;
+		}
+
+		void UpdateHudDisplay(int playerID) override {
+			hud->loadHuds(bossHP, playersHP[playerID]);
+			this->GetHudRPass().SetHud(hud->getHuds());
+		}
+
 	protected:
 		GameTechRenderer();
 		~GameTechRenderer();
 
 		GameWorld& gameWorld;
+		std::unique_ptr<Hud> hud = std::make_unique<Hud>();
 
 		void SortObjectList();
 
@@ -170,6 +186,9 @@ namespace NCL::CSC8503 {
 
 		float ssaoRadius = 0.5f;
 		float ssaoBias = 0.025f;
+
+		int bossHP = -1;
+		int playersHP[4];
 	};
 }
 

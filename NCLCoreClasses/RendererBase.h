@@ -150,6 +150,9 @@ namespace NCL::Rendering {
 
 		virtual void SetGameWorldMainCamera(int num) = 0;
 		virtual int GetGameWorldMainCamera() = 0;
+
+		virtual void UpdateHudDisplay(int playerID) = 0;
+
 	protected:
 		/**
 		 * @brief Add main render pass. Meant to add to, or modify, the GBuffer

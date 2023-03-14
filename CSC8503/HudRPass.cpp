@@ -1,3 +1,12 @@
+/**
+ * @file   HudRPass.cpp
+ * @brief  See HudRPass.h
+ *
+ * @author Shantao Liu
+ * @author Xiaoyang Liu
+ * @date   March 2023
+ */
+
 #include"HudRPass.h"
 #include "GameTechRenderer.h"
 #include "GameWorld.h"

@@ -80,6 +80,8 @@ void TutorialGame::StartLevel() {
 	XboxControllerManager::GetXboxController().CheckPorts();
 	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
 
+	for (int i = 0; i < 4; i++) players[i] = nullptr;
+
 	players[0] = AddPlayerToWorld(0, Vector3(0, 5, 90));
 	keyMap.ChangePlayerControlTypeMap(0, ControllerType::KeyboardMouse);
 	for (int i = 1; i <= numOfPlayers; i++) {
@@ -88,7 +90,7 @@ void TutorialGame::StartLevel() {
 	}
 
 
-	SetCameraFollow(players[0]);
+	SetCameraFollow(players[0]);		// Currently set to player[0] is crucial for split screen
 
 	boss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	boss->SetNextTarget(players[0]);
@@ -121,7 +123,7 @@ void TutorialGame::UpdateGame(float dt) {
 	keyMap.Update();
 
 	//temp change player
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::P))
+	/*if (Window::GetKeyboard()->KeyDown(KeyboardKeys::P))
 	{
 		if(players[1])
 			SetCameraFollow(players[1]);
@@ -129,7 +131,7 @@ void TutorialGame::UpdateGame(float dt) {
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::O))
 	{
 		SetCameraFollow(players[0]);
-	}
+	}*/
 
 	debugViewPoint.BeginFrame();
 	debugViewPoint.MarkTime("Update");
@@ -161,7 +163,7 @@ void TutorialGame::UpdateGame(float dt) {
 	gameStateManager.Update(dt);
 	ProcessState();
 
-	UpdateHud(dt);
+	UpdateHud(dt);		// TODO: update hud for each splitted screen inside RenderFrame
 
 	debugViewPoint.FinishTime("Update");
 	debugViewPoint.MarkTime("Render");
@@ -213,10 +215,13 @@ void TutorialGame::UpdateHud(float dt)
 		Debug::Print(std::string("Boss health: ").append(std::to_string((int)boss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
 	}
 
+	renderer.SetBossHP((int)boss->GetHealth()->GetHealth());
+	for (int i = 0; i < 4; i++) {
+		if (players[i]) renderer.SetPlayerHp(i, (int)players[i]->GetHealth()->GetHealth());
+	}
 
-	hud->loadHuds((int)boss->GetHealth()->GetHealth(), (int)players[gameWorld.GetMainCamera()->GetPlayerID()]->GetHealth()->GetHealth());	
-
-	renderer.GetHudRPass().SetHud(hud->getHuds());
+	//hud->loadHuds((int)boss->GetHealth()->GetHealth(), (int)players[gameWorld.GetMainCamera()->GetPlayerID()]->GetHealth()->GetHealth());
+	//renderer.GetHudRPass().SetHud(hud->getHuds());
 }
 
 void TutorialGame::ProcessState() {

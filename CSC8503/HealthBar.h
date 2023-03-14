@@ -1,7 +1,6 @@
  #pragma once
 
 #include"MenuRenderObject.h"
-#include"AssetLibrary.h"
 #include"UIObject.h"
 
 namespace NCL {

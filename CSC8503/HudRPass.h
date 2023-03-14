@@ -1,3 +1,12 @@
+/**
+ * @file   HudRPass.h
+ * @brief
+ *
+ * @author Shantao Liu
+ * @author Xiaoyang Liu
+ * @date   March 2023
+ */
+
 #pragma once
 #include "OGLOverlayRenderPass.h"
 #include "GameWorld.h"

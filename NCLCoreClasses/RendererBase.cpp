@@ -126,9 +126,8 @@ void RendererBase::RenderFrame() {
 	for (size_t i = 0; i < numPlayers; i++) {
 		size_t index = i * 4;
 		GetConfig().SetDefaultViewport(0, 0, viewports[index + 2], viewports[index + 3]);
-		
 		SetGameWorldMainCamera(i);
-
+		UpdateHudDisplay(i);
 		RenderScene();
 		GetConfig().SetDefaultViewport(viewports[index], viewports[index + 1], viewports[index + 2], viewports[index + 3]);
 		RenderPresent();
