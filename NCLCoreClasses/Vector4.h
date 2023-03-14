@@ -44,23 +44,9 @@ namespace NCL {
 
 			~Vector4() = default;
 
-			inline constexpr Vector4 Normalised() const {
-				Vector4 temp(*this);
-				temp.Normalise();
-				return temp;
-			}
+			Vector4 Normalised() const;
 
-			inline constexpr void Normalise() {
-				float length = Length();
-
-				if (length != 0.0f) {
-					length = 1.0f / length;
-					x = x * length;
-					y = y * length;
-					z = z * length;
-					w = w * length;
-				}
-			}
+			void Normalise();
 
 			inline float Length() const {
 				return std::sqrt((x * x) + (y * y) + (z * z) + (w * w));
@@ -95,6 +81,15 @@ namespace NCL {
 				);
 			}
 
+			static inline constexpr Vector4 Clamp(const Vector4& input, float min, float max) {
+				return Vector4(
+					std::clamp(input.x, min, max),
+					std::clamp(input.y, min, max),
+					std::clamp(input.z, min, max),
+					std::clamp(input.w, min, max)
+				);
+			}
+
 			static inline constexpr Vector4 Abs(const Vector4& input) {
 				return Vector4(
 					std::abs(input.x),
@@ -104,7 +99,7 @@ namespace NCL {
 				);
 			}
 
-			static inline constexpr Vector2 Lerp(const Vector2& a, const Vector2& b, float by) {
+			static inline constexpr Vector4 Lerp(const Vector4& a, const Vector4& b, float by) {
 				return (a * (1.0f - by) + (b * by));
 			}
 

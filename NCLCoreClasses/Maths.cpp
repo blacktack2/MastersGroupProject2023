@@ -36,20 +36,3 @@ float NCL::Maths::CrossAreaOfTri(const Vector3& a, const Vector3& b, const Vecto
 	Vector3 area = Vector3::Cross(a - b, a - c);
 	return area.Length() * 0.5f;
 }
-	
-
-Vector3 NCL::Maths::Clamp(const Vector3& a, const Vector3& mins, const Vector3& maxs) {
-	return Vector3(
-		Clamp(a.x, mins.x, maxs.x),
-		Clamp(a.y, mins.y, maxs.y),
-		Clamp(a.z, mins.z, maxs.z)
-	);
-}
-
-Vector3 NCL::Maths::Abs(const Vector3& v) {
-	return Vector3(
-		std::abs(v.x),
-		std::abs(v.y),
-		std::abs(v.z)
-	);
-}

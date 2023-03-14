@@ -79,15 +79,12 @@ namespace NCL {
 			return degs * PI / 180.0f;
 		};
 
-		template<class T>
+		template<class T, typename std::enable_if_t<std::is_arithmetic_v<T>, int> = 0>
 		inline T Clamp(T value, T min, T max) {
 			return value < min ? min : (value > max ? max : value);
 		}
 
-		Vector3 Clamp(const Vector3& a, const Vector3& mins, const Vector3& maxs);
-		Vector3 Abs(const Vector3& v);
-
-		template<class T>
+		template<class T, typename std::enable_if_t<std::is_arithmetic_v<T>, int> = 0>
 		inline T Lerp(T a, T b, float by) {
 			return (a * (1.0f - by) + (b * by));
 		}

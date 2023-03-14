@@ -566,7 +566,7 @@ bool CollisionDetection::AABBSphereIntersection(const AABBVolume& volumeA, const
 
 	Vector3 delta = worldTransformB.GetGlobalPosition() - worldTransformA.GetGlobalPosition();
 
-	Vector3 closestPointOnBox = Maths::Clamp(delta, -boxSize, boxSize);
+	Vector3 closestPointOnBox = Vector3::Clamp(delta, -boxSize, boxSize);
 
 	Vector3 localPoint = delta - closestPointOnBox;
 	float distance = localPoint.Length();
@@ -599,12 +599,12 @@ bool NCL::CollisionDetection::AABBCapsuleIntersection(const AABBVolume& volumeA,
 	Vector3 capsuleTail = capsulePos - capsuleDir * capsuleOffset;
 
 	Vector3 headDelta = capsuleHead - boxPos;
-	Vector3 closestPointToHead = Maths::Clamp(headDelta, -boxSize, boxSize);
+	Vector3 closestPointToHead = Vector3::Clamp(headDelta, -boxSize, boxSize);
 	Vector3 localPointHead = headDelta - closestPointToHead;
 	float headDistanceSquared = localPointHead.LengthSquared();
 
 	Vector3 tailDelta = capsuleTail - boxPos;
-	Vector3 closestPointToTail = Maths::Clamp(tailDelta, -boxSize, boxSize);
+	Vector3 closestPointToTail = Vector3::Clamp(tailDelta, -boxSize, boxSize);
 	Vector3 localPointTail = tailDelta - closestPointToTail;
 	float tailDistanceSquared = localPointTail.LengthSquared();
 
@@ -637,7 +637,7 @@ bool CollisionDetection::OBBSphereIntersection(const OBBVolume& volumeA, const T
 	Vector3 spherePos = orientation.Conjugate() * (worldTransformB.GetGlobalPosition() - obbPos);
 	float sphereRadius = volumeB.GetRadius();
 
-	Vector3 closestPointOnBox = Maths::Clamp(spherePos, -boxSize, boxSize);
+	Vector3 closestPointOnBox = Vector3::Clamp(spherePos, -boxSize, boxSize);
 
 	Vector3 localPoint = spherePos - closestPointOnBox;
 	float distanceSquared = localPoint.LengthSquared();
@@ -672,11 +672,11 @@ bool NCL::CollisionDetection::OBBCapsuleIntersection(const OBBVolume& volumeA, c
 	Vector3 capsuleHead = capsulePos + capsuleDir * capsuleOffset;
 	Vector3 capsuleTail = capsulePos - capsuleDir * capsuleOffset;
 
-	Vector3 closestPointToHead = Maths::Clamp(capsuleHead, -boxSize, boxSize);
+	Vector3 closestPointToHead = Vector3::Clamp(capsuleHead, -boxSize, boxSize);
 	Vector3 localPointHead = capsuleHead - closestPointToHead;
 	float headDistanceSquared = localPointHead.LengthSquared();
 
-	Vector3 closestPointToTail = Maths::Clamp(capsuleTail, -boxSize, boxSize);
+	Vector3 closestPointToTail = Vector3::Clamp(capsuleTail, -boxSize, boxSize);
 	Vector3 localPointTail = capsuleTail - closestPointToTail;
 	float tailDistanceSquared = localPointTail.LengthSquared();
 

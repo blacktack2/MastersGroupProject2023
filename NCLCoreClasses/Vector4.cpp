@@ -31,3 +31,21 @@ Vector4::Vector4(const Vector3& v3, float newW) : x(v3.x), y(v3.y), z(v3.z), w(n
 
 Vector4::Vector4(float newX, const Vector3& v3) : x(newX), y(v3.x), z(v3.y), w(v3.z) {
 }
+
+Vector4 Vector4::Normalised() const {
+	Vector4 temp(*this);
+	temp.Normalise();
+	return temp;
+}
+
+void Vector4::Normalise() {
+	float length = Length();
+
+	if (length != 0.0f) {
+		length = 1.0f / length;
+		x = x * length;
+		y = y * length;
+		z = z * length;
+		w = w * length;
+	}
+}

@@ -37,21 +37,8 @@ namespace NCL {
 
 			~Vector2() = default;
 
-			inline constexpr Vector2 Normalised() const {
-				Vector2 temp(*this);
-				temp.Normalise();
-				return temp;
-			}
-
-			inline constexpr void Normalise() {
-				float length = LengthSquared();
-
-				if (length != 0.0f) {
-					length = 1.0f / sqrt(length);
-					x = x * length;
-					y = y * length;
-				}
-			}
+			Vector2 Normalised() const;
+			void Normalise();
 
 			inline float Length() const {
 				return std::sqrt((x * x) + (y * y));
@@ -81,6 +68,13 @@ namespace NCL {
 				return Vector2(
 					std::clamp(input.x, mins.x, maxs.x),
 					std::clamp(input.y, mins.y, maxs.y)
+				);
+			}
+
+			static inline constexpr Vector2 Clamp(const Vector2& input, float min, float max) {
+				return Vector2(
+					std::clamp(input.x, min, max),
+					std::clamp(input.y, min, max)
 				);
 			}
 
