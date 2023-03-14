@@ -145,17 +145,17 @@ namespace NCL {
 				return direction;
 			}
 
-			inline void SetColour(const Vector4& colour) {
-				this->colour = colour;
-			}
-			inline const Vector4& GetColour() {
-				return colour;
-			}
-		private:
-			inline void UpdateShadowMatrix() {
-				shadowMatrix = Matrix4::Orthographic(-100.0f, 100.0f, -100.0f, 100.0f, -1.0f, 500.0f) *
-					Matrix4::BuildViewMatrix(direction * 250.0f, Vector3(0.0f), Vector3(0.0f, 1.0f, 0.0f));
-			}
+		inline void SetColour(const Vector4& colour) {
+			this->colour = colour;
+		}
+		inline const Vector4& GetColour() {
+			return colour;
+		}
+	private:
+		inline void UpdateShadowMatrix() {
+			shadowMatrix = Matrix4::Orthographic(-150.0f, 150.0f, -150.0f, 150.0f, -1.0f, 500.0f) *
+						   Matrix4::BuildViewMatrix(direction * 250.0f, Vector3(0.0f), Vector3(0.0f, 1.0f, 0.0f));
+		}
 
 			Vector3 direction;
 			Vector4 colour;

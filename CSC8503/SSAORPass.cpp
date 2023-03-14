@@ -24,8 +24,8 @@ using namespace CSC8503;
 SSAORPass::SSAORPass() : OGLMainRenderPass(), renderer(GameTechRenderer::instance()) {
 	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
-	ssaoTex    = AssetLoader::CreateTexture(TextureType::ColourRGB8, renderer.GetWidth(), renderer.GetHeight());
-	ssaoOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB8, renderer.GetWidth(), renderer.GetHeight());
+	ssaoTex    = AssetLoader::CreateTexture(TextureType::ColourR8, renderer.GetWidth(), renderer.GetHeight());
+	ssaoOutTex = AssetLoader::CreateTexture(TextureType::ColourR8, renderer.GetWidth(), renderer.GetHeight());
 	AddScreenTexture(*ssaoTex);
 	AddScreenTexture(*ssaoOutTex);
 
@@ -67,6 +67,7 @@ SSAORPass::~SSAORPass() {
 }
 
 void SSAORPass::OnWindowResize(int width, int height) {
+	RenderPassBase::OnWindowResize(width, height);
 	ssaoShader->Bind();
 
 	ssaoShader->SetUniformFloat("noiseScale", (float)width / (float)noiseTexSize, (float)height / (float)noiseTexSize);
@@ -111,8 +112,7 @@ void SSAORPass::DrawSSAO() {
 
 	Matrix4 viewMatrix = GameWorld::instance().GetMainCamera()->BuildViewMatrix();
 	ssaoShader->SetUniformMatrix("viewMatrix", viewMatrix);
-	float aspect = (float)renderer.GetWidth() / (float)renderer.GetHeight();
-	Matrix4 projMatrix = GameWorld::instance().GetMainCamera()->BuildProjectionMatrix(aspect);
+	Matrix4 projMatrix = GameWorld::instance().GetMainCamera()->BuildProjectionMatrix(renderer.GetAspect());
 	ssaoShader->SetUniformMatrix("projMatrix", projMatrix);
 
 	quad->Draw();
