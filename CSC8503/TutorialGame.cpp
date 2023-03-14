@@ -19,7 +19,6 @@
 #include "GameWorld.h"
 #include "InputKeyMap.h"
 #include "MenuManager.h"
-#include "OptionManager.h"
 
 #include "Camera.h"
 #include "Boss.h"
@@ -40,12 +39,12 @@
 #include "SoundSource.h"
 #include "SoundSystem.h"
 #include "TestAudio.h"
-#include "Hud.h"
+#include"Hud.h"
 #include "MeshAnimation.h"
 
 #include "Debug.h"
 
-//#include "./stb/stb_image.h"
+#include "./stb/stb_image.h"
 #include "XboxControllerManager.h"
 
 #include <string>
@@ -55,7 +54,7 @@ using namespace CSC8503;
 
 TutorialGame::TutorialGame() :
 debugViewPoint(DebugViewPoint::Instance()), gridManager(GameGridManager::instance()), gameStateManager(GameStateManager::instance()),
-renderer(GameTechRenderer::instance()), gameWorld(GameWorld::instance()), keyMap(InputKeyMap::instance()), menuManager(MenuManager::instance()), optionManager(OptionManager::instance()) {
+renderer(GameTechRenderer::instance()), gameWorld(GameWorld::instance()), keyMap(InputKeyMap::instance()), menuManager(MenuManager::instance()) {
 	sunLight = gameWorld.AddLight(new Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
 
 	physics = std::make_unique<PhysicsSystem>(gameWorld);
@@ -78,20 +77,45 @@ void TutorialGame::StartLevel() {
 	InitWorld();
 
 	XboxControllerManager::GetXboxController().CheckPorts();
-	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
-
-	players[0] = AddPlayerToWorld(0, Vector3(0, 5, 90));
-	keyMap.ChangePlayerControlTypeMap(0, ControllerType::KeyboardMouse);
-	for (int i = 1; i <= numOfPlayers; i++) {
-		players[i] = AddPlayerToWorld(i, Vector3(0, 5, 90));
-		keyMap.ChangePlayerControlTypeMap(i, ControllerType::Xbox);
+	int n = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
+	//std::cout << "controller connected " << n << std::endl;
+	switch (n)
+	{
+	case 4:
+		player4 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player4"), Vector3(0, 5, 90));
+		player4->AttachedCamera(4);
+		gameWorld.GetCamera(4)->SetControlType(ControlType::Controller_4);
+		gameWorld.GetCamera(4)->SetFollow(&(player4->GetTransform()));
+	case 3:
+		player3 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player3"), Vector3(0, 5, 90));
+		player3->AttachedCamera(3);
+		gameWorld.GetCamera(3)->SetControlType(ControlType::Controller_3);
+		gameWorld.GetCamera(3)->SetFollow(&(player3->GetTransform()));
+	case 2:
+		player2 = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player2"), Vector3(0, 5, 90));
+		player2->AttachedCamera(2);
+		gameWorld.GetCamera(2)->SetControlType(ControlType::Controller_2);
+		gameWorld.GetCamera(2)->SetFollow(&(player2->GetTransform()));
+	case 1:
+		player = AddPlayerToWorld(XboxControllerManager::GetXboxController().GetPort("player1"), Vector3(0, 5, 90));
+		player->AttachedCamera(1);
+		gameWorld.GetCamera(1)->SetControlType(ControlType::Controller_1);
+		gameWorld.GetCamera(1)->SetFollow(&(player->GetTransform()));
+	default:
+		// NOT using keyboard if there are already 4 controllers connected
+		if (player4 == nullptr)
+		{
+			player4 = AddPlayerToWorld(0, Vector3(0, 5, 90));	// playerID == 0 indicating player using keyboard
+			player4->AttachedCamera(4);
+			gameWorld.GetCamera(4)->SetControlType(ControlType::KeyboardMouse);
+			gameWorld.GetCamera(4)->SetFollow(&(player4->GetTransform()));
+		}
+		break;
 	}
+	SetCameraFollow(player4);
 
-
-	SetCameraFollow(players[0]);
-
-	boss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
-	boss->SetNextTarget(players[0]);
+	boss = AddBossToWorld({ 0, 5, -20 }, { 3,3,3 }, 1);
+	boss->SetNextTarget(player);
 }
 
 void TutorialGame::Clear() {
@@ -123,45 +147,36 @@ void TutorialGame::UpdateGame(float dt) {
 	//temp change player
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::P))
 	{
-		if(players[1])
-			SetCameraFollow(players[1]);
+		SetCameraFollow(player4);
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::O))
 	{
-		SetCameraFollow(players[0]);
+		SetCameraFollow(player);
 	}
 
 	debugViewPoint.BeginFrame();
 	debugViewPoint.MarkTime("Update");
 	
-	if (optionManager.GetSunMove()) {
+	static bool moveSun = false;
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM0)) {
+		moveSun = !moveSun;
+	}
+	if (moveSun) {
 		float runtime = gameWorld.GetRunTime();
 		sunLight->direction = Vector3(std::sin(runtime), std::cos(runtime), 0.0f);
 		renderer.GetSkyboxPass().SetSunDir(sunLight->direction);
 	}
 
-	if (!optionManager.GetSound()) {
-		SoundSystem::GetSoundSystem()->SetMasterVolume(0.0);
-	}
-	if (optionManager.GetSound()) {
-		SoundSystem::GetSoundSystem()->SetMasterVolume(0.5);
-		SoundSystem::GetSoundSystem()->Update(dt);
-	}
-	if (optionManager.GetVolumeUp()) {
-		int i = optionManager.GetUpTimes();
-		SoundSystem::GetSoundSystem()->SetMasterVolume(0.5 + i * 0.1);
-	}
-	if (optionManager.GetVolumeDown()) {
-		int i = optionManager.GetDownTimes();
-		SoundSystem::GetSoundSystem()->SetMasterVolume(0.5 - i * 0.1);
-	}
+
+	SoundSystem::GetSoundSystem()->Update(dt);
 
 	UpdateGameCore(dt);
 
 	gameStateManager.Update(dt);
 	ProcessState();
-
-	UpdateHud(dt);
+	hud->loadHuds((int)boss->GetHealth()->GetHealth(), (int)player4->GetHealth()->GetHealth());
+	(renderer.GetHudRPass()).SetHud(hud->getHuds());
+	renderer.EnableOverlayPass("Hud", true);
 
 	debugViewPoint.FinishTime("Update");
 	debugViewPoint.MarkTime("Render");
@@ -177,6 +192,13 @@ bool TutorialGame::IsQuit() {
 
 void TutorialGame::UpdateGameCore(float dt) {
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
+
+	if(player){
+		Debug::Print(std::string("health: ").append(std::to_string((int)player->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
+	}
+	if (boss) {
+		Debug::Print(std::string("Boss health: ").append(std::to_string((int)boss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
+	}
 
 	gameWorld.GetMainCamera()->UpdateCamera(dt);
 
@@ -202,21 +224,6 @@ void TutorialGame::UpdateGameCore(float dt) {
 		gameLevel->SetShelterTimer(0.0f);
 		UpdateLevel();
 	}
-}
-
-void TutorialGame::UpdateHud(float dt)
-{	
-	if (players[0]) {
-		Debug::Print(std::string("health: ").append(std::to_string((int)players[0]->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
-	}
-	if (boss) {
-		Debug::Print(std::string("Boss health: ").append(std::to_string((int)boss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
-	}
-
-
-	hud->loadHuds((int)boss->GetHealth()->GetHealth(), (int)players[gameWorld.GetMainCamera()->GetPlayerID()]->GetHealth()->GetHealth());	
-
-	renderer.GetHudRPass().SetHud(hud->getHuds());
 }
 
 void TutorialGame::ProcessState() {
@@ -278,9 +285,9 @@ PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& positi
 		.SetScale(Vector3(1, 1, 1))
 		.SetPosition(position);
 
+	character->SetRenderObject(new AnimatedRenderObject(character->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("player"), AssetLibrary<MeshMaterial>::GetAsset("player"),AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle")));
 
-	character->SetRenderObject(new AnimatedRenderObject(character->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("player"), AssetLibrary<MeshMaterial>::GetAsset("player"), AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle")));
-	
+	//boss->SetRenderObject(new AnimatedRenderObject(boss->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("boss"), AssetLibrary<MeshMaterial>::GetAsset("boss"), AssetLibrary<MeshAnimation>::GetAsset("WalkForward")));
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 
 	character->GetRenderObject()->SetColour(Vector4(1, 0.9f, 0.8f, 1));
@@ -304,7 +311,7 @@ void TutorialGame::SetCameraFollow(PlayerObject* p)
 Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
 	Boss* boss = new Boss();
 
-	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(Vector3{  dimensions.x,2.2f* dimensions.y, dimensions.z }));
 
 	boss->GetTransform()
 		.SetPosition(position)
@@ -357,17 +364,16 @@ void TutorialGame::UpdateLevel() {
 				gameWorld.AddGameObject(pillar);
 			}
 			if (object->objectType == ObjectType::FenceX){
-				Vector3 dimensions{ interval / 4.0f, 0.5f, interval / 5.0f };
+				Vector3 dimensions{ interval / 6.0f, 1.0f, interval / 5.0f };
 				Obstacle* fenceX = new Obstacle{ object, true };
 				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * 2, CollisionLayer::PaintAble));
 				fenceX->GetTransform()
 					.SetPosition(object->worldPos + Vector3{ 0,2,0 })
 					.SetScale(dimensions * 2);
 				//fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), basicTex, nullptr));		// TODO: change to the right Mesh
-				
-				PaintRenderObject* render = new PaintRenderObject(fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), nullptr);
-				fenceX->SetRenderObject(render);
 
+				PaintRenderObject* render = new PaintRenderObject(fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), AssetLibrary<MeshMaterial>::GetAsset("fenceX"));
+				fenceX->SetRenderObject(render);
 				fenceX->SetPhysicsObject(new PhysicsObject(&fenceX->GetTransform(), fenceX->GetBoundingVolume()));
 				fenceX->GetPhysicsObject()->SetInverseMass(0);
 				fenceX->GetPhysicsObject()->InitCubeInertia();

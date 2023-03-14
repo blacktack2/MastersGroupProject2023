@@ -21,7 +21,7 @@
 #include "SoundSystem.h"
 #include "BulletInstanceManager.h"
 #include <iostream>
-
+#include "AnimatedRenderObject.h"
 using namespace NCL;
 using namespace CSC8503;
 
@@ -30,10 +30,6 @@ PlayerObject::PlayerObject(int playerID) : GameObject(), playerID(playerID), key
 		CollisionWith(other);
 	};
 	SetupAudio();
-
-	AttachCamera(playerID);
-	gameWorld.GetCamera(playerID)->SetPlayerID(playerID);
-	gameWorld.GetCamera(playerID)->SetFollow(&this->GetTransform());
 
 }
 
@@ -66,21 +62,22 @@ void PlayerObject::Update(float dt) {
 		Vector3 dir = Vector3(0, 0, 0);
 		lastKey = keyMap.GetButtonState();
 		keyMap.Update();
-		/*
 		if (playerID == 0)		// Keyboard&Mouse user
 		{
 			GetInput(dir, keyMap.GetButtonState());
+			MoveAnimation(dir);
 			Move(dir);
 		}
 		else {
+			// testing (Xbox) controller input:
 			Vector3 movingDir;
 			GetControllerInput(movingDir);
-			Move(movingDir);
-		}*/
-		GetControllerInput(dir);
-		MoveAnimation(dir);
-		Move(dir);
 
+			MoveAnimation(movingDir);
+			Move(movingDir);
+			//RotateByAxis();
+			//MoveByPosition(dt, movingDir);
+		}
 		MoveCamera();
 
 		
@@ -147,17 +144,16 @@ This is a temporary member function used for testing controller's input. Feel fr
 	
 	// Thumb for movement:
 	Vector3 cameraForwardDirection = gameWorld.GetCamera(playerID)->GetPosition() - this->GetTransform().GetGlobalPosition();
-	Vector2 movementData{ 0,0 };
+	Vector2 movementThumbData{ 0,0 };
 	float rightTriggerDepth = 0;
 	float leftTriggerDepth = 0;
 	movingDir3D = Vector3{ 0,0,0 };
-	keyMap.GetAxisData(playerID, AxisInput::Axis1, movementData.x);
-	if (keyMap.GetAxisData(playerID, AxisInput::Axis1, movementData.x) && keyMap.GetAxisData(playerID, AxisInput::Axis2, movementData.y))
+	if (keyMap.GetAxisData(playerID, AxisInput::Axis1, movementThumbData.x) && keyMap.GetAxisData(playerID, AxisInput::Axis2, movementThumbData.y))
 	{
-		if (!(movementData.x == 0 && movementData.y == 0))
+		if (!(movementThumbData.x == 0 && movementThumbData.y == 0))
 		{
 			Vector2 unitForwardDir{ 0,1 };
-			float angle = atan2(unitForwardDir.x * movementData.y - movementData.x * unitForwardDir.y, unitForwardDir.x * movementData.x + unitForwardDir.y * movementData.y);
+			float angle = atan2(unitForwardDir.x * movementThumbData.y - movementThumbData.x * unitForwardDir.y, unitForwardDir.x * movementThumbData.x + unitForwardDir.y * movementThumbData.y);
 			Vector2 movingDir2D;
 			movingDir2D.x = cameraForwardDirection.x * cos(angle) - (-cameraForwardDirection.z) * sin(angle);
 			movingDir2D.y = (-cameraForwardDirection.z) * cos(angle) + cameraForwardDirection.x * sin(angle);
@@ -197,28 +193,48 @@ void PlayerObject::GetInput(Vector3& dir, unsigned int keyPress) {
 	{
 		dir += fwdAxis;
 		playerSource->Play(Sound::AddSound("footstep06.wav"));
+
 	}
 	if (keyMap.CheckButtonPressed(keyPress, InputType::Backward))
 	{
 		dir -= fwdAxis;
-		playerSource->Play(Sound::AddSound("footstep06.wav"));
+		//playerSource->Play(Sound::AddSound("footstep06.wav"));
+		//AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		//if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerBackward").get()) {
+		//	anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerBackward"));
+		//}
 	}
 	if (keyMap.CheckButtonPressed(keyPress, InputType::Left))
 	{
 		dir += leftAxis;
 		playerSource->Play(Sound::AddSound("footstep06.wav"));
+		//AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		//if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerLeft").get()) {
+		//	anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerLeft"));
+		//}
 	}
 	if (keyMap.CheckButtonPressed(keyPress, InputType::Right))
 	{
 		dir -= leftAxis;
 		playerSource->Play(Sound::AddSound("footstep06.wav"));
+		//AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		//if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerRight").get()) {
+		//	anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerRight"));
+		//}
 	}
 	if (keyMap.CheckButtonPressed(keyPress, InputType::Jump) && onGround && jumpTimer <= 0.0f)
 	{
 		jumpTimer = jumpCooldown;
 		this->GetPhysicsObject()->ApplyLinearImpulse(upAxis * jumpSpeed);
-		//playerSource->Play(Sound::AddSound("swing3.wav"));
+		playerSource->Play(Sound::AddSound("swing3.wav"));
+		//AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		//if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerJump").get()) {
+		//	anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerJump"));
+		//}
 	}
+
+
+
 	if (keyMap.CheckButtonPressed(keyPress, InputType::Action1))
 	{
 		Shoot();
@@ -228,6 +244,10 @@ void PlayerObject::GetInput(Vector3& dir, unsigned int keyPress) {
 	{
 		isFreeLook = true;
 	}
+	//AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+	//if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle").get()) {
+	//	anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle"));
+	//}
 	dir.Normalise();
 }
 
@@ -253,7 +273,7 @@ void PlayerObject::RotateYaw(float yaw) {
 }
 
 void PlayerObject::RotateToCamera() {
-	if (!isFreeLook) {
+	if (hasCamera && !isFreeLook) {
 		RotateYaw(gameWorld.GetCamera(hasCamera)->GetYaw());
 	}
 
@@ -333,7 +353,7 @@ void  NCL::CSC8503::PlayerObject::MoveAnimation(Vector3 dir) {
 			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerJump"));
 		}
 	}
-	else if (this->GetPhysicsObject()->GetLinearVelocity().x<0.2 && this->GetPhysicsObject()->GetLinearVelocity().x>-0.2 && this->GetPhysicsObject()->GetLinearVelocity().z<0.2 && this->GetPhysicsObject()->GetLinearVelocity().z>-0.2) {
+	else if (dir.x<0.2 && dir.x>-0.2 && dir.z<0.2 && dir.z>-0.2) {
 		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
 		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle").get()) {
 			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle"));

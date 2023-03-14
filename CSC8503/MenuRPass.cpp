@@ -36,7 +36,6 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()), menuMa
 	defaultShader->Bind();
 
 	defaultShader->SetUniformInt("diffuseTex", 0);
-	defaultShader->SetUniformInt("selectedTex", 1);
 
 	defaultShader->Unbind();
 }

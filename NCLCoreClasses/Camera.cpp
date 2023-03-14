@@ -92,17 +92,23 @@ void Camera::UpdateCamera(float dt) {
 		followPos = Vector3::Lerp(LastPos, followPos, std::min(smoothFactor * dt, 1.0f));
 		LastPos = followPos;
 
-		NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
-		Vector2 orientationData{ 0,0 };
-		if (keyMap.GetAxisData(playerID, AxisInput::Axis3, orientationData.x) && keyMap.GetAxisData(playerID, AxisInput::Axis4, orientationData.y))
+		/*if (controlledBy == ControlType::KeyboardMouse)
 		{
-			if (!(orientationData.x == 0 && orientationData.y == 0))
+			pitch -= (Window::GetMouse()->GetRelativePosition().y);
+			yaw -= (Window::GetMouse()->GetRelativePosition().x);
+		}*/
+		NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
+		Vector2 orientationThumbData{ 0,0 };
+		if (keyMap.GetAxisData((unsigned int)controlledBy, AxisInput::Axis3, orientationThumbData.x) && keyMap.GetAxisData((unsigned int)controlledBy, AxisInput::Axis4, orientationThumbData.y))
+		{
+			if (!(orientationThumbData.x == 0 && orientationThumbData.y == 0))
 			{
 				float sensitivity = 1.5f;
-				pitch += (orientationData.y * sensitivity);
-				yaw -= (orientationData.x * sensitivity);
+				pitch += (orientationThumbData.y * sensitivity);
+				yaw -= (orientationThumbData.x * sensitivity);
 			}
 		}
+		
 
 		pitch = std::clamp(pitch, -90.0f, 90.0f);
 		yaw += (yaw < 0) ? 360.0f : ((yaw > 360.0f) ? -360.0f : 0.0f);

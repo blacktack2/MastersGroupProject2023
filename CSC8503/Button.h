@@ -28,7 +28,7 @@ namespace NCL::CSC8503 {
 
     class Button : public UIObject {
     public:
-        typedef std::function<void(Button& button)> overlap_func;
+        typedef std::function<void()> overlap_func;
 
         Button(float PosX, float PosY, float Width, float Height, std::shared_ptr<TextureBase> texture, overlap_func onclick);
         ~Button();
@@ -58,6 +58,6 @@ namespace NCL::CSC8503 {
 
         bool isMouseHover;
 
-        overlap_func OnClickCallback = nullptr;
+        overlap_func OnClickCallback;
     };
 }

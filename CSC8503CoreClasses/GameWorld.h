@@ -75,7 +75,6 @@ namespace NCL {
 				cam->SetPitch(-15.0f);
 				cam->SetYaw(315.0f);
 				cam->SetPosition(Vector3(-60, 40, 60));
-				cam->SetFollow(nullptr);
 			}
 
 			Camera* GetCamera(int n) const {

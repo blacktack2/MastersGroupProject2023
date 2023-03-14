@@ -32,8 +32,6 @@ namespace NCL::CSC8503 {
 		~MenuRenderObject();
 
 		void Draw(const Vector4& dimensions);
-
-		void SetTexture(std::shared_ptr<TextureBase> texture);
 	private:
 		std::shared_ptr<TextureBase> texture;
 

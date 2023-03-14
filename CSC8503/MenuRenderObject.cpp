@@ -46,7 +46,3 @@ void MenuRenderObject::Draw(const Vector4& dimensions) {
 
 	shader->Unbind();
 }
-
-void MenuRenderObject::SetTexture(std::shared_ptr<TextureBase> texture) {
-	this->texture = texture;
-}

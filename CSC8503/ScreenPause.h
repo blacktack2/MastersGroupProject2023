@@ -3,14 +3,12 @@
  * @brief  A Pushdown automata state for Pausing the game.
  *
  * @author Felix Chiu
- * @author Yifei Hu
  * @date   February 2023
  */
 #pragma once
 #include "PushdownState.h"
 #include "Window.h"
 #include "MenuManager.h"
-#include "ScreenOption.h"
 #include "GameStateManager.h"
 #include "NetworkedGame.h"
 

@@ -1,7 +1,7 @@
 /**
  * @file   TutorialGame.h
- * @brief
- *
+ * @brief  
+ * 
  * @author Rich Davidson
  * @author Stuart Lewis
  * @date   March 2023
@@ -23,7 +23,6 @@ namespace NCL::CSC8503 {
 	class GameTechRenderer;
 	class GameWorld;
 	class MenuManager;
-	class OptionManager;
 	class Hud;
 	class GameLevel;
 	class PhysicsSystem;
@@ -52,8 +51,6 @@ namespace NCL::CSC8503 {
 		bool IsQuit();
 	protected:
 		void UpdateGameCore(float dt);
-		virtual void UpdateHud(float dt);
-
 		virtual void ProcessState();
 
 		void SetCameraFollow(PlayerObject* p);
@@ -65,7 +62,7 @@ namespace NCL::CSC8503 {
 
 		GameObject* AddFloorToWorld(const Vector3& position);
 
-		PlayerObject* AddPlayerToWorld(int playerID, const Vector3& position);
+			PlayerObject* AddPlayerToWorld(int playerID, const Vector3& position);
 
 		Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
 		void BuildLevel();
@@ -78,12 +75,14 @@ namespace NCL::CSC8503 {
 		GameWorld&        gameWorld;
 		InputKeyMap&      keyMap;
 		MenuManager&      menuManager;
-		OptionManager&	  optionManager;
 		
 		std::unique_ptr<Hud> hud;
 		std::unique_ptr<PhysicsSystem> physics;
-		
-		PlayerObject* players[4];
+
+		PlayerObject* player = nullptr;
+		PlayerObject* player2 = nullptr;
+		PlayerObject* player3 = nullptr;
+		PlayerObject* player4 = nullptr;
 
 		Light* sunLight = nullptr;
 

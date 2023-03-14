@@ -30,7 +30,3 @@ MenuRenderObject& UIObject::GetRenderObject() const {
 bool UIObject::HasRenderObject() const {
 	return renderObject != nullptr;
 }
-
-void UIObject::SetTexture(std::shared_ptr<TextureBase> texture) {
-	renderObject->SetTexture(texture);
-}

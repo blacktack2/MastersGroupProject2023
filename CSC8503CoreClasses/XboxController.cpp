@@ -24,6 +24,8 @@ XboxController::~XboxController()
 
 void XboxController::CheckPorts()
 {
+    std::string prefix = "player";
+    int playerNum = 1;
     for (int i = 0; i < 4; i++)
     {
         ZeroMemory(&state, sizeof(XINPUT_STATE));
@@ -31,14 +33,21 @@ void XboxController::CheckPorts()
         dwResult = XInputGetState(i, &state);
         if (dwResult == ERROR_SUCCESS)
         {
-            connectedControllers.push_back(i+1);
+            std::string name = prefix + std::to_string(playerNum);
+            portsMapping.emplace(name, i + 1);
+            playerNum += 1;
         }
     }
 }
 
+int XboxController::GetPort(const std::string& playerNum)
+{
+    return portsMapping.find(playerNum)->second;
+}
+
 int XboxController::GetActiveControllerNumber()
 {
-    return connectedControllers.size();
+    return portsMapping.size();
 }
 
 bool XboxController::UpdateConnection(unsigned int controllerNum)   // controllerNum == 1,2,3,4

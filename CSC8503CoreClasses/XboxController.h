@@ -26,6 +26,8 @@ namespace NCL
         ~XboxController();
 
         void CheckPorts();
+
+        int GetPort(const std::string& playerNum);
         int GetActiveControllerNumber();
 
         bool GetThumbLeft(unsigned int controllerNum, Maths::Vector2& v);
@@ -40,6 +42,6 @@ namespace NCL
         XINPUT_STATE state;
         DWORD dwResult;
         XINPUT_VIBRATION vibration;
-        std::vector<int> connectedControllers;
+        std::map<std::string, int> portsMapping;
     };
 }

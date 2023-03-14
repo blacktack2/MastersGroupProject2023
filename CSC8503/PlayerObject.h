@@ -5,7 +5,7 @@
 #include "GameStateManager.h"
 #include "Health.h"
 #include "PlayerBullet.h"
-#include"AnimatedRenderObject.h"
+
 namespace NCL {
 	namespace CSC8503 {
 		class Bullet;
@@ -21,7 +21,7 @@ namespace NCL {
 
 			void CollisionWith(GameObject* other);
 
-			void AttachCamera(int b) {
+			void AttachedCamera(int b) {
 				hasCamera = b;
 				//camera = cam;
 			};
@@ -38,7 +38,7 @@ namespace NCL {
 			{
 				return playerID;
 			}
-
+			void MoveAnimation(Vector3 dir);
 		protected:
 			void MoveTo(Vector3 position);
 			void Move(Vector3 dir);
@@ -76,7 +76,7 @@ namespace NCL {
 			float projectileLifespan = 5.0f;
 			float projectileFireRate = 0.1f;
 			float projectileFireRateTimer = 0;
-			void MoveAnimation(Vector3 dir);
+
 		private:
 
 			void SetupAudio();

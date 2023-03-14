@@ -230,7 +230,6 @@ void Boss::Update(float dt) {
         ChangeLoseState();
     }
     if (this->transform.GetGlobalPosition().y < -10) {
-        health.SetHealth(0);
         ChangeLoseState();
     }
     if (health.GetHealth() > 0 )
@@ -338,7 +337,7 @@ bool Boss::RandomWalk() {
     if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("WalkForward").get()) {
         anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("WalkForward"));
     }
-    float speed = 20.0f;
+    float speed = 0.0f; //////////////////////
     float period = 1.0f;    // change direction in period-seconds
     randomWalkTimer += deltaTime;
     if (randomWalkTimer > period) {
@@ -640,3 +639,4 @@ float Boss::SqrDistToTarget() {
 float Boss::DistToTarget() {
     return  (transform.GetGlobalPosition() - target->GetTransform().GetGlobalPosition()).Length();
 }
+

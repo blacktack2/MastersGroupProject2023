@@ -79,10 +79,9 @@ namespace NCL {
 			void HandleGameStatePacket(GamePacket* payload, int source);
 			void HandleLobbyPacket(GamePacket* payload, int source);
 
-			PlayerObject* AddNetworkPlayerToWorld(const Vector3& position, int playerID);
+			PlayerObject* AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID);
 			NetworkBoss* AddNetworkBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
-			
-			void UpdateHud(float dt) override;
+
 			void ProcessState() override;
 
 			std::map<int, int> stateIDs;
