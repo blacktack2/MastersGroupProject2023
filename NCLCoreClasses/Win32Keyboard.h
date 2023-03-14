@@ -11,18 +11,20 @@ https://research.ncl.ac.uk/game/
 #include "Keyboard.h"
 #include "Win32Window.h"
 
-namespace NCL::Win32Code {
-	class Win32Keyboard : public Keyboard {
-	public:
-		friend class Win32Window;
+namespace NCL{
+	namespace Win32Code {
+		class Win32Keyboard : public Keyboard {
+		public:
+			friend class Win32Window;
 
-	protected:
-		Win32Keyboard(HWND &hwnd);
-		virtual ~Win32Keyboard(void) {
-		}
+		protected:
+			Win32Keyboard(HWND& hwnd);
+			virtual ~Win32Keyboard(void) {
+			}
 
-		virtual void UpdateRAW(RAWINPUT* raw);
-		RAWINPUTDEVICE	rid;			//Windows OS hook 
-	};
+			virtual void UpdateRAW(RAWINPUT* raw);
+			RAWINPUTDEVICE	rid;			//Windows OS hook 
+		};
+	}
 }
 #endif //_WIN32

@@ -13,31 +13,33 @@
 #include <memory>
 #include <vector>
 
-namespace NCL::Rendering {
-	class OGLTexture;
+namespace NCL {
+	namespace Rendering {
+		class OGLTexture;
 
-	/**
-	 * @brief Base OpenGL implementation of a framebuffer.
-	 */
-	class OGLFrameBuffer : public FrameBuffer {
-	public:
-		OGLFrameBuffer();
-		~OGLFrameBuffer();
+		/**
+		 * @brief Base OpenGL implementation of a framebuffer.
+		 */
+		class OGLFrameBuffer : public FrameBuffer {
+		public:
+			OGLFrameBuffer();
+			~OGLFrameBuffer();
 
-		virtual void Bind() override;
-		virtual void Unbind() override;
+			virtual void Bind() override;
+			virtual void Unbind() override;
 
-		void DrawBuffers() override;
-		void DrawBuffers(unsigned int numBuffers) override;
+			void DrawBuffers() override;
+			void DrawBuffers(unsigned int numBuffers) override;
 
-		bool InitSuccess() override;
+			bool InitSuccess() override;
 
-		static std::unique_ptr<FrameBuffer> CreateFrameBuffer();
-	protected:
-		void BindToTexture(TextureBase& texture, unsigned int attachment) override;
-	private:
-		GLuint fboID;
+			static std::unique_ptr<FrameBuffer> CreateFrameBuffer();
+		protected:
+			void BindToTexture(TextureBase& texture, unsigned int attachment) override;
+		private:
+			GLuint fboID;
 
-		GLsizei numColourTexs = 0;
-	};
+			GLsizei numColourTexs = 0;
+		};
+	}
 }

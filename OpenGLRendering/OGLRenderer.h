@@ -30,69 +30,73 @@ namespace NCL {
 	class OGLLoadingManager;
 }
 
-namespace NCL::Maths {
-	class Matrix4;
+namespace NCL {
+	namespace Maths {
+		class Matrix4;
+	}
 }
 
-namespace NCL::Rendering {
-	class OGLMesh;
-	class OGLRenderPass;
-	class IPostRenderPass;
-	class OGLShader;
-	class OGLTexture;
+namespace NCL {
+	namespace Rendering {
+		class OGLMesh;
+		class OGLRenderPass;
+		class IPostRenderPass;
+		class OGLShader;
+		class OGLTexture;
 
-	class SimpleFont;
-	
-	/**
-	 * @brief Base OpenGL implementation of the main renderer.
-	 */
-	class OGLRenderer : public RendererBase {
-	public:
-		friend class OGLLoadingManager;
-		OGLRenderer(Window& w);
-		~OGLRenderer();
+		class SimpleFont;
 
-		void OnWindowResize(int width, int height) override;
-		bool HasInitialised() const override {
-			return initState;
-		}
+		/**
+		 * @brief Base OpenGL implementation of the main renderer.
+		 */
+		class OGLRenderer : public RendererBase {
+		public:
+			friend class OGLLoadingManager;
+			OGLRenderer(Window& w);
+			~OGLRenderer();
 
-		void ForceValidDebugState(bool newState) {
-			forceValidDebugState = newState;
-		}
+			void OnWindowResize(int width, int height) override;
+			bool HasInitialised() const override {
+				return initState;
+			}
 
-		virtual bool SetVerticalSync(VerticalSyncState s);
+			void ForceValidDebugState(bool newState) {
+				forceValidDebugState = newState;
+			}
 
-		RendererConfigBase& GetConfig() override {
-			return config;
-		}
+			virtual bool SetVerticalSync(VerticalSyncState s);
 
-		void ClearBuffers(ClearBit mask) override;
-	protected:
-		void BeginFrame() override;
-		void EndFrame() override;
+			RendererConfigBase& GetConfig() override {
+				return config;
+			}
 
-		void SwapBuffers() override;
-		void ClearBackbuffer() override;
+			void ClearBuffers(ClearBit mask) override;
+		protected:
+			void BeginFrame() override;
+			void EndFrame() override;
+
+			void SwapBuffers() override;
+			void ClearBackbuffer() override;
 
 #ifdef _WIN32
-		void InitWithWin32(Window& w);
+			void InitWithWin32(Window& w);
 
-	public:
-		HGLRC CreateContext();
-		void MakeCurrent(HGLRC context) {
-			wglMakeCurrent(deviceContext, context);
-		}
-	protected:
-		void DestroyWithWin32();
+		public:
+			HGLRC CreateContext();
+			void MakeCurrent(HGLRC context) {
+				wglMakeCurrent(deviceContext, context);
+			}
+		protected:
+			void DestroyWithWin32();
 
-		HDC deviceContext;
-		HGLRC renderContext;
+			HDC deviceContext;
+			HGLRC renderContext;
 #endif
-	private:
-		OGLRendererConfig config;
+		private:
+			OGLRendererConfig config;
 
-		bool initState;
-		bool forceValidDebugState;
-	};
+			bool initState;
+			bool forceValidDebugState;
+		};
+	}
 }

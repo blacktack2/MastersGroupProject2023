@@ -18,42 +18,46 @@ namespace NCL {
 	class MeshGeometry;
 }
 
-namespace NCL::Rendering {
-	class FrameBuffer;
-	class ShaderBase;
-	class TextureBase;
+namespace NCL {
+	namespace Rendering {
+		class FrameBuffer;
+		class ShaderBase;
+		class TextureBase;
+	}
 }
 
 using namespace NCL;
 using namespace Rendering;
 using namespace Maths;
 
-namespace NCL::CSC8503 {
-	class GameTechRenderer;
-	class GameWorld;
+namespace NCL {
+	namespace CSC8503 {
+		class GameTechRenderer;
+		class GameWorld;
 
-	class SkyboxRPass : public OGLMainRenderPass {
-	public:
-		SkyboxRPass();
-		~SkyboxRPass();
+		class SkyboxRPass : public OGLMainRenderPass {
+		public:
+			SkyboxRPass();
+			~SkyboxRPass();
 
-		virtual void Render() override;
+			virtual void Render() override;
 
-		void SetSunDir(const Vector3& direction);
+			void SetSunDir(const Vector3& direction);
 
-		inline TextureBase& GetOutTex() const {
-			return *colourOutTex;
-		}
-	private:
-		GameTechRenderer& renderer;
-		GameWorld& gameWorld;
+			inline TextureBase& GetOutTex() const {
+				return *colourOutTex;
+			}
+		private:
+			GameTechRenderer& renderer;
+			GameWorld& gameWorld;
 
-		std::shared_ptr<MeshGeometry> quad;
+			std::shared_ptr<MeshGeometry> quad;
 
-		std::unique_ptr<FrameBuffer> frameBuffer;
+			std::unique_ptr<FrameBuffer> frameBuffer;
 
-		std::unique_ptr<TextureBase> colourOutTex;
+			std::unique_ptr<TextureBase> colourOutTex;
 
-		std::unique_ptr<ShaderBase> shader;
-	};
+			std::unique_ptr<ShaderBase> shader;
+		};
+	}
 }

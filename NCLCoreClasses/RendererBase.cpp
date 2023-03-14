@@ -14,8 +14,8 @@ using namespace NCL;
 using namespace Rendering;
 
 RendererBase::RendererBase(Window& window) : hostWindow(window)	{
-	windowWidth  = window.GetScreenSize().x;
-	windowHeight = window.GetScreenSize().y;
+	windowWidth  = static_cast<int>(window.GetScreenSize().x);
+	windowHeight = static_cast<int>(window.GetScreenSize().y);
 }
 
 RendererBase::~RendererBase() {
