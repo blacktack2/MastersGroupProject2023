@@ -24,9 +24,6 @@ void Bullet::Update(float dt) {
 	lifespan -= dt;
 	if (lifespan <= 0) {
 		isActive = false;
-		GetPhysicsObject()->SetAngularVelocity(Vector3(0));
-		GetPhysicsObject()->SetLinearVelocity(Vector3(0));
-		GetPhysicsObject()->ClearForces();
 		return;
 	}
 
