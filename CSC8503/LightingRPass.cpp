@@ -144,8 +144,7 @@ void LightingRPass::DrawLight(const Light& light, const Matrix4& shadowMatrix) {
 
 	lightShader->SetUniformFloat("cameraPos", gameWorld.GetMainCamera()->GetPosition());
 
-	float screenAspect = (float)renderer.GetWidth() / (float)renderer.GetHeight();
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetAspect());
 	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
 	Matrix4 inverseViewProj = (projMatrix * viewMatrix).Inverse();
 

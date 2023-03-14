@@ -68,7 +68,7 @@ namespace NCL {
 		//to a vertex shader (i.e it's already an 'inverse camera matrix').
 		Matrix4 BuildViewMatrix() const;
 
-		Matrix4 BuildProjectionMatrix(float aspectRatio = 1.0f) const;
+		Matrix4 BuildProjectionMatrix(float aspectRatio) const;
 
 		//Gets position in world space
 		Vector3 GetPosition() const { return position; }
