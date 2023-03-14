@@ -294,7 +294,7 @@ void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
             Vector3 a = tempSteps[i - 1];
             Vector3 b = tempSteps[i];
 
-            Debug::DrawLine(a, b, Vector4{ 0,1,0,1 }, 0.0f);
+            //Debug::DrawLine(a, b, Vector4{ 0,1,0,1 }, 0.0f);
         }
     }
 }
@@ -351,7 +351,7 @@ bool Boss::RandomWalk() {
         this->GetTransform().SetOrientation(orientation);
         return true;
     }
-    Debug::DrawLine(GetTransform().GetGlobalPosition(), GetTransform().GetGlobalPosition() + randomWalkDirection * 15, Vector4{ 0,1,0,1 }, 0.0f);
+    //Debug::DrawLine(GetTransform().GetGlobalPosition(), GetTransform().GetGlobalPosition() + randomWalkDirection * 15, Vector4{ 0,1,0,1 }, 0.0f);
     GetTransform().SetPosition(GetTransform().GetGlobalPosition() + randomWalkDirection * speed * deltaTime);
     return false;
 }

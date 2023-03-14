@@ -65,7 +65,7 @@ namespace NCL {
 			void ClientProcessNetworkObject(GamePacket* payload, int objID);
 			void ServerProcessNetworkObject(GamePacket* payload, int playerID);
 
-			void PlayerJoinedServer(int playerID);
+			PlayerObject* PlayerJoinedServer(int playerID);
 			void PlayerLeftServer(int playerID);
 
 			//packet handle

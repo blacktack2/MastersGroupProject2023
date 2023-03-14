@@ -92,9 +92,11 @@ void TutorialGame::StartLevel() {
 
 
 	SetCameraFollow(players[0]);
+	hud->AddHuds(players[0]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
 
 	boss = AddBossToWorld({ 0, 5, -20 }, Vector3( 4 ), 2);
-	boss->SetNextTarget(players[0]);
+	boss -> SetNextTarget(players[0]);
+	hud->AddHuds(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
 }
 
 void TutorialGame::Clear() {
@@ -104,6 +106,7 @@ void TutorialGame::Clear() {
 	physics->Clear();
 	gridManager.Clear();
 	boss = nullptr;
+	hud->ClearAndErase();
 }
 
 void TutorialGame::InitWorld() {
@@ -203,17 +206,6 @@ void TutorialGame::UpdateGameCore(float dt) {
 
 void TutorialGame::UpdateHud(float dt)
 {	
-	/*
-	if (players[0]) {
-		Debug::Print(std::string("health: ").append(std::to_string((int)players[0]->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
-	}
-	if (boss) {
-		Debug::Print(std::string("Boss health: ").append(std::to_string((int)boss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
-	}
-	*/
-
-	hud->loadHuds((int)boss->GetHealth()->GetHealth(), (int)players[gameWorld.GetMainCamera()->GetPlayerID()]->GetHealth()->GetHealth());	
-
 	renderer.GetHudRPass().SetHud(hud->getHuds());
 }
 

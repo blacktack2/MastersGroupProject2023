@@ -13,6 +13,10 @@ namespace NCL {
 			const float GetHealth() {
 				return health;
 			}
+			float GetMaxHealth() {
+				return maxHealth;
+			}
+
 			void Damage(float damage) {
 				if (health <= 0)
 					return;
@@ -22,6 +26,8 @@ namespace NCL {
 			}
 			void Heal(float heal) {
 				health += heal;
+				if (health > maxHealth)
+					health = maxHealth;
 			}
 			void DamageOverTime(float damage, float time) {
 				if (overTimeTimer <= 0) {
@@ -32,9 +38,12 @@ namespace NCL {
 
 			void SetHealth(float health) {
 				this->health = health;
+				if (this->health > maxHealth)
+					this->health = maxHealth;
 			}
 		protected:
 			float health;
+			float maxHealth;
 			float overTimeTimer = 0;
 		};
 	}
