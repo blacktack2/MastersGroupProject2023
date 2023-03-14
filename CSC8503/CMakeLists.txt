@@ -264,10 +264,12 @@ if(USE_ORBIS)
 foreach (file ${PS4_SHADER_FILES})
     get_filename_component(file_name ${file} NAME_WE)
 	get_filename_component(file_ext ${file} EXT)
-			
+	
 	if( file_ext STREQUAL  ".pssl")
 		message("Compiling PSSL file: ${file}")
+		get_filename_component(file_dir ${file} DIRECTORY)
 		set_property(SOURCE ${file} PROPERTY VS_TOOL_OVERRIDE WavePsslc) 
+		set_property(SOURCE ${file} PROPERTY VS_SETTINGS "FileType=Document" "OutputFileName=${file_dir}/${file_name}.sb")  
 	endif()
 endforeach()
 
@@ -431,6 +433,7 @@ endif()
 if(USE_ORBIS)
 include_directories("../Plugins/PlayStation4/")
 include_directories("./")
+include_directories("${SCE_ORBIS_SDK_DIR}/target/samples/")
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC Playstation4)
 
 add_custom_target(

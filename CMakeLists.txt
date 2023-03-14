@@ -12,7 +12,11 @@ if(NOT CMAKE_VS_PLATFORM_NAME)
 endif()
 message("${CMAKE_VS_PLATFORM_NAME} architecture in use")
 
-if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64") AND SCE_ROOT_DIR AND  (NOT("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "ORBIS")))
+if(NOT SDK_ROOT_DIR)
+	message("No Root dir")
+endif()
+
+if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64") AND (NOT SCE_ORBIS_SDK_DIR OR (NOT("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "ORBIS"))))
     message(FATAL_ERROR "${CMAKE_VS_PLATFORM_NAME} arch is not supported!")
 endif()
 
@@ -29,10 +33,11 @@ set(CMAKE_CONFIGURATION_TYPES
 # Global compiler options
 ################################################################################
 #set(CMAKE_CXX_STANDARD 20)
-if(SCE_ROOT_DIR)
+if(SCE_ORBIS_SDK_DIR)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_EXTENSION OFF)
-
+set(CXX_STANDARD_REQUIRED YES)
+set(CMAKE_CXX_EXTENSION NO)
+message("Setting up cpp done")
 else()
 set(CMAKE_CXX_STANDARD 23)
 endif()
@@ -68,15 +73,17 @@ add_compile_definitions(ASSETROOTLOCATION="${ASSET_ROOT}")
 set(USE_VULKAN CACHE BOOL false)
 if(USE_VULKAN)
     add_compile_definitions("USEVULKAN") 
-endif() 
+endif()
+ 
 add_compile_definitions(NOMINMAX)
-set(USE_ORBIS BOOL false FORCE)
-if(SCE_ROOT_DIR)
-set(USE_ORBIS BOOL true FORCE)
-add_compile_definitions(_ORBIS)
-message("ORBIS in use")
+set(USE_ORBIS false)
+
+if(SCE_ORBIS_SDK_DIR)
+	set(USE_ORBIS true)
+	add_compile_definitions(_ORBIS)
+	message("ORBIS in use")
 else()
-add_compile_definitions("x64")  
+  add_compile_definitions(x64)  
 endif()
 ################################################################################
 # Sub-projects
@@ -87,7 +94,8 @@ add_subdirectory(OpenGLRendering)
 add_subdirectory(CSC8503)
 
 if(USE_ORBIS)
-add_subdirectory(Plugins/PlayStation4)
+ message("USE_ORBIS set to: ${USE_ORBIS}") 
+ add_subdirectory(Plugins/PlayStation4)
 endif()
 
 set(OPENAL_LIBRARY "${CMAKE_SOURCE_DIR}/lib/Debug/OpenAL/" CACHE STRING "" FORCE)

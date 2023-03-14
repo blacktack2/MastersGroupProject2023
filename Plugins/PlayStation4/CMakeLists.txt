@@ -133,6 +133,7 @@ set(ADDITIONAL_LIBRARY_DEPENDENCIES
 include_directories("../../NCLCoreClasses/")
 include_directories("../../CSC8503CoreClasses/")
 include_directories("./")
+include_directories("${SCE_ORBIS_SDK_DIR}/target/samples/")
 
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC NCLCoreClasses)
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC CSC8503CoreClasses)
