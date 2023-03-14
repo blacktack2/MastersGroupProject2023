@@ -24,8 +24,8 @@ using namespace CSC8503;
 SSAORPass::SSAORPass() : OGLMainRenderPass(), renderer(GameTechRenderer::instance()) {
 	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
-	ssaoTex    = AssetLoader::CreateTexture(TextureType::ColourRGB8, renderer.GetWidth(), renderer.GetHeight());
-	ssaoOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB8, renderer.GetWidth(), renderer.GetHeight());
+	ssaoTex    = AssetLoader::CreateTexture(TextureType::ColourR8, renderer.GetWidth(), renderer.GetHeight());
+	ssaoOutTex = AssetLoader::CreateTexture(TextureType::ColourR8, renderer.GetWidth(), renderer.GetHeight());
 	AddScreenTexture(*ssaoTex);
 	AddScreenTexture(*ssaoOutTex);
 
