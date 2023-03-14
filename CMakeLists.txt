@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.18.0 FATAL_ERROR)
 
 set(CMAKE_SYSTEM_VERSION 10.0 CACHE STRING "" FORCE)
 
@@ -12,7 +12,11 @@ if(NOT CMAKE_VS_PLATFORM_NAME)
 endif()
 message("${CMAKE_VS_PLATFORM_NAME} architecture in use")
 
-if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64"))
+if(NOT SDK_ROOT_DIR)
+	message("No Root dir")
+endif()
+
+if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64") AND (NOT SCE_ORBIS_SDK_DIR OR (NOT("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "ORBIS"))))
     message(FATAL_ERROR "${CMAKE_VS_PLATFORM_NAME} arch is not supported!")
 endif()
 
@@ -29,8 +33,14 @@ set(CMAKE_CONFIGURATION_TYPES
 # Global compiler options
 ################################################################################
 #set(CMAKE_CXX_STANDARD 20)
+if(SCE_ORBIS_SDK_DIR)
+set(CMAKE_CXX_STANDARD 17)
+set(CXX_STANDARD_REQUIRED YES)
+set(CMAKE_CXX_EXTENSION NO)
+message("Setting up cpp done")
+else()
 set(CMAKE_CXX_STANDARD 23)
-
+endif()
 ################################################################################
 # Nuget packages function stub.
 ################################################################################
@@ -63,8 +73,18 @@ add_compile_definitions(ASSETROOTLOCATION="${ASSET_ROOT}")
 set(USE_VULKAN CACHE BOOL false)
 if(USE_VULKAN)
     add_compile_definitions("USEVULKAN") 
-endif() 
+endif()
+ 
 add_compile_definitions(NOMINMAX)
+set(USE_ORBIS false)
+
+if(SCE_ORBIS_SDK_DIR)
+	set(USE_ORBIS true)
+	add_compile_definitions(_ORBIS)
+	message("ORBIS in use")
+else()
+  add_compile_definitions(x64)  
+endif()
 ################################################################################
 # Sub-projects
 ################################################################################
@@ -72,6 +92,11 @@ add_subdirectory(NCLCoreClasses)
 add_subdirectory(CSC8503CoreClasses)
 add_subdirectory(OpenGLRendering)
 add_subdirectory(CSC8503)
+
+if(USE_ORBIS)
+ message("USE_ORBIS set to: ${USE_ORBIS}") 
+ add_subdirectory(Plugins/PlayStation4)
+endif()
 
 set(OPENAL_LIBRARY "${CMAKE_SOURCE_DIR}/lib/Debug/OpenAL/" CACHE STRING "" FORCE)
 set(OPENAL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include" CACHE STRING "" FORCE)

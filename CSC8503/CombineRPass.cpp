@@ -32,7 +32,7 @@ CombineRPass::CombineRPass() : OGLCombineRenderPass(), renderer(GameTechRenderer
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
-	shader = AssetLoader::CreateShader("combine.vert", "combine.frag");
+	shader = AssetLoader::CreateShaderAndInit("combine.vert", "combine.frag");
 
 	shader->Bind();
 

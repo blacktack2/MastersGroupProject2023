@@ -19,7 +19,7 @@ namespace NCL::Rendering {
 	 */
 	class OGLBufferObject : public BufferObjectBase {
 	public:
-		OGLBufferObject(size_t size, unsigned int binding);
+		OGLBufferObject(size_t size, GLuint binding);
 		~OGLBufferObject();
 
 		virtual void Read(void* dataOut, int offset = 0, int amount = 0) override;

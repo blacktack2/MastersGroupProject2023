@@ -20,9 +20,12 @@ MenuManager::~MenuManager() {
 }
 
 void MenuManager::Update(float dt) {
+	menus[currentMenu]->Update(dt);
+	/*
 	for (auto& menu : menus) {
 		menu.second->Update(dt);
 	}
+	*/
 }
 
 Vector4 MenuManager::GetMenuDimension() {

@@ -12,7 +12,6 @@ set(Header_Files
     "GameStateManager.h"
 	"Maze.h"
     "MenuRenderObject.h"
-
     "Obstacle.h"
     "StateGameObject.h"
     "TutorialGame.h"
@@ -66,6 +65,8 @@ set(Render_Files
     "ModelRPass.cpp"
     "MenuRPass.h"
     "MenuRPass.cpp"
+    "HudRPass.h"
+    "HudRPass.cpp"
 )
 
 if(USE_VULKAN)
@@ -74,6 +75,14 @@ if(USE_VULKAN)
 
     file(GLOB SHADER_FILES ${ASSET_ROOT}/Shaders/VK/*.*)
 endif()
+
+if(USE_ORBIS)
+   file(GLOB PS4_SHADER_FILES ${ASSET_ROOT}/Shaders/PS4/*.*)
+   source_group("PS4 Shader Files" FILES ${PS4_SHADER_FILES})
+   file(GLOB_RECURSE Textures ${ASSET_ROOT}/Textures/*.*)
+   source_group("Textures" FILES ${Textures})
+endif()
+
 
 source_group("Source Files" FILES ${Source_Files})
 source_group("Rendering" FILES ${Render_Files})
@@ -154,6 +163,12 @@ set(Menu_Files
     "ScreenMultiplayer.cpp"
     "ScreenMultiplayerOption.h"
     "ScreenMultiplayerOption.cpp"
+    "OptionManager.h"
+    "OptionManager.cpp"
+    "HealthBar.h"
+    "HealthBar.cpp"
+    "Hud.h"
+    "Hud.cpp"
 )
 source_group("Menu Files" FILES ${Menu_Files})
 
@@ -234,6 +249,60 @@ foreach (file ${SHADER_FILES})
         list(APPEND SPIRV_BINARY_FILES ${SPIRV_OUTPUT})   
 	endif()
 endforeach()
+
+endif()
+
+
+
+################################################################################
+# PS4 implementation
+################################################################################
+if(USE_ORBIS)
+    list(APPEND ALL_FILES ${PS4_SHADER_FILES} 
+	${Textures})
+
+foreach (file ${PS4_SHADER_FILES})
+    get_filename_component(file_name ${file} NAME_WE)
+	get_filename_component(file_ext ${file} EXT)
+	
+	if( file_ext STREQUAL  ".pssl")
+		message("Compiling PSSL file: ${file}")
+		get_filename_component(file_dir ${file} DIRECTORY)
+		set_property(SOURCE ${file} PROPERTY VS_TOOL_OVERRIDE WavePsslc) 
+		set_property(SOURCE ${file} PROPERTY VS_SETTINGS "FileType=Document" "OutputFileName=${file_dir}/${file_name}.sb")  
+	endif()
+endforeach()
+
+set(IMG2GNF_TOOL_EXECUTEABLE "${SCE_ORBIS_SDK_DIR}/host_tools/bin/orbis-image2gnf")
+foreach (file ${Textures})
+	get_filename_component(file_name ${file} NAME_WE)
+	get_filename_component(file_ext ${file} EXT)
+	
+	if(file_ext STREQUAL ".jpg" OR 
+	   file_ext STREQUAL ".png" OR 
+	   file_ext STREQUAL ".JPG" OR 
+	   file_ext STREQUAL ".PNG" OR 
+	   file_ext STREQUAL ".TGA" OR 
+	   file_ext STREQUAL ".tga")
+		message("Adding custom command to ${file}")
+		get_filename_component(file_dir ${file} DIRECTORY)
+		get_filename_component(file_abs ${file} ABSOLUTE)
+        set(GNF_OUTPUT ${file_name}.gnf)
+		set(GNF_ABS_INPUT ${file_abs})
+		set(GNF_ABS_OUTPUT ${file_dir}/${GNF_OUTPUT})
+		
+		add_custom_command(
+			OUTPUT ${GNF_ABS_OUTPUT}
+			
+			COMMENT "Converting ${file} to .gnf"
+			COMMAND ${IMG2GNF_TOOL_EXECUTEABLE} -i  ${GNF_ABS_INPUT} -o ${GNF_ABS_OUTPUT} -f Auto
+            DEPENDS ${file}
+			VERBATIM
+		)
+        list(APPEND GNF_FILES ${GNF_OUTPUT})   
+	endif()
+endforeach()
+
 
 endif()
 
@@ -361,6 +430,19 @@ add_custom_target(
 add_dependencies(${PROJECT_NAME} SHADER_FILES)
 
 endif()
+if(USE_ORBIS)
+include_directories("../Plugins/PlayStation4/")
+include_directories("./")
+include_directories("${SCE_ORBIS_SDK_DIR}/target/samples/")
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC Playstation4)
+
+add_custom_target(
+    PS4_SHADER_FILES
+    DEPENDS ON ${GNF_FILES}
+)
+
+add_dependencies(${PROJECT_NAME} PS4_SHADER_FILES)
+endif()
 
 ################################################################################
 # OpenAL config
@@ -369,3 +451,17 @@ include_directories("../include/")
 link_directories("../lib/Debug/OpenAL/")
 
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC  ${CMAKE_SOURCE_DIR}/lib/Debug/OpenAL/OpenAL32.lib)
+
+################################################################################
+# PS4 config
+################################################################################
+if(USE_ORBIS)
+ set_property(SOURCE ${ALL_FILES} PROPERTY COMPILE_OPTIONS "-Wall")
+ set_property(TARGET ${PROJECT_NAME} PROPERTY VS_SOURCE_SETTINGS_WavePsslc "FileType=Document")
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+) 
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17" FORCE)
+endif()

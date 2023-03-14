@@ -58,6 +58,8 @@ OGLRenderer::OGLRenderer(Window& w) : RendererBase(w), config(*this) {
 		AssetLoader::RegisterMeshCreateFunction(OGLMesh::CreateMesh);
 		AssetLoader::RegisterShaderCreateFunction(OGLShader::CreateShader);
 		AssetLoader::RegisterTextureCreateFunction(OGLTexture::CreateTexture);
+		AssetLoader::RegisterMeshCreateAndInitFunction(OGLMesh::CreateMeshAndInit);
+		AssetLoader::RegisterShaderCreateAndInitFunction(OGLShader::CreateShaderAndInit);
 	}
 
 	forceValidDebugState = false;
@@ -216,6 +218,38 @@ void OGLRenderer::InitWithWin32(Window& w) {
 
 	w.SetRenderer(this);
 }
+
+HGLRC OGLRenderer::CreateContext() {
+	HGLRC context;
+	if (!initState) return context;
+
+	char* ver = (char*)glGetString(GL_VERSION); // ver must equal "4.1.0" (or greater!)
+	int major = ver[0] - '0'; //casts the 'correct' major version integer from our version string
+	int minor = ver[2] - '0'; //casts the 'correct' minor version integer from our version string
+
+	int attribs[] = {
+		WGL_CONTEXT_MAJOR_VERSION_ARB, major,
+		WGL_CONTEXT_MINOR_VERSION_ARB, minor,
+		WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB
+#ifdef OPENGL_DEBUGGING 
+		| WGL_CONTEXT_DEBUG_BIT_ARB
+#endif //No deprecated stuff!! DIE DIE DIE glBegin!!!!
+		,WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+		0 //That's enough attributes...
+	};
+
+	PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+	context = wglCreateContextAttribsARB(deviceContext, 0, attribs);
+	if (!wglShareLists(renderContext, context))
+	{
+		wglDeleteContext(context);
+		std::cout << "Error Sharing Between Files" << std::endl;
+		HGLRC context;
+	}
+
+	return context;
+}
+
 
 void OGLRenderer::DestroyWithWin32() {
 	wglDeleteContext(renderContext);

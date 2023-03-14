@@ -38,6 +38,8 @@ namespace NCL::CSC8503 {
 
 		bool HasRenderObject() const;
 
+		void SetTexture(std::shared_ptr<TextureBase> texture);
+
 		void AddChild(UIObject& child) {
 			children.push_back(child);
 		}

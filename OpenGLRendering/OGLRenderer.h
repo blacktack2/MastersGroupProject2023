@@ -27,6 +27,7 @@
 
 namespace NCL {
 	class MeshGeometry;
+	class OGLLoadingManager;
 }
 
 namespace NCL::Maths {
@@ -47,6 +48,7 @@ namespace NCL::Rendering {
 	 */
 	class OGLRenderer : public RendererBase {
 	public:
+		friend class OGLLoadingManager;
 		OGLRenderer(Window& w);
 		~OGLRenderer();
 
@@ -75,6 +77,13 @@ namespace NCL::Rendering {
 
 #ifdef _WIN32
 		void InitWithWin32(Window& w);
+
+	public:
+		HGLRC CreateContext();
+		void MakeCurrent(HGLRC context) {
+			wglMakeCurrent(deviceContext, context);
+		}
+	protected:
 		void DestroyWithWin32();
 
 		HDC deviceContext;
