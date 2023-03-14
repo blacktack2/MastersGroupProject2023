@@ -5,125 +5,127 @@
 #include "NetworkState.h"
 #include "InputKeyMap.h"
 
-namespace NCL::CSC8503 {
-	class GameObject;
+namespace NCL {
+	namespace CSC8503 {
+		class GameObject;
 
-	struct ItemInitPacket : public GamePacket {
-		int		objectID = -1;
-		short int index = 0;
-		Vector3		position;
-		Vector3		scale;
-		Quaternion	orientation;
-		Vector3		velocity;
+		struct ItemInitPacket : public GamePacket {
+			int		objectID = -1;
+			short int index = 0;
+			Vector3		position;
+			Vector3		scale;
+			Quaternion	orientation;
+			Vector3		velocity;
 
-		ItemInitPacket() {
-			type = Item_Init_Message;
-			size = sizeof(ItemInitPacket) - sizeof(GamePacket);
-		}
-	};
+			ItemInitPacket() {
+				type = Item_Init_Message;
+				size = sizeof(ItemInitPacket) - sizeof(GamePacket);
+			}
+		};
 
-	struct FullPacket : public GamePacket {
-		int		objectID = -1;
-		NetworkState fullState;
-		int health = 0;
+		struct FullPacket : public GamePacket {
+			int		objectID = -1;
+			NetworkState fullState;
+			int health = 0;
 
-		FullPacket() {
-			type = Full_State;
-			size = sizeof(FullPacket) - sizeof(GamePacket);
-		}
-	};
+			FullPacket() {
+				type = Full_State;
+				size = sizeof(FullPacket) - sizeof(GamePacket);
+			}
+		};
 
-	struct DeltaPacket : public GamePacket {
-		int			fullID		= -1;
-		int			objectID	= -1;
-		int			pos[3] = {0};
-		int			orientation[4] = {0};
+		struct DeltaPacket : public GamePacket {
+			int			fullID = -1;
+			int			objectID = -1;
+			int			pos[3] = { 0 };
+			int			orientation[4] = { 0 };
 
-		DeltaPacket() {
-			type = Delta_State;
-			size = sizeof(DeltaPacket) - sizeof(GamePacket);
-		}
-	};
+			DeltaPacket() {
+				type = Delta_State;
+				size = sizeof(DeltaPacket) - sizeof(GamePacket);
+			}
+		};
 
-	struct ClientPacket : public GamePacket {
-		int		lastID = -1;
-		unsigned int buttonstates = 0;
-		short int axis[AxisInput::AxisInputDataMax] = {0};
-		int yaw = 0;
-		int pitch = 0;
+		struct ClientPacket : public GamePacket {
+			int		lastID = -1;
+			unsigned int buttonstates = 0;
+			short int axis[AxisInput::AxisInputDataMax] = { 0 };
+			int yaw = 0;
+			int pitch = 0;
 
-		ClientPacket() {
-			type = Received_State;
-			size = sizeof(ClientPacket);
-		}
-	};
+			ClientPacket() {
+				type = Received_State;
+				size = sizeof(ClientPacket);
+			}
+		};
 
-	class NetworkObject		{
-	public:
-		NetworkObject(GameObject& o, int id = -1);
-		virtual ~NetworkObject();
+		class NetworkObject {
+		public:
+			NetworkObject(GameObject& o, int id = -1);
+			virtual ~NetworkObject();
 
-		//Called by clients
-		virtual bool ReadPacket(GamePacket& p, float dt);
-		//Called by servers
-		virtual bool WritePacket(GamePacket** p, bool deltaFrame, int stateID);
+			//Called by clients
+			virtual bool ReadPacket(GamePacket& p, float dt);
+			//Called by servers
+			virtual bool WritePacket(GamePacket** p, bool deltaFrame, int stateID);
 
-		void UpdateStateHistory(int minID);
+			void UpdateStateHistory(int minID);
 
-		int GetNetworkID(){
-			return networkID;
-		}
+			int GetNetworkID() {
+				return networkID;
+			}
 
-		void UpdateDelta(float dt);
+			void UpdateDelta(float dt);
 
-		int smoothFrameCount = 0;
-		int smoothFrameTotal = 10;
+			int smoothFrameCount = 0;
+			int smoothFrameTotal = 10;
 
-		Transform& GetRenderTransform() {
-			return renderTransform;
-		}
+			Transform& GetRenderTransform() {
+				return renderTransform;
+			}
 
-		void SnapRenderToSelf() {
-			renderTransform = object.GetTransform();
-		}
+			void SnapRenderToSelf() {
+				renderTransform = object.GetTransform();
+			}
 
-		bool isActive() {
-			return object.IsActive();
-		}
+			bool isActive() {
+				return object.IsActive();
+			}
 
-	protected:
-		Transform renderTransform;
+		protected:
+			Transform renderTransform;
 
-		NetworkState& GetLatestNetworkState();
+			NetworkState& GetLatestNetworkState();
 
-		bool GetNetworkState(int frameID, NetworkState& state);
+			bool GetNetworkState(int frameID, NetworkState& state);
 
-		virtual bool ReadDeltaPacket(DeltaPacket &p, float dt);
-		virtual bool ReadFullPacket(FullPacket &p, float dt);
-		virtual bool ReadItemInitPacket(ItemInitPacket &p, float dt);
+			virtual bool ReadDeltaPacket(DeltaPacket& p, float dt);
+			virtual bool ReadFullPacket(FullPacket& p, float dt);
+			virtual bool ReadItemInitPacket(ItemInitPacket& p, float dt);
 
-		virtual bool WriteDeltaPacket(GamePacket**p, int stateID);
-		virtual bool WriteFullPacket(GamePacket**p);
+			virtual bool WriteDeltaPacket(GamePacket** p, int stateID);
+			virtual bool WriteFullPacket(GamePacket** p);
 
-		GameObject& object;
+			GameObject& object;
 
-		NetworkState lastFullState;
+			NetworkState lastFullState;
 
-		NetworkState lastDeltaState = NetworkState();
+			NetworkState lastDeltaState = NetworkState();
 
-		std::vector<NetworkState> stateHistory;
+			std::vector<NetworkState> stateHistory;
 
-		int deltaErrors;
-		int fullErrors;
+			int deltaErrors;
+			int fullErrors;
 
-		int networkID;
-		
-		float deltaOrientationDivisor = 10000000;
-		float deltaOrientationDivisorInverse = 1 / deltaOrientationDivisor;
+			int networkID;
 
-		float deltaPosDivisor = 1000;
-		float deltaPosDivisorInverse = 1 / deltaPosDivisor;
+			float deltaOrientationDivisor = 10000000;
+			float deltaOrientationDivisorInverse = 1 / deltaOrientationDivisor;
 
-		float smoothFrameInverse = 1.0f / smoothFrameTotal;
-	};
+			float deltaPosDivisor = 1000;
+			float deltaPosDivisorInverse = 1 / deltaPosDivisor;
+
+			float smoothFrameInverse = 1.0f / smoothFrameTotal;
+		};
+	}
 }

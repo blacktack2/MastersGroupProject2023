@@ -139,8 +139,11 @@ void LoadMenuAsset() {
 	AssetLibrary<TextureBase>::AddAsset("num9", std::move(AssetLoader::LoadTexture("num9.jpg")));
 
 	AssetLibrary<TextureBase>::AddAsset("fontAtlas", std::move(AssetLoader::LoadTexture("PressStart2P.png")));
-	AssetLibrary<TextureBase>::AddAsset("BossHealthBarBorder", std::move(AssetLoader::LoadTexture("HP/Borders/Border_Style_2.png")));
-	AssetLibrary<TextureBase>::AddAsset("BossHealthBar", std::move(AssetLoader::LoadTexture("HP/Style_2.png")));
+	AssetLibrary<TextureBase>::AddAsset("BossHealthBarBorder", std::move(AssetLoader::LoadTexture("HP/Borders/Border_Style_3.png")));
+	AssetLibrary<TextureBase>::AddAsset("BossHealthBar", std::move(AssetLoader::LoadTexture("HP/Style_3.png")));
+
+	AssetLibrary<TextureBase>::AddAsset("PlayerHealthBarBorder", std::move(AssetLoader::LoadTexture("HP/Borders/Border_Style_4.png")));
+	AssetLibrary<TextureBase>::AddAsset("PlayerHealthBar", std::move(AssetLoader::LoadTexture("HP/Style_2.png")));
 
 	AssetLibrary<ShaderBase>::AddAsset("menu", std::move(AssetLoader::CreateShader("menuVertex.vert", "menuFragment.frag")));
 	AssetLibrary<ShaderBase>::AddAsset("button", std::move(AssetLoader::CreateShader("buttonVertex.vert", "buttonFragment.frag")));

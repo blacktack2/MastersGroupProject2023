@@ -17,53 +17,57 @@ namespace NCL {
 	class MeshGeometry;
 }
 
-namespace NCL::Rendering {
-	class FrameBuffer;
-	class ShaderBase;
-	class TextureBase;
+namespace NCL {
+	namespace Rendering {
+		class FrameBuffer;
+		class ShaderBase;
+		class TextureBase;
+	}
 }
 
 using namespace NCL;
 using namespace Rendering;
 
-namespace NCL::CSC8503 {
-	class GameTechRenderer;
-	class GameWorld;
+namespace NCL {
+	namespace CSC8503 {
+		class GameTechRenderer;
+		class GameWorld;
 
-	class ModelRPass : public OGLMainRenderPass {
-	public:
-		ModelRPass();
-		~ModelRPass();
+		class ModelRPass : public OGLMainRenderPass {
+		public:
+			ModelRPass();
+			~ModelRPass();
 
-		virtual void Render() override;
+			virtual void Render() override;
 
-		void AddModelShader(std::shared_ptr<ShaderBase> shader);
+			void AddModelShader(std::shared_ptr<ShaderBase> shader);
 
-		inline void SetGamma(float g) {
-			gamma = g;
-		}
+			inline void SetGamma(float g) {
+				gamma = g;
+			}
 
-		inline TextureBase& GetAlbedoOutTex() const {
-			return *albedoOutTex;
-		}
-		inline TextureBase& GetNormalOutTex() const {
-			return *normalOutTex;
-		}
-		inline TextureBase& GetDepthOutTex() const {
-			return *depthOutTex;
-		}
-	private:
-		GameTechRenderer& renderer;
-		GameWorld& gameWorld;
+			inline TextureBase& GetAlbedoOutTex() const {
+				return *albedoOutTex;
+			}
+			inline TextureBase& GetNormalOutTex() const {
+				return *normalOutTex;
+			}
+			inline TextureBase& GetDepthOutTex() const {
+				return *depthOutTex;
+			}
+		private:
+			GameTechRenderer& renderer;
+			GameWorld& gameWorld;
 
-		std::unique_ptr<FrameBuffer> frameBuffer;
+			std::unique_ptr<FrameBuffer> frameBuffer;
 
-		std::unique_ptr<TextureBase> albedoOutTex;
-		std::unique_ptr<TextureBase> normalOutTex;
-		std::unique_ptr<TextureBase> depthOutTex;
+			std::unique_ptr<TextureBase> albedoOutTex;
+			std::unique_ptr<TextureBase> normalOutTex;
+			std::unique_ptr<TextureBase> depthOutTex;
 
-		std::vector<std::shared_ptr<ShaderBase>> modelShaders{};
+			std::vector<std::shared_ptr<ShaderBase>> modelShaders{};
 
-		float gamma = 2.2f;
-	};
+			float gamma = 2.2f;
+		};
+	}
 }

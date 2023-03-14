@@ -12,12 +12,14 @@
 #include <functional>
 #include <string>
 
-namespace NCL::Rendering {
-	class BufferObjectBase;
-	class FrameBuffer;
-	class ShaderBase;
-	class TextureBase;
-	enum class TextureType;
+namespace NCL {
+	namespace Rendering {
+		class BufferObjectBase;
+		class FrameBuffer;
+		class ShaderBase;
+		class TextureBase;
+		enum class TextureType;
+	}
 }
 
 using namespace NCL::Rendering;

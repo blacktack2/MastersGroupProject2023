@@ -9,13 +9,11 @@ using namespace NCL;
 using namespace NCL::CSC8503;
 
 GameWorld::GameWorld() : staticQuadTree(Vector2(1024, 1024), 7, 6), dynamicQuadTree(Vector2(1024, 1024), 7, 6) {
+	for (int i = 0; i < CAM_COUNT; i++) {
+		cameras[i] = new Camera();
+	}
 	
-	playerCamera1 = new Camera();
-	playerCamera2 = new Camera();
-	playerCamera3 = new Camera();
-	playerCamera4 = new Camera();
-	
-	mainCamera = playerCamera1;
+	mainCamera = cameras[0];
 
 	shuffleConstraints	= false;
 	shuffleObjects		= false;
@@ -25,10 +23,10 @@ GameWorld::GameWorld() : staticQuadTree(Vector2(1024, 1024), 7, 6), dynamicQuadT
 
 GameWorld::~GameWorld()	{
 	//delete mainCamera;
-	delete playerCamera1;
-	delete playerCamera2;
-	delete playerCamera3;
-	delete playerCamera4;
+	for (int i = 0; i < CAM_COUNT; i++) {
+		delete cameras[i];
+		cameras[i] = nullptr;
+	}
 }
 
 void GameWorld::Clear() {
@@ -310,5 +308,45 @@ void GameWorld::RemoveLight(LightIterator l) {
 
 void GameWorld::ClearLight() {
 	lights.clear();
+}
+
+Camera* GameWorld::GetMainCamera() const {
+	return mainCamera;
+}
+void GameWorld::InitCameras() const {
+	for (int i = 0; i < CAM_COUNT; i++) {
+		InitCamera(cameras[i]);
+	}
+
+}
+void GameWorld::InitCamera(Camera* cam) const {
+	if (!cam)
+		return;
+	cam->SetNearPlane(0.1f);
+	cam->SetFarPlane(1000.0f);
+	cam->SetPitch(-15.0f);
+	cam->SetYaw(315.0f);
+	cam->SetPosition(Vector3(-60, 40, 60));
+	cam->SetFollow(nullptr);
+}
+
+Camera* GameWorld::GetCamera(int n) const {
+	if (n >= CAM_COUNT || n < 0)
+		return nullptr;
+	return cameras[n] ;
+}
+
+void GameWorld::UpdateCamera(float dt) {
+	for (Camera* i : cameras) {
+		i->UpdateCamera(dt);
+	}
+}
+
+Camera* GameWorld::SetMainCamera(int n)
+{
+	if (n >= CAM_COUNT || n < 0)
+		return nullptr;
+	mainCamera = cameras[n];
+	return mainCamera;
 }
 

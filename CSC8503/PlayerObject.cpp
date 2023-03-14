@@ -22,6 +22,8 @@
 #include "BulletInstanceManager.h"
 
 #include <iostream>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 using namespace NCL;
 using namespace CSC8503;
@@ -50,8 +52,8 @@ PlayerObject::~PlayerObject() {
 
 void PlayerObject::Update(float dt) {
 	//Change game state
-	MoveCamera(dt);
 	if (health.GetHealth() <= 0) {
+		MoveCamera(dt);
 		ChangeLoseState();
 		return;
 	}
@@ -134,7 +136,15 @@ void PlayerObject::MoveCamera(float dt) {
 	//rotate camera
 	camera->SetPitch(pitch);
 	camera->SetYaw(yaw);
-	camera->UpdateCamera(dt);
+	Ray ray = CollisionDetection::BuildRayFromCamera(*camera);
+	RayCollision closestCollision;
+	if (gameWorld.Raycast(ray, closestCollision, true, this)) {
+		lookingAt = closestCollision.collidedAt;
+	}
+	else {
+		lookingAt = transform.GetGlobalPosition() + ray.GetDirection() * 20;
+	}
+	//camera->UpdateCamera(dt);
 }
 
 void PlayerObject::GetAxisInput()
@@ -214,6 +224,7 @@ void PlayerObject::CheckGround() {
 }
 
 void PlayerObject::RotateYaw(float yaw) {
+	//this->GetTransform().SetOrientation(Quaternion::Lerp(this->GetTransform().GetGlobalOrientation(), Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), yaw), camTurnSpeed));
 	this->GetTransform().SetOrientation(Quaternion::Lerp(this->GetTransform().GetGlobalOrientation(), Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), yaw), camTurnSpeed));
 }
 
@@ -261,17 +272,7 @@ void PlayerObject::CollisionWith(GameObject* other) {
 
 PlayerBullet* PlayerObject::PrepareBullet()
 {
-	Ray ray = CollisionDetection::BuildRayFromCamera(*camera);
-	Vector3 dir;
-	RayCollision closestCollision;
-	if (gameWorld.Raycast(ray, closestCollision, true, this)) {
-		dir = closestCollision.collidedAt - transform.GetGlobalPosition();
-		lookingAt = closestCollision.collidedAt;
-	}
-	else {
-		dir = ray.GetDirection() * 100;
-		lookingAt = closestCollision.collidedAt;
-	}
+	Vector3 dir = lookingAt - transform.GetGlobalPosition();
 	dir = Quaternion::EulerAnglesToQuaternion((float)(rand() % 100 - 50) / 20, (float)(rand() % 100 - 50) / 20, (float)(rand() % 100 - 50) / 20) * dir; // add randomness
 
 	PlayerBullet* ink = BulletInstanceManager::instance().GetPlayerBullet();

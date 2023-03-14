@@ -14,9 +14,11 @@
 #include <string>
 #include <vector>
 
-namespace NCL::Rendering {
-	class ShaderBase;
-	class TextureBase;
+namespace NCL {
+	namespace Rendering {
+		class ShaderBase;
+		class TextureBase;
+	}
 }
 
 using namespace NCL::Rendering;

@@ -18,35 +18,39 @@ namespace NCL {
 	class MeshGeometry;
 }
 
-namespace NCL::Rendering {
-	class FrameBuffer;
-	class ShaderBase;
-	class TextureBase;
+namespace NCL {
+	namespace Rendering {
+		class FrameBuffer;
+		class ShaderBase;
+		class TextureBase;
+	}
 }
 
 using namespace NCL;
 using namespace Rendering;
 
-namespace NCL::CSC8503 {
-	class GameTechRenderer;
-	class GameWorld;
+namespace NCL {
+	namespace CSC8503 {
+		class GameTechRenderer;
+		class GameWorld;
 
-	class MenuManager;
-	class UIObject;
+		class MenuManager;
+		class UIObject;
 
-	class MenuRPass : public OGLOverlayRenderPass {
-	public:
-		MenuRPass();
-		~MenuRPass();
+		class MenuRPass : public OGLOverlayRenderPass {
+		public:
+			MenuRPass();
+			~MenuRPass();
 
-		virtual void Render() override;
-	private:
-		GameTechRenderer& renderer;
-		GameWorld& gameWorld;
-		MenuManager& menuManager;
+			virtual void Render() override;
+		private:
+			GameTechRenderer& renderer;
+			GameWorld& gameWorld;
+			MenuManager& menuManager;
 
-		std::unique_ptr<TextureBase> defaultTexture;
+			std::unique_ptr<TextureBase> defaultTexture;
 
-		std::unique_ptr<ShaderBase> defaultShader;
-	};
+			std::unique_ptr<ShaderBase> defaultShader;
+		};
+	}
 }

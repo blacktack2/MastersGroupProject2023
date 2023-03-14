@@ -13,16 +13,20 @@
 #include <vector>
 #include <string>
 
-namespace NCL::Maths {
-	class Vector2;
-	class Vector3;
-	class Vector4;
-	class Matrix4;
+namespace NCL {
+	namespace Maths {
+		class Vector2;
+		class Vector3;
+		class Vector4;
+		class Matrix4;
 
-	class Vector4i;
+		class Vector4i;
+	}
 }
-namespace NCL::Rendering {
-	class RendererBase;
+namespace NCL {
+	namespace Rendering {
+		class RendererBase;
+	}
 }
 
 using namespace NCL::Maths;

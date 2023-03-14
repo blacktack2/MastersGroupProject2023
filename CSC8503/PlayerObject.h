@@ -54,9 +54,9 @@ namespace NCL {
 			void RotateToCamera();
 			void RotateByAxis();
 			void RotatePlayer();
-
+		public:
 			void MoveCamera(float dt);
-
+		protected:
 			void CheckGround();
 
 			PlayerBullet* PrepareBullet();
@@ -86,6 +86,9 @@ namespace NCL {
 
 			float pitch = 0.0f;
 			float yaw = 0.0f;
+			
+			//camera related
+			Vector3 lookingAt = Vector3(0);
 
 		private:
 
@@ -107,8 +110,6 @@ namespace NCL {
 			int hasCamera = 0;		// 0 means no camera; 1,2,3,4 indicates which playerCamera it is attached to.
 			bool isFreeLook = false;
 			float camTurnSpeed = 0.5f;
-			Vector3 lookingAt = Vector3(0);
-
 
 			//instantiated objs
 			std::vector<GameObject*> lastInstancedObjects;

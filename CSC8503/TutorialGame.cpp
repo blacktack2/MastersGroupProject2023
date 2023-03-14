@@ -93,7 +93,7 @@ void TutorialGame::StartLevel() {
 
 	SetCameraFollow(players[0]);
 
-	boss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
+	boss = AddBossToWorld({ 0, 5, -20 }, Vector3( 4 ), 2);
 	boss->SetNextTarget(players[0]);
 }
 
@@ -183,13 +183,8 @@ void TutorialGame::UpdateGameCore(float dt) {
 
 	GameGridManager::instance().Update(dt);
 
-	//gameWorld.GetCamera(1)->UpdateCamera(dt);
-	//gameWorld.GetCamera(2)->UpdateCamera(dt);
-	//gameWorld.GetCamera(3)->UpdateCamera(dt);
-	//gameWorld.GetCamera(4)->UpdateCamera(dt);
-
 	Vector3 crossPos = CollisionDetection::Unproject(Vector3(screenSize * 0.5f, 0.99f), *gameWorld.GetMainCamera());
-	Debug::DrawAxisLines(Matrix4::Translation(crossPos), 1.0f);
+	//Debug::DrawAxisLines(Matrix4::Translation(crossPos), 1.0f);
 
 	gameWorld.PreUpdateWorld();
 
@@ -203,17 +198,19 @@ void TutorialGame::UpdateGameCore(float dt) {
 		gameLevel->SetShelterTimer(0.0f);
 		UpdateLevel();
 	}
+	gameWorld.UpdateCamera(dt);
 }
 
 void TutorialGame::UpdateHud(float dt)
 {	
+	/*
 	if (players[0]) {
 		Debug::Print(std::string("health: ").append(std::to_string((int)players[0]->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
 	}
 	if (boss) {
 		Debug::Print(std::string("Boss health: ").append(std::to_string((int)boss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
 	}
-
+	*/
 
 	hud->loadHuds((int)boss->GetHealth()->GetHealth(), (int)players[gameWorld.GetMainCamera()->GetPlayerID()]->GetHealth()->GetHealth());	
 
@@ -308,7 +305,7 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 
 	boss->GetTransform()
 		.SetPosition(position)
-		.SetScale(dimensions * 2);
+		.SetScale(dimensions);
 
 	boss->SetRenderObject(new AnimatedRenderObject(boss->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("boss"), AssetLibrary<MeshMaterial>::GetAsset("boss"), AssetLibrary<MeshAnimation>::GetAsset("WalkForward")));
 

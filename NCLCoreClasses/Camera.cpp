@@ -32,6 +32,8 @@ Camera::Camera() {
 	lookat = Vector3(1, 0, 0);
 
 	camType		= CameraType::Perspective;
+
+	isSmooth = true;
 }
 
 Camera::Camera(float pitch, float yaw, const Vector3& position) : Camera() {
@@ -114,13 +116,14 @@ void Camera::UpdateCamera(float dt) {
 			std::sin(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch))
 		) * followDistance;
 		*/
-		position = followPos - Vector3(
+		Vector3 newPos = followPos - Vector3(
 			std::cos(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch)),
 			std::sin(Maths::DegreesToRadians(pitch)),
 			std::sin(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch))
 		) * followDistance;
-		position.y += 1.0f;
-		position.x += 1.0f;
+		//position = Vector3::Lerp(position, newPos, std::min(smoothFactor * dt, 1.0f));
+		newPos.y += 1.0f;
+		position = Vector3::Lerp(position, newPos + follow->GetGlobalOrientation() * Vector3(1.0f, 0, 0) * 1.5f, std::min(smoothFactor * dt, 1.0f));
 		position.y = std::max(position.y, 0.1f);
 
 	}
