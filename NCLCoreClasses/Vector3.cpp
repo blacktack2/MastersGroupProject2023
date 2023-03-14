@@ -1,17 +1,16 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
-#include "Vector4.h"
+/**
+ * @file   Vector3.cpp
+ * @brief  See Vector3.h.
+ * 
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #include "Vector3.h"
-#include "Vector2.h"
-using namespace NCL;
-using namespace Maths;
 
+#include "Vector4.h"
+#include "Vector2.h"
+
+using namespace NCL::Maths;
 
 Vector3::Vector3(const Vector2& v2, float newZ) : x(v2.x), y(v2.y), z(newZ) {
 }
