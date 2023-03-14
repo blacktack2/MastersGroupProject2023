@@ -198,6 +198,7 @@ void TutorialGame::UpdateGameCore(float dt) {
 		gameLevel->SetShelterTimer(0.0f);
 		UpdateLevel();
 	}
+	gameWorld.UpdateCamera(dt);
 }
 
 void TutorialGame::UpdateHud(float dt)

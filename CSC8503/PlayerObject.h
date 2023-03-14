@@ -54,9 +54,9 @@ namespace NCL {
 			void RotateToCamera();
 			void RotateByAxis();
 			void RotatePlayer();
-
+		public:
 			void MoveCamera(float dt);
-
+		protected:
 			void CheckGround();
 
 			PlayerBullet* PrepareBullet();

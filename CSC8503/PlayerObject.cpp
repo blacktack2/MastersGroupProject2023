@@ -52,8 +52,8 @@ PlayerObject::~PlayerObject() {
 
 void PlayerObject::Update(float dt) {
 	//Change game state
-	MoveCamera(dt);
 	if (health.GetHealth() <= 0) {
+		MoveCamera(dt);
 		ChangeLoseState();
 		return;
 	}
@@ -144,7 +144,7 @@ void PlayerObject::MoveCamera(float dt) {
 	else {
 		lookingAt = transform.GetGlobalPosition() + ray.GetDirection() * 20;
 	}
-	camera->UpdateCamera(dt);
+	//camera->UpdateCamera(dt);
 }
 
 void PlayerObject::GetAxisInput()

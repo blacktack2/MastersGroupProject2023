@@ -17,6 +17,8 @@ namespace NCL {
 
 using namespace NCL::Maths;
 
+
+
 namespace NCL::CSC8503 {
 	class GameGridManager;
 	class GameStateManager;
