@@ -43,13 +43,10 @@ void AttenuateLight(inout vec3 incident, inout float attenuation, vec3 worldPos,
 		discard;
 }
 
-void GetShadow(inout float shadow, vec3 worldPos, vec3 normal, vec3 viewDir) {
-	vec4 pushVal = vec4(normal, 0.0) * dot(viewDir, normal) * 0.1;
-	vec4 shadowProj = shadowMatrix * (vec4(worldPos, 1.0) + pushVal);
-
-	vec3 shadowNDC = shadowProj.xyz / shadowProj.w;
-	vec3 biasCoord = shadowNDC * 0.5 + 0.5;
-	shadow = texture(shadowTex, biasCoord).r;
+void GetShadow(inout float shadow, vec3 worldPos) {
+	vec3 shadowPos = (shadowMatrix * vec4(worldPos, 1.0)).xyz * 0.5 + 0.5;
+	shadowPos.z -= 0.0003;
+	shadow = texture(shadowTex, shadowPos).r;
 }
 
 out vec4 diffuseOutput;
@@ -76,7 +73,7 @@ void main() {
 	vec3 halfDir = normalize(incident + viewDir);
 
 	float shadow;
-	GetShadow(shadow, worldPos, normal, viewDir);
+	GetShadow(shadow, worldPos);
 
 	float lambert = clamp(dot(incident, normal), 0.0, 1.0);
 	float rFactor = clamp(dot(halfDir, normal),  0.0, 1.0);
