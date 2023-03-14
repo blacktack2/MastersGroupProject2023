@@ -40,6 +40,9 @@ namespace NCL::CSC8503 {
 		~DebugRPass();
 
 		virtual void Render() override;
+		
+		void RenderWinLoseInformation(bool win);
+	
 	private:
 		void RenderLines();
 		void RenderText();

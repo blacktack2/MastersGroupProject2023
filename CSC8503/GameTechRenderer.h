@@ -24,6 +24,10 @@
 #include "HudRPass.h"
 #include "Hud.h"
 #include "GameWorld.h"
+//#include "Debug.h"
+#include "DebugRPass.h"
+
+
 
 #include <algorithm>
 #include <memory>
@@ -153,6 +157,17 @@ namespace NCL::CSC8503 {
 		void UpdateHudDisplay(int playerID) override {
 			hud->loadHuds(bossHP, playersHP[playerID]);
 			this->GetHudRPass().SetHud(hud->getHuds());
+		}
+
+		void DisplayWinLoseInformation(int playerID) override {
+			std::cout << playersHP[0] << std::endl;
+			gameWorld.GetCamera(playerID);
+			if (bossHP <= 0) {
+				debugPass->RenderWinLoseInformation(true);
+			}
+			else if (playersHP[playerID] <= 0) {
+				debugPass->RenderWinLoseInformation(false);
+			}
 		}
 
 	protected:

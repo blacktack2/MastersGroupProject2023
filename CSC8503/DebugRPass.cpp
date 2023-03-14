@@ -119,3 +119,29 @@ void DebugRPass::RenderText() {
 
 	textShader->Unbind();
 }
+
+void DebugRPass::RenderWinLoseInformation(bool win) {
+	renderer.GetConfig().SetCullFace(false);
+	textShader->Bind();
+
+	const TextureBase& texture = Debug::GetDebugFont()->GetTexture();
+
+	texture.Bind(0);
+
+	debugTextPos.clear();
+	debugTextColours.clear();
+	debugTextUVs.clear();
+
+	float size = 20.0f;
+	if (win) Debug::GetDebugFont()->BuildVerticesForString("You Win!", Vector2(5, 80), Vector4(0, 1, 0, 1), size, debugTextPos, debugTextUVs, debugTextColours);
+	else Debug::GetDebugFont()->BuildVerticesForString("You got Inked!", Vector2(5, 80), Vector4(1, 0, 0, 1), size, debugTextPos, debugTextUVs, debugTextColours);
+
+	textMesh->SetVertexPositions(debugTextPos);
+	textMesh->SetVertexColours(debugTextColours);
+	textMesh->SetVertexTextureCoords(debugTextUVs);
+	textMesh->UploadToGPU();
+	textMesh->Draw();
+
+	textShader->Unbind();
+	renderer.GetConfig().SetCullFace();
+}

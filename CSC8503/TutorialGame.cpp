@@ -160,7 +160,7 @@ void TutorialGame::UpdateGame(float dt) {
 
 	UpdateGameCore(dt);
 
-	gameStateManager.Update(dt);
+	//gameStateManager.Update(dt);
 	ProcessState();
 
 	UpdateHud(dt);		// TODO: update hud for each splitted screen inside RenderFrame

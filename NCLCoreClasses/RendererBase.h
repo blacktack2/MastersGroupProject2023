@@ -5,7 +5,8 @@
  * 
  * @author Rich Davidson
  * @author Stuart Lewis
- * @date   February 2023
+ * @author Xiaoyang Liu
+ * @date   March 2023
  */
 #pragma once
 #include "Window.h"
@@ -152,6 +153,8 @@ namespace NCL::Rendering {
 		virtual int GetGameWorldMainCamera() = 0;
 
 		virtual void UpdateHudDisplay(int playerID) = 0;
+
+		virtual void DisplayWinLoseInformation(int playerID) = 0;
 
 	protected:
 		/**
