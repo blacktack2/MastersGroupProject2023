@@ -67,6 +67,7 @@ SSAORPass::~SSAORPass() {
 }
 
 void SSAORPass::OnWindowResize(int width, int height) {
+	RenderPassBase::OnWindowResize(width, height);
 	ssaoShader->Bind();
 
 	ssaoShader->SetUniformFloat("noiseScale", (float)width / (float)noiseTexSize, (float)height / (float)noiseTexSize);
