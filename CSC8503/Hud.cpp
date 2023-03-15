@@ -23,21 +23,17 @@ void Hud::loadHuds(int BossHP, int PlayerHP) {
 };
 
 void Hud::Draw() {
-	int c = 0;
 	for (auto& hud : huds) {
-		std::cout << hud.first << " " << hud.second->IsEnabled << std::endl;
-		if (hud.second->IsEnabled) {
-			std::cout << c << std::endl;
-			hud.second->Draw();
-			c++;
+		if (hud->IsEnabled) {
+			hud->Draw();
 		}
 			
 	}
 }
 
-void  Hud::AddHealthBar(int playerID, Health* hp, Vector2 anchor, Vector2 dimension) {
+void  Hud::AddHealthBar(Health* hp, Vector2 anchor, Vector2 dimension) {
 	HealthBar* NewHealthBar = new HealthBar(AssetLibrary<TextureBase>::GetAsset("PlayerHealthBar"), anchor, dimension, hp);
-	huds[playerID * 2] = NewHealthBar;
+	huds.push_back(NewHealthBar);
 	HealthBar* NewHealthBarborder = new HealthBar(AssetLibrary<TextureBase>::GetAsset("PlayerHealthBarBorder"), anchor, dimension);
-	huds[playerID * 2 + 1] = NewHealthBarborder;
+	huds.push_back(NewHealthBarborder);
 }

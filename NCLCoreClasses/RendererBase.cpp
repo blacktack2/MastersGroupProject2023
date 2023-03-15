@@ -119,6 +119,24 @@ void RendererBase::ResizeViewport() {
 	}
 }
 
+void RendererBase::RenderViewPort(int viewportID, int cameraID, const std::vector<float>& viewports, bool displayHudDebug)
+{
+	size_t index = viewportID * 4;
+	GetConfig().SetDefaultViewport(0, 0, viewports[index + 2], viewports[index + 3]);
+	SetGameWorldMainCamera(cameraID);
+	RenderScene();
+	GetConfig().SetDefaultViewport(viewports[index], viewports[index + 1], viewports[index + 2], viewports[index + 3]);
+	RenderPresent();
+	//DisplayWinLoseInformation(i);
+	EnableOverlayPass("Menu", false);
+	if (!displayHudDebug) {
+		EnableOverlayPass("Hud", true);
+		EnableOverlayPass("Debug", true);
+	}
+	UpdatePipeline();
+	RenderOverlay();
+}
+
 void RendererBase::RenderFrame() {
 	static const std::vector<float> viewports1 = {
 		0.0f, 0.0f, 1.0f, 1.0f,
@@ -138,23 +156,15 @@ void RendererBase::RenderFrame() {
 	int mainCamera = GetGameWorldMainCamera();
 	bool temp1 = overlayRenderPasses[overlayMap["Menu"]].enabled;
 
-	for (size_t i = 0; i < numPlayers; i++) {
-		size_t index = i * 4;
-		GetConfig().SetDefaultViewport(0, 0, viewports[index + 2], viewports[index + 3]);
-		SetGameWorldMainCamera(i);
-		//UpdateHudDisplay(i);
-		RenderScene();
-		GetConfig().SetDefaultViewport(viewports[index], viewports[index + 1], viewports[index + 2], viewports[index + 3]);
-		RenderPresent();
-		DisplayWinLoseInformation(i);
-		EnableOverlayPass("Menu", false);
-		if (!temp1) {
-			EnableOverlayPass("Hud", true);
-			EnableOverlayPass("Debug", true);
+	//viewport 0 is always main camera
+	RenderViewPort(0, mainCamera, viewports, temp1);
+	int cameraID = 0;
+	for (size_t i = 1; i < numPlayers; i++) {
+		if (cameraID == mainCamera) {
+			cameraID++;
 		}
-		UpdatePipeline();
-		RenderOverlay();
-
+		RenderViewPort(i, cameraID, viewports, temp1);
+		cameraID++;
 	}
 	
 	SetGameWorldMainCamera(mainCamera);

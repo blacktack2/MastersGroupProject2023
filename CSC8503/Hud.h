@@ -26,32 +26,20 @@ namespace NCL {
 			}
 			void ClearAndErase() {
 				for (auto hud : huds) {
-					delete hud.second;
+					delete hud;
 				}
 				huds.clear();
 			}
 			void loadHuds(int BossHP, int PlayerHP);
 
 			void Draw();
-			void AddHealthBar(int playerID, Health* hp, Vector2 anchor, Vector2 dimension);
-			const std::map<int, HealthBar*>& getHuds() {
+			void AddHealthBar(Health* hp, Vector2 anchor, Vector2 dimension);
+			const std::vector<HealthBar*>& getHuds() {
 				return huds;
 			};
-			void EnableHealthBar(int playerID, bool isEnable) {
-				//DisableAllHealthBar();
-				if(huds.count(playerID * 2) > 0)
-					huds[playerID * 2]->IsEnabled = isEnable;
-				if (huds.count(playerID * 2 + 1) > 0)
-					huds[playerID * 2 + 1]->IsEnabled = isEnable;
-			}
-			void DisableAllHealthBar() {
-				for (auto i : huds) {
-					i.second->IsEnabled = false;
-				}
-			}
 
 		protected:
-			std::map<int, HealthBar*> huds;
+			std::vector<HealthBar*> huds;
 		};
 	}
 }

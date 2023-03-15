@@ -143,6 +143,7 @@ namespace NCL {
 
 		void SetGameWorldMainCamera(int cameraNum) override {
 			gameWorld.SetMainCamera(cameraNum);
+
 		}
 
 		int GetGameWorldMainCamera() override {
@@ -158,7 +159,6 @@ namespace NCL {
 		}
 
 		void UpdateHudDisplay(int playerID) override {
-			this->GetHudRPass().GetHud().EnableHealthBar(playerID, true);
 		}
 
 		void DisplayWinLoseInformation(int playerID) override {

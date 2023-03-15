@@ -62,7 +62,6 @@ renderer(GameTechRenderer::instance()), gameWorld(GameWorld::instance()), keyMap
 	sunLight = &gameWorld.AddDirectionalLight(Vector3(0.9f, 0.4f, 0.1f), Vector4(1.0f));
 
 	physics = std::make_unique<PhysicsSystem>(gameWorld);
-	hud = std::make_unique<Hud>();
 	
 	SoundSystem::Initialize();
 	StartLevel();
@@ -79,24 +78,23 @@ TutorialGame::~TutorialGame() {
 
 void TutorialGame::StartLevel() {
 	InitWorld();
-
+	std::cout << "tutorial " << std::endl;
 	XboxControllerManager::GetXboxController().CheckPorts();
 	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
 	if (numOfPlayers >= 4)
 		numOfPlayers = 4;
-	for (int i = 0; i < 4; i++) players[i] = nullptr;
 
 	boss = AddBossToWorld({ 0, 5, -20 }, Vector3(4), 2);
 
 	players[0] = AddPlayerToWorld(0, Vector3(0, 5, 90));
 	keyMap.ChangePlayerControlTypeMap(0, ControllerType::KeyboardMouse);
-	players[0]->GetCamera()->GetHud().AddHealthBar(players[0]->GetPlayerID(), players[0]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
-	players[0]->GetCamera()->GetHud().AddHealthBar(5, boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
+	players[0]->GetCamera()->GetHud().AddHealthBar(players[0]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
+	players[0]->GetCamera()->GetHud().AddHealthBar(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
 	for (int i = 1; i < numOfPlayers; i++) {
 		players[i] = AddPlayerToWorld(i, Vector3(0, 5, 90));		// TODO: currently this will result in access violation if 4 controllers are connected
 		keyMap.ChangePlayerControlTypeMap(i, ControllerType::Xbox);
-		players[i]->GetCamera()->GetHud().AddHealthBar(players[i]->GetPlayerID(), players[i]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
-		players[i]->GetCamera()->GetHud().AddHealthBar(5, boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
+		players[i]->GetCamera()->GetHud().AddHealthBar(players[i]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
+		players[i]->GetCamera()->GetHud().AddHealthBar(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
 	}
 	renderer.SetNumPlayers(numOfPlayers + 1);		// +1 accounts for players[0] who uses Keyboard & Mouse
 	SetCameraFollow(players[0]);		// Currently set to player[0] is crucial for split screen
@@ -105,19 +103,21 @@ void TutorialGame::StartLevel() {
 }
 
 void TutorialGame::Clear() {
+	for (int i = 0; i < 4; i++) {
+		if (players[i] != nullptr)
+			players[i]->GetCamera()->GetHud().ClearAndErase();
+		players[i] = nullptr;
+	}
 	gameStateManager.SetGameState(GameState::OnGoing);
 	gameWorld.ClearAndErase();
 	BulletInstanceManager::instance().ObjectIntiation();
 	physics->Clear();
 	gridManager.Clear();
 	boss = nullptr;
-	hud->ClearAndErase();
-	//renderer.GetHudRPass().SetHud(hud->getHuds());
 }
 
 void TutorialGame::InitWorld() {
 	Clear();
-
 	gridManager.AddGameGrid(new GameGrid(Vector3(0.0f), 400, 400, 1));
 	BuildLevel();
 
@@ -183,8 +183,6 @@ void TutorialGame::UpdateGame(float dt) {
 	//gameStateManager.Update(dt);
 	ProcessState();
 
-	UpdateHud(dt);		// TODO: update hud for each splitted screen inside RenderFrame
-
 	debugViewPoint.FinishTime("Update");
 	debugViewPoint.MarkTime("Render");
 	renderer.Render();
@@ -198,12 +196,7 @@ bool TutorialGame::IsQuit() {
 }
 
 void TutorialGame::UpdateGameCore(float dt) {
-	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
-
 	GameGridManager::instance().Update(dt);
-
-	Vector3 crossPos = CollisionDetection::Unproject(Vector3(screenSize * 0.5f, 0.99f), *gameWorld.GetMainCamera());
-	//Debug::DrawAxisLines(Matrix4::Translation(crossPos), 1.0f);
 
 	gameWorld.PreUpdateWorld();
 
@@ -218,24 +211,6 @@ void TutorialGame::UpdateGameCore(float dt) {
 		UpdateLevel();
 	}
 	gameWorld.UpdateCamera(dt);
-}
-
-void TutorialGame::UpdateHud(float dt)
-{	
-	if (players[0]) {
-		Debug::Print(std::string("health: ").append(std::to_string((int)players[0]->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
-	}
-	if (boss) {
-		Debug::Print(std::string("Boss health: ").append(std::to_string((int)boss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
-	}
-
-	renderer.SetBossHP((int)boss->GetHealth()->GetHealth());
-	for (int i = 0; i < 4; i++) {
-		if (players[i]) renderer.SetPlayerHp(i, (int)players[i]->GetHealth()->GetHealth());
-	}
-
-	//hud->loadHuds((int)boss->GetHealth()->GetHealth(), (int)players[gameWorld.GetMainCamera()->GetPlayerID()]->GetHealth()->GetHealth());
-	//renderer.GetHudRPass().SetHud(hud->getHuds());
 }
 
 void TutorialGame::ProcessState() {
@@ -314,8 +289,7 @@ PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& positi
 void TutorialGame::SetCameraFollow(PlayerObject* p)
 {
 	int id = p->GetPlayerID();
-	if (id == 0) gameWorld.SetMainCamera(4);
-	else gameWorld.SetMainCamera(id);
+	gameWorld.SetMainCamera(id);
 	//gameWorld.GetMainCamera()->SetFollow(&(p->GetTransform()));
 }
 

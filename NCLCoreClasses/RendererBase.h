@@ -254,6 +254,7 @@ namespace NCL {
 			};
 
 		void ResizeViewport();
+		void RenderViewPort(int viewportID, int cameraID, const std::vector<float>& viewports, bool displayHudDebug);
 		void RenderFrame();
 		void RenderScene();
 		void RenderPresent();

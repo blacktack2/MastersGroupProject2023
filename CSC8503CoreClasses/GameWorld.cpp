@@ -344,6 +344,7 @@ void GameWorld::UpdateCamera(float dt) {
 
 Camera* GameWorld::SetMainCamera(int n)
 {
+	mainCameraIndex = n;
 	if (n >= CAM_COUNT || n < 0)
 		return nullptr;
 	mainCamera = cameras[n];
