@@ -1,0 +1,15 @@
+MeshMat
+1
+2
+2
+Ch14_Body
+2
+Diffuse:/Player/Ch14_1001_Diffuse.png
+Bump:/Player/Ch14_1001_Normal.png
+Cyborg_Weapon_mat
+3
+Diffuse:/Player/Weapon_BaseColor.png
+Bump:/Player/Weapon_Normal.png
+Metallic:/Player/Weapon_Metallic.png
+0
+1
