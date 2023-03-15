@@ -106,7 +106,7 @@ void NetworkedGame::Clear()
 void NetworkedGame::StartLobby()
 {
 	canJoin = true;
-
+	renderer.SetNumPlayers(1);
 	InitWorld();
 	SpawnPlayers();
 	int id = OBJECTID_START;
