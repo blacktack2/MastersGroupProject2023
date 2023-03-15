@@ -170,5 +170,28 @@ namespace NCL {
 				return o;
 			}
 		};
+
+		class Vector2i {
+		public:
+			union {
+				struct {
+					int x;
+					int y;
+				};
+				int array[2];
+			};
+		public:
+			Vector2i() : x(0), y(0) {}
+
+			Vector2i(int x, int y) : x(x), y(y) {}
+
+			inline int operator[](int i) const {
+				return array[i];
+			}
+
+			inline int& operator[](int i) {
+				return array[i];
+			}
+		};
 	}
 }

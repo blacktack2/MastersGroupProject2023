@@ -198,5 +198,31 @@ namespace NCL {
 				return o;
 			}
 		};
+
+		class Vector4i {
+		public:
+			union {
+				struct {
+					int x;
+					int y;
+					int z;
+					int w;
+				};
+				int array[4];
+			};
+
+		public:
+			constexpr Vector4i() : x(0), y(0), z(0), w(0) {}
+
+			constexpr Vector4i(int x, int y, int z, int w) : x(x), y(y), z(z), w(w) {}
+
+			inline constexpr int operator[](int i) const {
+				return array[i];
+			}
+
+			inline constexpr int& operator[](int i) {
+				return array[i];
+			}
+		};
 	}
 }

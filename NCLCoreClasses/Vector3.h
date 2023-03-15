@@ -198,5 +198,29 @@ namespace NCL {
 				return o;
 			}
 		};
+
+		class Vector3i {
+		public:
+			union {
+				struct {
+					int x;
+					int y;
+					int z;
+				};
+				int array[3];
+			};
+		public:
+			Vector3i() : x(0), y(0), z(0) {}
+
+			Vector3i(int x, int y, int z) : x(x), y(y), z(z) {}
+
+			inline int operator[](int i) const {
+				return array[i];
+			}
+
+			inline int& operator[](int i) {
+				return array[i];
+			}
+		};
 	}
 }

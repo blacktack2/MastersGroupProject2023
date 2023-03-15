@@ -14,60 +14,6 @@ namespace NCL {
 		class Vector2;
 		class Vector3;
 
-		class Vector2i {
-		public:
-			int array[2];
-
-			Vector2i() {
-				array[0] = 0;
-				array[1] = 0;
-			}
-			inline int operator[](int i) const {
-				return array[i];
-			}
-
-			inline int& operator[](int i) {
-				return array[i];
-			}
-		};
-
-		class Vector3i {
-		public:
-			int array[3];
-
-			Vector3i() {
-				array[0] = 0;
-				array[1] = 0;
-				array[2] = 0;
-			}
-			inline int operator[](int i) const {
-				return array[i];
-			}
-
-			inline int& operator[](int i) {
-				return array[i];
-			}
-		};
-
-		class Vector4i {
-		public:
-			int array[4];
-
-			Vector4i() {
-				array[0] = 0;
-				array[1] = 0;
-				array[2] = 0;
-				array[3] = 0;
-			}
-			inline int operator[](int i) const {
-				return array[i];
-			}
-
-			inline int& operator[](int i) {
-				return array[i];
-			}
-		};
-
 		static const float PI = 3.14159265358979323846f;
 		static const float PI_OVER_360 = PI / 360.0f;
 
