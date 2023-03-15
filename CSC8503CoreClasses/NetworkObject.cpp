@@ -3,6 +3,7 @@
 #include "Debug.h"
 #include "./enet/enet.h"
 #include "../CSC8503/PlayerBullet.h"
+#include "Maths.h"
 using namespace NCL;
 using namespace CSC8503;
 
@@ -193,12 +194,11 @@ void NetworkObject::UpdateStateHistory(int minID) {
 }
 
 void NetworkObject::UpdateDelta(float dt) {
-	if (networkID == 5) {
-		//std::cout << "boss" << std::endl;
-	}
-	float posT = std::clamp(dt * 15, 0.1f, 1.0f);
+
+	//float posT = Maths::Clamp(dt * 15, 0.1f, 1.0f);
+	float posT = Maths::Clamp(dt * 30, 0.1f, 1.0f);
 	
-	Debug::DrawLine(object.GetTransform().GetGlobalPosition(), object.GetTransform().GetGlobalPosition() + Vector3(0, 0.5, 0), Debug::RED, 0.01f);
+	//Debug::DrawLine(object.GetTransform().GetGlobalPosition(), object.GetTransform().GetGlobalPosition() + Vector3(0, 0.5, 0), Debug::RED, 0.01f);
 
 	renderTransform.SetPosition(Vector3::Lerp(renderTransform.GetGlobalPosition(), lastDeltaState.position, posT));
 	renderTransform.SetOrientation(Quaternion::Lerp(renderTransform.GetGlobalOrientation(), lastDeltaState.orientation, 0.2));

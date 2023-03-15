@@ -34,6 +34,65 @@ void NetworkPlayer::OnCollisionBegin(GameObject* otherObject) {
 	}
 }
 
+void NCL::CSC8503::NetworkPlayer::MoveInput(unsigned int keyPress, short int axis[AxisInput::AxisInputDataMax], Vector2 rotationAxis)
+{
+	if (health.GetHealth() > 0) {
+		Vector3 dir = Vector3(0, 0, 0);
+		SetAxis(axis);
+		GetDir(dir);
+		GetButtonInput(keyPress);
+		Move(dir);
+		this->yaw = rotationAxis.x;
+		this->pitch = rotationAxis.y;
+		RotateYaw(yaw);
+		MoveCamera(0.05f);
+
+		Debug::DrawLine(lookingAt, lookingAt + Vector3(0, 3, 0), Debug::CYAN, 0.01f);
+	}
+}
+
+void NCL::CSC8503::NetworkPlayer::ServerSideMovement(float dt)
+{
+	RotateToCamera();
+	Vector3 dir = Vector3(0, 0, 0);
+	lastKey = keyMap.GetButtonState();
+	keyMap.Update();
+	if (health.GetHealth() > 0) {
+		RotatePlayer();
+		MoveCamera(dt);
+
+		GetAxisInput();
+		GetDir(dir);
+
+		GetButtonInput(keyMap.GetButtonState());
+		Move(dir);
+	}
+}
+
+void NCL::CSC8503::NetworkPlayer::ClientUpdateCamera(float dt)
+{
+	keyMap.Update();
+	RotatePlayer();
+	MoveCamera(dt);
+}
+
+void NCL::CSC8503::NetworkPlayer::SetAxis(short int axis[AxisInput::AxisInputDataMax])
+{
+	for (int i = 0; i < AxisInput::AxisInputDataMax; i++) {
+		float input;
+		input = static_cast<float>(axis[i] / 10000);
+		this->axis[i] = input;
+	}
+}
+
+void NCL::CSC8503::NetworkPlayer::GetNetworkAxis(short int axis[])
+{
+	GetAxisInput();
+	for (int i = 0; i < AxisInput::AxisInputDataMax; i++) {
+		axis[i] = static_cast<short int>(this->axis[i] * 10000);
+	}
+}
+
 void NetworkPlayer::Shoot()
 {
 	if (projectileFireRateTimer > 0)

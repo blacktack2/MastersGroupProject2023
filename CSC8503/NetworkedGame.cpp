@@ -188,8 +188,6 @@ void NetworkedGame::UpdateGame(float dt) {
 	}
 
 	TutorialGame::UpdateGame(dt);
-
-	gameWorld.GetMainCamera()->UpdateCamera(dt);
 }
 
 void NetworkedGame::FreezeSelf()
@@ -247,7 +245,7 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	//move main player
 	NetworkPlayer* player = static_cast<NetworkPlayer*>(localPlayer);
 	if (!player->isFrozen) {
-		player->ServerSideMovement();
+		player->ServerSideMovement(dt);
 	}
 	localPlayer->GetNetworkObject()->SnapRenderToSelf();
 	std::vector<NetworkObject*> networkObjects = gameWorld.GetNetworkObjects();
@@ -282,21 +280,18 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	
 	//*/
 	//send self data to server
+
 	ClientPacket newPacket;
 	newPacket.lastID = stateID;
-	keyMap.Update();
-	newPacket.buttonstates = keyMap.GetButtonState();
-	if (!Window::GetKeyboard()->KeyDown(KeyboardKeys::C)) {
-		newPacket.yaw = (int) gameWorld.GetMainCamera()->GetYaw() * 1000;
-	}
-	else {
-		newPacket.yaw = NULL;
-	}
 	if (localPlayer) {
 		NetworkPlayer* player = static_cast<NetworkPlayer*>(localPlayer);
-		if (player->isFrozen) {
-			newPacket.buttonstates = 0;
-			newPacket.yaw = NULL;
+		if (!player->isFrozen) {
+			player->ClientUpdateCamera(dt);
+			keyMap.Update();
+			newPacket.buttonstates = keyMap.GetButtonState();
+			player->GetNetworkAxis(newPacket.axis);
+			newPacket.yaw = static_cast<int>(player->GetYaw() * 1000);
+			newPacket.pitch = static_cast<int>(player->GetPitch() * 1000);
 		}
 	}
 	
@@ -399,12 +394,8 @@ PlayerObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID) {
 	if (!serverPlayers.contains(playerID))
 		return;
-	//rotation
-	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(((ClientPacket*)payload)->buttonstates);
-
-	if (((ClientPacket*)payload)->yaw != NULL) {
-		((NetworkPlayer*)serverPlayers[playerID])->RotateYaw(((ClientPacket*)payload)->yaw * 0.001f);
-	}
+	
+	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(((ClientPacket*)payload)->buttonstates, ((ClientPacket*)payload)->axis, Vector2(((ClientPacket*)payload)->yaw * 0.001f, ((ClientPacket*)payload)->pitch * 0.001f));
 
 	if (((ClientPacket*)payload)->lastID > stateIDs[playerID]) {
 		stateIDs[playerID] = ((ClientPacket*)payload)->lastID;

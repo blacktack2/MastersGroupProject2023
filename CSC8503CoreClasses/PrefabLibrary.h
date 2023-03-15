@@ -9,8 +9,10 @@
 #include <memory>
 #include <unordered_map>
 
-namespace NCL::CSC8503 {
-	class GameObject;
+namespace NCL {
+	namespace CSC8503 {
+		class GameObject;
+	}
 }
 using namespace NCL::CSC8503;
 

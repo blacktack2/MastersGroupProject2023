@@ -36,9 +36,9 @@ OGLOverlayRenderPass(), gameWorld(GameWorld::instance()), renderer(GameTechRende
 
 	textShader->Unbind();
 
-	lineMesh = AssetLoader::CreateMeshAndInit();
+	lineMesh = AssetLoader::CreateMesh();
 	lineMesh->SetPrimitiveType(GeometryPrimitive::Lines);
-	textMesh = AssetLoader::CreateMeshAndInit();
+	textMesh = AssetLoader::CreateMesh();
 }
 
 DebugRPass::~DebugRPass() {
@@ -59,9 +59,8 @@ void DebugRPass::RenderLines() {
 		return;
 	}
 
-	float screenAspect = (float)renderer.GetWidth() / (float)renderer.GetHeight();
 	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetAspect());
 	
 	Matrix4 viewProjMatrix  = projMatrix * viewMatrix;
 

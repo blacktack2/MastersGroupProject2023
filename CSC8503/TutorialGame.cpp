@@ -40,7 +40,10 @@
 #include "SoundSource.h"
 #include "SoundSystem.h"
 #include "TestAudio.h"
+
+#include "Light.h"
 #include "Hud.h"
+
 #include "MeshAnimation.h"
 
 #include "Debug.h"
@@ -56,7 +59,7 @@ using namespace CSC8503;
 TutorialGame::TutorialGame() :
 debugViewPoint(DebugViewPoint::Instance()), gridManager(GameGridManager::instance()), gameStateManager(GameStateManager::instance()),
 renderer(GameTechRenderer::instance()), gameWorld(GameWorld::instance()), keyMap(InputKeyMap::instance()), menuManager(MenuManager::instance()), optionManager(OptionManager::instance()) {
-	sunLight = gameWorld.AddLight(new Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
+	sunLight = &gameWorld.AddDirectionalLight(Vector3(0.9f, 0.4f, 0.1f), Vector4(1.0f));
 
 	physics = std::make_unique<PhysicsSystem>(gameWorld);
 	hud = std::make_unique<Hud>();
@@ -90,7 +93,7 @@ void TutorialGame::StartLevel() {
 
 	SetCameraFollow(players[0]);
 
-	boss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
+	boss = AddBossToWorld({ 0, 5, -20 }, Vector3( 4 ), 2);
 	boss->SetNextTarget(players[0]);
 }
 
@@ -136,8 +139,8 @@ void TutorialGame::UpdateGame(float dt) {
 	
 	if (optionManager.GetSunMove()) {
 		float runtime = gameWorld.GetRunTime();
-		sunLight->direction = Vector3(std::sin(runtime), std::cos(runtime), 0.0f);
-		renderer.GetSkyboxPass().SetSunDir(sunLight->direction);
+		sunLight->SetDirection(Vector3(std::sin(runtime), std::cos(runtime), 0.0f));
+		renderer.GetSkyboxPass().SetSunDir(sunLight->GetDirection());
 	}
 
 	if (!optionManager.GetSound()) {
@@ -178,17 +181,10 @@ bool TutorialGame::IsQuit() {
 void TutorialGame::UpdateGameCore(float dt) {
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 
-	gameWorld.GetMainCamera()->UpdateCamera(dt);
-
 	GameGridManager::instance().Update(dt);
 
-	gameWorld.GetCamera(1)->UpdateCamera(dt);
-	gameWorld.GetCamera(2)->UpdateCamera(dt);
-	gameWorld.GetCamera(3)->UpdateCamera(dt);
-	gameWorld.GetCamera(4)->UpdateCamera(dt);
-
 	Vector3 crossPos = CollisionDetection::Unproject(Vector3(screenSize * 0.5f, 0.99f), *gameWorld.GetMainCamera());
-	Debug::DrawAxisLines(Matrix4::Translation(crossPos), 1.0f);
+	//Debug::DrawAxisLines(Matrix4::Translation(crossPos), 1.0f);
 
 	gameWorld.PreUpdateWorld();
 
@@ -202,17 +198,19 @@ void TutorialGame::UpdateGameCore(float dt) {
 		gameLevel->SetShelterTimer(0.0f);
 		UpdateLevel();
 	}
+	gameWorld.UpdateCamera(dt);
 }
 
 void TutorialGame::UpdateHud(float dt)
 {	
+	/*
 	if (players[0]) {
 		Debug::Print(std::string("health: ").append(std::to_string((int)players[0]->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
 	}
 	if (boss) {
 		Debug::Print(std::string("Boss health: ").append(std::to_string((int)boss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
 	}
-
+	*/
 
 	hud->loadHuds((int)boss->GetHealth()->GetHealth(), (int)players[gameWorld.GetMainCamera()->GetPlayerID()]->GetHealth()->GetHealth());	
 
@@ -307,7 +305,7 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 
 	boss->GetTransform()
 		.SetPosition(position)
-		.SetScale(dimensions * 2);
+		.SetScale(dimensions);
 
 	boss->SetRenderObject(new AnimatedRenderObject(boss->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("boss"), AssetLibrary<MeshMaterial>::GetAsset("boss"), AssetLibrary<MeshAnimation>::GetAsset("WalkForward")));
 

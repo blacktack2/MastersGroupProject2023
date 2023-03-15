@@ -20,46 +20,50 @@ namespace NCL {
 	class MeshGeometry;
 }
 
-namespace NCL::Rendering {
-	class FrameBuffer;
-	class ShaderBase;
-	class TextureBase;
+namespace NCL {
+	namespace Rendering {
+		class FrameBuffer;
+		class ShaderBase;
+		class TextureBase;
+	}
 }
 
 using namespace NCL;
 using namespace Rendering;
 using namespace Maths;
 
-namespace NCL::CSC8503 {
-	class GameTechRenderer;
-	class GameWorld;
+namespace NCL {
+	namespace CSC8503 {
+		class GameTechRenderer;
+		class GameWorld;
 
-	class DebugRPass : public OGLOverlayRenderPass {
-	public:
-		DebugRPass();
-		~DebugRPass();
+		class DebugRPass : public OGLOverlayRenderPass {
+		public:
+			DebugRPass();
+			~DebugRPass();
 
-		virtual void Render() override;
-	private:
-		void RenderLines();
-		void RenderText();
+			virtual void Render() override;
+		private:
+			void RenderLines();
+			void RenderText();
 
-		GameTechRenderer& renderer;
-		GameWorld& gameWorld;
+			GameTechRenderer& renderer;
+			GameWorld& gameWorld;
 
-		std::unique_ptr<ShaderBase> lineShader;
-		std::unique_ptr<ShaderBase> textShader;
+			std::unique_ptr<ShaderBase> lineShader;
+			std::unique_ptr<ShaderBase> textShader;
 
-		std::vector<Vector3> debugLineData;
+			std::vector<Vector3> debugLineData;
 
-		std::vector<Vector3> debugTextPos;
-		std::vector<Vector4> debugTextColours;
-		std::vector<Vector2> debugTextUVs;
+			std::vector<Vector3> debugTextPos;
+			std::vector<Vector4> debugTextColours;
+			std::vector<Vector2> debugTextUVs;
 
-		std::unique_ptr<MeshGeometry> lineMesh;
-		std::unique_ptr<MeshGeometry> textMesh;
+			std::unique_ptr<MeshGeometry> lineMesh;
+			std::unique_ptr<MeshGeometry> textMesh;
 
-		size_t lineCount;
-		size_t textCount;
-	};
+			size_t lineCount;
+			size_t textCount;
+		};
+	}
 }

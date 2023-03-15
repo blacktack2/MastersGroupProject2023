@@ -4,7 +4,7 @@ MeshMat
 1
 defaultModel
 3
-Diffuse:DefaultDiffuse
+Albedo:DefaultDiffuse
 Bump:DefaultBump
 Spec:DefaultSpec
 0

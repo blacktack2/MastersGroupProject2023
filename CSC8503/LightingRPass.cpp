@@ -18,6 +18,8 @@
 #include "ShaderBase.h"
 #include "TextureBase.h"
 
+#include "RenderObject.h"
+
 using namespace NCL;
 using namespace CSC8503;
 
@@ -26,28 +28,39 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	sphere = AssetLibrary<MeshGeometry>::GetAsset("sphere");
 	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
+	shadowMapTex = AssetLoader::CreateTexture(TextureType::Shadow, SHADOWSIZE, SHADOWSIZE);
+
 	lightDiffuseOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetWidth(), renderer.GetHeight());
 	lightSpecularOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetWidth(), renderer.GetHeight());
 	AddScreenTexture(*lightDiffuseOutTex);
 	AddScreenTexture(*lightSpecularOutTex);
 
-	frameBuffer = AssetLoader::CreateFrameBuffer();
-	frameBuffer->Bind();
-	frameBuffer->AddTexture(*lightDiffuseOutTex);
-	frameBuffer->AddTexture(*lightSpecularOutTex);
-	frameBuffer->DrawBuffers();
-	frameBuffer->Unbind();
+	shadowFrameBuffer = AssetLoader::CreateFrameBuffer();
+	shadowFrameBuffer->Bind();
+	shadowFrameBuffer->AddTexture(*shadowMapTex);
+	shadowFrameBuffer->DrawBuffers(0);
+	shadowFrameBuffer->Unbind();
 
-	shader = AssetLoader::CreateShaderAndInit("light.vert", "light.frag");
+	lightFrameBuffer = AssetLoader::CreateFrameBuffer();
+	lightFrameBuffer->Bind();
+	lightFrameBuffer->AddTexture(*lightDiffuseOutTex);
+	lightFrameBuffer->AddTexture(*lightSpecularOutTex);
+	lightFrameBuffer->DrawBuffers();
+	lightFrameBuffer->Unbind();
 
-	shader->Bind();
+	lightShader = AssetLoader::CreateShaderAndInit("light.vert", "light.frag");
 
-	shader->SetUniformFloat("pixelSize", 1.0f / (float)renderer.GetWidth(), 1.0f / (float)renderer.GetHeight());
+	lightShader->Bind();
 
-	shader->SetUniformInt("depthTex", 0);
-	shader->SetUniformInt("normalTex", 1);
+	lightShader->SetUniformFloat("pixelSize", 1.0f / (float)renderer.GetWidth(), 1.0f / (float)renderer.GetHeight());
 
-	shader->Unbind();
+	lightShader->SetUniformInt("depthTex", 0);
+	lightShader->SetUniformInt("normalTex", 1);
+	lightShader->SetUniformInt("shadowTex", 2);
+
+	lightShader->Unbind();
+
+	AddShadowShader(AssetLibrary<ShaderBase>::GetAsset("shadowDefault"));
 }
 
 LightingRPass::~LightingRPass() {
@@ -55,55 +68,94 @@ LightingRPass::~LightingRPass() {
 
 void LightingRPass::OnWindowResize(int width, int height) {
 	RenderPassBase::OnWindowResize(width, height);
-	shader->Bind();
+	lightShader->Bind();
 
-	shader->SetUniformFloat("pixelSize", 1.0f / (float)width, 1.0f / (float)height);
+	lightShader->SetUniformFloat("pixelSize", 1.0f / (float)width, 1.0f / (float)height);
 
-	shader->Unbind();
+	lightShader->Unbind();
 }
 
 void LightingRPass::Render() {
-	frameBuffer->Bind();
+	lightFrameBuffer->Bind();
 
 	renderer.ClearBuffers(ClearBit::Color);
 
-	frameBuffer->Unbind();
+	lightFrameBuffer->Unbind();
 
 	gameWorld.OperateOnLights([&](const Light& light) {
-		DrawLight(light);
+		const Matrix4& shadowMatrix = light.GetShadowMatrix();
+
+		DrawShadowMap(light, shadowMatrix);
+		DrawLight(light, shadowMatrix);
 	});
 }
 
-void LightingRPass::DrawLight(const Light& light) {
-	frameBuffer->Bind();
-	shader->Bind();
+void LightingRPass::AddShadowShader(std::shared_ptr<ShaderBase> shader) {
+	shadowShaders.push_back(shader);
+}
+
+void LightingRPass::DrawShadowMap(const Light& light, const Matrix4& shadowMatrix) {
+	for (const auto& shader : shadowShaders) {
+		shader->Bind();
+
+		shader->SetUniformMatrix("projViewMatrix", shadowMatrix);
+
+		shader->Unbind();
+	}
+
+	shadowFrameBuffer->Bind();
+
+	renderer.GetConfig().SetViewport(0, 0, SHADOWSIZE, SHADOWSIZE);
+
+	renderer.GetConfig().SetColourMask(false, false, false, false);
+	renderer.GetConfig().SetDepthMask(true);
+	renderer.GetConfig().SetDepthTest(true);
+
+	renderer.ClearBuffers(ClearBit::Depth);
+
+	gameWorld.OperateOnContents([&](GameObject* gameObject) {
+		RenderObject* renderObject = gameObject->GetRenderObject();
+		if (!renderObject) {
+			return;
+		}
+
+		renderObject->DrawToShadowMap();
+	});
+
+	renderer.GetConfig().SetDepthTest();
+	renderer.GetConfig().SetDepthMask();
+	renderer.GetConfig().SetColourMask();
+
+	renderer.GetConfig().SetViewport();
+
+	shadowFrameBuffer->Unbind();
+}
+
+void LightingRPass::DrawLight(const Light& light, const Matrix4& shadowMatrix) {
+	lightFrameBuffer->Bind();
+	lightShader->Bind();
 
 	renderer.GetConfig().SetBlend(true, BlendFuncSrc::One, BlendFuncDst::One);
 	renderer.GetConfig().SetDepthTest(true, DepthTestFunc::Always);
 
 	depthTexIn->Bind(0);
 	normalTexIn->Bind(1);
+	shadowMapTex->Bind(2);
 
-	shader->SetUniformFloat("cameraPos", gameWorld.GetMainCamera()->GetPosition());
+	lightShader->SetUniformFloat("cameraPos", gameWorld.GetMainCamera()->GetPosition());
 
-	Matrix4 modelMatrix = Matrix4();
-	modelMatrix.SetDiagonal(Vector4(1));
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix();
+	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetAspect());
 	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
 	Matrix4 inverseViewProj = (projMatrix * viewMatrix).Inverse();
 
-	shader->SetUniformFloat("lightPosition" , light.position);
-	shader->SetUniformFloat("lightColour"   , light.colour);
-	shader->SetUniformFloat("lightRadius"   , light.radius);
-	shader->SetUniformFloat("lightDirection", light.direction);
-	shader->SetUniformFloat("lightAngle"    , light.angle);
+	light.Upload(*lightShader);
 
-	shader->SetUniformMatrix("inverseProjView", inverseViewProj);
-	shader->SetUniformMatrix("modelMatrix"    , modelMatrix);
-	shader->SetUniformMatrix("viewMatrix"     , viewMatrix);
-	shader->SetUniformMatrix("projMatrix"     , projMatrix);
+	lightShader->SetUniformMatrix("inverseProjView", inverseViewProj);
+	lightShader->SetUniformMatrix("viewMatrix"     , viewMatrix);
+	lightShader->SetUniformMatrix("projMatrix"     , projMatrix);
+	lightShader->SetUniformMatrix("shadowMatrix"   , shadowMatrix);
 
-	if (light.position.w == 0.0f) {
+	if (dynamic_cast<const DirectionalLight*>(&light)) {
 		quad->Draw();
 	} else {
 		renderer.GetConfig().SetCullFace(true, CullFace::Back);
@@ -114,6 +166,6 @@ void LightingRPass::DrawLight(const Light& light) {
 	renderer.GetConfig().SetDepthTest();
 	renderer.GetConfig().SetBlend();
 
-	shader->Unbind();
-	frameBuffer->Unbind();
+	lightShader->Unbind();
+	lightFrameBuffer->Unbind();
 }

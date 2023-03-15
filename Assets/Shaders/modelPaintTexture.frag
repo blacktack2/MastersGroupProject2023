@@ -8,7 +8,7 @@
  * @date   February 2023
  */
 
-uniform sampler2D diffuseTex;
+uniform sampler2D albedoTex;
 uniform sampler2D bumpTex;
 uniform sampler2D paintTex;
 
@@ -22,10 +22,9 @@ in Vertex {
 	vec3 normal;
 	vec3 tangent;
 	vec3 binormal;
-	vec3 worldPos;
 } IN;
 
-out vec4 diffuseOut;
+out vec4 albedoOut;
 out vec4 normalOut;
 
 void main() {
@@ -44,10 +43,10 @@ void main() {
 	vec3 normal = texture(bumpTex, IN.texCoord).rgb * 2.0 - 1.0;
 	normal = normalize(TBN * normalize(normal));
 
-	diffuseOut = (texture(diffuseTex, IN.texCoord) + IN.colour) * modelColour;
-	diffuseOut.rgb = pow(diffuseOut.rgb, vec3(gamma));
+	albedoOut = (texture(albedoTex, IN.texCoord) + IN.colour) * modelColour;
+	albedoOut.rgb = pow(albedoOut.rgb, vec3(gamma));
 
 	normalOut = vec4(normal * 0.5 + 0.5, 1.0);
 	
-	diffuseOut.rgb = paint.rgb * paint.a + diffuseOut.rgb * (1 - paint.a);
+	albedoOut.rgb = paint.rgb * paint.a + albedoOut.rgb * (1 - paint.a);
 }
