@@ -50,7 +50,7 @@ OGLTexture::OGLTexture(TextureType type, unsigned int width, unsigned int height
 	} else {
 		SetFilters(MinFilter::Nearest, MagFilter::Nearest);
 	}
-	SetEdgeWrap(EdgeWrap::ClampToEdge);
+	SetEdgeWrap(type == TextureType::ColourRGBA32F ? EdgeWrap::Repeat : EdgeWrap::ClampToEdge);
 	Resize(width, height);
 	Unbind();
 }

@@ -7,6 +7,9 @@
  * @date   February 2023
  */
 #pragma once
+#include "Vector2.h"
+#include "Vector4.h"
+
 #include <functional>
 #include <optional>
 
@@ -51,6 +54,10 @@ namespace NCL::CSC8503 {
 		const Vector4& GetColour() const {
 			return colour;
 		}
+
+		void SetTexScale(const Vector2& scale) {
+			texScale = scale;
+		}
 			
 		void Draw();
 	protected:
@@ -63,5 +70,6 @@ namespace NCL::CSC8503 {
 		std::shared_ptr<MeshGeometry> mesh;
 		std::shared_ptr<MeshMaterial> material;
 		Vector4 colour;
+		Vector2 texScale = Vector2(1.0f);
 	};
 }

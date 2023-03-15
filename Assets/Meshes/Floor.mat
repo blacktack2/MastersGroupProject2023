@@ -1,0 +1,10 @@
+MeshMat
+1
+1
+1
+defaultModel
+3
+Diffuse:Floor/Floor_basecolor.tga
+Bump:Floor/Floor_height.tga
+Spec:Floor_roughness.tga
+0
