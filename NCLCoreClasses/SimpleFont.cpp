@@ -15,9 +15,8 @@
 
 #include <fstream>
 
-using namespace NCL;
-using namespace Rendering;
-using namespace Maths;
+using namespace NCL::Rendering;
+using namespace NCL::Maths;
 
 SimpleFont::SimpleFont(const std::string& filename, const TextureBase& texture) :
 texture(texture) {
