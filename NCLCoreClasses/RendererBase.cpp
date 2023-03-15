@@ -89,7 +89,19 @@ void RendererBase::UpdatePipeline() {
 }
 
 void RendererBase::OnWindowResize(int width, int height) {
-	SetNumPlayers(numPlayers);
+	ResizeViewport();
+}
+
+void RendererBase::ResizeViewport() {
+	switch (numPlayers) {
+	default:
+	case 1:
+		splitWidth = GetWidth(); splitHeight = GetHeight(); break;
+	case 2:
+		splitWidth = GetWidth() * 0.5f; splitHeight = GetHeight(); break;
+	case 3: case 4:
+		splitWidth = GetWidth() * 0.5f; splitHeight = GetHeight() * 0.5f; break;
+	}
 	for (auto& pass : mainRenderPasses) {
 		pass.pass.WindowResize(splitWidth, splitHeight);
 	}
@@ -108,20 +120,20 @@ void RendererBase::OnWindowResize(int width, int height) {
 }
 
 void RendererBase::RenderFrame() {
-	static std::vector<float> viewports1 = {
+	static const std::vector<float> viewports1 = {
 		0.0f, 0.0f, 1.0f, 1.0f,
 	};
-	static std::vector<float> viewports2 = {
+	static const std::vector<float> viewports2 = {
 		0.0f, 0.0f, 0.5f, 1.0f,
 		0.5f, 0.0f, 0.5f, 1.0f,
 	};
-	static std::vector<float> viewports4 = {
+	static const std::vector<float> viewports4 = {
 		0.0f, 0.0f, 0.5f, 0.5f,
 		0.0f, 0.5f, 0.5f, 0.5f,
 		0.5f, 0.0f, 0.5f, 0.5f,
 		0.5f, 0.5f, 0.5f, 0.5f,
 	};
-	std::vector<float>& viewports = numPlayers > 2 ? viewports4 : (numPlayers > 1 ? viewports2 : viewports1);
+	const std::vector<float>& viewports = numPlayers > 2 ? viewports4 : (numPlayers > 1 ? viewports2 : viewports1);
 	ClearBackbuffer();
 	int mainCamera = GetGameWorldMainCamera();
 	bool temp1 = overlayRenderPasses[overlayMap["Menu"]].enabled;
@@ -130,7 +142,6 @@ void RendererBase::RenderFrame() {
 		size_t index = i * 4;
 		GetConfig().SetDefaultViewport(0, 0, viewports[index + 2], viewports[index + 3]);
 		SetGameWorldMainCamera(i);
-
 		UpdateHudDisplay(i);
 		RenderScene();
 		GetConfig().SetDefaultViewport(viewports[index], viewports[index + 1], viewports[index + 2], viewports[index + 3]);

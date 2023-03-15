@@ -25,6 +25,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "Vector4.h"
 
 namespace NCL::Rendering {
 	enum class VerticalSyncState {
@@ -73,15 +74,7 @@ namespace NCL::Rendering {
 
 		inline void SetNumPlayers(unsigned int numPlayers) {
 			this->numPlayers = numPlayers;
-			switch (numPlayers) {
-			default:
-			case 1:
-				splitWidth = GetWidth(); splitHeight = GetHeight(); break;
-			case 2:
-				splitWidth = GetWidth() * 0.5f; splitHeight = GetHeight(); break;
-			case 3: case 4:
-				splitWidth = GetWidth() * 0.5f; splitHeight = GetHeight() * 0.5f; break;
-			}
+			ResizeViewport();
 		}
 
 		/**
@@ -155,7 +148,6 @@ namespace NCL::Rendering {
 		virtual void UpdateHudDisplay(int playerID) = 0;
 
 		virtual void DisplayWinLoseInformation(int playerID) = 0;
-
 	protected:
 		/**
 		 * @brief Add main render pass. Meant to add to, or modify, the GBuffer
@@ -263,12 +255,13 @@ namespace NCL::Rendering {
 			bool enabled;
 		};
 
+		void ResizeViewport();
 		void RenderFrame();
 		void RenderScene();
 		void RenderPresent();
 		void RenderOverlay();
 
-		unsigned int numPlayers = 2;
+		unsigned int numPlayers = 4;
 		int splitWidth = 1, splitHeight = 1;
 
 		bool doRenderScene = true;
@@ -286,5 +279,17 @@ namespace NCL::Rendering {
 
 		std::vector<std::reference_wrapper<IRenderPass>> renderPipeline;
 		std::vector<std::reference_wrapper<IRenderPass>> overlayPipeline;
+
+		NCL::Maths::Vector4 player1Viewport = NCL::Maths::Vector4(0, 0, 1, 1);
+		NCL::Maths::Vector4 player2Viewport = NCL::Maths::Vector4(0, 0, 1, 1);
+		NCL::Maths::Vector4 player3Viewport = NCL::Maths::Vector4(0, 0, 1, 1);
+		NCL::Maths::Vector4 player4Viewport = NCL::Maths::Vector4(0, 0, 1, 1);
+
+		/** 
+		* TODO:
+		*	Split renderePipeline&overlayPipeline to have one for each player
+		*	Store player specific viewports in Vector4 member variables
+		*	Try to simplify the RenderFrame mainloop (preferably to just a few for loops)
+		*/
 	};
 }

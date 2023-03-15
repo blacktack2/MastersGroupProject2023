@@ -160,7 +160,6 @@ namespace NCL::CSC8503 {
 		}
 
 		void DisplayWinLoseInformation(int playerID) override {
-			std::cout << playersHP[0] << std::endl;
 			gameWorld.GetCamera(playerID);
 			if (bossHP <= 0) {
 				debugPass->RenderWinLoseInformation(true);

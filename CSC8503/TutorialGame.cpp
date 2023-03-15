@@ -85,11 +85,10 @@ void TutorialGame::StartLevel() {
 	players[0] = AddPlayerToWorld(0, Vector3(0, 5, 90));
 	keyMap.ChangePlayerControlTypeMap(0, ControllerType::KeyboardMouse);
 	for (int i = 1; i <= numOfPlayers; i++) {
-		players[i] = AddPlayerToWorld(i, Vector3(0, 5, 90));		// TODO: access violation if 4 controllers are connected
+		players[i] = AddPlayerToWorld(i, Vector3(0, 5, 90));		// TODO: currently this will result in access violation if 4 controllers are connected
 		keyMap.ChangePlayerControlTypeMap(i, ControllerType::Xbox);
 	}
-
-
+	renderer.SetNumPlayers(numOfPlayers + 1);		// +1 accounts for players[0] who uses Keyboard & Mouse
 	SetCameraFollow(players[0]);		// Currently set to player[0] is crucial for split screen
 
 	boss = AddBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
@@ -121,6 +120,16 @@ void TutorialGame::InitWorld() {
 void TutorialGame::UpdateGame(float dt) {
 	GameState gameState = gameStateManager.GetGameState();
 	keyMap.Update();
+
+	// TODO - This is temporary (remove)
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM1))
+		renderer.SetNumPlayers(1);
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM2))
+		renderer.SetNumPlayers(2);
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM3))
+		renderer.SetNumPlayers(3);
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM4))
+		renderer.SetNumPlayers(4);
 
 	//temp change player
 	/*if (Window::GetKeyboard()->KeyDown(KeyboardKeys::P))
