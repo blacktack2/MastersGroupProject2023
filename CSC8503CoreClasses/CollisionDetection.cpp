@@ -524,7 +524,7 @@ bool NCL::CollisionDetection::AABBOBBIntersection(const AABBVolume& volumeA, con
 	Vector3 posB = worldTransformB.GetGlobalPosition();
 	Vector3 halfSizeB = volumeB.GetHalfDimensions();
 	Quaternion orientationB = worldTransformB.GetGlobalOrientation();
-	Matrix3 matrixB = worldTransformB.GetGlobalMatrix();
+	Matrix3 matrixB = Matrix3(worldTransformB.GetGlobalMatrix());
 
 	Matrix3 orientationMatB = Matrix3(orientationB);
 
