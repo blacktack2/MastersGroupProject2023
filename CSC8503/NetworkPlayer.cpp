@@ -46,8 +46,6 @@ void NCL::CSC8503::NetworkPlayer::MoveInput(unsigned int keyPress, short int axi
 		this->pitch = rotationAxis.y;
 		RotateYaw(yaw);
 		MoveCamera(0.05f);
-
-		Debug::DrawLine(lookingAt, lookingAt + Vector3(0, 3, 0), Debug::CYAN, 0.01f);
 	}
 }
 

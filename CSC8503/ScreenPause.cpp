@@ -42,6 +42,12 @@ PushdownState::PushdownResult ScreenPause::OnUpdate(float dt, PushdownState** ne
 	switch (menuState)
 	{
 	case ChangeState::Resume:
+		if (game) {
+			NetworkedGame* netGame = dynamic_cast<NetworkedGame*>(game);
+			if (netGame) {
+				netGame->UnfreezeSelf();
+			}
+		}
 		return PushdownResult::Pop;
 	case ChangeState::Option:
 		*newState = new ScreenOption();
