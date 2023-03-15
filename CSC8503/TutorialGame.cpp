@@ -94,8 +94,6 @@ void TutorialGame::StartLevel() {
 	renderer.SetNumPlayers(numOfPlayers + 1);		// +1 accounts for players[0] who uses Keyboard & Mouse
 	SetCameraFollow(players[0]);		// Currently set to player[0] is crucial for split screen
 
-
-	SetCameraFollow(players[0]);
 	hud->AddHuds(players[0]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
 
 	boss = AddBossToWorld({ 0, 5, -20 }, Vector3( 4 ), 2);

@@ -103,19 +103,19 @@ void RendererBase::ResizeViewport() {
 		splitWidth = GetWidth() * 0.5f; splitHeight = GetHeight() * 0.5f; break;
 	}
 	for (auto& pass : mainRenderPasses) {
-		pass.pass.WindowResize(splitWidth, splitHeight);
+		pass.pass.OnWindowResize(splitWidth, splitHeight);
 	}
 	if (combinePass) {
-		combinePass->WindowResize(splitWidth, splitHeight);
+		combinePass->OnWindowResize(splitWidth, splitHeight);
 	}
 	for (auto& pass : postRenderPasses) {
-		pass.pass.WindowResize(splitWidth, splitHeight);
+		pass.pass.OnWindowResize(splitWidth, splitHeight);
 	}
 	if (presentPass) {
-		presentPass->WindowResize(splitWidth, splitHeight);
+		presentPass->OnWindowResize(splitWidth, splitHeight);
 	}
 	for (auto& pass : overlayRenderPasses) {
-		pass.pass.WindowResize(splitWidth, splitHeight);
+		pass.pass.OnWindowResize(splitWidth, splitHeight);
 	}
 }
 

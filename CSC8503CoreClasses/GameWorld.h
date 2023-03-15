@@ -68,6 +68,9 @@ namespace NCL {
 			Camera* GetCamera(int n) const;
 			void UpdateCamera(float dt);
 			Camera* SetMainCamera(int n);
+			int GetMainCameraIndex() {
+				return mainCameraIndex;
+			}
 
 			void ShuffleConstraints(bool state) {
 				shuffleConstraints = state;

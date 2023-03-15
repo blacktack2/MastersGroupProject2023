@@ -101,7 +101,7 @@ void BloomRPass::SetBias(float bias) {
 	combineShader->Unbind();
 }
 
-void BloomRPass::OnWindowResize() {
+void BloomRPass::OnWindowResize(int width, int height) {
 	SetBloomDepth(bloomDepth);
 }
 
