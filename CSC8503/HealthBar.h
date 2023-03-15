@@ -1,7 +1,6 @@
  #pragma once
 
 #include"MenuRenderObject.h"
-#include"AssetLibrary.h"
 #include"UIObject.h"
 #include "Health.h"
 
@@ -22,12 +21,14 @@ namespace NCL {
 				}
 				return Vector4(Vector2(screenPos.x + dimension.x * (health->GetHealth() / health->GetMaxHealth() - 1 ), screenPos.y), Vector2(dimension.x * health->GetHealth() / health->GetMaxHealth(), dimension.y));
 			};
-
+			bool IsEnabled = true;
 		private:
 			Health* health;
 			
 			Vector2 screenPos;
 			Vector2 dimension;
+
+
 
 		};
 	}

@@ -24,7 +24,7 @@ BloomRPass::BloomRPass() : OGLPostRenderPass(), renderer(GameTechRenderer::insta
 	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
 	SetBloomDepth(bloomDepth);
-	colourOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA16F, renderer.GetWidth(), renderer.GetHeight());
+	colourOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA16F, renderer.GetSplitWidth(), renderer.GetSplitHeight());
 	AddScreenTexture(*colourOutTex);
 
 	bloomFrameBuffer = AssetLoader::CreateFrameBuffer();
@@ -59,11 +59,6 @@ BloomRPass::BloomRPass() : OGLPostRenderPass(), renderer(GameTechRenderer::insta
 }
 
 BloomRPass::~BloomRPass() {
-}
-
-void BloomRPass::OnWindowResize(int width, int height) {
-	RenderPassBase::OnWindowResize(width, height);
-	SetBloomDepth(bloomDepth);
 }
 
 void BloomRPass::Render() {
@@ -104,6 +99,11 @@ void BloomRPass::SetBias(float bias) {
 	combineShader->SetUniformFloat("bias", bias);
 
 	combineShader->Unbind();
+}
+
+void BloomRPass::OnWindowResize(int width, int height) {
+	RenderPassBase::OnWindowResize(width, height);
+	SetBloomDepth(bloomDepth);
 }
 
 void BloomRPass::Downsample() {

@@ -226,13 +226,16 @@ void Boss::Update(float dt) {
     if(node)
         InkEffectManager::instance().ApplyInkEffect(node->inkType, GetHealth(), 1);
     //check boss health
-    if (GetHealth()->GetHealth() <= 0) {
-        ChangeLoseState();
+    if (gameStateManager->GetGameState() == GameState::OnGoing) {
+        if (GetHealth()->GetHealth() <= 0) {
+            ChangeLoseState();
+        }
+        if (this->transform.GetGlobalPosition().y < -10) {
+            health.SetHealth(0);
+            ChangeLoseState();
+        }
     }
-    if (this->transform.GetGlobalPosition().y < -10) {
-        health.SetHealth(0);
-        ChangeLoseState();
-    }
+    
     if (health.GetHealth() > 0 )
     {
         bossAction = NoAction;

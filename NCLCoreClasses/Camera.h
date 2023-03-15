@@ -10,6 +10,11 @@ https://research.ncl.ac.uk/game/
 #include "Matrix4.h"
 #include "../CSC8503CoreClasses/Transform.h"
 #include "Vector3.h"
+namespace NCL {
+	namespace CSC8503 {
+		class Hud;
+	}
+}
 
 namespace NCL {
 	using namespace Maths;
@@ -26,7 +31,7 @@ namespace NCL {
 
 		Camera(float pitch, float yaw, const Vector3& position);
 
-		~Camera(void) = default;
+		~Camera(void);
 
 		void SetFollow(Transform* transform, bool isSmooth = false);
 
@@ -88,6 +93,8 @@ namespace NCL {
 		static Camera BuildPerspectiveCamera(const Vector3& pos, float pitch, float yaw, float fov, float near, float far);
 		static Camera BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, float left, float right, float top, float bottom, float near, float far);
 
+		Hud& GetHud();
+
 		//smoothing
 		bool isSmooth;
 		Vector3 LastPos;
@@ -114,5 +121,7 @@ namespace NCL {
 		Vector3 lookat;
 
 		int playerID = 0;
+
+		Hud& hud;
 	};
 }

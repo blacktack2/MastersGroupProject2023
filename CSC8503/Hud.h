@@ -4,12 +4,15 @@
  *
  * @author Shantao Liu
  * @author Felix Chiu
+ * @author Xiaoyang Liu
  * @date   March 2023
  */
 #pragma once
 
 #include "HealthBar.h"
 #include "Assetlibrary.h"
+#include "HudBase.h"
+
 namespace NCL {
 	namespace CSC8503 {
 		using namespace Maths;
@@ -28,10 +31,13 @@ namespace NCL {
 				huds.clear();
 			}
 			void loadHuds(int BossHP, int PlayerHP);
-			void AddHuds(Health* hp,Vector2 anchor, Vector2 dimension);
+
+			void Draw();
+			void AddHealthBar(Health* hp, Vector2 anchor, Vector2 dimension);
 			const std::vector<HealthBar*>& getHuds() {
 				return huds;
 			};
+
 		protected:
 			std::vector<HealthBar*> huds;
 		};

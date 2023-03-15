@@ -25,9 +25,9 @@ using namespace CSC8503;
 
 ModelRPass::ModelRPass() : OGLMainRenderPass(),
 gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
-	albedoOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetWidth(), renderer.GetHeight());
-	normalOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetWidth(), renderer.GetHeight());
-	depthOutTex  = AssetLoader::CreateTexture(TextureType::Depth, renderer.GetWidth(), renderer.GetHeight());
+	albedoOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	normalOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	depthOutTex  = AssetLoader::CreateTexture(TextureType::Depth, renderer.GetSplitWidth(), renderer.GetSplitHeight());
 	AddScreenTexture(*albedoOutTex);
 	AddScreenTexture(*normalOutTex);
 	AddScreenTexture(*depthOutTex);
@@ -59,7 +59,8 @@ void ModelRPass::Render() {
 		shader->Bind();
 
 		Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-		Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetAspect());
+		float screenAspect = (float)renderer.GetSplitWidth() / (float)renderer.GetSplitHeight();
+		Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
 
 		shader->SetUniformMatrix("viewMatrix", viewMatrix);
 		shader->SetUniformMatrix("projMatrix", projMatrix);

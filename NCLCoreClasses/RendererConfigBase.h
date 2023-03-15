@@ -103,7 +103,14 @@ namespace NCL {
 			 * @brief This overload resets the viewport to fit the current bounds of the window.
 			 */
 			inline void SetViewport() {
-				SetViewport(0, 0, renderer.GetWidth(), renderer.GetHeight());
+				SetViewport(vpX, vpY, vpWidth, vpHeight);
+			}
+			inline void SetDefaultViewport(float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f) {
+				vpX = x * renderer.GetWidth();
+				vpY = y * renderer.GetHeight();
+				vpWidth = width * renderer.GetWidth();
+				vpHeight = height * renderer.GetHeight();
+				SetViewport();
 			}
 			/**
 			 * @brief Set the colour to clear buffers to.
@@ -162,6 +169,9 @@ namespace NCL {
 			virtual void SetDepthMask(bool enabled = false) = 0;
 		private:
 			RendererBase& renderer;
+
+			int vpX = 0, vpY = 0;
+			unsigned int vpWidth = 1, vpHeight = 1;
 		};
 	}
 }

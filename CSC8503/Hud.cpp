@@ -22,7 +22,16 @@ void Hud::loadHuds(int BossHP, int PlayerHP) {
 	*/
 };
 
-void  Hud::AddHuds(Health* hp, Vector2 anchor, Vector2 dimension) {
+void Hud::Draw() {
+	for (auto& hud : huds) {
+		if (hud->IsEnabled) {
+			hud->Draw();
+		}
+			
+	}
+}
+
+void  Hud::AddHealthBar(Health* hp, Vector2 anchor, Vector2 dimension) {
 	HealthBar* NewHealthBar = new HealthBar(AssetLibrary<TextureBase>::GetAsset("PlayerHealthBar"), anchor, dimension, hp);
 	huds.push_back(NewHealthBar);
 	HealthBar* NewHealthBarborder = new HealthBar(AssetLibrary<TextureBase>::GetAsset("PlayerHealthBarBorder"), anchor, dimension);

@@ -2,6 +2,7 @@
 #include "Maths.h"
 #include "Window.h"
 #include "../CSC8503CoreClasses/InputKeyMap.h"
+#include "../CSC8503/Hud.h"
 
 #include <algorithm>
 
@@ -13,7 +14,7 @@ void Camera::SetFollow(Transform* transform, bool isSmooth) {
 	this->isSmooth = isSmooth;
 }
 
-Camera::Camera() {
+Camera::Camera() : hud(*new Hud()) {
 	left	= 0;
 	right	= 0;
 	top		= 0;
@@ -52,7 +53,9 @@ Camera::Camera(float pitch, float yaw, const Vector3& position) : Camera() {
 
 	this->camType	= CameraType::Perspective;
 }
-
+Camera::~Camera(void) {
+	delete& hud;
+};
 /*
 Polls the camera for keyboard / mouse movement.
 Should be done once per frame! Pass it the msec since
@@ -177,4 +180,8 @@ Camera Camera::BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, floa
 	c.bottom	= bottom;
 
 	return c;
+}
+
+Hud& Camera::GetHud() {
+	return hud;
 }
