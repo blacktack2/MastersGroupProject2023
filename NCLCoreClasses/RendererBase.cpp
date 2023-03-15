@@ -137,23 +137,26 @@ void RendererBase::RenderFrame() {
 	ClearBackbuffer();
 	int mainCamera = GetGameWorldMainCamera();
 	bool temp1 = overlayRenderPasses[overlayMap["Menu"]].enabled;
-	bool temp2 = overlayRenderPasses[overlayMap["Hud"]].enabled;
+
 	for (size_t i = 0; i < numPlayers; i++) {
 		size_t index = i * 4;
 		GetConfig().SetDefaultViewport(0, 0, viewports[index + 2], viewports[index + 3]);
 		SetGameWorldMainCamera(i);
-		UpdateHudDisplay(i);
+		//UpdateHudDisplay(i);
 		RenderScene();
 		GetConfig().SetDefaultViewport(viewports[index], viewports[index + 1], viewports[index + 2], viewports[index + 3]);
 		RenderPresent();
 		DisplayWinLoseInformation(i);
 		EnableOverlayPass("Menu", false);
-		EnableOverlayPass("Hud", true);
-		EnableOverlayPass("Debug", true);
+		if (!temp1) {
+			EnableOverlayPass("Hud", true);
+			EnableOverlayPass("Debug", true);
+		}
 		UpdatePipeline();
 		RenderOverlay();
 
 	}
+	
 	SetGameWorldMainCamera(mainCamera);
 	GetConfig().SetDefaultViewport();
 	EnableOverlayPass("Menu", temp1);

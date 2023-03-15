@@ -82,23 +82,26 @@ void TutorialGame::StartLevel() {
 
 	XboxControllerManager::GetXboxController().CheckPorts();
 	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
-
+	if (numOfPlayers >= 4)
+		numOfPlayers = 4;
 	for (int i = 0; i < 4; i++) players[i] = nullptr;
+
+	boss = AddBossToWorld({ 0, 5, -20 }, Vector3(4), 2);
 
 	players[0] = AddPlayerToWorld(0, Vector3(0, 5, 90));
 	keyMap.ChangePlayerControlTypeMap(0, ControllerType::KeyboardMouse);
-	for (int i = 1; i <= numOfPlayers; i++) {
+	players[0]->GetCamera()->GetHud().AddHealthBar(players[0]->GetPlayerID(), players[0]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
+	players[0]->GetCamera()->GetHud().AddHealthBar(5, boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
+	for (int i = 1; i < numOfPlayers; i++) {
 		players[i] = AddPlayerToWorld(i, Vector3(0, 5, 90));		// TODO: currently this will result in access violation if 4 controllers are connected
 		keyMap.ChangePlayerControlTypeMap(i, ControllerType::Xbox);
+		players[i]->GetCamera()->GetHud().AddHealthBar(players[i]->GetPlayerID(), players[i]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
+		players[i]->GetCamera()->GetHud().AddHealthBar(5, boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
 	}
 	renderer.SetNumPlayers(numOfPlayers + 1);		// +1 accounts for players[0] who uses Keyboard & Mouse
 	SetCameraFollow(players[0]);		// Currently set to player[0] is crucial for split screen
 
-	hud->AddHuds(players[0]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
-
-	boss = AddBossToWorld({ 0, 5, -20 }, Vector3( 4 ), 2);
 	boss -> SetNextTarget(players[0]);
-	hud->AddHuds(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
 }
 
 void TutorialGame::Clear() {
@@ -109,6 +112,7 @@ void TutorialGame::Clear() {
 	gridManager.Clear();
 	boss = nullptr;
 	hud->ClearAndErase();
+	//renderer.GetHudRPass().SetHud(hud->getHuds());
 }
 
 void TutorialGame::InitWorld() {

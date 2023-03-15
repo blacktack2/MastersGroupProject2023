@@ -127,7 +127,7 @@ void NetworkedGame::StartLevel() {
 
 	boss = AddNetworkBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	boss->SetNextTarget(players[0]);
-	hud->AddHuds(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
+	hud->AddHealthBar(connectedPlayerIDs.size(), boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
 
 	gameStateManager.SetGameState(GameState::OnGoing);
 	BroadcastGameStateChange();
@@ -136,16 +136,16 @@ void NetworkedGame::StartLevel() {
 void NetworkedGame::SpawnPlayers() {
 	if (thisServer) {
 		localPlayer = SpawnPlayer(0, true);
-		hud->AddHuds(localPlayer->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
+		hud->AddHealthBar(localPlayer->GetPlayerID(), localPlayer->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
 	}
 	if (thisClient && selfID != NULL) {
 		localPlayer = SpawnPlayer(selfID, true);
-		hud->AddHuds(localPlayer->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
+		hud->AddHealthBar(localPlayer->GetPlayerID(), localPlayer->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
 	}
 	int count = 1;
 	for (int id : connectedPlayerIDs) {
 		PlayerObject* p = PlayerJoinedServer(id);
-		hud->AddHuds(p->GetHealth(), Vector2(-0.7f, 0.9f - 0.1f * count), Vector2(0.25f, 0.02f));
+		hud->AddHealthBar(p->GetPlayerID(), p->GetHealth(), Vector2(-0.7f, 0.9f - 0.1f * count), Vector2(0.25f, 0.02f));
 		count++;
 	}
 }
@@ -502,7 +502,7 @@ void NetworkedGame::HandlePlayerSyncPacket(GamePacket* payload, int source) {
 		std::cout << name << " " << selfID << " Creating localhost player " << selfID << std::endl;
 		localPlayer = SpawnPlayer(selfID, true);
 		players[0] = static_cast<PlayerObject*> (localPlayer);
-		hud->AddHuds(localPlayer->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
+		hud->AddHealthBar(localPlayer->GetPlayerID(), localPlayer->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
 	}
 }
 
@@ -689,7 +689,7 @@ void NetworkedGame::UpdateHud(float dt)
 	if (boss) {
 		Debug::Print(std::string("Boss health: ").append(std::to_string((int)boss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
 	}*/
-	(renderer.GetHudRPass()).SetHud(hud->getHuds());
+	//(renderer.GetHudRPass()).SetHud(hud->getHuds());
 }
 
 void NetworkedGame::ProcessState() {

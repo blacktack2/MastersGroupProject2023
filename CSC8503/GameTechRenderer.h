@@ -158,8 +158,7 @@ namespace NCL {
 		}
 
 		void UpdateHudDisplay(int playerID) override {
-			hud->loadHuds(bossHP, playersHP[playerID]);
-			this->GetHudRPass().SetHud(hud->getHuds());
+			this->GetHudRPass().GetHud().EnableHealthBar(playerID, true);
 		}
 
 		void DisplayWinLoseInformation(int playerID) override {

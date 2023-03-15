@@ -42,28 +42,7 @@ HudRPass::~HudRPass() {
 void HudRPass::Render() {
 	renderer.GetConfig().SetCullFace(false);
 
-	//if (BossBorder) {
-	//	DrawUIObject((UIObject*)BossBorder);
-	//}
-	//if(BossHealth){ 
-	//	DrawUIObject((UIObject*)BossHealth);
-	//}
-
-	for (auto& hud : huds) {
-		//DrawUIObject((UIObject*)hud);
-		hud->Draw();
-	}
+	gameWorld.GetMainCamera()->GetHud().Draw();
 
 	renderer.GetConfig().SetCullFace();
 }
-//void HudRPass::DrawHud() {
-//	DrawUIObject((UIObject*)health);
-//}
-//void HudRPass::DrawUIObject(UIObject* obj) {
-//	MenuRenderObject* renderObject = obj->GetRenderObject();
-//	if (!renderObject) {
-//		return;
-//	}
-//	//std::cout << obj->GetDimension() << std::endl;
-//	renderObject->Draw(obj->GetDimension());
-//}

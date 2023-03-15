@@ -102,6 +102,7 @@ void BloomRPass::SetBias(float bias) {
 }
 
 void BloomRPass::OnWindowResize(int width, int height) {
+	RenderPassBase::OnWindowResize(width, height);
 	SetBloomDepth(bloomDepth);
 }
 
