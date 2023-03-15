@@ -8,14 +8,16 @@
  */
 #pragma once
 
-namespace NCL::Rendering {
-	/**
-	 * @brief Top-most Interface class representing a single pass in the
-	 * rendering pipeline.
-	 */
-	class IRenderPass {
-	public:
-		virtual void WindowResize(int width, int height) = 0;
-		virtual void Render() = 0;
-	};
+namespace NCL {
+	namespace Rendering {
+		/**
+		 * @brief Top-most Interface class representing a single pass in the
+		 * rendering pipeline.
+		 */
+		class IRenderPass {
+		public:
+			virtual void OnWindowResize(int width, int height) = 0;
+			virtual void Render() = 0;
+		};
+	}
 }

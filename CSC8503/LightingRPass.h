@@ -18,59 +18,71 @@ namespace NCL {
 	class MeshGeometry;
 }
 
-namespace NCL::Rendering {
-	class FrameBuffer;
-	class ShaderBase;
-	class TextureBase;
+namespace NCL {
+	namespace Rendering {
+		class FrameBuffer;
+		class ShaderBase;
+		class TextureBase;
+	}
 }
 
 using namespace NCL;
 using namespace Rendering;
 
-namespace NCL::CSC8503 {
-	class GameWorld;
-	class GameTechRenderer;
+namespace NCL {
+	namespace CSC8503 {
+		class GameWorld;
+		class GameTechRenderer;
 
-	class LightingRPass : public OGLMainRenderPass {
-	public:
-		LightingRPass();
-		~LightingRPass();
+		class LightingRPass : public OGLMainRenderPass {
+		public:
+			LightingRPass();
+			~LightingRPass();
 
-		virtual void Render() override;
+			virtual void OnWindowResize(int width, int height) override;
 
-		inline TextureBase& GetDiffuseOutTex() const {
-			return *lightDiffuseOutTex;
-		}
-		inline TextureBase& GetSpecularOutTex() const {
-			return *lightSpecularOutTex;
-		}
+			virtual void Render() override;
 
-		inline void SetDepthTexIn(TextureBase& tex) {
-			depthTexIn = &tex;
-		}
+			void AddShadowShader(std::shared_ptr<ShaderBase> shader);
 
-		inline void SetNormalTexIn(TextureBase& tex) {
-			normalTexIn = &tex;
-		}
-	protected:
-		virtual void OnWindowResize() override;
-	private:
-		void DrawLight(const Light& light);
+			inline TextureBase& GetDiffuseOutTex() const {
+				return *lightDiffuseOutTex;
+			}
+			inline TextureBase& GetSpecularOutTex() const {
+				return *lightSpecularOutTex;
+			}
 
-		GameTechRenderer& renderer;
-		GameWorld& gameWorld;
+			inline void SetDepthTexIn(TextureBase& tex) {
+				depthTexIn = &tex;
+			}
 
-		std::shared_ptr<MeshGeometry> sphere;
-		std::shared_ptr<MeshGeometry> quad;
+			inline void SetNormalTexIn(TextureBase& tex) {
+				normalTexIn = &tex;
+			}
+		private:
+			void DrawShadowMap(const Light& light, const Matrix4& shadowMatrix);
+			void DrawLight(const Light& light, const Matrix4& shadowMatrix);
 
-		std::unique_ptr<FrameBuffer> frameBuffer;
+			GameTechRenderer& renderer;
+			GameWorld& gameWorld;
 
-		TextureBase* depthTexIn = nullptr;
-		TextureBase* normalTexIn = nullptr;
+			std::shared_ptr<MeshGeometry> sphere;
+			std::shared_ptr<MeshGeometry> quad;
 
-		std::unique_ptr<TextureBase> lightDiffuseOutTex;
-		std::unique_ptr<TextureBase> lightSpecularOutTex;
+			std::unique_ptr<FrameBuffer> shadowFrameBuffer;
+			std::unique_ptr<FrameBuffer> lightFrameBuffer;
 
-		std::unique_ptr<ShaderBase> shader;
-	};
+			TextureBase* depthTexIn = nullptr;
+			TextureBase* normalTexIn = nullptr;
+
+			std::unique_ptr<TextureBase> shadowMapTex;
+
+			std::unique_ptr<TextureBase> lightDiffuseOutTex;
+			std::unique_ptr<TextureBase> lightSpecularOutTex;
+
+			std::unique_ptr<ShaderBase> lightShader;
+
+			std::vector<std::shared_ptr<ShaderBase>> shadowShaders{};
+		};
+	}
 }

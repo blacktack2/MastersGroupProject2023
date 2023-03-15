@@ -25,16 +25,16 @@ using namespace CSC8503;
 
 ModelRPass::ModelRPass() : OGLMainRenderPass(),
 gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
-	diffuseOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetSplitWidth(), renderer.GetSplitHeight());
-	normalOutTex  = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetSplitWidth(), renderer.GetSplitHeight());
-	depthOutTex   = AssetLoader::CreateTexture(TextureType::Depth, renderer.GetSplitWidth(), renderer.GetSplitHeight());
-	AddScreenTexture(*diffuseOutTex);
+	albedoOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	normalOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	depthOutTex  = AssetLoader::CreateTexture(TextureType::Depth, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	AddScreenTexture(*albedoOutTex);
 	AddScreenTexture(*normalOutTex);
 	AddScreenTexture(*depthOutTex);
 
 	frameBuffer = AssetLoader::CreateFrameBuffer();
 	frameBuffer->Bind();
-	frameBuffer->AddTexture(*diffuseOutTex);
+	frameBuffer->AddTexture(*albedoOutTex);
 	frameBuffer->AddTexture(*normalOutTex);
 	frameBuffer->AddTexture(*depthOutTex);
 	frameBuffer->DrawBuffers();
@@ -75,7 +75,7 @@ void ModelRPass::Render() {
 			return;
 		}
 
-		renderObject->Draw();
+		renderObject->DrawToGBuffer();
 	});
 
 	renderer.GetConfig().SetDepthTest();
@@ -87,8 +87,8 @@ void ModelRPass::AddModelShader(std::shared_ptr<ShaderBase> shader) {
 	modelShaders.push_back(shader);
 	shader->Bind();
 
-	shader->SetUniformInt("diffuseTex", 0);
-	shader->SetUniformInt("bumpTex"   , 1);
+	shader->SetUniformInt("albedoTex", 0);
+	shader->SetUniformInt("bumpTex"  , 1);
 
 	shader->Unbind();
 }

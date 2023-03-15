@@ -68,7 +68,7 @@ namespace NCL {
 		//to a vertex shader (i.e it's already an 'inverse camera matrix').
 		Matrix4 BuildViewMatrix() const;
 
-		Matrix4 BuildProjectionMatrix(float aspectRatio = 1.0f) const;
+		Matrix4 BuildProjectionMatrix(float aspectRatio) const;
 
 		//Gets position in world space
 		Vector3 GetPosition() const { return position; }
@@ -91,7 +91,7 @@ namespace NCL {
 		//smoothing
 		bool isSmooth;
 		Vector3 LastPos;
-		float smoothFactor = 60.0f;
+		float smoothFactor = 50.0f;
 	protected:
 		CameraType camType;
 

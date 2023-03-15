@@ -15,33 +15,37 @@
 #include <memory>
 #include <vector>
 
-namespace NCL::Rendering {
-	class TextureBase;
+namespace NCL {
+	namespace Rendering {
+		class TextureBase;
+	}
 }
 
 using namespace NCL::Rendering;
 using namespace NCL::Maths;
 
-namespace NCL::CSC8503 {
-	class Menu : public UIObject {
-	public:
-		Menu(Vector2 screenPos, Vector2 dimension, std::shared_ptr<TextureBase> texture);
-		~Menu();
+namespace NCL {
+	namespace CSC8503 {
+		class Menu : public UIObject {
+		public:
+			Menu(Vector2 screenPos, Vector2 dimension, std::shared_ptr<TextureBase> texture);
+			~Menu();
 
-		void Update(float dt) override;
-		Vector4 GetDimension() const override;
+			void Update(float dt) override;
+			Vector4 GetDimension() const override;
 
-		Button& AddButton(float x, float y, float width, float height, std::shared_ptr<TextureBase> texture, Button::overlap_func onclick = nullptr);
+			Button& AddButton(float x, float y, float width, float height, std::shared_ptr<TextureBase> texture, Button::overlap_func onclick = nullptr);
 
-		const std::vector<std::unique_ptr<Button>>& GetButtons() {
-			return buttons;
-		}
-	protected:
-		Vector2 screenPos;
-		Vector2 dimension;
+			const std::vector<std::unique_ptr<Button>>& GetButtons() {
+				return buttons;
+			}
+		protected:
+			Vector2 screenPos;
+			Vector2 dimension;
 
-		std::vector<std::unique_ptr<Button>> buttons;
+			std::vector<std::unique_ptr<Button>> buttons;
 
-		int buttonSelect = 0;
-	};
+			int buttonSelect = 0;
+		};
+	}
 }

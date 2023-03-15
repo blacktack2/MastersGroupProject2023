@@ -20,75 +20,79 @@ namespace NCL {
 	class MeshGeometry;
 }
 
-namespace NCL::Rendering {
-	class BufferObjectBase;
-	class FrameBuffer;
-	class ShaderBase;
-	class TextureBase;
+namespace NCL{
+	namespace Rendering {
+		class BufferObjectBase;
+		class FrameBuffer;
+		class ShaderBase;
+		class TextureBase;
+	}
 }
 
 using namespace NCL;
 using namespace Rendering;
 using namespace Maths;
 
-namespace NCL::CSC8503 {
-	class GameTechRenderer;
+namespace NCL {
+	namespace CSC8503 {
+		class GameTechRenderer;
 
-	class SSAORPass : public OGLMainRenderPass {
-	public:
-		SSAORPass();
-		~SSAORPass();
+		class SSAORPass : public OGLMainRenderPass {
+		public:
+			SSAORPass();
+			~SSAORPass();
 
-		virtual void OnWindowResize() override;
+			virtual void OnWindowResize(int width, int height) override;
 
-		virtual void Render() override;
+			virtual void Render() override;
 
-		void SetRadius(float radius);
-		void SetBias(float bias);
-		void SetNumKernels(size_t numKernels);
+			void SetRadius(float radius);
+			void SetBias(float bias);
+			void SetNumKernels(size_t numKernels);
 
-		inline TextureBase& GetOutTex() const {
-			return *ssaoOutTex;
-		}
+			inline TextureBase& GetOutTex() const {
+				return *ssaoOutTex;
+			}
 
-		inline void SetDepthTexIn(TextureBase& tex) {
-			depthTexIn = &tex;
-		}
+			inline void SetDepthTexIn(TextureBase& tex) {
+				depthTexIn = &tex;
+			}
 
-		inline void SetNormalTexIn(TextureBase& tex) {
-			normalTexIn = &tex;
-		}
-	private:
-		void DrawSSAO();
-		void BlurSSAO();
+			inline void SetNormalTexIn(TextureBase& tex) {
+				normalTexIn = &tex;
+			}
+		private:
+			void DrawSSAO();
+			void BlurSSAO();
 
-		void GenerateKernels();
-		void GenerateNoiseTex();
+			void GenerateKernels();
+			void GenerateNoiseTex();
 
-		GameTechRenderer& renderer;
+			GameTechRenderer& renderer;
 
-		std::shared_ptr<MeshGeometry> quad;
+			std::shared_ptr<MeshGeometry> quad;
 
-		std::unique_ptr<FrameBuffer> ssaoFrameBuffer;
-		std::unique_ptr<FrameBuffer> blurFrameBuffer;
+			std::unique_ptr<FrameBuffer> ssaoFrameBuffer;
+			std::unique_ptr<FrameBuffer> blurFrameBuffer;
 
-		TextureBase* depthTexIn = nullptr;
-		TextureBase* normalTexIn = nullptr;
+			TextureBase* depthTexIn = nullptr;
+			TextureBase* normalTexIn = nullptr;
 
-		std::unique_ptr<TextureBase> noiseTex;
-		std::unique_ptr<TextureBase> ssaoTex;
-		std::unique_ptr<TextureBase> ssaoOutTex;
+			std::unique_ptr<TextureBase> noiseTex;
+			std::unique_ptr<TextureBase> ssaoTex;
+			std::unique_ptr<TextureBase> ssaoOutTex;
 
-		std::unique_ptr<ShaderBase> ssaoShader;
-		std::unique_ptr<ShaderBase> blurShader;
+			std::unique_ptr<ShaderBase> ssaoShader;
+			std::unique_ptr<ShaderBase> blurShader;
 
-		std::unique_ptr<BufferObjectBase> kernelSSBO;
+			std::unique_ptr<BufferObjectBase> kernelSSBO;
 
-		unsigned int noiseTexSize = 4;
-		size_t numKernels = 64;
-		std::vector<Vector3> kernels{};
+			unsigned int noiseTexSize = 4;
+			size_t numKernels = 64;
+			std::vector<Vector3> kernels{};
 
-		std::uniform_real_distribution<float> random = std::uniform_real_distribution(0.0f, 1.0f);
-		std::default_random_engine generator;
-	};
+			std::uniform_real_distribution<float> random = std::uniform_real_distribution(0.0f, 1.0f);
+			std::default_random_engine generator;
+		};
+	}
 }

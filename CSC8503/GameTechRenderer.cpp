@@ -53,9 +53,9 @@ void GameTechRenderer::InitPipeline() {
 
 	combinePass = std::make_unique<CombineRPass>();
 	combinePass->SetSkyboxTexIn(skyboxPass->GetOutTex());
-	combinePass->SetDiffuseTexIn(modelPass->GetDiffuseOutTex());
-	combinePass->SetDiffuseLightTexIn(lightingPass->GetDiffuseOutTex());
-	combinePass->SetSpecularLightTexIn(lightingPass->GetSpecularOutTex());
+	combinePass->SetAlbedoTexIn(modelPass->GetAlbedoOutTex());
+	combinePass->SetDiffuseTexIn(lightingPass->GetDiffuseOutTex());
+	combinePass->SetSpecularTexIn(lightingPass->GetSpecularOutTex());
 	combinePass->SetSSAOTexIn(ssaoPass->GetOutTex());
 	combinePass->SetNormalTexIn(modelPass->GetNormalOutTex());
 	combinePass->SetDepthTexIn(modelPass->GetDepthOutTex());

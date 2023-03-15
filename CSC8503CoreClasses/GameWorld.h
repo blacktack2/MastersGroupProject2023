@@ -12,6 +12,8 @@
 #include <string>
 #include <vector>
 
+#define CAM_COUNT 4
+
 namespace NCL {
 	class Camera;
 	using Maths::Ray;
@@ -26,7 +28,7 @@ namespace NCL {
 
 		typedef std::vector<GameObject*>::const_iterator GameObjectIterator;
 		typedef std::vector<Constraint*>::const_iterator ConstraintIterator;
-		typedef std::vector<Light*>::const_iterator LightIterator;
+		typedef std::vector<std::unique_ptr<Light>>::const_iterator LightIterator;
 
 		class GameWorld {
 		private:
@@ -54,22 +56,18 @@ namespace NCL {
 				return networkObjects;
 			}
 
-			Light* AddLight(Light* l);
+			PointLight&       AddPointLight(const Vector3& position, const Vector4& colour, float radius);
+			SpotLight&        AddSpotLight(const Vector3& position, const Vector4& direction, const Vector4& colour, float radius, float angle);
+			DirectionalLight& AddDirectionalLight(const Vector3& direction, const Vector4& colour);
 			void RemoveLight(LightIterator l);
 			void ClearLight();
 
-			Camera* GetMainCamera() const {
-				return mainCamera;
-			}
+			Camera* GetMainCamera() const;
 			void InitCameras() const;
-			void InitCamera(Camera& cam) const;
-
+			void InitCamera(Camera* cam) const;
 			Camera* GetCamera(int n) const;
-
+			void UpdateCamera(float dt);
 			Camera* SetMainCamera(int n);
-			int GetMainCameraIndex() {
-				return mainCameraIndex;
-			}
 
 			void ShuffleConstraints(bool state) {
 				shuffleConstraints = state;
@@ -110,22 +108,24 @@ namespace NCL {
 			inline float GetDeltaTime() const {
 				return deltaTime;
 			}
-
 		protected:
 			std::vector<GameObject*> gameObjects;
 			std::vector<Constraint*> constraints;
 			std::vector<NetworkObject*> networkObjects;
-			std::vector<Light*> lights;
+			std::vector<std::unique_ptr<Light>> lights;
 
 			QuadTree dynamicQuadTree;
 			QuadTree staticQuadTree;
 
 			int mainCameraIndex = 1;
-			Camera* mainCamera = nullptr;
+			//Check if needed
 			std::unique_ptr<Camera> playerCamera1 = nullptr;
 			std::unique_ptr<Camera> playerCamera2 = nullptr;
 			std::unique_ptr<Camera> playerCamera3 = nullptr;
 			std::unique_ptr<Camera> playerCamera4 = nullptr;
+
+			Camera* mainCamera;
+			Camera* cameras[CAM_COUNT];
 
 			bool shuffleConstraints;
 			bool shuffleObjects;

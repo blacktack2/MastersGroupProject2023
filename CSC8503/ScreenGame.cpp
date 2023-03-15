@@ -18,7 +18,7 @@ ScreenGame::ScreenGame() {
 
 PushdownState::PushdownResult ScreenGame::OnUpdate(float dt, PushdownState** newState) {
 	keyMap.Update();
-	if (keyMap.GetButton(InputType::ESC)) {
+	if (keyMap.GetButton(InputType::Pause)) {
 		*newState = new ScreenPause();
 		return PushdownResult::Push;
 	}

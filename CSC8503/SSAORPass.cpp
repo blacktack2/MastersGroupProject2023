@@ -24,8 +24,8 @@ using namespace CSC8503;
 SSAORPass::SSAORPass() : OGLMainRenderPass(), renderer(GameTechRenderer::instance()) {
 	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
-	ssaoTex    = AssetLoader::CreateTexture(TextureType::ColourRGB8, renderer.GetSplitWidth(), renderer.GetSplitHeight());
-	ssaoOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB8, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	ssaoTex    = AssetLoader::CreateTexture(TextureType::ColourR8, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	ssaoOutTex = AssetLoader::CreateTexture(TextureType::ColourR8, renderer.GetSplitWidth(), renderer.GetSplitHeight());
 	AddScreenTexture(*ssaoTex);
 	AddScreenTexture(*ssaoOutTex);
 
@@ -66,7 +66,8 @@ SSAORPass::SSAORPass() : OGLMainRenderPass(), renderer(GameTechRenderer::instanc
 SSAORPass::~SSAORPass() {
 }
 
-void SSAORPass::OnWindowResize() {
+void SSAORPass::OnWindowResize(int width, int height) {
+	RenderPassBase::OnWindowResize(width, height);
 	ssaoShader->Bind();
 
 	ssaoShader->SetUniformFloat("noiseScale", (float)renderer.GetSplitWidth() / (float)noiseTexSize, (float)renderer.GetSplitHeight() / (float)noiseTexSize);

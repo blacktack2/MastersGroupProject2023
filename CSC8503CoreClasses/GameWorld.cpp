@@ -9,13 +9,11 @@ using namespace NCL;
 using namespace NCL::CSC8503;
 
 GameWorld::GameWorld() : staticQuadTree(Vector2(1024, 1024), 7, 6), dynamicQuadTree(Vector2(1024, 1024), 7, 6) {
+	for (int i = 0; i < CAM_COUNT; i++) {
+		cameras[i] = new Camera();
+	}
 	
-	playerCamera1 = std::make_unique<Camera>();
-	playerCamera2 = std::make_unique<Camera>();
-	playerCamera3 = std::make_unique<Camera>();
-	playerCamera4 = std::make_unique<Camera>();
-	
-	SetMainCamera(1);
+	mainCamera = cameras[0];
 
 	shuffleConstraints	= false;
 	shuffleObjects		= false;
@@ -24,6 +22,11 @@ GameWorld::GameWorld() : staticQuadTree(Vector2(1024, 1024), 7, 6), dynamicQuadT
 }
 
 GameWorld::~GameWorld()	{
+	//delete mainCamera;
+	for (int i = 0; i < CAM_COUNT; i++) {
+		delete cameras[i];
+		cameras[i] = nullptr;
+	}
 }
 
 void GameWorld::Clear() {
@@ -106,7 +109,7 @@ void GameWorld::OperateOnConstraints(ConstraintFunc f) {
 }
 
 void GameWorld::OperateOnLights(LightFunc f) {
-	for (const Light* l : lights) {
+	for (const auto& l : lights) {
 		f(*l);
 	}
 }
@@ -206,43 +209,6 @@ void GameWorld::OperateOnDynamicTree(QuadTreeNode::QuadTreeFunc func, const Vect
 	}
 }
 
-Camera* GameWorld::GetCamera(int n) const {
-	switch (n) {
-	case 0:
-		return playerCamera4.get(); // TODO this is HARDCODED! fix this later!
-	case 1:
-		return playerCamera1.get();
-	case 2:
-		return playerCamera2.get();
-	case 3:
-		return playerCamera3.get();
-	case 4:
-		return playerCamera4.get();
-	default:
-		return nullptr;
-	}
-}
-
-Camera* GameWorld::SetMainCamera(int n) {
-	mainCameraIndex = n;
-	switch (n) {
-	case 1:
-		mainCamera = playerCamera1.get();
-		return mainCamera;
-	case 2:
-		mainCamera = playerCamera2.get();
-		return mainCamera;
-	case 3:
-		mainCamera = playerCamera3.get();
-		return mainCamera;
-	case 4:
-		mainCamera = playerCamera4.get();
-		return mainCamera;
-	default:
-		return nullptr;
-	}
-}
-
 bool GameWorld::Raycast(Ray& r, RayCollision& closestCollision, bool closestObject, GameObject* ignoreThis) {
 	//The simplest raycast just goes through each object and sees if there's a collision
 	RayCollision collision;
@@ -301,11 +267,6 @@ bool GameWorld::Raycast(Ray& r, RayCollision& closestCollision, bool closestObje
 	return false;
 }
 
-
-/*
-Constraint Tutorial Stuff
-*/
-
 void GameWorld::AddConstraint(Constraint* c) {
 	constraints.emplace_back(c);
 }
@@ -326,9 +287,19 @@ void GameWorld::RemoveConstraint(std::vector<Constraint*>::const_iterator c, boo
 	}
 }
 
-Light* GameWorld::AddLight(Light* l) {
-	lights.push_back(l);
-	return l;
+PointLight& GameWorld::AddPointLight(const Vector3& position, const Vector4& colour, float radius) {
+	lights.push_back(std::make_unique<PointLight>(position, colour, radius));
+	return static_cast<PointLight&>(*lights.back());
+}
+
+SpotLight& GameWorld::AddSpotLight(const Vector3& position, const Vector4& direction, const Vector4& colour, float radius, float angle) {
+	lights.push_back(std::make_unique<SpotLight>(position, direction, colour, radius, angle));
+	return static_cast<SpotLight&>(*lights.back());
+}
+
+DirectionalLight& GameWorld::AddDirectionalLight(const Vector3& direction, const Vector4& colour) {
+	lights.push_back(std::make_unique<DirectionalLight>(direction, colour));
+	return static_cast<DirectionalLight&>(*lights.back());
 }
 
 void GameWorld::RemoveLight(LightIterator l) {
@@ -339,18 +310,43 @@ void GameWorld::ClearLight() {
 	lights.clear();
 }
 
+Camera* GameWorld::GetMainCamera() const {
+	return mainCamera;
+}
 void GameWorld::InitCameras() const {
-	InitCamera(*playerCamera1);
-	InitCamera(*playerCamera2);
-	InitCamera(*playerCamera3);
-	InitCamera(*playerCamera4);
+	for (int i = 0; i < CAM_COUNT; i++) {
+		InitCamera(cameras[i]);
+	}
+
+}
+void GameWorld::InitCamera(Camera* cam) const {
+	if (!cam)
+		return;
+	cam->SetNearPlane(0.1f);
+	cam->SetFarPlane(1000.0f);
+	cam->SetPitch(-15.0f);
+	cam->SetYaw(315.0f);
+	cam->SetPosition(Vector3(-60, 40, 60));
+	cam->SetFollow(nullptr);
 }
 
-void GameWorld::InitCamera(Camera& cam) const {
-	cam.SetNearPlane(0.1f);
-	cam.SetFarPlane(1000.0f);
-	cam.SetPitch(-15.0f);
-	cam.SetYaw(315.0f);
-	cam.SetPosition(Vector3(-60, 40, 60));
-	cam.SetFollow(nullptr);
+Camera* GameWorld::GetCamera(int n) const {
+	if (n >= CAM_COUNT || n < 0)
+		return nullptr;
+	return cameras[n] ;
 }
+
+void GameWorld::UpdateCamera(float dt) {
+	for (Camera* i : cameras) {
+		i->UpdateCamera(dt);
+	}
+}
+
+Camera* GameWorld::SetMainCamera(int n)
+{
+	if (n >= CAM_COUNT || n < 0)
+		return nullptr;
+	mainCamera = cameras[n];
+	return mainCamera;
+}
+

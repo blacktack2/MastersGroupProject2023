@@ -29,7 +29,7 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	//defaultTexture = (OGLTexture*)OGLTexture::RGBATextureFromFilename("defaultmain.jpg");
 	defaultTexture = AssetLoader::LoadTexture("defaultmain.jpg");
 
-	defaultShader = AssetLoader::CreateShader("menuVertex.vert", "menuFragment.frag");
+	defaultShader = AssetLoader::CreateShaderAndInit("menuVertex.vert", "menuFragment.frag");
 
 	defaultShader->Bind();
 

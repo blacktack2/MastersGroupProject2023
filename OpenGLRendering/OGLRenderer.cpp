@@ -58,7 +58,6 @@ OGLRenderer::OGLRenderer(Window& w) : RendererBase(w), config(*this) {
 		AssetLoader::RegisterMeshCreateFunction(OGLMesh::CreateMesh);
 		AssetLoader::RegisterShaderCreateFunction(OGLShader::CreateShader);
 		AssetLoader::RegisterTextureCreateFunction(OGLTexture::CreateTexture);
-		AssetLoader::RegisterMeshCreateAndInitFunction(OGLMesh::CreateMeshAndInit);
 		AssetLoader::RegisterShaderCreateAndInitFunction(OGLShader::CreateShaderAndInit);
 	}
 

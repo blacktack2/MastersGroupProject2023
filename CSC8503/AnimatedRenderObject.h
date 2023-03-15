@@ -19,35 +19,39 @@ namespace NCL {
 	class MeshMaterial;
 }
 
-namespace NCL::Rendering {
-	class ShaderBase;
+namespace NCL {
+	namespace Rendering {
+		class ShaderBase;
+	}
 }
 
-namespace NCL::CSC8503 {
-	class AnimatedRenderObject : public RenderObject {
-	public:
-		AnimatedRenderObject(Transform& parentTransform, std::shared_ptr<MeshGeometry> mesh, std::shared_ptr<MeshMaterial> material, std::shared_ptr<MeshAnimation> animation);
-		~AnimatedRenderObject();
+namespace NCL {
+	namespace CSC8503 {
+		class AnimatedRenderObject : public RenderObject {
+		public:
+			AnimatedRenderObject(Transform& parentTransform, std::shared_ptr<MeshGeometry> mesh, std::shared_ptr<MeshMaterial> material, std::shared_ptr<MeshAnimation> animation);
+			~AnimatedRenderObject();
 
-		inline const MeshAnimation& GetAnimation() const {
-			return *anim;
-		}
-		inline void SetAnimation(std::shared_ptr<MeshAnimation> animation) {
-			anim = animation;
-			currentFrame = 0;
-			nextFrame = 0;
-		}
-	protected:
-		void PreDraw(int sublayer, ShaderBase& shader) override;
+			inline const MeshAnimation& GetAnimation() const {
+				return *anim;
+			}
+			inline void SetAnimation(std::shared_ptr<MeshAnimation> animation) {
+				anim = animation;
+				currentFrame = 0;
+				nextFrame = 0;
+			}
+		protected:
+			void PreDraw(int sublayer, ShaderBase& shader) override;
 
-		ShaderBase& GetDefaultShader() override;
+			ShaderBase& GetDefaultShader() override;
 
-		std::shared_ptr<MeshAnimation> anim;
+			std::shared_ptr<MeshAnimation> anim;
 
-		int currentFrame;
-		int nextFrame;
+			int currentFrame;
+			int nextFrame;
 
-		float frameTime;
-		float animSpeed = 1.0f;
-	};
+			float frameTime;
+			float animSpeed = 1.0f;
+		};
+	}
 }
