@@ -21,7 +21,7 @@ namespace NCL {
 				PlayerObject::RotateYaw(yaw);
 			}
 
-			void MoveInput(unsigned int keyPress, short int axis[AxisInput::AxisInputDataMax], Vector2);
+			void MoveInput(float dt, unsigned int keyPress, short int axis[AxisInput::AxisInputDataMax], Vector2);
 
 			void ServerSideMovement(float dt);
 

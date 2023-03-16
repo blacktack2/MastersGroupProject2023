@@ -93,7 +93,7 @@ void NCL::CSC8503::PlayerObject::Movement(float dt)
 	GetDir(dir);
 
 	GetButtonInput(keyMap.GetButtonState());
-	Move(dir);
+	Move(dt,dir);
 
 	RotatePlayer();
 }
@@ -116,13 +116,13 @@ This is a temporary member function. Feel free to merge this into PlayerObject::
 	this->GetTransform().SetPosition(this->GetTransform().GetGlobalPosition() + dir * 10 * dt);
 }
 
-void PlayerObject::Move(Vector3 dir) {
-	this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
+void PlayerObject::Move(float dt, Vector3 dir) {
+	this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed * dt);
 
 	if (lastDir != Vector3(0, 0, 0)) {
 		//Vector3 stopDir = dir - lastDir;
 		if (NCL::InputKeyMap::instance().GetButtonState() != lastKey) {
-			this->GetPhysicsObject()->ApplyLinearImpulse(-lastDir * moveSpeed);
+			this->GetPhysicsObject()->ApplyLinearImpulse(-lastDir * moveSpeed * dt);
 		}
 
 	}
@@ -329,7 +329,7 @@ void NCL::CSC8503::PlayerObject::SetupAudio()
 	SoundSystem::GetSoundSystem()->SetListener(this);
 
 }
-void  NCL::CSC8503::PlayerObject::MoveAnimation(Vector3 dir) {
+void PlayerObject::MoveAnimation(Vector3 dir) {
 	if (this->GetPhysicsObject()->GetLinearVelocity().y > 0.01) {
 		//jump
 		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());

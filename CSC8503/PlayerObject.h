@@ -48,7 +48,7 @@ namespace NCL {
 			void Movement(float dt);
 
 			void MoveTo(Vector3 position);
-			void Move(Vector3 dir);
+			void Move(float dt, Vector3 dir);
 			void MoveByPosition(float dt, Vector3 dir);
 			void GetButtonInput(unsigned int keyPress);
 			void GetAxisInput();
@@ -67,6 +67,8 @@ namespace NCL {
 			virtual void Shoot();
 			void Jump();
 			void BulletModification(PlayerBullet* bullet){};
+
+			void MoveAnimation(Vector3 dir);
 
 			int playerID = -1;
 
@@ -106,7 +108,7 @@ namespace NCL {
 			float jumpSpeed = 10.0f;
 
 			//movement related
-			float moveSpeed = 0.4f;
+			float moveSpeed = 20.0f;
 			Vector3 lastDir = Vector3(0,0,0);
 			
 			//camera related

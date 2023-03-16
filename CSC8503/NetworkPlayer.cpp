@@ -34,14 +34,14 @@ void NetworkPlayer::OnCollisionBegin(GameObject* otherObject) {
 	}
 }
 
-void NCL::CSC8503::NetworkPlayer::MoveInput(unsigned int keyPress, short int axis[AxisInput::AxisInputDataMax], Vector2 rotationAxis)
+void NCL::CSC8503::NetworkPlayer::MoveInput(float dt, unsigned int keyPress, short int axis[AxisInput::AxisInputDataMax], Vector2 rotationAxis)
 {
 	if (health.GetHealth() > 0) {
 		Vector3 dir = Vector3(0, 0, 0);
 		SetAxis(axis);
 		GetDir(dir);
 		GetButtonInput(keyPress);
-		Move(dir);
+		Move(dt, dir);
 		this->yaw = rotationAxis.x;
 		this->pitch = rotationAxis.y;
 		RotateYaw(yaw);
@@ -63,7 +63,7 @@ void NCL::CSC8503::NetworkPlayer::ServerSideMovement(float dt)
 		GetDir(dir);
 
 		GetButtonInput(keyMap.GetButtonState());
-		Move(dir);
+		Move(dt, dir);
 	}
 }
 

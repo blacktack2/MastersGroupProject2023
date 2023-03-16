@@ -403,7 +403,7 @@ void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID
 	if (!serverPlayers.contains(playerID))
 		return;
 	
-	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(((ClientPacket*)payload)->buttonstates, ((ClientPacket*)payload)->axis, Vector2(((ClientPacket*)payload)->yaw * 0.001f, ((ClientPacket*)payload)->pitch * 0.001f));
+	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(game_dt, ((ClientPacket*)payload)->buttonstates, ((ClientPacket*)payload)->axis, Vector2(((ClientPacket*)payload)->yaw * 0.001f, ((ClientPacket*)payload)->pitch * 0.001f));
 
 	if (((ClientPacket*)payload)->lastID > stateIDs[playerID]) {
 		stateIDs[playerID] = ((ClientPacket*)payload)->lastID;
