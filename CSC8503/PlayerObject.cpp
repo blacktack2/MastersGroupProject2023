@@ -37,7 +37,6 @@ PlayerObject::PlayerObject(int playerID) : GameObject(), playerID(playerID), key
 	AttachCamera(playerID);
 	camera->SetPlayerID(playerID);
 	camera->SetFollow(&this->GetTransform());
-
 }
 
 PlayerObject::~PlayerObject() {
@@ -54,7 +53,7 @@ void PlayerObject::Update(float dt) {
 	//Change game state
 	if (health.GetHealth() <= 0) {
 		MoveCamera(dt);
-		ChangeLoseState();
+		//ChangeLoseState();
 		return;
 	}
 		

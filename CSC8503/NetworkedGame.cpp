@@ -37,6 +37,7 @@ NetworkedGame::NetworkedGame(bool isServer)	{
 	thisClient = nullptr;
 
 	NetworkBase::Initialise();
+	gameStateManager.SetIsNetworked(true);
 	timeToNextPacket  = 0.0f;
 	packetsToSnapshot = 0;
 	stateID = 0;
@@ -54,6 +55,7 @@ NetworkedGame::NetworkedGame(bool isServer)	{
 }
 
 NetworkedGame::~NetworkedGame()	{
+	gameStateManager.SetIsNetworked(false);
 	Disconnect();
 	delete thisServer;
 	delete thisClient;

@@ -65,6 +65,7 @@ renderer(GameTechRenderer::instance()), gameWorld(GameWorld::instance()), keyMap
 	
 	SoundSystem::Initialize();
 	StartLevel();
+	gameStateManager.SetIsNetworked(false);
 }
 
 TutorialGame::~TutorialGame() {
@@ -83,7 +84,7 @@ void TutorialGame::StartLevel() {
 	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
 	if (numOfPlayers >= 4)
 		numOfPlayers = 4;
-
+	numOfPlayers = 2;
 	boss = AddBossToWorld({ 0, 5, -20 }, Vector3(4), 2);
 
 	players[0] = AddPlayerToWorld(0, Vector3(0, 5, 90));
@@ -96,7 +97,8 @@ void TutorialGame::StartLevel() {
 		players[i]->GetCamera()->GetHud().AddHealthBar(players[i]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
 		players[i]->GetCamera()->GetHud().AddHealthBar(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
 	}
-	renderer.SetNumPlayers(numOfPlayers + 1);		// +1 accounts for players[0] who uses Keyboard & Mouse
+	playerNum = numOfPlayers + 1;
+	renderer.SetNumPlayers(playerNum);		// +1 accounts for players[0] who uses Keyboard & Mouse
 	SetCameraFollow(players[0]);		// Currently set to player[0] is crucial for split screen
 
 	boss -> SetNextTarget(players[0]);
@@ -114,6 +116,7 @@ void TutorialGame::Clear() {
 	physics->Clear();
 	gridManager.Clear();
 	boss = nullptr;
+	playerNum = 0;
 }
 
 void TutorialGame::InitWorld() {
@@ -142,17 +145,6 @@ void TutorialGame::UpdateGame(float dt) {
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM4))
 		renderer.SetNumPlayers(4);
 
-	//temp change player
-	/*if (Window::GetKeyboard()->KeyDown(KeyboardKeys::P))
-	{
-		if(players[1])
-			SetCameraFollow(players[1]);
-	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::O))
-	{
-		SetCameraFollow(players[0]);
-	}*/
-
 	debugViewPoint.BeginFrame();
 	debugViewPoint.MarkTime("Update");
 	
@@ -180,7 +172,7 @@ void TutorialGame::UpdateGame(float dt) {
 
 	UpdateGameCore(dt);
 
-	//gameStateManager.Update(dt);
+	gameStateManager.Update(dt);
 	ProcessState();
 
 	debugViewPoint.FinishTime("Update");
@@ -214,6 +206,15 @@ void TutorialGame::UpdateGameCore(float dt) {
 }
 
 void TutorialGame::ProcessState() {
+	int totalHealth = 0;
+
+	for (int i = 0; i < playerNum; i++) {
+		totalHealth += players[i]->GetHealth()->GetHealth();
+	}
+	if (totalHealth <= 0) {
+		gameStateManager.SetGameState(GameState::Lose);
+	}
+
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	if (keyMap.GetButton(InputType::Restart)) {
 		this->StartLevel();

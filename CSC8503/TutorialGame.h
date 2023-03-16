@@ -90,7 +90,7 @@ namespace NCL {
 			GameLevel* gameLevel = nullptr;
 			Boss* boss = nullptr;
 
-
+			int playerNum = 0;
 			float interval = 0.0f;
 		};
 	}
