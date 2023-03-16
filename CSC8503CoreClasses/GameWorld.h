@@ -111,6 +111,16 @@ namespace NCL {
 			inline float GetDeltaTime() const {
 				return deltaTime;
 			}
+			inline void SetDeltaTime(float dt) {
+				deltaTime = dt;
+			}
+
+			inline int GetScreenNum() {
+				return screenNum;
+			}
+			inline void SetScreenNum(int n) {
+				screenNum = n;
+			}
 		protected:
 			std::vector<GameObject*> gameObjects;
 			std::vector<Constraint*> constraints;
@@ -137,6 +147,8 @@ namespace NCL {
 
 			float runTime;
 			float deltaTime = 0.0f;		// Used by Animation
+
+			int screenNum = 1;
 		};
 	}
 }
