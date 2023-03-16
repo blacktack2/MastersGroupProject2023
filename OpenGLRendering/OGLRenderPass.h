@@ -15,9 +15,9 @@ namespace NCL {
 		 */
 		class OGLRenderPass : public RenderPassBase {
 		public:
-			virtual ~OGLRenderPass() {}
+			~OGLRenderPass() override = default;
 		protected:
-			OGLRenderPass() {}
+			OGLRenderPass() = default;
 		};
 	}
 }
