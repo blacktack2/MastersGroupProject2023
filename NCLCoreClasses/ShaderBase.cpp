@@ -7,8 +7,8 @@
  * @date   February 2023
  */
 #include "ShaderBase.h"
-using namespace NCL;
-using namespace Rendering;
+
+using namespace NCL::Rendering;
 
 ShaderBase::ShaderBase(const std::string& vert, const std::string& frag, const std::string& tesc, const std::string& tese, const std::string& geom) {
 	shaderFiles[(size_t)ShaderStage::Vertex] = vert;
@@ -16,7 +16,4 @@ ShaderBase::ShaderBase(const std::string& vert, const std::string& frag, const s
 	shaderFiles[(size_t)ShaderStage::TessCont] = tesc;
 	shaderFiles[(size_t)ShaderStage::TessEval] = tese;
 	shaderFiles[(size_t)ShaderStage::Geometry] = geom;
-}
-
-ShaderBase::~ShaderBase() {
 }
