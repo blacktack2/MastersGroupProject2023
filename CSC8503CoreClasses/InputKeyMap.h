@@ -79,9 +79,6 @@ namespace NCL {
 			return downStates & key;
 		}
 
-		unsigned int GetButtonState() {
-			return buttonstates;
-		}
 		bool GetButton(InputType key, int PlayerID = 0);
 
 		unsigned int GetButtonState();

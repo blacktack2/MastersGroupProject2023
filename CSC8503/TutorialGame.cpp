@@ -273,8 +273,7 @@ PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& positi
 		.SetScale(Vector3(1, 1, 1))
 		.SetPosition(position);
 
-
-	character->SetRenderObject(new AnimatedRenderObject(character->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("player"), AssetLibrary<MeshMaterial>::GetAsset("player"), AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle")));
+	character->SetRenderObject(new RenderObject(character->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("goat"), nullptr));
 	
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 
