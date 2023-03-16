@@ -8,6 +8,7 @@ Health::Health() {
 }
 Health::Health(float health) {
 	this->health = health;
+	this->maxHealth = health;
 }
 
 Health::~Health() {

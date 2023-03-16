@@ -27,6 +27,10 @@ namespace NCL {
 				//camera = cam;
 			};
 
+			Camera* GetCamera() {
+				return camera;
+			}
+
 			const std::vector<GameObject*> GetLastInstancedObjects() {
 				return lastInstancedObjects;
 			}

@@ -41,7 +41,7 @@ namespace NCL {
 		public:
 			DebugRPass();
 			~DebugRPass();
-
+			void RenderWinLoseInformation(bool win);
 			virtual void Render() override;
 		private:
 			void RenderLines();

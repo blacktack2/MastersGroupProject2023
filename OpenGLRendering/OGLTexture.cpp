@@ -115,7 +115,8 @@ void OGLTexture::Initialize() {
 	} else {
 		SetFilters(MinFilter::Nearest, MagFilter::Nearest);
 	}
-	SetEdgeWrap(EdgeWrap::ClampToEdge);
+	SetEdgeWrap(GetType() == TextureType::ColourRGBA32F ? EdgeWrap::Repeat : EdgeWrap::ClampToEdge);
+
 	Resize(width, height);
 	if (!data.empty()) {
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, dummyFormat, dummyType, data.data());

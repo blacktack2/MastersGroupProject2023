@@ -13,7 +13,7 @@ RendererConfigBase::RendererConfigBase(const RendererBase& renderer) : renderer(
 }
 
 void RendererConfigBase::ResetAll() {
-	SetViewport();
+	SetDefaultViewport();
 	SetClearColour();
 	SetAlphaTest();
 	SetBlend();

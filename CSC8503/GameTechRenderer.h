@@ -21,8 +21,13 @@
 #include "DebugRPass.h"
 #include "MenuRPass.h"
 #include "PaintingRPass.h"
-#include"HudRPass.h"
+#include "HudRPass.h"
+#include "Hud.h"
 #include "GameWorld.h"
+//#include "Debug.h"
+#include "DebugRPass.h"
+
+
 
 #include <algorithm>
 #include <memory>
@@ -136,11 +141,42 @@ namespace NCL {
 				return ssaoBias;
 			}
 
-		protected:
-			GameTechRenderer();
-			~GameTechRenderer();
+		void SetGameWorldMainCamera(int cameraNum) override {
+			gameWorld.SetMainCamera(cameraNum);
 
-			GameWorld& gameWorld;
+		}
+
+		int GetGameWorldMainCamera() override {
+			return gameWorld.GetMainCameraIndex();
+		}
+
+		void SetBossHP(int hp) {
+			bossHP = hp;
+		}
+
+		void SetPlayerHp(int id, int hp) {
+			playersHP[id] = hp;
+		}
+
+		void UpdateHudDisplay(int playerID) override {
+		}
+
+		void DisplayWinLoseInformation(int playerID) override {
+			gameWorld.GetCamera(playerID);
+			if (bossHP <= 0) {
+				debugPass->RenderWinLoseInformation(true);
+			}
+			else if (playersHP[playerID] <= 0) {
+				debugPass->RenderWinLoseInformation(false);
+			}
+		}
+
+	protected:
+		GameTechRenderer();
+		~GameTechRenderer();
+
+		GameWorld& gameWorld;
+		std::unique_ptr<Hud> hud = std::make_unique<Hud>();
 
 			void SortObjectList();
 
@@ -163,7 +199,8 @@ namespace NCL {
 			float bloomBias = 0.04f;
 
 			float hdrExposure = 1.0f;
-
+			int bossHP = -1;
+			int playersHP[4];
 			float ssaoRadius = 0.5f;
 			float ssaoBias = 0.025f;
 		};

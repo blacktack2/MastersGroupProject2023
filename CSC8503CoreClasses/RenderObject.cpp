@@ -67,6 +67,7 @@ void RenderObject::PreDraw(int sublayer) {
 	shader->SetUniformMatrix("modelMatrix", modelMatrix);
 
 	shader->SetUniformFloat("modelColour", colour);
+	shader->SetUniformFloat("texScale", texScale);
 
 	TextureBase* diffuse = entry->GetTexture("Albedo");
 	diffuse = diffuse ? diffuse : AssetLibrary<TextureBase>::GetAsset("defaultAlbedo").get();

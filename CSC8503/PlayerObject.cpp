@@ -20,7 +20,7 @@
 #include "Sound.h"
 #include "SoundSystem.h"
 #include "BulletInstanceManager.h"
-
+#include"AnimatedRenderObject.h"
 #include <iostream>
 #define _USE_MATH_DEFINES
 #include <math.h>

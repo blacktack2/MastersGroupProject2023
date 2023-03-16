@@ -8,8 +8,10 @@
  */
 #pragma once
 #include "Vector3.h"
-
 #include "../CSC8503CoreClasses/Transform.h"
+#include "../CSC8503/Hud.h"
+
+#include <memory>
 
 using namespace NCL::CSC8503;
 
@@ -27,9 +29,7 @@ namespace NCL {
 	class Camera {
 	public:
 		Camera();
-
 		Camera(float pitch, float yaw, const Vector3& position);
-
 		~Camera() = default;
 
 		inline void SetFollow(Transform* transform) {
@@ -94,7 +94,7 @@ namespace NCL {
 		/**
 		 * @return Yaw rotation component (in degrees).
 		 */
-		inline float GetYaw()   const {
+		inline float GetYaw() const {
 			return yaw;
 		}
 		/**
@@ -117,6 +117,10 @@ namespace NCL {
 		inline Camera& SetPitch(float p) {
 			pitch = p;
 			return *this;
+		}
+
+		inline Hud& GetHud() {
+			return hud;
 		}
 
 		static Camera BuildPerspectiveCamera(const Vector3& pos, float pitch, float yaw, float fov, float near, float far);
@@ -142,9 +146,10 @@ namespace NCL {
 		float followLon      = 0.0f;
 		Vector3 lookat       = Vector3(1.0f, 0.0f, 0.0f);
 
-		Vector3 LastPos;
 		float smoothFactor = 50.0f;
 
 		int playerID = 0;
+
+		Hud hud{};
 	};
 }

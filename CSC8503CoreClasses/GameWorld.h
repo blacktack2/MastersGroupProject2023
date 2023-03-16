@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <random>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -67,6 +68,9 @@ namespace NCL {
 			Camera* GetCamera(int n) const;
 			void UpdateCamera(float dt);
 			Camera* SetMainCamera(int n);
+			int GetMainCameraIndex() {
+				return mainCameraIndex;
+			}
 
 			void ShuffleConstraints(bool state) {
 				shuffleConstraints = state;
@@ -115,6 +119,13 @@ namespace NCL {
 
 			QuadTree dynamicQuadTree;
 			QuadTree staticQuadTree;
+
+			int mainCameraIndex = 1;
+			//Check if needed
+			std::unique_ptr<Camera> playerCamera1 = nullptr;
+			std::unique_ptr<Camera> playerCamera2 = nullptr;
+			std::unique_ptr<Camera> playerCamera3 = nullptr;
+			std::unique_ptr<Camera> playerCamera4 = nullptr;
 
 			Camera* mainCamera;
 			Camera* cameras[CAM_COUNT];

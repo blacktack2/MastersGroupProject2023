@@ -9,7 +9,8 @@
 #pragma once
 #include <functional>
 #include <optional>
-
+#include<Vector2.h>
+#include<Vector4.h>
 namespace NCL {
 	class MeshMaterial;
 	class MeshGeometry;
@@ -54,7 +55,9 @@ namespace NCL {
 			const Vector4& GetColour() const {
 				return colour;
 			}
-
+			void SetTexScale(const Vector2& scale) {
+				texScale = scale;
+			}
 			void DrawToGBuffer();
 			void DrawToShadowMap();
 		protected:
@@ -71,6 +74,7 @@ namespace NCL {
 			std::shared_ptr<MeshGeometry> mesh;
 			std::shared_ptr<MeshMaterial> material;
 			Vector4 colour;
+			Vector2 texScale = Vector2(1.0f);
 		};
 	}
 }

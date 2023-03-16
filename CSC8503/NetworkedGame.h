@@ -65,7 +65,7 @@ namespace NCL {
 			void ClientProcessNetworkObject(GamePacket* payload, int objID);
 			void ServerProcessNetworkObject(GamePacket* payload, int playerID);
 
-			void PlayerJoinedServer(int playerID);
+			PlayerObject* PlayerJoinedServer(int playerID);
 			void PlayerLeftServer(int playerID);
 
 			//packet handle
@@ -82,7 +82,6 @@ namespace NCL {
 			PlayerObject* AddNetworkPlayerToWorld(const Vector3& position, int playerID);
 			NetworkBoss* AddNetworkBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
 			
-			void UpdateHud(float dt) override;
 			void ProcessState() override;
 
 			std::map<int, int> stateIDs;
