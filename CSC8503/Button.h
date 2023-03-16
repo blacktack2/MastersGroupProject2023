@@ -70,5 +70,6 @@ namespace NCL::CSC8503 {
         OptionManager& optionManager = OptionManager::instance();
 
         int counter = 12000;
+        int t = 0;
     };
 }

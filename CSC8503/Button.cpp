@@ -43,11 +43,16 @@ void Button::Update(float dt){
 
     if (keyMap.GetButtonDown(InputType::DOWN)) {
         counter++;
+        t++;
         optionManager.SetCounter(counter);
         OnSelect();
     }
 
     if (keyMap.GetButtonUp(InputType::UP)) {
+        if (t == 0) {
+            counter += 2;
+        }
+        t++;
         counter--;
         optionManager.SetCounter(counter);
         OnSelect();
