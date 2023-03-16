@@ -18,6 +18,7 @@ set(Header_Files
     "OGLRenderPass.h"
     "OGLShader.h"
     "OGLTexture.h"
+    "OGLLoadingManager.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -36,6 +37,7 @@ set(Source_Files
     "OGLRenderPass.cpp"
     "OGLShader.cpp"
     "OGLTexture.cpp"
+    "OGLLoadingManager.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 

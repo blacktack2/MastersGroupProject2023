@@ -14,40 +14,44 @@
 #include <memory>
 #include <vector>
 
-namespace NCL::Rendering {
-	class TextureBase;
+namespace NCL {
+	namespace Rendering {
+		class TextureBase;
+	}
 }
 
 using namespace NCL::Maths;
 using namespace NCL::Rendering;
 
-namespace NCL::CSC8503 {
-	class MenuRenderObject;
+namespace NCL {
+	namespace CSC8503 {
+		class MenuRenderObject;
 
-	class UIObject{
-	public:
-		UIObject(std::shared_ptr<TextureBase> texture);
-		~UIObject() = default;
+		class UIObject {
+		public:
+			UIObject(std::shared_ptr<TextureBase> texture);
+			~UIObject() = default;
 
-		virtual void Update(float dt) = 0;
-		virtual Vector4 GetDimension() const = 0;
-		
-		void Draw();
+			virtual void Update(float dt) = 0;
+			virtual Vector4 GetDimension() const = 0;
 
-		MenuRenderObject& GetRenderObject() const;
+			void Draw();
 
-		bool HasRenderObject() const;
+			MenuRenderObject& GetRenderObject() const;
 
-		void SetTexture(std::shared_ptr<TextureBase> texture);
+			bool HasRenderObject() const;
 
-		void AddChild(UIObject& child) {
-			children.push_back(child);
-		}
-	protected:
-		virtual void DrawExtras() {}
+			void SetTexture(std::shared_ptr<TextureBase> texture);
 
-		std::unique_ptr<MenuRenderObject> renderObject;
+			void AddChild(UIObject& child) {
+				children.push_back(child);
+			}
+		protected:
+			virtual void DrawExtras() {}
 
-		std::vector<std::reference_wrapper<UIObject>> children{};
-	};
+			std::unique_ptr<MenuRenderObject> renderObject;
+
+			std::vector<std::reference_wrapper<UIObject>> children{};
+		};
+	}
 }

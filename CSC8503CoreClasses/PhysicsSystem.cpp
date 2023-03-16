@@ -7,6 +7,7 @@
 #include "PhysicsObject.h"
 #include "Quaternion.h"
 #include "Window.h"
+#include "Maths.h"
 
 #include <functional>
 using namespace NCL;
@@ -242,8 +243,8 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 	PhysicsObject* physA = a.GetPhysicsObject();
 	PhysicsObject* physB = b.GetPhysicsObject();
 
-	float elasticityA = std::clamp(physA->GetElasticity(), 0.0f, 1.0f);
-	float elasticityB = std::clamp(physB->GetElasticity(), 0.0f, 1.0f);
+	float elasticityA = Maths::Clamp(physA->GetElasticity(), 0.0f, 1.0f);
+	float elasticityB = Maths::Clamp(physB->GetElasticity(), 0.0f, 1.0f);
 
 	Transform& transformA = a.GetTransform();
 	Transform& transformB = b.GetTransform();

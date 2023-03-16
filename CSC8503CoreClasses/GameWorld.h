@@ -8,8 +8,11 @@
 
 #include <functional>
 #include <random>
+#include <memory>
 #include <string>
 #include <vector>
+
+#define CAM_COUNT 4
 
 namespace NCL {
 	class Camera;
@@ -25,7 +28,7 @@ namespace NCL {
 
 		typedef std::vector<GameObject*>::const_iterator GameObjectIterator;
 		typedef std::vector<Constraint*>::const_iterator ConstraintIterator;
-		typedef std::vector<Light*>::const_iterator LightIterator;
+		typedef std::vector<std::unique_ptr<Light>>::const_iterator LightIterator;
 
 		class GameWorld {
 		private:
@@ -53,68 +56,20 @@ namespace NCL {
 				return networkObjects;
 			}
 
-			Light* AddLight(Light* l);
+			PointLight&       AddPointLight(const Vector3& position, const Vector4& colour, float radius);
+			SpotLight&        AddSpotLight(const Vector3& position, const Vector4& direction, const Vector4& colour, float radius, float angle);
+			DirectionalLight& AddDirectionalLight(const Vector3& direction, const Vector4& colour);
 			void RemoveLight(LightIterator l);
 			void ClearLight();
 
-			Camera* GetMainCamera() const {
-				return mainCamera;
-			}
-			void InitCameras() const {
-				InitCamera(playerCamera1);
-				InitCamera(playerCamera2);
-				InitCamera(playerCamera3);
-				InitCamera(playerCamera4);
-
-			}
-			void InitCamera(Camera* cam) const {
-				if (!cam)
-					return;
-				cam->SetNearPlane(0.1f);
-				cam->SetFarPlane(1000.0f);
-				cam->SetPitch(-15.0f);
-				cam->SetYaw(315.0f);
-				cam->SetPosition(Vector3(-60, 40, 60));
-				cam->SetFollow(nullptr);
-			}
-
-			Camera* GetCamera(int n) const {
-				switch (n)
-				{
-				case 0:
-					return playerCamera4;	// this is HARDCODED! fix this later!
-				case 1:
-					return playerCamera1;
-				case 2:
-					return playerCamera2;
-				case 3:
-					return playerCamera3;
-				case 4:
-					return playerCamera4;
-				default:
-					return nullptr;		// wrong input
-				}
-			}
-
-			Camera* SetMainCamera(int n)
-			{
-				switch (n)
-				{
-				case 1:
-					mainCamera = playerCamera1;
-					return mainCamera;
-				case 2:
-					mainCamera = playerCamera2;
-					return mainCamera;
-				case 3:
-					mainCamera = playerCamera3;
-					return mainCamera;
-				case 4:
-					mainCamera = playerCamera4;
-					return mainCamera;
-				default:
-					return nullptr;		// wrong input
-				}
+			Camera* GetMainCamera() const;
+			void InitCameras() const;
+			void InitCamera(Camera* cam) const;
+			Camera* GetCamera(int n) const;
+			void UpdateCamera(float dt);
+			Camera* SetMainCamera(int n);
+			int GetMainCameraIndex() {
+				return mainCameraIndex;
 			}
 
 			void ShuffleConstraints(bool state) {
@@ -156,21 +111,24 @@ namespace NCL {
 			inline float GetDeltaTime() const {
 				return deltaTime;
 			}
-
 		protected:
 			std::vector<GameObject*> gameObjects;
 			std::vector<Constraint*> constraints;
 			std::vector<NetworkObject*> networkObjects;
-			std::vector<Light*> lights;
+			std::vector<std::unique_ptr<Light>> lights;
 
 			QuadTree dynamicQuadTree;
 			QuadTree staticQuadTree;
 
+			int mainCameraIndex = 1;
+			//Check if needed
+			std::unique_ptr<Camera> playerCamera1 = nullptr;
+			std::unique_ptr<Camera> playerCamera2 = nullptr;
+			std::unique_ptr<Camera> playerCamera3 = nullptr;
+			std::unique_ptr<Camera> playerCamera4 = nullptr;
+
 			Camera* mainCamera;
-			Camera* playerCamera1 = nullptr;
-			Camera* playerCamera2 = nullptr;
-			Camera* playerCamera3 = nullptr;
-			Camera* playerCamera4 = nullptr;
+			Camera* cameras[CAM_COUNT];
 
 			bool shuffleConstraints;
 			bool shuffleObjects;

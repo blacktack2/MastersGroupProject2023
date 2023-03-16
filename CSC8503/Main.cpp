@@ -34,6 +34,9 @@
 #include "ScreenMain.h"
 
 #include "AssetLibrary.h"
+#include "OGLLoadingManager.h"
+
+
 #include "AssetLoader.h"
 #include "PrefabLibrary.h"
 
@@ -88,19 +91,20 @@ void LoadGlobalAssets() {
 	AssetLibrary<MeshGeometry>::AddAsset("shelter", AssetLoader::LoadMesh("shelterCube.msh"));
 	AssetLibrary<MeshGeometry>::AddAsset("pillar", AssetLoader::LoadMesh("pillarMsh.msh"));
 
-	AssetLibrary<TextureBase>::AddAsset("defaultDiffuse", AssetLoader::LoadTexture("DefaultDiffuse.png"));
-	AssetLibrary<TextureBase>::AddAsset("defaultBump", AssetLoader::LoadTexture("DefaultBump.png"));
-	AssetLibrary<TextureBase>::AddAsset("defaultSpec", AssetLoader::LoadTexture("DefaultSpec.png"));
-	AssetLibrary<TextureBase>::AddAsset("basic", AssetLoader::LoadTexture("checkerboard.png"));
-	AssetLibrary<TextureBase>::AddAsset("healingKitTex", AssetLoader::LoadTexture("shelterTex.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("pillarTex", AssetLoader::LoadTexture("pillarTex.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("defaultAlbedo", std::move(AssetLoader::LoadTexture("DefaultAlbedo.png")));
+	AssetLibrary<TextureBase>::AddAsset("defaultBump", std::move(AssetLoader::LoadTexture("DefaultBump.png")));
+	AssetLibrary<TextureBase>::AddAsset("defaultSpec", std::move(AssetLoader::LoadTexture("DefaultSpec.png")));
+	AssetLibrary<TextureBase>::AddAsset("basic", std::move(AssetLoader::LoadTexture("checkerboard.png")));
+	AssetLibrary<TextureBase>::AddAsset("pillarTex", std::move(AssetLoader::LoadTexture("pillarTex.jpg")));
 
 	AssetLibrary<MeshMaterial>::AddAsset("default", std::make_shared<MeshMaterial>("Default.mat"));
 	AssetLibrary<MeshMaterial>::AddAsset("pillar", std::make_shared<MeshMaterial>("pillar.mat"));
+	AssetLibrary<MeshMaterial>::AddAsset("floor", std::make_shared<MeshMaterial>("Floor.mat"));
 
 	AssetLibrary<ShaderBase>::AddAsset("modelDefault", std::move(AssetLoader::CreateShader("modelDefault.vert", "modelDefault.frag")));
 	AssetLibrary<ShaderBase>::AddAsset("paintDefault", std::move(AssetLoader::CreateShader("modelDefault.vert", "modelPaintTexture.frag")));
 	AssetLibrary<ShaderBase>::AddAsset("animationDefault", std::move(AssetLoader::CreateShader("modelAnimated.vert", "modelAnimated.frag")));
+	AssetLibrary<ShaderBase>::AddAsset("shadowDefault", std::move(AssetLoader::CreateShader("shadowDefault.vert", "shadowDefault.frag")));
 }
 
 void LoadMenuAsset() {
@@ -148,10 +152,13 @@ void LoadMenuAsset() {
 	AssetLibrary<TextureBase>::AddAsset("num7", AssetLoader::LoadTexture("Menu/num7.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("num8", AssetLoader::LoadTexture("Menu/num8.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("num9", AssetLoader::LoadTexture("Menu/num9.jpg"));
+	
+	AssetLibrary<TextureBase>::AddAsset("fontAtlas", std::move(AssetLoader::LoadTexture("PressStart2P.png")));
+	AssetLibrary<TextureBase>::AddAsset("BossHealthBarBorder", std::move(AssetLoader::LoadTexture("HP/Borders/Border_Style_3.png")));
+	AssetLibrary<TextureBase>::AddAsset("BossHealthBar", std::move(AssetLoader::LoadTexture("HP/Style_3.png")));
 
-	AssetLibrary<TextureBase>::AddAsset("fontAtlas", AssetLoader::LoadTexture("PressStart2P.png"));
-	AssetLibrary<TextureBase>::AddAsset("BossHealthBarBorder", AssetLoader::LoadTexture("HP/Borders/Border_Style_2.png"));
-	AssetLibrary<TextureBase>::AddAsset("BossHealthBar", AssetLoader::LoadTexture("HP/Style_2.png"));
+	AssetLibrary<TextureBase>::AddAsset("PlayerHealthBarBorder", std::move(AssetLoader::LoadTexture("HP/Borders/Border_Style_4.png")));
+	AssetLibrary<TextureBase>::AddAsset("PlayerHealthBar", std::move(AssetLoader::LoadTexture("HP/Style_2.png")));
 
 	AssetLibrary<ShaderBase>::AddAsset("menu", std::move(AssetLoader::CreateShader("menuVertex.vert", "menuFragment.frag")));
 	AssetLibrary<ShaderBase>::AddAsset("button", std::move(AssetLoader::CreateShader("buttonVertex.vert", "buttonFragment.frag")));
@@ -227,7 +234,6 @@ void LoadAsset() {
 	LoadPrefabs();
 }
 
-
 void StartPushdownAutomata(Window* w) {
 	PushdownMachine machine(new ScreenMain());
 	while (w->UpdateWindow()) {
@@ -244,11 +250,12 @@ void StartPushdownAutomata(Window* w) {
 
 int main() {
 	Window* w = Window::CreateGameWindow("CSC8507 Game technology!", 1280, 720);
+	GameTechRenderer& renderer = GameTechRenderer::instance();
+	OGLLoadingManager loadingScreen = OGLLoadingManager(w, renderer);
 
 	std::cout << "loading\n";
-	GameTechRenderer& renderer = GameTechRenderer::instance();
 	
-	LoadAsset();
+	loadingScreen.Load(LoadAsset);
 	renderer.InitPipeline();
 	
 	if (!w->HasInitialised()) {

@@ -92,8 +92,7 @@ void Button::OnPress() {
 }
 
 void Button::DrawExtras() {
-    Debug::Print("[]", Vector2(posX, posY), btncolour, 1.0f);
-    Debug::Print("[]", Vector2(posX + width, posY + height), btncolour, 1.0f);
+    
 }
 
 void Button::CheckMousePosition(Vector2 mousePos) {

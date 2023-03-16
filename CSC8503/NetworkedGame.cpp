@@ -96,19 +96,20 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 
 void NetworkedGame::Clear()
 {
+	std::cout << "clear" << std::endl;
 	TutorialGame::Clear();
 	for (int i = 0; i <= 4; i++) {
 		players[0] = nullptr;
 	}
-	localPlayer = NULL;
+	localPlayer = nullptr;
 }
 
 void NetworkedGame::StartLobby()
 {
 	canJoin = true;
-
 	InitWorld();
 	SpawnPlayers();
+	renderer.SetNumPlayers(1);
 	int id = OBJECTID_START;
 	BulletInstanceManager::instance().AddNetworkObject(id);
 
@@ -126,6 +127,7 @@ void NetworkedGame::StartLevel() {
 
 	boss = AddNetworkBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
 	boss->SetNextTarget(players[0]);
+	localPlayer->GetCamera()->GetHud().AddHealthBar(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
 
 	gameStateManager.SetGameState(GameState::OnGoing);
 	BroadcastGameStateChange();
@@ -134,12 +136,18 @@ void NetworkedGame::StartLevel() {
 void NetworkedGame::SpawnPlayers() {
 	if (thisServer) {
 		localPlayer = SpawnPlayer(0, true);
+		localPlayer->GetCamera()->GetHud().AddHealthBar(localPlayer->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
+		std::cout << "added hud " << std::endl;
 	}
 	if (thisClient && selfID != NULL) {
 		localPlayer = SpawnPlayer(selfID, true);
+		localPlayer->GetCamera()->GetHud().AddHealthBar(localPlayer->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
 	}
+	int count = 1;
 	for (int id : connectedPlayerIDs) {
-		PlayerJoinedServer(id);
+		PlayerObject* p = PlayerJoinedServer(id);
+		localPlayer->GetCamera()->GetHud().AddHealthBar(p->GetHealth(), Vector2(-0.7f, 0.9f - 0.1f * count), Vector2(0.25f, 0.02f));
+		count++;
 	}
 }
 
@@ -188,8 +196,6 @@ void NetworkedGame::UpdateGame(float dt) {
 	}
 
 	TutorialGame::UpdateGame(dt);
-
-	gameWorld.GetMainCamera()->UpdateCamera(dt);
 }
 
 void NetworkedGame::FreezeSelf()
@@ -247,7 +253,7 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	//move main player
 	NetworkPlayer* player = static_cast<NetworkPlayer*>(localPlayer);
 	if (!player->isFrozen) {
-		player->ServerSideMovement();
+		player->ServerSideMovement(dt);
 	}
 	localPlayer->GetNetworkObject()->SnapRenderToSelf();
 	std::vector<NetworkObject*> networkObjects = gameWorld.GetNetworkObjects();
@@ -282,21 +288,18 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	
 	//*/
 	//send self data to server
+
 	ClientPacket newPacket;
 	newPacket.lastID = stateID;
-	keyMap.Update();
-	newPacket.buttonstates = keyMap.GetButtonState();
-	if (!Window::GetKeyboard()->KeyDown(KeyboardKeys::C)) {
-		newPacket.yaw = (int) gameWorld.GetMainCamera()->GetYaw() * 1000;
-	}
-	else {
-		newPacket.yaw = NULL;
-	}
 	if (localPlayer) {
 		NetworkPlayer* player = static_cast<NetworkPlayer*>(localPlayer);
-		if (player->isFrozen) {
-			newPacket.buttonstates = 0;
-			newPacket.yaw = NULL;
+		if (!player->isFrozen) {
+			player->ClientUpdateCamera(dt);
+			keyMap.Update();
+			newPacket.buttonstates = keyMap.GetButtonState();
+			player->GetNetworkAxis(newPacket.axis);
+			newPacket.yaw = static_cast<int>(player->GetYaw() * 1000);
+			newPacket.pitch = static_cast<int>(player->GetPitch() * 1000);
 		}
 	}
 	
@@ -388,7 +391,7 @@ PlayerObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 	if (isSelf) {
 		keyMap.ChangePlayerControlTypeMap(selfID, ControllerType::KeyboardMouse);
 		SetCameraFollow(newPlayer);
-		gameWorld.GetMainCamera()->SetFollow(&(newPlayer->GetNetworkObject()->GetRenderTransform()));
+		newPlayer->GetCamera()->SetFollow(&(newPlayer->GetNetworkObject()->GetRenderTransform()));
 		players[selfID] = newPlayer;
 	}
 	serverPlayers[playerID] = newPlayer;
@@ -399,12 +402,8 @@ PlayerObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 void NetworkedGame::ServerProcessNetworkObject(GamePacket* payload, int playerID) {
 	if (!serverPlayers.contains(playerID))
 		return;
-	//rotation
-	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(((ClientPacket*)payload)->buttonstates);
-
-	if (((ClientPacket*)payload)->yaw != NULL) {
-		((NetworkPlayer*)serverPlayers[playerID])->RotateYaw(((ClientPacket*)payload)->yaw * 0.001f);
-	}
+	
+	((NetworkPlayer*)serverPlayers[playerID])->MoveInput(((ClientPacket*)payload)->buttonstates, ((ClientPacket*)payload)->axis, Vector2(((ClientPacket*)payload)->yaw * 0.001f, ((ClientPacket*)payload)->pitch * 0.001f));
 
 	if (((ClientPacket*)payload)->lastID > stateIDs[playerID]) {
 		stateIDs[playerID] = ((ClientPacket*)payload)->lastID;
@@ -447,8 +446,7 @@ void NetworkedGame::HandlePlayerConnectedPacket(GamePacket* payload, int source)
 
 	int playerID = ((PlayerConnectionPacket*)payload)->playerID;
 	connectedPlayerIDs.push_back(playerID);
-	NetworkedGame::PlayerJoinedServer(playerID);
-
+	PlayerObject* newPlayer = NetworkedGame::PlayerJoinedServer(playerID);
 	//if server: send to clients
 	if (thisServer) {
 		//send server object;
@@ -504,7 +502,7 @@ void NetworkedGame::HandlePlayerSyncPacket(GamePacket* payload, int source) {
 	if (thisClient && localPlayer == nullptr) {
 		std::cout << name << " " << selfID << " Creating localhost player " << selfID << std::endl;
 		localPlayer = SpawnPlayer(selfID, true);
-		players[0] = static_cast<PlayerObject*> (localPlayer);
+		localPlayer->GetCamera()->GetHud().AddHealthBar(localPlayer->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
 	}
 }
 
@@ -597,8 +595,9 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	}
 }
 
-void NetworkedGame::PlayerJoinedServer(int playerID) {
-	PlayerObject* temp = static_cast<PlayerObject*>(SpawnPlayer(playerID));
+PlayerObject* NetworkedGame::PlayerJoinedServer(int playerID) {
+	PlayerObject* temp = SpawnPlayer(playerID);
+	return temp;
 }
 
 void NetworkedGame::PlayerLeftServer(int playerID) {
@@ -654,7 +653,7 @@ PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, in
 NetworkBoss* NetworkedGame::AddNetworkBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
 	NetworkBoss* boss = new NetworkBoss(this);
 
-	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(Vector3{ dimensions.x,dimensions.y * 2.2f,dimensions.z }));
 
 	boss->GetTransform()
 		.SetPosition(position)
@@ -675,22 +674,6 @@ NetworkBoss* NetworkedGame::AddNetworkBossToWorld(const Vector3& position, Vecto
 	gameWorld.AddGameObject(boss);
 
 	return boss;
-}
-
-void NetworkedGame::UpdateHud(float dt)
-{
-	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
-
-	if (localPlayer) {
-		Debug::Print(std::string("health: ").append(std::to_string((int)localPlayer->GetHealth()->GetHealth())), Vector2(5, 5), Vector4(1, 1, 0, 1));
-		if (boss) {
-			hud->loadHuds((int)boss->GetHealth()->GetHealth(), (int)localPlayer->GetHealth()->GetHealth());
-		}
-	}
-	if (boss) {
-		Debug::Print(std::string("Boss health: ").append(std::to_string((int)boss->GetHealth()->GetHealth())), Vector2(60, 5), Vector4(1, 1, 0, 1));
-	}
-	(renderer.GetHudRPass()).SetHud(hud->getHuds());
 }
 
 void NetworkedGame::ProcessState() {

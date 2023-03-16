@@ -13,8 +13,8 @@
 
 using namespace NCL::Rendering;
 
-OGLTexture::OGLTexture(TextureType type, unsigned int width, unsigned int height) : TextureBase(type) {
-	glGenTextures(1, &texID);
+OGLTexture::OGLTexture(TextureType type, unsigned int width, unsigned int height) : TextureBase(type),
+width(width), height(height) {
 	switch (type) {
 		case TextureType::ColourR8      :
 			pixComponents = GL_R8               ; dummyFormat = GL_RED            ; dummyType = GL_UNSIGNED_BYTE; break;
@@ -41,18 +41,8 @@ OGLTexture::OGLTexture(TextureType type, unsigned int width, unsigned int height
 		case TextureType::Stencil       :
 			pixComponents = GL_RGBA             ; dummyFormat = GL_STENCIL_INDEX  ; dummyType = GL_UNSIGNED_BYTE; break;
 		case TextureType::Shadow        :
-			pixComponents = GL_DEPTH_COMPONENT  ; dummyFormat = GL_DEPTH_COMPONENT; dummyType = GL_UNSIGNED_BYTE; break;
+			pixComponents = GL_DEPTH_COMPONENT  ; dummyFormat = GL_DEPTH_COMPONENT; dummyType = GL_FLOAT        ; break;
 	}
-	Bind();
-	if (type == TextureType::Shadow) {
-		SetFilters(MinFilter::Linear, MagFilter::Linear);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
-	} else {
-		SetFilters(MinFilter::Nearest, MagFilter::Nearest);
-	}
-	SetEdgeWrap(EdgeWrap::ClampToEdge);
-	Resize(width, height);
-	Unbind();
 }
 
 OGLTexture::~OGLTexture() {
@@ -88,6 +78,52 @@ void OGLTexture::Upload(void* data, PixelDataFormat format, PixelDataType type) 
 		case PixelDataType::Float         : gltype = GL_FLOAT         ; break;
 	}
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, glformat, gltype, data);
+}
+
+void OGLTexture::SoftUpload(void* data, size_t amount, PixelDataFormat format, PixelDataType type) {
+	switch (format) {
+		case PixelDataFormat::Red            : dummyFormat = GL_RED            ; break;
+		case PixelDataFormat::RG             : dummyFormat = GL_RG             ; break;
+		case PixelDataFormat::RGB            : dummyFormat = GL_RGB            ; break;
+		default:
+		case PixelDataFormat::RGBA           : dummyFormat = GL_RGBA           ; break;
+		case PixelDataFormat::DepthComponent : dummyFormat = GL_DEPTH_COMPONENT; break;
+		case PixelDataFormat::DepthStencil   : dummyFormat = GL_DEPTH_STENCIL  ; break;
+	}
+	switch (type) {
+		default:
+		case PixelDataType::UnsignedByte  : dummyType = GL_UNSIGNED_BYTE ; break;
+		case PixelDataType::Byte          : dummyType = GL_BYTE          ; break;
+		case PixelDataType::UnsignedShort : dummyType = GL_UNSIGNED_SHORT; break;
+		case PixelDataType::Short         : dummyType = GL_SHORT         ; break;
+		case PixelDataType::UnsignedInt   : dummyType = GL_UNSIGNED_INT  ; break;
+		case PixelDataType::Int           : dummyType = GL_INT           ; break;
+		case PixelDataType::HalfFloat     : dummyType = GL_HALF_FLOAT    ; break;
+		case PixelDataType::Float         : dummyType = GL_FLOAT         ; break;
+	}
+	this->data.resize(amount);
+	for (size_t i = 0; i < amount; i++) {
+		this->data[i] = ((char*)data)[i];
+	}
+}
+
+void OGLTexture::Initialize() {
+	glGenTextures(1, &texID);
+	Bind();
+	if (type == TextureType::Shadow) {
+		SetFilters(MinFilter::Linear, MagFilter::Linear);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+	} else {
+		SetFilters(MinFilter::Nearest, MagFilter::Nearest);
+	}
+	SetEdgeWrap(type == TextureType::ColourRGBA32F ? EdgeWrap::Repeat : EdgeWrap::ClampToEdge);
+
+	Resize(width, height);
+	if (!data.empty()) {
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, dummyFormat, dummyType, data.data());
+		data.clear();
+	}
+	Unbind();
 }
 
 void OGLTexture::Bind() const {
@@ -156,13 +192,13 @@ std::unique_ptr<TextureBase> OGLTexture::LoadTexture(const std::string& filename
 
 	std::unique_ptr<TextureBase> glTex = CreateTextureFromData(texData, width, height, channels);
 
-	delete[] texData;
-
 	return glTex;
 }
 
 std::unique_ptr<TextureBase> OGLTexture::CreateTexture(TextureType type, unsigned int width, unsigned int height) {
-	return std::make_unique<OGLTexture>(type, width, height);
+	std::unique_ptr<TextureBase> tex = std::make_unique<OGLTexture>(type, width, height);
+	tex->Initialize();
+	return tex;
 }
 
 std::unique_ptr<TextureBase> OGLTexture::CreateTextureFromData(char* data, unsigned int width, unsigned int height, int channels) {
@@ -176,11 +212,7 @@ std::unique_ptr<TextureBase> OGLTexture::CreateTextureFromData(char* data, unsig
 	}
 
 	std::unique_ptr<TextureBase> tex = std::make_unique<OGLTexture>(TextureType::ColourRGBA32F, width, height);
-	tex->Bind();
-
-	tex->Upload(data, format, PixelDataType::UnsignedByte);
-
-	tex->Unbind();
+	tex->SoftUpload(data, (size_t)width * (size_t)height * channels, format, PixelDataType::UnsignedByte);
 
 	return tex;
 }

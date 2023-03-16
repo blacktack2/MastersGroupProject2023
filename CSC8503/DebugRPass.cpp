@@ -25,8 +25,8 @@ using namespace CSC8503;
 
 DebugRPass::DebugRPass() :
 OGLOverlayRenderPass(), gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
-	lineShader = AssetLoader::CreateShader("debugLines.vert", "debugLines.frag");
-	textShader = AssetLoader::CreateShader("debugText.vert" , "debugText.frag" );
+	lineShader = AssetLoader::CreateShaderAndInit("debugLines.vert", "debugLines.frag");
+	textShader = AssetLoader::CreateShaderAndInit("debugText.vert" , "debugText.frag" );
 
 	textShader->Bind();
 
@@ -59,9 +59,8 @@ void DebugRPass::RenderLines() {
 		return;
 	}
 
-	float screenAspect = (float)renderer.GetWidth() / (float)renderer.GetHeight();
 	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetAspect());
 	
 	Matrix4 viewProjMatrix  = projMatrix * viewMatrix;
 
@@ -119,4 +118,30 @@ void DebugRPass::RenderText() {
 	textMesh->Draw();
 
 	textShader->Unbind();
+}
+
+void DebugRPass::RenderWinLoseInformation(bool win) {
+	renderer.GetConfig().SetCullFace(false);
+	textShader->Bind();
+
+	const TextureBase& texture = Debug::GetDebugFont()->GetTexture();
+
+	texture.Bind(0);
+
+	debugTextPos.clear();
+	debugTextColours.clear();
+	debugTextUVs.clear();
+
+	float size = 20.0f;
+	if (win) Debug::GetDebugFont()->BuildVerticesForString("You Win!", Vector2(5, 80), Vector4(0, 1, 0, 1), size, debugTextPos, debugTextUVs, debugTextColours);
+	else Debug::GetDebugFont()->BuildVerticesForString("You got Inked!", Vector2(5, 80), Vector4(1, 0, 0, 1), size, debugTextPos, debugTextUVs, debugTextColours);
+
+	textMesh->SetVertexPositions(debugTextPos);
+	textMesh->SetVertexColours(debugTextColours);
+	textMesh->SetVertexTextureCoords(debugTextUVs);
+	textMesh->UploadToGPU();
+	textMesh->Draw();
+
+	textShader->Unbind();
+	renderer.GetConfig().SetCullFace();
 }

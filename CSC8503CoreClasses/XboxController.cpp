@@ -24,6 +24,7 @@ XboxController::~XboxController()
 
 void XboxController::CheckPorts()
 {
+    connectedControllers.clear();
     for (int i = 0; i < 4; i++)
     {
         ZeroMemory(&state, sizeof(XINPUT_STATE));

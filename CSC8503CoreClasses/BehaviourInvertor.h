@@ -9,22 +9,23 @@
 #include "BehaviourNodeWithChildren.h"
 #include <string>
 
-namespace NCL::core {
+namespace NCL{
+	namespace core {
 
-	class BehaviourInvertor : public BehaviourNodeWithChildren {
-	public:
-		BehaviourInvertor(const std::string& nodeName) : BehaviourNodeWithChildren(nodeName) {}
-		~BehaviourInvertor() {}
-		BehaviourState Execute(float dt) override {
-			//std::cout << "Executing invertor " << mName << "\n";
-			int count = 0;
-			BehaviourState nodeState = childNodes[0]->Execute(dt);
-			switch (nodeState) {
+		class BehaviourInvertor : public BehaviourNodeWithChildren {
+		public:
+			BehaviourInvertor(const std::string& nodeName) : BehaviourNodeWithChildren(nodeName) {}
+			~BehaviourInvertor() {}
+			BehaviourState Execute(float dt) override {
+				//std::cout << "Executing invertor " << mName << "\n";
+				int count = 0;
+				BehaviourState nodeState = childNodes[0]->Execute(dt);
+				switch (nodeState) {
 				case Success: {
 					currentState = Failure;
 					return currentState;
 				}
-					
+
 				case Ongoing: {
 					currentState = nodeState;
 					return currentState;
@@ -34,16 +35,17 @@ namespace NCL::core {
 					currentState = Success;
 					return currentState;
 				}
+				}
+
 			}
-			
-		}
-		void AddChild(BehaviourNode* n){
-			if(childNodes.size()<1)
-			childNodes.emplace_back(n);
-			else{
-				childNodes.clear();
-				childNodes.emplace_back(n);
+			void AddChild(BehaviourNode* n) {
+				if (childNodes.size() < 1)
+					childNodes.emplace_back(n);
+				else {
+					childNodes.clear();
+					childNodes.emplace_back(n);
+				}
 			}
-		}
-	};
+		};
+	}
 }

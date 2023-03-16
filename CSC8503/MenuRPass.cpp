@@ -31,7 +31,7 @@ MenuRPass::MenuRPass() : OGLOverlayRenderPass(),
 gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()), menuManager(MenuManager::instance()) {
 	defaultTexture = AssetLoader::LoadTexture("defaultmain.jpg");
 
-	defaultShader = AssetLoader::CreateShader("menuVertex.vert", "menuFragment.frag");
+	defaultShader = AssetLoader::CreateShaderAndInit("menuVertex.vert", "menuFragment.frag");
 
 	defaultShader->Bind();
 

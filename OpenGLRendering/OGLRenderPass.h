@@ -8,14 +8,16 @@
 #pragma once
 #include "RenderPassBase.h"
 
-namespace NCL::Rendering {
-	/**
-	 * @brief Base OpenGL implementation of a render pass.
-	 */
-	class OGLRenderPass : public RenderPassBase {
-	public:
-		virtual ~OGLRenderPass() {}
-	protected:
-		OGLRenderPass() {}
-	};
+namespace NCL {
+	namespace Rendering {
+		/**
+		 * @brief Base OpenGL implementation of a render pass.
+		 */
+		class OGLRenderPass : public RenderPassBase {
+		public:
+			virtual ~OGLRenderPass() {}
+		protected:
+			OGLRenderPass() {}
+		};
+	}
 }

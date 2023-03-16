@@ -9,13 +9,11 @@ using namespace NCL;
 using namespace NCL::CSC8503;
 
 GameWorld::GameWorld() : staticQuadTree(Vector2(1024, 1024), 7, 6), dynamicQuadTree(Vector2(1024, 1024), 7, 6) {
+	for (int i = 0; i < CAM_COUNT; i++) {
+		cameras[i] = new Camera();
+	}
 	
-	playerCamera1 = new Camera();
-	playerCamera2 = new Camera();
-	playerCamera3 = new Camera();
-	playerCamera4 = new Camera();
-	
-	mainCamera = playerCamera1;
+	mainCamera = cameras[0];
 
 	shuffleConstraints	= false;
 	shuffleObjects		= false;
@@ -25,10 +23,10 @@ GameWorld::GameWorld() : staticQuadTree(Vector2(1024, 1024), 7, 6), dynamicQuadT
 
 GameWorld::~GameWorld()	{
 	//delete mainCamera;
-	delete playerCamera1;
-	delete playerCamera2;
-	delete playerCamera3;
-	delete playerCamera4;
+	for (int i = 0; i < CAM_COUNT; i++) {
+		delete cameras[i];
+		cameras[i] = nullptr;
+	}
 }
 
 void GameWorld::Clear() {
@@ -111,7 +109,7 @@ void GameWorld::OperateOnConstraints(ConstraintFunc f) {
 }
 
 void GameWorld::OperateOnLights(LightFunc f) {
-	for (const Light* l : lights) {
+	for (const auto& l : lights) {
 		f(*l);
 	}
 }
@@ -269,11 +267,6 @@ bool GameWorld::Raycast(Ray& r, RayCollision& closestCollision, bool closestObje
 	return false;
 }
 
-
-/*
-Constraint Tutorial Stuff
-*/
-
 void GameWorld::AddConstraint(Constraint* c) {
 	constraints.emplace_back(c);
 }
@@ -294,9 +287,19 @@ void GameWorld::RemoveConstraint(std::vector<Constraint*>::const_iterator c, boo
 	}
 }
 
-Light* GameWorld::AddLight(Light* l) {
-	lights.push_back(l);
-	return l;
+PointLight& GameWorld::AddPointLight(const Vector3& position, const Vector4& colour, float radius) {
+	lights.push_back(std::make_unique<PointLight>(position, colour, radius));
+	return static_cast<PointLight&>(*lights.back());
+}
+
+SpotLight& GameWorld::AddSpotLight(const Vector3& position, const Vector4& direction, const Vector4& colour, float radius, float angle) {
+	lights.push_back(std::make_unique<SpotLight>(position, direction, colour, radius, angle));
+	return static_cast<SpotLight&>(*lights.back());
+}
+
+DirectionalLight& GameWorld::AddDirectionalLight(const Vector3& direction, const Vector4& colour) {
+	lights.push_back(std::make_unique<DirectionalLight>(direction, colour));
+	return static_cast<DirectionalLight&>(*lights.back());
 }
 
 void GameWorld::RemoveLight(LightIterator l) {
@@ -305,5 +308,46 @@ void GameWorld::RemoveLight(LightIterator l) {
 
 void GameWorld::ClearLight() {
 	lights.clear();
+}
+
+Camera* GameWorld::GetMainCamera() const {
+	return mainCamera;
+}
+void GameWorld::InitCameras() const {
+	for (int i = 0; i < CAM_COUNT; i++) {
+		InitCamera(cameras[i]);
+	}
+
+}
+void GameWorld::InitCamera(Camera* cam) const {
+	if (!cam)
+		return;
+	cam->SetNearPlane(0.1f);
+	cam->SetFarPlane(1000.0f);
+	cam->SetPitch(-15.0f);
+	cam->SetYaw(315.0f);
+	cam->SetPosition(Vector3(-60, 40, 60));
+	cam->SetFollow(nullptr);
+}
+
+Camera* GameWorld::GetCamera(int n) const {
+	if (n >= CAM_COUNT || n < 0)
+		return nullptr;
+	return cameras[n] ;
+}
+
+void GameWorld::UpdateCamera(float dt) {
+	for (Camera* i : cameras) {
+		i->UpdateCamera(dt);
+	}
+}
+
+Camera* GameWorld::SetMainCamera(int n)
+{
+	mainCameraIndex = n;
+	if (n >= CAM_COUNT || n < 0)
+		return nullptr;
+	mainCamera = cameras[n];
+	return mainCamera;
 }
 
