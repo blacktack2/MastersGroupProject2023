@@ -16,6 +16,7 @@ InputKeyMap::InputKeyMap() {
 InputKeyMap::~InputKeyMap() {}
 
 void InputKeyMap::Update() {
+	unsigned int oldStates = buttonstates;
 	buttonstates = InputType::Empty;
 	movementAxis = Vector2(0);
 	cameraAxis = Vector2(0);
@@ -23,6 +24,9 @@ void InputKeyMap::Update() {
 	for (auto playerTypePair : playerControlTypeMap) {
 		UpdatePlayer(playerTypePair.first);
 	}
+
+	upStates   = oldStates & (buttonstates ^ oldStates);
+	downStates = buttonstates & (oldStates ^ buttonstates);
 }
 
 bool InputKeyMap::GetButton(InputType key, int PlayerID) {
@@ -156,6 +160,19 @@ void InputKeyMap::UpdateWindows(int playerID)
 	{
 		SetButton(InputType::Pause, playerID);
 	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN ) || Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT))
+	{
+		buttonstates |= InputType::DOWN;
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP) || Window::GetKeyboard()->KeyDown(KeyboardKeys::LEFT))
+	{
+		buttonstates |= InputType::UP;
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN))
+	{
+		buttonstates |= InputType::Confirm;
+	}
+
 	if (Window::GetMouse()) {
 		if (Window::GetMouse()->ButtonDown(MouseButtons::LEFT))
 		{

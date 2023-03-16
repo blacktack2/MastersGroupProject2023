@@ -653,7 +653,7 @@ PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, in
 NetworkBoss* NetworkedGame::AddNetworkBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
 	NetworkBoss* boss = new NetworkBoss(this);
 
-	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(Vector3{ dimensions.x,dimensions.y * 2.2f,dimensions.z }));
 
 	boss->GetTransform()
 		.SetPosition(position)
