@@ -147,6 +147,8 @@ namespace NCL {
 		virtual void UpdateHudDisplay(int playerID) = 0;
 
 		virtual void DisplayWinLoseInformation(int playerID) = 0;
+
+		virtual void SetGameWorldDeltaTime(float dt) = 0;
 	protected:
 		/**
 		 * @brief Add main render pass. Meant to add to, or modify, the GBuffer

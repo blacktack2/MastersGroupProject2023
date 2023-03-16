@@ -84,7 +84,7 @@ void TutorialGame::StartLevel() {
 	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
 	if (numOfPlayers >= 4)
 		numOfPlayers = 4;
-	numOfPlayers = 2;
+
 	boss = AddBossToWorld({ 0, 5, -20 }, Vector3(4), 2);
 
 	players[0] = AddPlayerToWorld(0, Vector3(0, 5, 90));
@@ -97,8 +97,10 @@ void TutorialGame::StartLevel() {
 		players[i]->GetCamera()->GetHud().AddHealthBar(players[i]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
 		players[i]->GetCamera()->GetHud().AddHealthBar(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
 	}
-	playerNum = numOfPlayers + 1;
-	renderer.SetNumPlayers(playerNum);		// +1 accounts for players[0] who uses Keyboard & Mouse
+	numOfPlayers++;		// +1 accounts for players[0] who uses Keyboard & Mouse
+	playerNum = numOfPlayers;
+	renderer.SetNumPlayers(playerNum);
+	gameWorld.SetScreenNum(playerNum);
 	SetCameraFollow(players[0]);		// Currently set to player[0] is crucial for split screen
 
 	boss -> SetNextTarget(players[0]);
@@ -136,14 +138,22 @@ void TutorialGame::UpdateGame(float dt) {
 	keyMap.Update();
 
 	// TODO - This is temporary (remove)
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM1))
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM1)) {
 		renderer.SetNumPlayers(1);
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM2))
+		gameWorld.SetScreenNum(1);
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM2)) {
 		renderer.SetNumPlayers(2);
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM3))
+		gameWorld.SetScreenNum(2);
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM3)) {
 		renderer.SetNumPlayers(3);
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM4))
+		gameWorld.SetScreenNum(3);
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM4)) {
 		renderer.SetNumPlayers(4);
+		gameWorld.SetScreenNum(4);
+	}
 
 	debugViewPoint.BeginFrame();
 	debugViewPoint.MarkTime("Update");
@@ -275,7 +285,8 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 		.SetScale(floorSize * 2)
 		.SetPosition(position);
 	
-	PaintRenderObject* render = new PaintRenderObject(floor->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("cube"), nullptr);
+	PaintRenderObject* render = new PaintRenderObject(floor->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("cube"), AssetLibrary<MeshMaterial>::GetAsset("floor"));
+	render->SetTexScale(Vector2(10.0f));
 	floor->SetRenderObject(render);
 
 	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));
@@ -325,11 +336,12 @@ void TutorialGame::SetCameraFollow(PlayerObject* p)
 Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
 	Boss* boss = new Boss();
 
-	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+	//boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(Vector3{ dimensions.x,dimensions.y*2.2f,dimensions.z}));
 
 	boss->GetTransform()
 		.SetPosition(position)
-		.SetScale(dimensions);
+		.SetScale(dimensions*2);
 
 	boss->SetRenderObject(new AnimatedRenderObject(boss->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("boss"), AssetLibrary<MeshMaterial>::GetAsset("boss"), AssetLibrary<MeshAnimation>::GetAsset("WalkForward")));
 
@@ -378,7 +390,7 @@ void TutorialGame::UpdateLevel() {
 				gameWorld.AddGameObject(pillar);
 			}
 			if (object->objectType == ObjectType::FenceX){
-				Vector3 dimensions{ interval / 4.0f, 0.5f, interval / 5.0f };
+				Vector3 dimensions{ interval / 6.0f, 1.0f, interval / 5.0f };
 				Obstacle* fenceX = new Obstacle{ object, true };
 				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * 2, CollisionLayer::PaintAble));
 				fenceX->GetTransform()

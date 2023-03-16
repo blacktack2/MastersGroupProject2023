@@ -49,4 +49,11 @@ private:
 
 	int up = 0;
 	int down = 0;
+
+	bool ReturnPointer = false;
+	bool SunMovePointer = false;
+	bool DebugModePointer = false;
+	bool SoundPointer = false;
+	bool VolumeUpPointer = false;
+	bool VolumeDownPointer = false;
 };

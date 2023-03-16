@@ -3,6 +3,7 @@
  * @brief  A Pushdown automata state for multiplayer game options.
  *
  * @author Felix Chiu
+ * @author Yifei Hu
  * @author Stuart Lewis
  * @date   February 2023
  */
@@ -36,7 +37,12 @@ private:
 		StartClient,
 		Quit
 	};
+	OptionManager& optionManager = OptionManager::instance();
 	ChangeState menuState = ChangeState::None;
 
 	const std::string NAME = "ScreenMultiplayerOption";
+
+	bool StartPointer = false;
+	bool MultiPointer = false;
+	bool QuitPointer = false;
 };

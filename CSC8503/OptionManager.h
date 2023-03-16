@@ -25,7 +25,7 @@ namespace NCL {
 			int upTimes;
 			int downTimes;
 
-
+			int counter;
 		public:
 			static OptionManager& instance() {
 				static OptionManager INSTANCE;
@@ -53,6 +53,9 @@ namespace NCL {
 
 			void SetDownTimes(int num) { downTimes = num; };
 			int GetDownTimes() { return downTimes; };
+
+			void SetCounter(int num) { counter = num; };
+			int GetCounter() { return counter; };
 		};
 	}
 }

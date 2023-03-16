@@ -32,7 +32,7 @@ AnimatedRenderObject::~AnimatedRenderObject() {
 }
 
 void AnimatedRenderObject::PreDraw(int sublayer, ShaderBase& shader) {
-	frameTime -= GameWorld::instance().GetDeltaTime() * animSpeed;
+	frameTime -= GameWorld::instance().GetDeltaTime() / GameWorld::instance().GetScreenNum() * animSpeed;
 	while (frameTime < 0.0f) {
 		currentFrame = nextFrame++;
 		nextFrame    = nextFrame == anim->GetFrameCount() ? 0 : nextFrame;
@@ -45,7 +45,7 @@ void AnimatedRenderObject::PreDraw(int sublayer, ShaderBase& shader) {
 	//const std::vector<int>& bindPoseIndices = mesh->GetBindPoseIndices();
 
 	std::vector<Matrix4> frameMatrices;
-	for (unsigned int i = 0; i < mesh->GetJointCount(); i++) {
+	for (unsigned int i = 0; i < std::min(mesh->GetJointCount(), anim->GetJointCount()); i++) {
 		frameMatrices.emplace_back(frameData[i] * invBindPose[i]);
 	}
 	shader.SetUniformMatrix("joints", frameMatrices);

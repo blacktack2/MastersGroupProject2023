@@ -171,6 +171,10 @@ namespace NCL {
 			}
 		}
 
+		void SetGameWorldDeltaTime(float dt) override {
+			gameWorld.SetDeltaTime(dt);
+		}
+
 	protected:
 		GameTechRenderer();
 		~GameTechRenderer();
