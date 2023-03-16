@@ -163,6 +163,7 @@ void RendererBase::RenderFrame() {
 		if (cameraID == mainCamera) {
 			cameraID++;
 		}
+		//if (i > 1) { SetGameWorldDeltaTime(0.0f); }
 		RenderViewPort(i, cameraID, viewports, temp1);
 		cameraID++;
 	}

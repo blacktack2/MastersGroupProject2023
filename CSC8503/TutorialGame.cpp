@@ -96,7 +96,9 @@ void TutorialGame::StartLevel() {
 		players[i]->GetCamera()->GetHud().AddHealthBar(players[i]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
 		players[i]->GetCamera()->GetHud().AddHealthBar(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
 	}
-	renderer.SetNumPlayers(numOfPlayers + 1);		// +1 accounts for players[0] who uses Keyboard & Mouse
+	numOfPlayers++;		// +1 accounts for players[0] who uses Keyboard & Mouse
+	renderer.SetNumPlayers(numOfPlayers);
+	gameWorld.SetScreenNum(numOfPlayers);
 	SetCameraFollow(players[0]);		// Currently set to player[0] is crucial for split screen
 
 	boss -> SetNextTarget(players[0]);
@@ -133,14 +135,22 @@ void TutorialGame::UpdateGame(float dt) {
 	keyMap.Update();
 
 	// TODO - This is temporary (remove)
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM1))
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM1)) {
 		renderer.SetNumPlayers(1);
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM2))
+		gameWorld.SetScreenNum(1);
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM2)) {
 		renderer.SetNumPlayers(2);
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM3))
+		gameWorld.SetScreenNum(2);
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM3)) {
 		renderer.SetNumPlayers(3);
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM4))
+		gameWorld.SetScreenNum(3);
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM4)) {
 		renderer.SetNumPlayers(4);
+		gameWorld.SetScreenNum(4);
+	}
 
 	//temp change player
 	/*if (Window::GetKeyboard()->KeyDown(KeyboardKeys::P))
