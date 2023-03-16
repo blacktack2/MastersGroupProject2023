@@ -246,7 +246,8 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 		.SetScale(floorSize * 2)
 		.SetPosition(position);
 	
-	PaintRenderObject* render = new PaintRenderObject(floor->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("cube"), nullptr);
+	PaintRenderObject* render = new PaintRenderObject(floor->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("cube"), AssetLibrary<MeshMaterial>::GetAsset("floor"));
+	render->SetTexScale(Vector2(10.0f));
 	floor->SetRenderObject(render);
 
 	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));
@@ -296,11 +297,12 @@ void TutorialGame::SetCameraFollow(PlayerObject* p)
 Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
 	Boss* boss = new Boss();
 
-	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+	//boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(Vector3{ dimensions.x,dimensions.y*2.2f,dimensions.z}));
 
 	boss->GetTransform()
 		.SetPosition(position)
-		.SetScale(dimensions);
+		.SetScale(dimensions*2);
 
 	boss->SetRenderObject(new AnimatedRenderObject(boss->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("boss"), AssetLibrary<MeshMaterial>::GetAsset("boss"), AssetLibrary<MeshAnimation>::GetAsset("WalkForward")));
 
@@ -349,7 +351,7 @@ void TutorialGame::UpdateLevel() {
 				gameWorld.AddGameObject(pillar);
 			}
 			if (object->objectType == ObjectType::FenceX){
-				Vector3 dimensions{ interval / 4.0f, 0.5f, interval / 5.0f };
+				Vector3 dimensions{ interval / 6.0f, 1.0f, interval / 5.0f };
 				Obstacle* fenceX = new Obstacle{ object, true };
 				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * 2, CollisionLayer::PaintAble));
 				fenceX->GetTransform()
