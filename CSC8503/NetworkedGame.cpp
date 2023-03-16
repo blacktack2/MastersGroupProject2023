@@ -689,7 +689,17 @@ void NetworkedGame::ProcessState() {
 			Debug::Print("Please Wait for server to return to lobby", Vector2(5, 80), Vector4(1, 1, 1, 1));
 		}
 		break;
+	case GameState::Lobby:
+		if (thisServer) {
+			Debug::Print("Press [R] or [Start] to Start the Game", Vector2(5, 80), Vector4(1, 1, 1, 1));
+		}
+		if (thisClient) {
+			Debug::Print("Please Wait for server to Start the Game", Vector2(5, 80), Vector4(1, 1, 1, 1));
+		}
+		break;
 	}
+
+	std::cout << (int)gameStateManager.GetGameState() << std::endl;
 
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	if (thisServer) {
