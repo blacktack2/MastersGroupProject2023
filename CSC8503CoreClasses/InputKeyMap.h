@@ -14,6 +14,9 @@ enum InputType : unsigned int {
 	FreeLook = (1u << 7),
 	ESC = (1u << 8),
 
+	DOWN = (1u << 19),
+	UP = (1u << 20),
+
 	Start = (1u << 27),
 	Pause = (1u << 28),
 	Restart = (1u << 29),
@@ -55,6 +58,14 @@ namespace NCL {
 
 		bool GetButton(InputType key) {
 			return buttonstates & key;
+		}
+
+		bool GetButtonUp(InputType key) {
+			return upStates & key;
+		}
+
+		bool GetButtonDown(InputType key) {
+			return downStates & key;
 		}
 
 		unsigned int GetButtonState() {
@@ -105,6 +116,8 @@ namespace NCL {
 		void UpdateXbox(int playerID);
 
 		unsigned int buttonstates;
+		unsigned int upStates;
+		unsigned int downStates;
 		float AxisDataArray[5][AxisInput::AxisInputDataMax] = { 0 };
 		Vector2 movementAxis;
 		Vector2 cameraAxis;

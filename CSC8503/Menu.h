@@ -31,7 +31,7 @@ namespace NCL::CSC8503 {
 		void Update(float dt) override;
 		Vector4 GetDimension() const override;
 
-		Button& AddButton(float x, float y, float width, float height, std::shared_ptr<TextureBase> texture, Button::overlap_func onclick = nullptr);
+		Button& AddButton(float x, float y, float width, float height, std::shared_ptr<TextureBase> texture, Button::overlap_func onclick = nullptr, Button::overlap_func onselect = nullptr, Button::overlap_func onpress = nullptr);
 
 		const std::vector<std::unique_ptr<Button>>& GetButtons() {
 			return buttons;
