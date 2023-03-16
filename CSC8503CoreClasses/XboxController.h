@@ -33,6 +33,8 @@ namespace NCL
         bool GetRightTrigger(unsigned int controllerNum, float& n);
         bool GetLeftTrigger(unsigned int controllerNum, float& n);
 
+        bool GetButton(unsigned int controllerNum, short int button);
+
     protected:
 
         bool UpdateConnection(unsigned int controllerNum);

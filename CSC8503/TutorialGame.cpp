@@ -239,7 +239,7 @@ void TutorialGame::ProcessState() {
 	switch (gameStateManager.GetGameState()) {
 	case GameState::Win:
 	case GameState::Lose:
-		Debug::Print("Press [Space] or [Start] to play again", Vector2(5, 80), Vector4(1, 1, 1, 1));
+		Debug::Print("Press [R] or [Start] to play again", Vector2(5, 80), Vector4(1, 1, 1, 1));
 		break;
 	}
 

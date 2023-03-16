@@ -98,10 +98,10 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 
 void NetworkedGame::Clear()
 {
-	std::cout << "clear" << std::endl;
-	localPlayer->GetCamera()->GetHud().ClearAndErase();
+	if(localPlayer)
+		localPlayer->GetCamera()->GetHud().ClearAndErase();
 	TutorialGame::Clear();
-	for (int i = 0; i <= 4; i++) {
+	for (int i = 0; i < 4; i++) {
 		players[0] = nullptr;
 	}
 	localPlayer = nullptr;
@@ -121,7 +121,6 @@ void NetworkedGame::StartLobby()
 }
 
 void NetworkedGame::StartLevel() {
-	std::cout << "network " << std::endl;
 	canJoin = false;
 
 	InitWorld();
@@ -141,7 +140,6 @@ void NetworkedGame::SpawnPlayers() {
 	if (thisServer) {
 		localPlayer = SpawnPlayer(0, true);
 		localPlayer->GetCamera()->GetHud().AddHealthBar(localPlayer->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
-		std::cout << "added hud " << std::endl;
 	}
 	if (thisClient && selfID != NULL) {
 		localPlayer = SpawnPlayer(selfID, true);
@@ -199,7 +197,6 @@ GameServer* NetworkedGame::GetServer()
 
 void NetworkedGame::Disconnect()
 {
-	std::cout << "attempt disconnect" << std::endl;
 	if (thisClient) {
 		thisClient->Disconnect();
 	}
@@ -686,7 +683,7 @@ void NetworkedGame::ProcessState() {
 	case GameState::Win:
 	case GameState::Lose:
 		if(thisServer){
-			Debug::Print("Press [Space] or [Start] to return to lobby", Vector2(5, 80), Vector4(1, 1, 1, 1));
+			Debug::Print("Press [R] or [Start] to return to lobby", Vector2(5, 80), Vector4(1, 1, 1, 1));
 		}
 		if (thisClient) {
 			Debug::Print("Please Wait for server to return to lobby", Vector2(5, 80), Vector4(1, 1, 1, 1));
