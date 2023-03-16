@@ -55,6 +55,8 @@ namespace NCL {
 		protected:
 			void UpdateGameCore(float dt);
 
+			virtual void BossTarget();
+
 			virtual void ProcessState();
 
 			void SetCameraFollow(PlayerObject* p);

@@ -91,7 +91,7 @@ void TutorialGame::StartLevel() {
 	keyMap.ChangePlayerControlTypeMap(0, ControllerType::KeyboardMouse);
 	players[0]->GetCamera()->GetHud().AddHealthBar(players[0]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
 	players[0]->GetCamera()->GetHud().AddHealthBar(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
-	for (int i = 1; i < numOfPlayers; i++) {
+	for (int i = 1; i <= numOfPlayers; i++) {
 		players[i] = AddPlayerToWorld(i, Vector3(0, 5, 90));		// TODO: currently this will result in access violation if 4 controllers are connected
 		keyMap.ChangePlayerControlTypeMap(i, ControllerType::Xbox);
 		players[i]->GetCamera()->GetHud().AddHealthBar(players[i]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
@@ -105,18 +105,18 @@ void TutorialGame::StartLevel() {
 }
 
 void TutorialGame::Clear() {
-	for (int i = 0; i < 4; i++) {
-		if (players[i] != nullptr)
-			players[i]->GetCamera()->GetHud().ClearAndErase();
+	for (int i = 0; i < playerNum; i++) {
+		//if (players[i] != nullptr)
+		players[i]->GetCamera()->GetHud().ClearAndErase();
 		players[i] = nullptr;
 	}
+	playerNum = 0;
 	gameStateManager.SetGameState(GameState::OnGoing);
 	gameWorld.ClearAndErase();
 	BulletInstanceManager::instance().ObjectIntiation();
 	physics->Clear();
 	gridManager.Clear();
 	boss = nullptr;
-	playerNum = 0;
 }
 
 void TutorialGame::InitWorld() {
@@ -189,6 +189,9 @@ bool TutorialGame::IsQuit() {
 
 void TutorialGame::UpdateGameCore(float dt) {
 	GameGridManager::instance().Update(dt);
+	if (boss) {
+		BossTarget();
+	}
 
 	gameWorld.PreUpdateWorld();
 
@@ -205,14 +208,39 @@ void TutorialGame::UpdateGameCore(float dt) {
 	gameWorld.UpdateCamera(dt);
 }
 
+void TutorialGame::BossTarget() {
+	//change boss target
+	Vector3 displacement;
+	PlayerObject* target = boss->GetTarget();
+	float mindist = 300;
+	for (int i = 0; i < playerNum; i++) {
+		if (players[i]->GetHealth()->GetHealth() <= 0) {
+			continue;
+		}
+		displacement = players[i]->GetTransform().GetGlobalPosition() - boss->GetTransform().GetGlobalPosition();
+		float dist = abs(displacement.Length());
+		if (dist < mindist) {
+			target = players[i];
+			mindist = dist;
+		}
+	}
+	boss->SetNextTarget(target);
+}
+
 void TutorialGame::ProcessState() {
 	int totalHealth = 0;
-
 	for (int i = 0; i < playerNum; i++) {
 		totalHealth += players[i]->GetHealth()->GetHealth();
 	}
 	if (totalHealth <= 0) {
 		gameStateManager.SetGameState(GameState::Lose);
+	}
+
+	switch (gameStateManager.GetGameState()) {
+	case GameState::Win:
+	case GameState::Lose:
+		Debug::Print("Press [Space] or [Start] to play again", Vector2(5, 80), Vector4(1, 1, 1, 1));
+		break;
 	}
 
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
