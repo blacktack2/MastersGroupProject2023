@@ -36,6 +36,7 @@ namespace NCL {
 		static SimpleFont* GetDebugFont();
 
 		static const std::vector<DebugStringEntry>& GetDebugStrings();
+		static void ClearDebugStrings();
 		static const std::vector<DebugLineEntry>& GetDebugLines();
 
 		static const Vector4 RED;

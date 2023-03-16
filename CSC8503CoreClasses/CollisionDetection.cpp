@@ -69,12 +69,12 @@ void NCL::CollisionDetection::ClosestRayPoints(const Vector3& centerA, const Vec
 	bool clampedB = false;
 	if (lenA != 0) {
 		float old = t1;
-		t1 = std::clamp(t1, -lenA, lenA);
+		t1 = Maths::Clamp(t1, -lenA, lenA);
 		clampedA = t1 != old;
 	}
 	if (lenB != 0) {
 		float old = t2;
-		t2 = std::clamp(t2, -lenB, lenB);
+		t2 = Maths::Clamp(t2, -lenB, lenB);
 		clampedB = t2 != old;
 	}
 
@@ -610,7 +610,7 @@ bool NCL::CollisionDetection::AABBCapsuleIntersection(const AABBVolume& volumeA,
 
 	Vector3 boxPoint = boxPos + (headDistanceSquared < tailDistanceSquared ? closestPointToHead : closestPointToTail);
 
-	float proj = std::clamp(Vector3::Dot(boxPoint - capsulePos, capsuleDir), -capsuleOffset, capsuleOffset);
+	float proj = Maths::Clamp(Vector3::Dot(boxPoint - capsulePos, capsuleDir), -capsuleOffset, capsuleOffset);
 	Vector3 capsulePoint = capsulePos + capsuleDir * proj;
 
 	float distanceSquared = (capsulePoint - boxPoint).LengthSquared();
@@ -682,7 +682,7 @@ bool NCL::CollisionDetection::OBBCapsuleIntersection(const OBBVolume& volumeA, c
 
 	Vector3 boxPoint = headDistanceSquared < tailDistanceSquared ? closestPointToHead : closestPointToTail;
 
-	float proj = std::clamp(Vector3::Dot(boxPoint - capsulePos, capsuleDir), -capsuleOffset, capsuleOffset);
+	float proj = Maths::Clamp(Vector3::Dot(boxPoint - capsulePos, capsuleDir), -capsuleOffset, capsuleOffset);
 	Vector3 capsulePoint = capsulePos + capsuleDir * proj;
 
 	float distanceSquared = (capsulePoint - boxPoint).LengthSquared();
@@ -711,7 +711,7 @@ bool NCL::CollisionDetection::SphereCapsuleIntersection(const SphereVolume& volu
 	float capsuleHalfHeight = volumeB.GetHalfHeight();
 	Vector3 capsuleDir = capsuleOrientation * Vector3(0, 1, 0);
 
-	float proj = std::clamp(Vector3::Dot(sphereCenter - capsuleCenter, capsuleDir), -capsuleHalfHeight, capsuleHalfHeight);
+	float proj = Maths::Clamp(Vector3::Dot(sphereCenter - capsuleCenter, capsuleDir), -capsuleHalfHeight, capsuleHalfHeight);
 	Vector3 capsulePos = capsuleCenter + capsuleDir * proj;
 
 	float distanceSquared = (capsulePos - sphereCenter).LengthSquared();

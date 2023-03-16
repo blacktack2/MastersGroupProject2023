@@ -6,6 +6,15 @@ using namespace NCL;
 using namespace CSC8503;
 using namespace NCL;
 
+InputKeyMap::InputKeyMap() {
+	buttonstates = InputType::Empty;
+	movementAxis = Vector2(0);
+	cameraAxis = Vector2(0);
+	mousePosition = Vector2(0);
+	ChangePlayerControlTypeMap(0, ControllerType::KeyboardMouse);
+}
+InputKeyMap::~InputKeyMap() {}
+
 void InputKeyMap::Update() {
 	unsigned int oldStates = buttonstates;
 	buttonstates = InputType::Empty;
@@ -20,9 +29,56 @@ void InputKeyMap::Update() {
 	downStates = buttonstates & (oldStates ^ buttonstates);
 }
 
+bool InputKeyMap::GetButton(InputType key, int PlayerID) {
+	return CheckButtonPressed(buttonstates, key, PlayerID);
+}
+
+unsigned int InputKeyMap::GetButtonState() {
+	return buttonstates;
+}
+
+bool InputKeyMap::CheckButtonPressed(unsigned int state, InputType key, int PlayerID) {
+
+	if (key < Start) {
+		return state & (key << (4 * PlayerID));
+	}
+	return state & key;
+}
+
+bool InputKeyMap::GetAxisData(unsigned int playerNum, AxisInput axis, float& data)
+{
+	if (axis == AxisInputDataMax) {
+		return false;
+	}
+	if ((playerNum > 4))
+	{
+		return false;
+	}
+	data = AxisDataArray[playerNum][axis];
+	return true;
+}
+
+Vector2 InputKeyMap::GetMousePosition() {
+	return mousePosition;
+}
+bool InputKeyMap::HasMouse() {
+	return Window::GetMouse();
+}
+
 void InputKeyMap::ChangePlayerControlTypeMap(int playerID, ControllerType type)
 {	
 	playerControlTypeMap[playerID] = type;
+}
+
+void InputKeyMap::SetButton(InputType key, int PlayerID = 0)
+{
+	if (key < Start) {
+		buttonstates |= (key << (4 * PlayerID));
+	}
+	else {
+		buttonstates |= key;
+	}
+	
 }
 
 void InputKeyMap::UpdateGameStateDependant() {
@@ -31,21 +87,21 @@ void InputKeyMap::UpdateGameStateDependant() {
 	switch (gameState) {
 	case GameState::Lobby:
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::R)) {
-			buttonstates |= InputType::Start;
+			SetButton(InputType::Start);
 		}
 	case GameState::OnGoing: default:
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
-			buttonstates |= InputType::Pause;
+			SetButton(InputType::Pause);
 		}
 		break;
 	case GameState::Win:
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) {
-			buttonstates |= InputType::Restart;
+			SetButton(InputType::Restart);
 		}
 		break;
 	case GameState::Lose:
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) {
-			buttonstates |= InputType::Restart;
+			SetButton(InputType::Restart);
 		}
 		break;
 	}
@@ -73,40 +129,36 @@ void InputKeyMap::UpdatePlayer(int playerID)
 
 }
 
-void NCL::InputKeyMap::UpdateWindows(int playerID)
+void InputKeyMap::UpdateWindows(int playerID)
 {
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W))
 	{
-		buttonstates |= InputType::Foward;
 		AxisDataArray[playerID][AxisInput::Axis2] = 1;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S))
 	{
-		buttonstates |= InputType::Backward;
 		AxisDataArray[playerID][AxisInput::Axis2] = -1;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A))
 	{
-		buttonstates |= InputType::Left;
 		AxisDataArray[playerID][AxisInput::Axis1] = -1;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D))
 	{
-		buttonstates |= InputType::Right;
 		AxisDataArray[playerID][AxisInput::Axis1] = 1;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SPACE))
 	{
-		buttonstates |= InputType::Jump;
+		SetButton(InputType::Jump, playerID);
 		AxisDataArray[playerID][AxisInput::Axis6] = 1;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::C))
 	{
-		buttonstates |= InputType::FreeLook;
+		SetButton(InputType::FreeLook, playerID);
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE))
 	{
-		buttonstates |= InputType::ESC;
+		SetButton(InputType::Pause, playerID);
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN ) || Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT))
 	{
@@ -124,17 +176,17 @@ void NCL::InputKeyMap::UpdateWindows(int playerID)
 	if (Window::GetMouse()) {
 		if (Window::GetMouse()->ButtonDown(MouseButtons::LEFT))
 		{
-			buttonstates |= InputType::Action1;
+			SetButton(InputType::Action1, playerID);
 			AxisDataArray[playerID][AxisInput::Axis5] = 1;
 		}
 		if (Window::GetMouse()->ButtonPressed(MouseButtons::RIGHT))
 		{
-			buttonstates |= InputType::Action2;
+			SetButton(InputType::Action2, playerID);
 		}
 
 		if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
 		{
-			buttonstates |= InputType::Confirm;
+			SetButton(InputType::Confirm, playerID);
 		}
 
 		AxisDataArray[playerID][AxisInput::Axis4] = -1.0f * Window::GetMouse()->GetRelativePosition().y;
@@ -144,7 +196,7 @@ void NCL::InputKeyMap::UpdateWindows(int playerID)
 	}
 }
 
-void NCL::InputKeyMap::UpdateXbox(int playerID)
+void InputKeyMap::UpdateXbox(int playerID)
 {
 	// Axis:
 	Vector2 thumbLeft;

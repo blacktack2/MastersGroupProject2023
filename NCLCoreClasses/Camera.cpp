@@ -2,6 +2,7 @@
 #include "Maths.h"
 #include "Window.h"
 #include "../CSC8503CoreClasses/InputKeyMap.h"
+#include "../CSC8503/Hud.h"
 
 #include <algorithm>
 
@@ -13,7 +14,7 @@ void Camera::SetFollow(Transform* transform, bool isSmooth) {
 	this->isSmooth = isSmooth;
 }
 
-Camera::Camera() {
+Camera::Camera() : hud(*new Hud()) {
 	left	= 0;
 	right	= 0;
 	top		= 0;
@@ -32,6 +33,8 @@ Camera::Camera() {
 	lookat = Vector3(1, 0, 0);
 
 	camType		= CameraType::Perspective;
+
+	isSmooth = true;
 }
 
 Camera::Camera(float pitch, float yaw, const Vector3& position) : Camera() {
@@ -50,7 +53,9 @@ Camera::Camera(float pitch, float yaw, const Vector3& position) : Camera() {
 
 	this->camType	= CameraType::Perspective;
 }
-
+Camera::~Camera(void) {
+	delete& hud;
+};
 /*
 Polls the camera for keyboard / mouse movement.
 Should be done once per frame! Pass it the msec since
@@ -89,9 +94,10 @@ void Camera::UpdateCamera(float dt) {
 		}
 	} else {
 		Vector3 followPos = follow->GetGlobalPosition();
-		followPos = Vector3::Lerp(LastPos, followPos, std::min(smoothFactor * dt, 1.0f));
+		//followPos = Vector3::Lerp(LastPos, followPos, std::min(smoothFactor * dt, 1.0f));
 		LastPos = followPos;
 
+		/*
 		NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 		Vector2 orientationData{ 0,0 };
 		if (keyMap.GetAxisData(playerID, AxisInput::Axis3, orientationData.x) && keyMap.GetAxisData(playerID, AxisInput::Axis4, orientationData.y))
@@ -103,14 +109,25 @@ void Camera::UpdateCamera(float dt) {
 				yaw -= (orientationData.x * sensitivity);
 			}
 		}
-
-		pitch = std::clamp(pitch, -90.0f, 90.0f);
-		yaw += (yaw < 0) ? 360.0f : ((yaw > 360.0f) ? -360.0f : 0.0f);
+		*/
 
 		followDistance = std::clamp(followDistance - (float)Window::GetMouse()->GetWheelMovement(), 5.0f, 40.0f);
-
-		position = followPos - Vector3(std::cos(-Maths::DegreesToRadians(90.0f + yaw)), Maths::DegreesToRadians(pitch), std::sin(-Maths::DegreesToRadians(90.0f + yaw))) * followDistance;
-
+		/*
+		position = followPos - Vector3(
+			std::cos(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch)),
+			std::min(std::sin(Maths::DegreesToRadians(pitch)), 0.0f),
+			std::sin(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch))
+		) * followDistance;
+		*/
+		Vector3 newPos = followPos - Vector3(
+			std::cos(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch)),
+			std::sin(Maths::DegreesToRadians(pitch)),
+			std::sin(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch))
+		) * followDistance;
+		//position = Vector3::Lerp(position, newPos, std::min(smoothFactor * dt, 1.0f));
+		newPos.y += 1.0f;
+		position = Vector3::Lerp(position, newPos + follow->GetGlobalOrientation() * Vector3(1.0f, 0, 0) * 1.5f, std::min(smoothFactor * dt, 1.0f));
+		position.y = std::max(position.y, 0.1f);
 
 	}
 }
@@ -163,4 +180,8 @@ Camera Camera::BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, floa
 	c.bottom	= bottom;
 
 	return c;
+}
+
+Hud& Camera::GetHud() {
+	return hud;
 }

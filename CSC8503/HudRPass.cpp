@@ -1,3 +1,12 @@
+/**
+ * @file   HudRPass.cpp
+ * @brief  See HudRPass.h
+ *
+ * @author Shantao Liu
+ * @author Xiaoyang Liu
+ * @date   March 2023
+ */
+
 #include"HudRPass.h"
 #include "GameTechRenderer.h"
 #include "GameWorld.h"
@@ -20,7 +29,7 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	//defaultTexture = (OGLTexture*)OGLTexture::RGBATextureFromFilename("defaultmain.jpg");
 	defaultTexture = AssetLoader::LoadTexture("defaultmain.jpg");
 
-	defaultShader = AssetLoader::CreateShader("menuVertex.vert", "menuFragment.frag");
+	defaultShader = AssetLoader::CreateShaderAndInit("menuVertex.vert", "menuFragment.frag");
 
 	defaultShader->Bind();
 
@@ -33,28 +42,7 @@ HudRPass::~HudRPass() {
 void HudRPass::Render() {
 	renderer.GetConfig().SetCullFace(false);
 
-	//if (BossBorder) {
-	//	DrawUIObject((UIObject*)BossBorder);
-	//}
-	//if(BossHealth){ 
-	//	DrawUIObject((UIObject*)BossHealth);
-	//}
-
-	for (auto& hud : huds) {
-		//DrawUIObject((UIObject*)hud);
-		hud->Draw();
-	}
+	gameWorld.GetMainCamera()->GetHud().Draw();
 
 	renderer.GetConfig().SetCullFace();
 }
-//void HudRPass::DrawHud() {
-//	DrawUIObject((UIObject*)health);
-//}
-//void HudRPass::DrawUIObject(UIObject* obj) {
-//	MenuRenderObject* renderObject = obj->GetRenderObject();
-//	if (!renderObject) {
-//		return;
-//	}
-//	//std::cout << obj->GetDimension() << std::endl;
-//	renderObject->Draw(obj->GetDimension());
-//}

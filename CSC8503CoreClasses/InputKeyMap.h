@@ -2,21 +2,33 @@
 #include "Window.h"
 #include "XboxControllerManager.h"
 
+constexpr auto MAXPLAYER = 4;
+
 enum InputType : unsigned int {
 	Empty = 0,
-	Foward = (1u << 0),
-	Backward = (1u << 1),
-	Left = (1u << 2),
-	Right = (1u << 3),
-	Jump = (1u << 4),
-	Action1 = (1u << 5),
-	Action2 = (1u << 6),
-	FreeLook = (1u << 7),
-	ESC = (1u << 8),
 
-	DOWN = (1u << 19),
-	UP = (1u << 20),
+	Jump = (1u << 0),
+	Action1 = (1u << 1),
+	Action2 = (1u << 2),
+	FreeLook = (1u << 3),
 
+	Jump_2 = (1u << 4),
+	Action1_2 = (1u << 5),
+	Action2_2 = (1u << 6),
+	FreeLook_2 = (1u << 7),
+
+	Jump_3 = (1u << 8),
+	Action1_3 = (1u << 9),
+	Action2_3 = (1u << 10),
+	FreeLook_3 = (1u << 11),
+
+	Jump_4 = (1u << 12),
+	Action1_4 = (1u << 13),
+	Action2_4 = (1u << 14),
+	FreeLook_4 = (1u << 15),
+
+	DOWN = (1u << 25),
+	UP = (1u << 26),
 	Start = (1u << 27),
 	Pause = (1u << 28),
 	Restart = (1u << 29),
@@ -56,10 +68,9 @@ namespace NCL {
 			return INSTANCE;
 		}
 
-		bool GetButton(InputType key) {
-			return buttonstates & key;
-		}
+		void Update();
 
+		bool GetButton(InputType key, int PlayerID = 0);
 		bool GetButtonUp(InputType key) {
 			return upStates & key;
 		}
@@ -68,44 +79,23 @@ namespace NCL {
 			return downStates & key;
 		}
 
-		unsigned int GetButtonState() {
-			return buttonstates;
-		}
 
-		bool CheckButtonPressed(unsigned int state, InputType key) {
-			return state & key;
-		}
+		unsigned int GetButtonState();
 
-		bool GetAxisData(unsigned int playerNum, AxisInput axis, float& data)		// controllerNum == 1,2,3,4,5
-		{
-			if ((playerNum > 4))
-			{
-				return false;
-			}
-			data = AxisDataArray[playerNum][axis];
-			return true;
-		}
+		bool CheckButtonPressed(unsigned int state, InputType key, int PlayerID);
 
-		Vector2 GetMousePosition() {
-			return mousePosition;
-		}
-		bool HasMouse() {
-			return Window::GetMouse();
-		}
+		bool GetAxisData(unsigned int playerNum, AxisInput axis, float& data);
 
-		void Update();
+		Vector2 GetMousePosition();
+		bool HasMouse();
 
 		void ChangePlayerControlTypeMap(int playerID, ControllerType type);
 
 	private:
-		InputKeyMap(){
-			buttonstates = InputType::Empty;
-			movementAxis = Vector2(0);
-			cameraAxis = Vector2(0);
-			mousePosition = Vector2(0);
-			ChangePlayerControlTypeMap(0, ControllerType::KeyboardMouse);
-		}
-		~InputKeyMap(){}
+		InputKeyMap();
+		~InputKeyMap();
+
+		void SetButton(InputType key, int PlayerID);
 
 		void UpdateGameStateDependant();
 
@@ -116,9 +106,9 @@ namespace NCL {
 		void UpdateXbox(int playerID);
 
 		unsigned int buttonstates;
+		float AxisDataArray[MAXPLAYER][AxisInput::AxisInputDataMax] = { 0 };
 		unsigned int upStates;
 		unsigned int downStates;
-		float AxisDataArray[5][AxisInput::AxisInputDataMax] = { 0 };
 		Vector2 movementAxis;
 		Vector2 cameraAxis;
 		Vector2 mousePosition;

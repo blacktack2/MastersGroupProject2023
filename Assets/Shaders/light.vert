@@ -7,7 +7,6 @@
  * @date   February 2023
  */
 
-uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projMatrix;
 
@@ -21,7 +20,7 @@ void main () {
 		gl_Position = vec4(position, 1.0);
 	} else {                       // Point/Spot Light
 		vec3 scale = vec3(lightRadius);
-		vec3 worldPos = (vec4(position * scale, 1.0) * modelMatrix).xyz + lightPosition.xyz;
+		vec3 worldPos = position * scale + lightPosition.xyz;
 		gl_Position = projMatrix * viewMatrix * vec4(worldPos, 1.0);
 	}
 }

@@ -4,6 +4,7 @@
 #include "Debug.h"
 #include "GameGridManager.h"
 #include "SphereVolume.h"
+#include "PhysicsObject.h"
 
 using namespace NCL;
 using namespace CSC8503;

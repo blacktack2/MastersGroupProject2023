@@ -12,23 +12,25 @@
 #include <functional>
 #include <vector>
 
-namespace NCL::Rendering {
-	/**
-	 * @brief Base class for render passes containing functionality common to
-	 * all interfaces.
-	 */
-	class RenderPassBase {
-	public:
-		virtual ~RenderPassBase();
+namespace NCL {
+	namespace Rendering {
+		/**
+		 * @brief Base class for render passes containing functionality common to
+		 * all interfaces.
+		 */
+		class RenderPassBase {
+		public:
+			virtual ~RenderPassBase();
 
-		virtual void OnWindowResize(int width, int height);
+			virtual void OnWindowResize(int width, int height);
 
-		virtual void Render() = 0;
-	protected:
-		RenderPassBase();
+			virtual void Render() = 0;
+		protected:
+			RenderPassBase();
 
-		void AddScreenTexture(TextureBase& tex);
-	private:
-		std::vector<std::reference_wrapper<TextureBase>> textures;
-	};
+			void AddScreenTexture(TextureBase& tex);
+		private:
+			std::vector<std::reference_wrapper<TextureBase>> textures;
+		};
+	}
 }

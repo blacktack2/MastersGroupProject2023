@@ -25,6 +25,7 @@ using namespace Rendering;
 using namespace CSC8503;
 
 GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()), gameWorld(GameWorld::instance()) {
+	for (int i = 0; i < 4; i++) playersHP[i] = -1;
 }
 
 GameTechRenderer::~GameTechRenderer() {
@@ -52,9 +53,9 @@ void GameTechRenderer::InitPipeline() {
 
 	combinePass = std::make_unique<CombineRPass>();
 	combinePass->SetSkyboxTexIn(skyboxPass->GetOutTex());
-	combinePass->SetDiffuseTexIn(modelPass->GetDiffuseOutTex());
-	combinePass->SetDiffuseLightTexIn(lightingPass->GetDiffuseOutTex());
-	combinePass->SetSpecularLightTexIn(lightingPass->GetSpecularOutTex());
+	combinePass->SetAlbedoTexIn(modelPass->GetAlbedoOutTex());
+	combinePass->SetDiffuseTexIn(lightingPass->GetDiffuseOutTex());
+	combinePass->SetSpecularTexIn(lightingPass->GetSpecularOutTex());
 	combinePass->SetSSAOTexIn(ssaoPass->GetOutTex());
 	combinePass->SetNormalTexIn(modelPass->GetNormalOutTex());
 	combinePass->SetDepthTexIn(modelPass->GetDepthOutTex());

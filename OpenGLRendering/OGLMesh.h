@@ -13,36 +13,40 @@
 #include <memory>
 #include <string>
 
-namespace NCL::Rendering {
-	/**
-	 * @brief OpenGL implementation of mesh geometry.
-	 */
-	class OGLMesh : public MeshGeometry {
-	public:
-		friend class OGLRenderer;
-		OGLMesh();
-		OGLMesh(const std::string& filename);
-		~OGLMesh();
+namespace NCL {
+	namespace Rendering {
+		/**
+		 * @brief OpenGL implementation of mesh geometry.
+		 */
+		class OGLMesh : public MeshGeometry {
+		public:
+			friend class OGLRenderer;
+			OGLMesh();
+			OGLMesh(const std::string& filename);
+			~OGLMesh();
 
-		virtual void Draw() override;
-		virtual void Draw(unsigned int subLayer) override;
+			virtual void Initilize() { UploadToGPU(); };
 
-		void RecalculateNormals();
+			virtual void Draw() override;
+			virtual void Draw(unsigned int subLayer) override;
 
-		void UploadToGPU() override;
-		void UpdateGPUBuffers(unsigned int startVertex, unsigned int vertexCount);
+			void RecalculateNormals();
 
-		static std::unique_ptr<MeshGeometry> LoadMesh(const std::string& filename);
-		static std::unique_ptr<MeshGeometry> CreateMesh();
-	protected:
-		GLuint GetVAO() const { return vao; }
-		void BindVertexAttribute(int attribSlot, int bufferID, int bindingID, int elementCount, int elementSize, int elementOffset);
+			void UploadToGPU() override;
+			void UpdateGPUBuffers(unsigned int startVertex, unsigned int vertexCount);
 
-		int subCount;
+			static std::unique_ptr<MeshGeometry> LoadMesh(const std::string& filename);
+			static std::unique_ptr<MeshGeometry> CreateMesh();
+		protected:
+			GLuint GetVAO() const { return vao; }
+			void BindVertexAttribute(int attribSlot, int bufferID, int bindingID, int elementCount, int elementSize, int elementOffset);
 
-		GLuint vao;
-		GLuint oglType;
-		GLuint attributeBuffers[VertexAttribute::MAX_ATTRIBUTES];
-		GLuint indexBuffer;
-	};
+			int subCount;
+
+			GLuint vao;
+			GLuint oglType;
+			GLuint attributeBuffers[VertexAttribute::MAX_ATTRIBUTES];
+			GLuint indexBuffer;
+		};
+	}
 }

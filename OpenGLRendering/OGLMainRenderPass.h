@@ -9,16 +9,18 @@
 #include "OGLRenderPass.h"
 #include "IMainRenderPass.h"
 
-namespace NCL::Rendering {
-	/**
-	 * @brief Base OpenGL implementation of a main stage render pass.
-	 */
-	class OGLMainRenderPass : public OGLRenderPass, public IMainRenderPass {
-	public:
-		OGLMainRenderPass() : OGLRenderPass() {}
+namespace NCL {
+	namespace Rendering {
+		/**
+		 * @brief Base OpenGL implementation of a main stage render pass.
+		 */
+		class OGLMainRenderPass : public OGLRenderPass, public IMainRenderPass {
+		public:
+			OGLMainRenderPass() : OGLRenderPass() {}
 
-		virtual void OnWindowResize(int width, int height) override {
-			OGLRenderPass::OnWindowResize(width, height);
-		}
-	};
+			virtual void OnWindowResize(int width, int height) override {
+				OGLRenderPass::OnWindowResize(width, height);
+			}
+		};
+	}
 }

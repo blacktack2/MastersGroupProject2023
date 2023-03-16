@@ -24,7 +24,7 @@ SkyboxRPass::SkyboxRPass() : OGLMainRenderPass(),
 gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
-	colourOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetWidth(), renderer.GetHeight());
+	colourOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetSplitWidth(), renderer.GetSplitHeight());
 	AddScreenTexture(*colourOutTex);
 
 	frameBuffer = AssetLoader::CreateFrameBuffer();
@@ -33,7 +33,7 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
-	shader = AssetLoader::CreateShader("skybox.vert", "skybox.frag");
+	shader = AssetLoader::CreateShaderAndInit("skybox.vert", "skybox.frag");
 
 	shader->Bind();
 
@@ -42,7 +42,7 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	shader->SetUniformFloat("cirrus", 0.5f);
 	shader->SetUniformFloat("cumulus", 0.5f);
 
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix();
+	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetAspect());
 	shader->SetUniformMatrix("projMatrix", projMatrix);
 
 	shader->Unbind();

@@ -21,27 +21,15 @@ namespace NCL {
 				PlayerObject::RotateYaw(yaw);
 			}
 
-			void MoveInput(unsigned int keyPress) {
-				if (health.GetHealth() > 0) {
-					Vector3 dir = Vector3(0, 0, 0);
-					GetInput(dir, keyPress);
-					Move(dir);
-					MoveCamera();
-				}
-				
-			}
+			void MoveInput(unsigned int keyPress, short int axis[AxisInput::AxisInputDataMax], Vector2);
 
-			void ServerSideMovement() {
-				RotateToCamera();
-				Vector3 dir = Vector3(0, 0, 0);
-				lastKey = keyMap.GetButtonState();
-				keyMap.Update();
-				if (health.GetHealth() > 0) {
-					GetInput(dir, keyMap.GetButtonState());
-					Move(dir);
-					MoveCamera();
-				}
-			}
+			void ServerSideMovement(float dt);
+
+			void ClientUpdateCamera(float dt);
+
+			void SetAxis(short int axis[AxisInput::AxisInputDataMax]);
+
+			void GetNetworkAxis(short int axis[]);
 
 			int GetPlayerNum() const {
 				return playerID;
@@ -51,6 +39,20 @@ namespace NCL {
 
 			void SetHealth(float hp) {
 				health.SetHealth(hp);
+			}
+
+			float GetYaw() {
+				return yaw;
+			}
+			void SetYaw(float yaw) {
+				this->yaw = yaw;
+			}
+
+			float GetPitch() {
+				return pitch;
+			}
+			void SetPitch(float pitch){
+				this->pitch = pitch;
 			}
 
 			bool isFrozen;

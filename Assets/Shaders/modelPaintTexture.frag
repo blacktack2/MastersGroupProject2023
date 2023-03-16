@@ -14,6 +14,8 @@ uniform sampler2D paintTex;
 
 uniform vec4 modelColour;
 
+uniform vec2 texScale = vec2(1.0);
+
 uniform float gamma = 2.2;
 
 in Vertex {
@@ -41,10 +43,10 @@ void main() {
 		paint.a = 0;
 	}
 	
-	vec3 normal = texture(bumpTex, IN.texCoord).rgb * 2.0 - 1.0;
+	vec3 normal = texture(bumpTex, IN.texCoord * texScale).rgb * 2.0 - 1.0;
 	normal = normalize(TBN * normalize(normal));
 
-	diffuseOut = (texture(diffuseTex, IN.texCoord) + IN.colour) * modelColour;
+	diffuseOut = (texture(diffuseTex, IN.texCoord * texScale) + IN.colour) * modelColour;
 	diffuseOut.rgb = pow(diffuseOut.rgb, vec3(gamma));
 
 	normalOut = vec4(normal * 0.5 + 0.5, 1.0);

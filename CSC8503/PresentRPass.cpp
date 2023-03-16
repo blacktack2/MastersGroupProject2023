@@ -25,7 +25,7 @@ using namespace NCL::CSC8503;
 PresentRPass::PresentRPass() : OGLPresentRenderPass() {
 	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
-	shader = AssetLoader::CreateShader("present.vert", "present.frag");
+	shader = AssetLoader::CreateShaderAndInit("present.vert", "present.frag");
 }
 
 PresentRPass::~PresentRPass() {

@@ -20,7 +20,11 @@ Bullet* BulletInstanceManager::GetBullet(int firstIndex) {
 	int index = indexs[firstIndex];
 	//std::cout << index << std::endl;
 	indexs[firstIndex] = (index + 1)% BULLETCOUNT;
-	return bullets[firstIndex][index];
+	Bullet* bullet = bullets[firstIndex][index];
+	bullet->GetPhysicsObject()->ClearForces();
+	bullet->GetPhysicsObject()->SetLinearVelocity(Vector3(0.0f));
+	bullet->GetPhysicsObject()->SetAngularVelocity(Vector3(0.0f));
+	return bullet;
 }
 
 void BulletInstanceManager::ObjectIntiation() {
