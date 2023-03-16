@@ -11,6 +11,3 @@ using namespace NCL::Rendering;
 
 BufferObjectBase::BufferObjectBase(size_t size, unsigned int binding) : size(size), binding(binding) {
 }
-
-BufferObjectBase::~BufferObjectBase() {
-}
