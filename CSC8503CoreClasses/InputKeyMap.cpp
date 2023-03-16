@@ -116,7 +116,7 @@ void NCL::InputKeyMap::UpdateWindows(int playerID)
 	{
 		buttonstates |= InputType::UP;
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RETURN))
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN))
 	{
 		buttonstates |= InputType::Confirm;
 	}

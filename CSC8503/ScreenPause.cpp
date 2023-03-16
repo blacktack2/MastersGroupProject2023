@@ -28,8 +28,9 @@ ScreenPause::~ScreenPause() {
 }
 
 PushdownState::PushdownResult ScreenPause::OnUpdate(float dt, PushdownState** newState) {
-	menuManager.Update(dt);
 	keyMap.Update();
+	menuManager.Update(dt);
+
 	renderer.Render();
 	if (game) {
 		NetworkedGame* netGame = dynamic_cast<NetworkedGame*>(game);
