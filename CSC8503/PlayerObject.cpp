@@ -137,11 +137,14 @@ void PlayerObject::MoveCamera(float dt) {
 	camera->SetYaw(yaw);
 	Ray ray = CollisionDetection::BuildRayFromCamera(*camera);
 	RayCollision closestCollision;
+	lookingAt = transform.GetGlobalPosition() + ray.GetDirection() * 30;
 	if (gameWorld.Raycast(ray, closestCollision, true, this)) {
-		lookingAt = closestCollision.collidedAt;
-	}
-	else {
-		lookingAt = transform.GetGlobalPosition() + ray.GetDirection() * 20;
+		if (closestCollision.rayDistance > 6) {
+			lookingAt = closestCollision.collidedAt;
+		}
+		else {
+			std::cout << "dist " << closestCollision.rayDistance << std::endl;
+		}
 	}
 	//camera->UpdateCamera(dt);
 }
