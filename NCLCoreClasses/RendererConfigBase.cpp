@@ -7,12 +7,9 @@
  */
 #include "RendererConfigBase.h"
 
-#include "RendererBase.h"
+using namespace NCL::Rendering;
 
-using namespace NCL;
-using namespace Rendering;
-
-RendererConfigBase::RendererConfigBase(RendererBase& renderer) : renderer(renderer) {
+RendererConfigBase::RendererConfigBase(const RendererBase& renderer) : renderer(renderer) {
 }
 
 void RendererConfigBase::ResetAll() {

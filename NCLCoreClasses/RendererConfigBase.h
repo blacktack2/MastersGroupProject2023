@@ -82,7 +82,6 @@ namespace NCL {
 		 */
 		class RendererConfigBase {
 		public:
-			RendererConfigBase(RendererBase& renderer);
 			virtual ~RendererConfigBase() = default;
 
 			/**
@@ -160,8 +159,10 @@ namespace NCL {
 			 * @brief Enable or disable writing to the depth buffer.
 			 */
 			virtual void SetDepthMask(bool enabled = false) = 0;
-		private:
-			RendererBase& renderer;
+		protected:
+			RendererConfigBase(const RendererBase& renderer);
+
+			const RendererBase& renderer;
 		};
 	}
 }
