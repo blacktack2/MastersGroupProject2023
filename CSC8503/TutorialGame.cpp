@@ -83,14 +83,14 @@ void TutorialGame::StartLevel() {
 	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
 	if (numOfPlayers >= 4)
 		numOfPlayers = 4;
-
+	std::cout << numOfPlayers << std::endl;
 	boss = AddBossToWorld({ 0, 5, -20 }, Vector3(4), 2);
 
 	players[0] = AddPlayerToWorld(0, Vector3(0, 5, 90));
 	keyMap.ChangePlayerControlTypeMap(0, ControllerType::KeyboardMouse);
 	players[0]->GetCamera()->GetHud().AddHealthBar(players[0]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
 	players[0]->GetCamera()->GetHud().AddHealthBar(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
-	for (int i = 1; i < numOfPlayers; i++) {
+	for (int i = 1; i <= numOfPlayers; i++) {
 		players[i] = AddPlayerToWorld(i, Vector3(0, 5, 90));		// TODO: currently this will result in access violation if 4 controllers are connected
 		keyMap.ChangePlayerControlTypeMap(i, ControllerType::Xbox);
 		players[i]->GetCamera()->GetHud().AddHealthBar(players[i]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
