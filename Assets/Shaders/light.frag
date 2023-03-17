@@ -9,6 +9,7 @@
 
 uniform sampler2D depthTex;
 uniform sampler2D normalTex;
+uniform sampler2D specTex;
 uniform sampler2DShadow shadowTex;
 
 uniform mat4 shadowMatrix;
@@ -82,5 +83,5 @@ void main() {
 	vec3 attenuated = lightColour.xyz * attenuation * shadow;
 
 	diffuseOutput  = vec4(attenuated * lambert, 1.0);
-	specularOutput = vec4(attenuated * specFactor * 0.33, 1.0);
+	specularOutput = vec4(attenuated * specFactor * 0.33, 1.0) * texture(specTex, texCoord);
 }

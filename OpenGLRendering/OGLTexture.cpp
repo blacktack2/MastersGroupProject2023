@@ -110,12 +110,16 @@ void OGLTexture::Initialize() {
 	glGenTextures(1, &texID);
 	Bind();
 	if (GetType() == TextureType::Shadow) {
+		SetEdgeWrap(GetType() == TextureType::ColourRGBA32F ? EdgeWrap::Repeat : EdgeWrap::ClampToEdge);
 		SetFilters(MinFilter::Linear, MagFilter::Linear);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+	} else if (GetType() == TextureType::ColourRGBA32F) {
+		SetEdgeWrap(EdgeWrap::Repeat);
+		SetFilters(MinFilter::Linear, MagFilter::Linear);
 	} else {
+		SetEdgeWrap(EdgeWrap::ClampToEdge);
 		SetFilters(MinFilter::Nearest, MagFilter::Nearest);
 	}
-	SetEdgeWrap(GetType() == TextureType::ColourRGBA32F ? EdgeWrap::Repeat : EdgeWrap::ClampToEdge);
 
 	Resize(width, height);
 	if (!data.empty()) {
