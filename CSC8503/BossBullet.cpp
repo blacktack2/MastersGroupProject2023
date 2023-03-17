@@ -8,7 +8,6 @@
  */
 #include "BossBullet.h"
 #include "Boss.h"
-#include "PaintRenderObject.h"
 #include "InkEffectManager.h"
 #include "GameGridManager.h"
 

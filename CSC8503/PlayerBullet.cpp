@@ -7,7 +7,6 @@
  */
 #include "PlayerBullet.h"
 #include "Boss.h"
-#include "PaintRenderObject.h"
 #include "InkEffectManager.h"
 
 using namespace NCL;

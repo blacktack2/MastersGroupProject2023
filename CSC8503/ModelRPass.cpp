@@ -89,6 +89,7 @@ void ModelRPass::AddModelShader(std::shared_ptr<ShaderBase> shader) {
 	shader->SetUniformInt("albedoTex", 0);
 	shader->SetUniformInt("bumpTex"  , 1);
 	shader->SetUniformInt("specTex"  , 2);
+	shader->SetUniformInt("paintTex" , 3);
 
 	shader->Unbind();
 }

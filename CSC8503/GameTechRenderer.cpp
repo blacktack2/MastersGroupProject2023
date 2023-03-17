@@ -17,6 +17,7 @@ using namespace NCL::Rendering;
 using namespace NCL::CSC8503;
 
 GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()), gameWorld(GameWorld::instance()) {
+	baseInstance = this;
 	for (size_t i = 0; i < 4; i++) {
 		playersHP[i] = -1;
 	}

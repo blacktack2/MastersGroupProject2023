@@ -13,7 +13,7 @@
 
 #include "DebugViewPoint.h"
 #include "CollisionVolume.h"
-#include "PaintRenderObject.h"
+#include "RenderObject.h"
 
 using namespace NCL;
 using namespace NCL::CSC8503;
@@ -41,16 +41,19 @@ void PaintingRPass::Render() {
 			return;
 		}
 
-		PaintRenderObject* renderObj = (PaintRenderObject*)gameObject->GetRenderObject();
+		RenderObject* renderObj = (RenderObject*)gameObject->GetRenderObject();
+		if (!renderObj->GetPaintTex()) {
+			return;
+		}
 
-		frameBuffer->AddTexture(renderObj->GetPaintTexture(), 0);
+		frameBuffer->AddTexture(*renderObj->GetPaintTex(), 0);
 
 		Matrix4 modelMatrix = renderObj->GetTransform().GetGlobalMatrix();
 		shader->SetUniformMatrix("modelMatrix", modelMatrix);
 
-		renderer.GetConfig().SetViewport(0, 0, renderObj->GetWidth(), renderObj->GetHeight());
+		renderer.GetConfig().SetViewport(0, 0, renderObj->GetPaintTexWidth(), renderObj->GetPaintTexHeight());
 
-		for (const PaintCollision& paint : renderObj->GetPaintCollisions()) {
+		for (const RenderObject::PaintCollision& paint : renderObj->GetPaintCollisions()) {
 			shader->SetUniformFloat("paintPos", paint.center);
 			shader->SetUniformFloat("paintColour", paint.colour);
 			shader->SetUniformFloat("paintSize", paint.radius);
