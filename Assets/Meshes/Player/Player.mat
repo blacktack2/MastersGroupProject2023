@@ -8,8 +8,8 @@ Albedo:/Player/Ch14_1001_Diffuse.png
 Bump:/Player/Ch14_1001_Normal.png
 Cyborg_Weapon_mat
 3
-Albedo:/Player/Weapon_BaseColor.png
-Bump:/Player/Weapon_Normal.png
-Metallic:/Player/Weapon_Metallic.png
+Albedo:/Player/Cyborg_Weapon.fbm/Weapon_BaseColor.png
+Bump:/Player/Cyborg_Weapon.fbm/Weapon_Normal.png
+Metallic:/Player/Cyborg_Weapon.fbm/Weapon_Metallic.png
 0
 1
