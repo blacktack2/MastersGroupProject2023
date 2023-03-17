@@ -55,9 +55,11 @@ namespace NCL {
 			inline void SetDepthTexIn(TextureBase& tex) {
 				depthTexIn = &tex;
 			}
-
 			inline void SetNormalTexIn(TextureBase& tex) {
 				normalTexIn = &tex;
+			}
+			inline void SetSpecTexIn(TextureBase& tex) {
+				specTexIn = &tex;
 			}
 		private:
 			void DrawShadowMap(const Light& light, const Matrix4& shadowMatrix);
@@ -74,6 +76,7 @@ namespace NCL {
 
 			TextureBase* depthTexIn  = nullptr;
 			TextureBase* normalTexIn = nullptr;
+			TextureBase* specTexIn   = nullptr;
 
 			std::unique_ptr<TextureBase> shadowMapTex;
 

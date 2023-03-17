@@ -60,7 +60,8 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 
 	lightShader->SetUniformInt("depthTex", 0);
 	lightShader->SetUniformInt("normalTex", 1);
-	lightShader->SetUniformInt("shadowTex", 2);
+	lightShader->SetUniformInt("specTex", 2);
+	lightShader->SetUniformInt("shadowTex", 3);
 
 	lightShader->Unbind();
 
@@ -141,7 +142,8 @@ void LightingRPass::DrawLight(const Light& light, const Matrix4& shadowMatrix) {
 
 	depthTexIn->Bind(0);
 	normalTexIn->Bind(1);
-	shadowMapTex->Bind(2);
+	specTexIn->Bind(2);
+	shadowMapTex->Bind(3);
 
 	lightShader->SetUniformFloat("cameraPos", gameWorld.GetMainCamera()->GetPosition());
 
