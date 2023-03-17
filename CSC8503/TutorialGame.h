@@ -77,7 +77,12 @@ namespace NCL {
 			DebugViewPoint& debugViewPoint;
 			GameGridManager& gridManager;
 			GameStateManager& gameStateManager;
+			#ifdef x64
 			GameTechRenderer& renderer;
+			#endif
+			#ifdef _ORBIS
+			NCL::PS4::PS4Renderer& renderer;
+			#endif
 			GameWorld& gameWorld;
 			InputKeyMap& keyMap;
 			MenuManager& menuManager;

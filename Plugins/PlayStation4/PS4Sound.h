@@ -8,8 +8,6 @@ public:
 	~PS4Sound();
 };
 
-#pragma once
-
 #include <string>
 #include <map>
 #include <iostream>
@@ -65,6 +63,6 @@ public:
 	unsigned int	size;
 	unsigned int	channels;
 
-	static map<string, Sound*> sounds;
+	static std::map<string, Sound*> sounds;
 };
 #endif

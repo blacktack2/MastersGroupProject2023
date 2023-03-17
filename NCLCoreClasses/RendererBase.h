@@ -49,7 +49,7 @@ namespace NCL {
 		 */
 		class RendererBase {
 		public:
-			friend class NCL::Window;
+			friend class Window;
 
 			RendererBase(Window& w);
 			virtual ~RendererBase();

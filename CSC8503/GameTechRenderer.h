@@ -8,6 +8,7 @@
  * @date   February 2023
  */
 #pragma once
+#ifdef x64
 #include "OGLRenderer.h"
 
 #include "SkyboxRPass.h"
@@ -169,4 +170,7 @@ namespace NCL {
 		};
 	}
 }
+
+
+#endif // !x64
 

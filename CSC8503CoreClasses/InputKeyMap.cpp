@@ -2,16 +2,23 @@
 #include "InputKeyMap.h"
 #include "../CSC8503/GameStateManager.h"
 
-using namespace NCL;
-using namespace CSC8503;
-using namespace NCL;
+#ifdef _ORBIS
+#include "Vector2.h"
+#include "../Plugins/PlayStation4/PS4InputManager.h"
+#endif // _ORBIS
+
 
 InputKeyMap::InputKeyMap() {
 	buttonstates = InputType::Empty;
 	movementAxis = Vector2(0);
 	cameraAxis = Vector2(0);
 	mousePosition = Vector2(0);
+#ifdef x64
 	ChangePlayerControlTypeMap(0, ControllerType::KeyboardMouse);
+#endif // x64
+#ifdef _ORBIS
+	ChangePlayerControlTypeMap(0, ControllerType::PS4);
+#endif // _ORBIS
 }
 InputKeyMap::~InputKeyMap() {}
 
@@ -19,6 +26,10 @@ void InputKeyMap::Update() {
 	buttonstates = InputType::Empty;
 	movementAxis = Vector2(0);
 	cameraAxis = Vector2(0);
+
+#ifdef _ORBIS
+	PS4::PS4InputManager::Update();
+#endif // _ORBIS
 
 	for (auto playerTypePair : playerControlTypeMap) {
 		UpdatePlayer(playerTypePair.first);
@@ -80,6 +91,7 @@ void InputKeyMap::SetButton(InputType key, int PlayerID = 0)
 void InputKeyMap::UpdateGameStateDependant() {
 	GameStateManager* gameStateManager = &GameStateManager::instance();
 	GameState gameState = gameStateManager->GetGameState();
+#ifdef x64
 	switch (gameState) {
 	case GameState::Lobby:
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::R)) {
@@ -100,7 +112,43 @@ void InputKeyMap::UpdateGameStateDependant() {
 			SetButton(InputType::Restart);
 		}
 		break;
+}
+#endif // x64
+#ifdef _ORBIS
+	switch (gameState) {
+	case GameState::Lobby:
+		for (int i = 0; i < SCE_USER_SERVICE_MAX_LOGIN_USERS; i++) {
+			if (PS4::PS4InputManager::GetButtons(i, PS4::CROSS)) {
+				SetButton(InputType::Start);
+				break;
+			}
+		}
+	case GameState::OnGoing: default:
+		for (int i = 0; i < SCE_USER_SERVICE_MAX_LOGIN_USERS; i++) {
+			if (PS4::PS4InputManager::GetButtons(i, PS4::START)) {
+				SetButton(InputType::Pause);
+				break;
+			}
+		}
+		break;
+	case GameState::Win:
+		for (int i = 0; i < SCE_USER_SERVICE_MAX_LOGIN_USERS; i++) {
+			if (PS4::PS4InputManager::GetButtons(i, PS4::START)) {
+				SetButton(InputType::Restart);
+				break;
+			}
+		}
+		break;
+	case GameState::Lose:
+		for (int i = 0; i < SCE_USER_SERVICE_MAX_LOGIN_USERS; i++) {
+			if (PS4::PS4InputManager::GetButtons(i, PS4::START)) {
+				SetButton(InputType::Restart);
+				break;
+			}
+		}
+		break;
 	}
+#endif // _ORBIS
 
 }
 
@@ -110,6 +158,7 @@ void InputKeyMap::UpdatePlayer(int playerID)
 	{
 		AxisDataArray[playerID][j] = 0.0f;
 	}
+#ifdef x64
 	switch (playerControlTypeMap[playerID])
 	{
 	case ControllerType::KeyboardMouse:
@@ -121,10 +170,17 @@ void InputKeyMap::UpdatePlayer(int playerID)
 	default:
 		break;
 	}
+#endif // x64
+
+#ifdef _ORBIS
+	UpdatePS4(playerID);
+#endif // _ORBIS
+
+	
 	UpdateGameStateDependant();
 
 }
-
+#ifdef x64
 void InputKeyMap::UpdateWindows(int playerID)
 {
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W))
@@ -205,3 +261,39 @@ void InputKeyMap::UpdateXbox(int playerID)
 		AxisDataArray[playerID][AxisInput::Axis6] = leftTriggerDepth;
 	}
 }
+#endif // x64
+
+#ifdef _ORBIS
+void NCL::InputKeyMap::UpdatePS4(int playerID) {
+	//Axis
+	Maths::Vector2 thumbLeft;
+	Maths::Vector2 thumbRight;
+	float rightTriggerDepth;
+	float leftTriggerDepth;
+	if (PS4::PS4InputManager::GetAxis(playerID, PS4::LEFTSTICK) != Maths::Vector2(-2))
+	{
+		Maths::Vector2 temp = PS4::PS4InputManager::GetAxis(playerID, PS4::LEFTSTICK);
+		AxisDataArray[playerID][AxisInput::Axis1] = temp.x;
+		AxisDataArray[playerID][AxisInput::Axis2] = temp.y;
+	}
+	if (PS4::PS4InputManager::GetAxis(playerID, PS4::RIGHTSTICK) != Maths::Vector2(-2))
+	{
+		Maths::Vector2 temp = PS4::PS4InputManager::GetAxis(playerID, PS4::RIGHTSTICK);
+		AxisDataArray[playerID][AxisInput::Axis3] = temp.x;
+		AxisDataArray[playerID][AxisInput::Axis4] = temp.y;
+	}
+	if (PS4::PS4InputManager::GetAxis(playerID, PS4::KEYPAD) != Maths::Vector2(-2))
+	{
+		Maths::Vector2 temp = PS4::PS4InputManager::GetAxis(playerID, PS4::KEYPAD);
+		AxisDataArray[playerID][AxisInput::Axis1] = temp.x;
+		AxisDataArray[playerID][AxisInput::Axis2] = temp.y;
+	}
+	if (PS4::PS4InputManager::GetButtons(playerID, PS4::R2)) {
+		AxisDataArray[playerID][AxisInput::Axis5] = 1.0f;
+	}
+	if (PS4::PS4InputManager::GetButtons(playerID, PS4::L2)) {
+		AxisDataArray[playerID][AxisInput::Axis6] = 1.0f;
+	}
+
+}
+#endif // _ORBIS

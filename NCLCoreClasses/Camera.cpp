@@ -64,7 +64,7 @@ void Camera::UpdateCamera(float dt) {
 		pitch -= (Window::GetMouse()->GetRelativePosition().y);
 		yaw -= (Window::GetMouse()->GetRelativePosition().x);
 
-		pitch = std::clamp(pitch, -90.0f, 90.0f);
+		pitch = Maths::Clamp(pitch, -90.0f, 90.0f);
 		yaw += (yaw < 0) ? 360.0f : ((yaw > 360.0f) ? -360.0f : 0.0f);
 
 		float frameSpeed = (Window::GetKeyboard()->KeyDown(KeyboardKeys::CONTROL) ? 200 : 25) * dt;
@@ -108,7 +108,7 @@ void Camera::UpdateCamera(float dt) {
 		}
 		*/
 
-		followDistance = std::clamp(followDistance - (float)Window::GetMouse()->GetWheelMovement(), 5.0f, 40.0f);
+		followDistance = Maths::Clamp(followDistance - (float)Window::GetMouse()->GetWheelMovement(), 5.0f, 40.0f);
 		/*
 		position = followPos - Vector3(
 			std::cos(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch)),

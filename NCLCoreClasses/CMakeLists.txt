@@ -162,13 +162,34 @@ if(MSVC)
             /OPT:ICF
         >
     )
+else()
+	target_compile_options(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Release>:
+            -Oi;
+            -Gy
+        >
+		$<$<CONFIG:Debug>:
+		-O0
+		>
+		-frtti;
+		-fexceptions;
+        -std:c++17;
+        #${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
+        #${DEFAULT_CXX_EXCEPTION_HANDLING};
+    )
+    target_link_options(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Release>:
+            -OPT:REF;
+            -OPT:ICF
+        >
+    )
 endif()
 
 ################################################################################
 # PS4 config
 ################################################################################
 if(USE_ORBIS)
- set_property(SOURCE ${ALL_FILES} PROPERTY COMPILE_OPTIONS "-Wall")
+ set_property(SOURCE ${ALL_FILES} PROPERTY COMPILE_OPTIONS "-Wall" "-fno-implicit-templates")
  set_property(TARGET ${PROJECT_NAME} PROPERTY VS_SOURCE_SETTINGS_WavePsslc "FileType=Document")
 set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_STANDARD 17

@@ -3,9 +3,9 @@
 #include <fstream>
 #include <gnf.h>
 
-#include <.\graphics\api_gnm\toolkit\allocators.h>
-#include <.\graphics\api_gnm\toolkit\stack_allocator.h>
-#include"../../Common/Assets.h"
+#include <..\samples\sample_code\graphics\api_gnm\toolkit\allocators.h>
+#include <..\samples\sample_code\graphics\api_gnm\toolkit\stack_allocator.h>
+#include "Assets.h"
 
 using namespace sce;
 using namespace NCL::PS4;

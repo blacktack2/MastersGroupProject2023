@@ -1,11 +1,11 @@
 #ifdef _ORBIS
 #include "PS4Camera.h"
 #include "PS4InputManager.h"
-#include "../../Common/Vector2.h"
-#include "../../Common/Maths.h"
-#include "../../PS4Starter/InputKeyMap.h"
+#include "Vector2.h"
+#include "Maths.h"
+#include "InputKeyMap.h"
 
-NCL::PS4::PS4Camera::PS4Camera()
+NCL::PS4::PS4Camera::PS4Camera():Camera()
 {
 	nearPlane = 1.0f;
 	farPlane = 1000.0f;
@@ -32,15 +32,8 @@ void NCL::PS4::PS4Camera::UpdateCamera(float dt)
 		pitch -= (rightAnalog.y);
 		yaw -= (rightAnalog.x);
 
-		pitch = std::min(pitch, 90.0f);
-		pitch = std::max(pitch, -90.0f);
-
-		if (yaw < 0) {
-			yaw += 360.0f;
-		}
-		if (yaw > 360.0f) {
-			yaw -= 360.0f;
-		}
+		pitch = Maths::Clamp(pitch, -90.0f, 90.0f);
+		yaw += (yaw < 0) ? 360.0f : ((yaw > 360.0f) ? -360.0f : 0.0f);
 
 		float frameSpeed = 32 * dt;
 
@@ -71,7 +64,12 @@ void NCL::PS4::PS4Camera::UpdateCamera(float dt)
 			position -= Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(1, 0, 0) * frameSpeed;
 		}
 
-
+		if (PS4::PS4InputManager::GetButtons(Player1, PS4::CROSS)) {
+			position.y += frameSpeed;
+		}
+		if (PS4::PS4InputManager::GetButtons(Player1, PS4::SQUARE)) {
+			position.y -= frameSpeed;
+		}
 		//if () {
 		//	position.y += frameSpeed;
 		//}

@@ -57,9 +57,9 @@ namespace NCL {
 		std::string("Positions"),
 		std::string("Colours"),
 		std::string("Tex Coords"),
-		std::string("Normals"),
 		std::string("Tangents"),
 		std::string("Joint Weights"),
+		std::string("Normals"),
 		std::string("Joint Indices")
 	};
 

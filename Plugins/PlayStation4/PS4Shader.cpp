@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <gnmx\shader_parser.h>
 #include <..\samples\sample_code\graphics\api_gnm\toolkit\shader_loader.h>
 

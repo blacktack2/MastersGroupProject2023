@@ -16,8 +16,8 @@
 using namespace NCL;
 using namespace Rendering;
 
-std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>  AssetLibrary<MeshGeometry>::assets;
-std::unordered_map<std::string, std::shared_ptr<TextureBase>>   AssetLibrary<TextureBase>::assets;
-std::unordered_map<std::string, std::shared_ptr<ShaderBase>>    AssetLibrary<ShaderBase>::assets;
-std::unordered_map<std::string, std::shared_ptr<MeshAnimation>> AssetLibrary<MeshAnimation>::assets;
-std::unordered_map<std::string, std::shared_ptr<MeshMaterial>>  AssetLibrary<MeshMaterial>::assets;
+template<> std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>  AssetLibrary<MeshGeometry>::assets;
+template<> std::unordered_map<std::string, std::shared_ptr<TextureBase>>   AssetLibrary<TextureBase>::assets;
+template<> std::unordered_map<std::string, std::shared_ptr<ShaderBase>>    AssetLibrary<ShaderBase>::assets;
+template<> std::unordered_map<std::string, std::shared_ptr<MeshAnimation>> AssetLibrary<MeshAnimation>::assets;
+template<> std::unordered_map<std::string, std::shared_ptr<MeshMaterial>>  AssetLibrary<MeshMaterial>::assets;

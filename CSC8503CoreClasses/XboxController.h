@@ -8,7 +8,7 @@
  */
 
 #pragma once
-
+#ifdef x64
 #include<Windows.h>
 #include<Xinput.h>
 #include <iostream>
@@ -43,3 +43,4 @@ namespace NCL
         std::vector<int> connectedControllers;
     };
 }
+#endif //x64

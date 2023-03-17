@@ -7,7 +7,7 @@
  */
 
 #pragma once
-
+#ifdef x64
 #include "XboxController.h"
 
 namespace NCL
@@ -35,3 +35,4 @@ namespace NCL
 
     };
 }
+#endif //x64

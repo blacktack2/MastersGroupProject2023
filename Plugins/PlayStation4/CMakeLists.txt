@@ -77,6 +77,27 @@ if(MSVC)
         "_WINSOCK2API_"
         "_WINSOCK_DEPRECATED_NO_WARNINGS"
     )
+	else()
+	target_compile_options(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Release>:
+            -Oi;
+            -Gy
+        >
+		$<$<CONFIG:Debug>:
+		-O0
+		>
+		-frtti;
+		-fexceptions;
+        -std:c++17;
+        #${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
+        #${DEFAULT_CXX_EXCEPTION_HANDLING};
+    )
+    target_link_options(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Release>:
+            -OPT:REF;
+            -OPT:ICF
+        >
+    )
 endif()
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE
@@ -90,14 +111,14 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <functional>
     <iostream>
     <set>
-    "../NCLCoreClasses/Vector2.h"
-    "../NCLCoreClasses/Vector3.h"
-    "../NCLCoreClasses/Vector4.h"
-    "../NCLCoreClasses/Quaternion.h"
-    "../NCLCoreClasses/Plane.h"
-    "../NCLCoreClasses/Matrix2.h"
-    "../NCLCoreClasses/Matrix3.h"
-    "../NCLCoreClasses/Matrix4.h"
+    "../../NCLCoreClasses/Vector2.h"
+    "../../NCLCoreClasses/Vector3.h"
+    "../../NCLCoreClasses/Vector4.h"
+    "../../NCLCoreClasses/Quaternion.h"
+    "../../NCLCoreClasses/Plane.h"
+    "../../NCLCoreClasses/Matrix2.h"
+    "../../NCLCoreClasses/Matrix3.h"
+    "../../NCLCoreClasses/Matrix4.h"
     
 )
  
@@ -142,7 +163,7 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC CSC8503CoreClasses)
 # PS4 config
 ################################################################################
 if(USE_ORBIS)
- set_property(SOURCE ${ALL_FILES} PROPERTY COMPILE_OPTIONS "-Wall")
+ set_property(SOURCE ${ALL_FILES} PROPERTY COMPILE_OPTIONS "-Wall" "-fno-implicit-templates")
  set_property(TARGET ${PROJECT_NAME} PROPERTY VS_SOURCE_SETTINGS_WavePsslc "FileType=Document")
 set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_STANDARD 17

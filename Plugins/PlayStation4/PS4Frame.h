@@ -4,8 +4,7 @@
 
 #include <gnmx.h>
 
-namespace NCL{
-	namespace PS4 {
+namespace NCL::PS4 {
 	class PS4Frame : public PS4MemoryAware
 	{
 	public:

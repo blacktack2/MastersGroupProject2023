@@ -10,27 +10,29 @@
 
 #define SAMPLE_GRANULARITY 1024
 
-namespace NCL::PS4 {
-	class Ps4AudioSystem
-	{
-	public:
-		Ps4AudioSystem(int audioSources = 32);
-		~Ps4AudioSystem();
+namespace NCL {
+	namespace PS4 {
+		class Ps4AudioSystem
+		{
+		public:
+			Ps4AudioSystem(int audioSources = 32);
+			~Ps4AudioSystem();
 
-	protected:
-		void AudioThread();
-		void UpdateSound();
+		protected:
+			void AudioThread();
+			void UpdateSound();
 
-		std::thread			audioThread;
-		std::atomic<bool>	threadFinished;
+			std::thread			audioThread;
+			std::atomic<bool>	threadFinished;
 
-		//libaudio3D
-		SceAudio3dPortId	audioPort;
+			//libaudio3D
+			SceAudio3dPortId	audioPort;
 
-		std::vector<PS4AudioSource*> audioSources;
+			std::vector<PS4AudioSource*> audioSources;
 
-		Ps4AudioEmitter*	testEmitter;
-		Sound*				testSound;
-	};
+			Ps4AudioEmitter* testEmitter;
+			Sound* testSound;
+		};
+	}
 }
 #endif

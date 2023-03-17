@@ -66,6 +66,7 @@ int realHZ		= idealHZ;
 float realDT	= idealDT;
 
 void PhysicsSystem::Update(float dt) {	
+#ifdef x64
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::N)) {
 		useSimpleContainer = !useSimpleContainer;
 		std::cout << "Setting broad container to " << useSimpleContainer << std::endl;
@@ -78,7 +79,7 @@ void PhysicsSystem::Update(float dt) {
 		constraintIterationCount++;
 		std::cout << "Setting constraint iterations to " << constraintIterationCount << std::endl;
 	}
-
+#endif //x64
 	dTOffset += dt; //We accumulate time delta here - there might be remainders from previous frame!
 
 	GameTimer t;

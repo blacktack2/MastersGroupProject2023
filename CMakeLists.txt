@@ -90,12 +90,14 @@ endif()
 ################################################################################
 add_subdirectory(NCLCoreClasses)
 add_subdirectory(CSC8503CoreClasses)
-add_subdirectory(OpenGLRendering)
+
 add_subdirectory(CSC8503)
 
 if(USE_ORBIS)
  message("USE_ORBIS set to: ${USE_ORBIS}") 
  add_subdirectory(Plugins/PlayStation4)
+ else()
+ add_subdirectory(OpenGLRendering)
 endif()
 
 set(OPENAL_LIBRARY "${CMAKE_SOURCE_DIR}/lib/Debug/OpenAL/" CACHE STRING "" FORCE)

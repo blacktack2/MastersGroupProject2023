@@ -3,11 +3,11 @@
 #include "PS4Input.h"
 
 #define Axis_Negative -2
-namespace NCL{
+namespace NCL {
 	namespace Maths { class Vector2; }
 	namespace PS4 {
 		enum Players {
-			Player1=0,
+			Player1 = 0,
 			Player2,
 			Player3,
 			Player4
@@ -16,15 +16,15 @@ namespace NCL{
 		class PS4InputManager {
 		private:
 			PS4InputManager() {};
-			~PS4InputManager();
+			~PS4InputManager() {};
 
 		public:
 			//create the input manager and collect controller data
 			static void Initialize();
-			
-			static void Destroy() ;
+
+			static void Destroy();
 			/*static PS4InputManager* GetInstance() { return instance; }*/
-			
+
 			//Update the controller states. Needs to be called every frame
 			static void Update();
 
@@ -33,7 +33,7 @@ namespace NCL{
 
 			//Provides button pressed information
 			static bool GetButtons(unsigned int playerId, unsigned int button);
-			
+
 		private:
 			/*static PS4InputManager* instance;*/
 

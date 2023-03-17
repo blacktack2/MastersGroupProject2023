@@ -1,6 +1,15 @@
 #pragma once
+#ifdef x64
 #include "Window.h"
 #include "XboxControllerManager.h"
+
+#endif // x64
+
+#ifdef _ORBIS
+#include <limits>
+#include <map>
+#include "../NCLCoreClasses/Vector2.h"
+#endif // _ORBIS
 
 constexpr auto MAXPLAYER = 4;
 
@@ -76,9 +85,11 @@ namespace NCL {
 		bool CheckButtonPressed(unsigned int state, InputType key, int PlayerID);
 
 		bool GetAxisData(unsigned int playerNum, AxisInput axis, float& data);
-
+#ifdef x64
 		Vector2 GetMousePosition();
 		bool HasMouse();
+#endif // x64
+
 
 		void ChangePlayerControlTypeMap(int playerID, ControllerType type);
 
@@ -92,15 +103,21 @@ namespace NCL {
 
 		void UpdatePlayer(int playerID);
 
+#ifdef x64
 		void UpdateWindows(int playerID);
 
 		void UpdateXbox(int playerID);
+#endif // x64
+
+#ifdef _ORBIS
+		void UpdatePS4(int playerID);
+#endif // _ORBIS
 
 		unsigned int buttonstates;
 		float AxisDataArray[MAXPLAYER][AxisInput::AxisInputDataMax] = { 0 };
-		Vector2 movementAxis;
-		Vector2 cameraAxis;
-		Vector2 mousePosition;
+		Maths::Vector2 movementAxis;
+		Maths::Vector2 cameraAxis;
+		Maths::Vector2 mousePosition;
 
 		std::map<int, ControllerType> playerControlTypeMap;
 	};

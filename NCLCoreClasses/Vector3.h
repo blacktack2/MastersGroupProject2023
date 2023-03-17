@@ -82,9 +82,9 @@ namespace NCL {
 
 			static inline constexpr Vector3 Clamp(const Vector3& input, const Vector3& mins, const Vector3& maxs) {
 				return Vector3(
-					std::clamp(input.x, mins.x, maxs.x),
-					std::clamp(input.y, mins.y, maxs.y),
-					std::clamp(input.z, mins.z, maxs.z)
+					Maths::Clamp(input.x, mins.x, maxs.x),
+					Maths::Clamp(input.y, mins.y, maxs.y),
+					Maths::Clamp(input.z, mins.z, maxs.z)
 				);
 			}
 
@@ -203,7 +203,7 @@ namespace NCL {
 			}
 
 			static inline constexpr Vector3 Lerp(const Vector3& a, const Vector3& b, const float t) {
-				return Vector3(std::lerp(a.x, b.x, t), std::lerp(a.y, b.y, t), std::lerp(a.z, b.z, t));
+				return Vector3(Maths::Lerp(a.x, b.x, t), Maths::Lerp(a.y, b.y, t), Maths::Lerp(a.z, b.z, t));
 			}
 		};
 	}

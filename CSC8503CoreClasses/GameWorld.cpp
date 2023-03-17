@@ -4,6 +4,13 @@
 #include "GameObject.h"
 #include "GameWorld.h"
 #include "PhysicsObject.h"
+#include<chrono>
+
+#include "Camera.h"
+#ifdef _ORBIS
+#include "../Plugins/PlayStation4/PS4Camera.h"
+#endif // _ORBIS
+
 
 using namespace NCL;
 using namespace NCL::CSC8503;
@@ -32,7 +39,9 @@ GameWorld::~GameWorld()	{
 void GameWorld::Clear() {
 	dynamicQuadTree.Clear();
 	staticQuadTree.Clear();
+	#ifdef x64
 	networkObjects.clear();
+	#endif //x64
 	gameObjects.clear();
 	constraints.clear();
 	worldIDCounter		= 0;
@@ -53,9 +62,11 @@ void GameWorld::AddGameObject(GameObject* o) {
 	gameObjects.emplace_back(o);
 	o->SetWorldID(worldIDCounter++);
 	worldStateCounter++;
+	#ifdef x64
 	if (o->GetNetworkObject() != nullptr) {
 		AddNetworkObject(o->GetNetworkObject());
 	}
+	#endif //x64
 }
 
 void GameWorld::RemoveGameObject(GameObject* o, bool andDelete) {
@@ -65,7 +76,7 @@ void GameWorld::RemoveGameObject(GameObject* o, bool andDelete) {
 	}
 	worldStateCounter++;
 }
-
+#ifdef x64
 void GameWorld::AddNetworkObject(NetworkObject* o) {
 	networkObjects.emplace_back(o);
 }
@@ -73,7 +84,7 @@ void GameWorld::AddNetworkObject(NetworkObject* o) {
 void GameWorld::RemoveNetworkObject(NetworkObject* o) {
 	networkObjects.erase(std::remove(networkObjects.begin(), networkObjects.end(), o), networkObjects.end());
 }
-
+#endif //x64
 
 void GameWorld::GetObjectIterators(
 	GameObjectIterator& first,

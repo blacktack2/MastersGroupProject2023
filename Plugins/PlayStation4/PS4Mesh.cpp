@@ -1,13 +1,15 @@
 #ifdef _ORBIS
 #include "PS4Mesh.h"
-#include "../../Common/Vector2.h"
-#include "../../Common/Vector3.h"
+#include "Vector2.h"
+#include "Vector3.h"
 
-#include <.\graphics\api_gnm\toolkit\allocators.h>
-#include <.\graphics\api_gnm\toolkit\stack_allocator.h>
+#include <..\samples\sample_code\graphics\api_gnm\toolkit\allocators.h>
+#include <..\samples\sample_code\graphics\api_gnm\toolkit\stack_allocator.h>
 
 using namespace NCL::Maths;
 using namespace NCL::PS4;
+
+using namespace sce;
 
 PS4Mesh::PS4Mesh()	{
 	indexBuffer		= 0;

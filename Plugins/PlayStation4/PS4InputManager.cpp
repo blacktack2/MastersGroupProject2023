@@ -1,6 +1,6 @@
 #ifdef _ORBIS
 #include "PS4InputManager.h"
-#include "../../Common/Vector2.h"
+#include "Vector2.h"
 #include "pad.h"
 #include <sys\_defines\_sce_ok.h>
 #include <iostream>

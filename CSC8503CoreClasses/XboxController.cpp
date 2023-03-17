@@ -6,7 +6,7 @@
  * @author Xiaoyang Liu
  * @date   February 2023
  */
-
+#ifdef x64
 #include "XboxController.h"
 #include <cmath>
 
@@ -165,3 +165,4 @@ bool XboxController::GetLeftTrigger(unsigned int controllerNum, float& n)      /
     }
     return true;
 }
+#endif //x64
