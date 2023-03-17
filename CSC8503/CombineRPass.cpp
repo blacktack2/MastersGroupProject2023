@@ -18,7 +18,8 @@
 #include "TextureBase.h"
 
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Rendering;
 
 CombineRPass::CombineRPass() : OGLCombineRenderPass(), renderer(GameTechRenderer::instance()) {
 	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
@@ -48,9 +49,6 @@ CombineRPass::CombineRPass() : OGLCombineRenderPass(), renderer(GameTechRenderer
 	shader->SetUniformInt("depthTex", 6);
 
 	shader->Unbind();
-}
-
-CombineRPass::~CombineRPass() {
 }
 
 void CombineRPass::Render() {

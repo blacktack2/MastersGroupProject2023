@@ -9,31 +9,27 @@
 
 #pragma once
 #include "OGLOverlayRenderPass.h"
+
 #include "Hud.h"
 
-namespace NCL::Rendering {
-	class ShaderBase;
-	class TextureBase;
-}
+#include <memory>
 
-using namespace NCL::Rendering;
+namespace NCL {
+	namespace CSC8503 {
+		class GameWorld;
+		class GameTechRenderer;
 
-namespace NCL::CSC8503 {
-	class GameWorld;
-	class GameTechRenderer;
+		class HudRPass : public OGLOverlayRenderPass {
+		public:
+			HudRPass();
+			~HudRPass() = default;
 
-	class HudRPass : public OGLOverlayRenderPass {
-	public:
-		HudRPass();
-		~HudRPass();
+			void Render() override;
+		private:
+			GameTechRenderer& renderer;
+			GameWorld& gameWorld;
 
-		virtual void Render() override;
-
-	private:
-		GameTechRenderer& renderer;
-		GameWorld& gameWorld;
-		std::unique_ptr<ShaderBase> defaultShader;
-		std::unique_ptr<TextureBase> defaultTexture;
-		Hud hud;
-	};
+			Hud hud;
+		};
+	}
 }

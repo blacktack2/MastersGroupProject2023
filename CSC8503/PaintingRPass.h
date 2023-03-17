@@ -6,21 +6,15 @@
 #include <optional>
 
 namespace NCL {
-	class MeshGeometry;
-}
+	class DebugViewPoint;
 
-namespace NCL {
 	namespace Rendering {
 		class FrameBuffer;
 		class ShaderBase;
-		class TextureBase;
 	}
-}
 
-using namespace NCL;
-using namespace Rendering;
+	using namespace NCL::Rendering;
 
-namespace NCL {
 	namespace CSC8503 {
 		class GameTechRenderer;
 		class GameWorld;
@@ -28,11 +22,11 @@ namespace NCL {
 		class PaintingRPass : public OGLMainRenderPass {
 		public:
 			PaintingRPass();
-			~PaintingRPass();
+			~PaintingRPass() = default;
 
 			void Render() override;
-
 		protected:
+			DebugViewPoint& debugView;
 			GameTechRenderer& renderer;
 			GameWorld& gameWorld;
 
