@@ -40,8 +40,6 @@ PlayerObject::PlayerObject(int playerID) : GameObject(), playerID(playerID), key
 }
 
 PlayerObject::~PlayerObject() {
-	alDeleteSources(1, &(*playerSource->GetSource()).source);
-	alDeleteSources(1, &(*attackSource->GetSource()).source);
 	SoundSystem::GetSoundSystem()->SetListener(nullptr);
 	delete playerSource;
 	delete attackSource;

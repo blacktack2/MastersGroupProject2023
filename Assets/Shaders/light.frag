@@ -61,8 +61,8 @@ void main() {
 	vec4 invClipPos = inverseProjView * vec4(ndcPos, 1.0);
 	vec3 worldPos   = invClipPos.xyz / invClipPos.w;
 
-	vec3 incident;
-	float attenuation;
+	vec3 incident = vec3(0);
+	float attenuation = 0;
 	if (lightPosition.w == 0)
 		AttenuateDirLight(incident, attenuation, lightDirection);
 	else
@@ -72,7 +72,7 @@ void main() {
 	vec3 viewDir = normalize(cameraPos - worldPos);
 	vec3 halfDir = normalize(incident + viewDir);
 
-	float shadow;
+	float shadow = 0;
 	GetShadow(shadow, worldPos);
 
 	float lambert = clamp(dot(incident, normal), 0.0, 1.0);

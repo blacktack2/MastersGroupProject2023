@@ -203,7 +203,7 @@ void OGLRenderer::InitWithWin32(Window& w) {
 }
 
 HGLRC OGLRenderer::CreateContext() {
-	HGLRC context = nullptr;
+	HGLRC context;
 	if (!initState) return context;
 
 	char* ver = (char*)glGetString(GL_VERSION); // ver must equal "4.1.0" (or greater!)
