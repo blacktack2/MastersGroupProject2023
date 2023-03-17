@@ -370,13 +370,13 @@ void TutorialGame::UpdateLevel() {
 		if (object->HasDestroyed()){
 			object->Destroy(false);
 			if (object->objectType == ObjectType::Pillar){
-				Vector3 dimensions{ interval / 2.0f, 10, interval / 2.0f };
+				Vector3 dimensions{ interval / 2.0f, 15, interval / 2.0f };
 				Obstacle* pillar = new Obstacle{ object, true };
 
 				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3f, 2.0f, 1.3f }, CollisionLayer::PaintAble));
 
 				pillar->GetTransform()
-					.SetPosition(object->worldPos + Vector3{ 0,20,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,15,0 })
 					.SetScale(dimensions * 2);
 				//pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("pillar"), healingKitTex, nullptr));
 				
