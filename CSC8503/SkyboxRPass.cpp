@@ -8,6 +8,7 @@
 #include "SkyboxRPass.h"
 
 #include "GameTechRenderer.h"
+#include "GameWorld.h"
 
 #include "AssetLibrary.h"
 #include "AssetLoader.h"

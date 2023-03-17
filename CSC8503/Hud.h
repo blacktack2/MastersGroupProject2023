@@ -11,7 +11,6 @@
 
 #include "HealthBar.h"
 #include "Assetlibrary.h"
-#include "HudBase.h"
 
 namespace NCL {
 	namespace CSC8503 {

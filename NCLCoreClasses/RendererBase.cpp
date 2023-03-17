@@ -11,17 +11,19 @@
 
 #include "RendererConfigBase.h"
 
+#include "IMainRenderPass.h"
+#include "ICombineRenderPass.h"
+#include "IPostRenderPass.h"
+#include "IPresentRenderPass.h"
+#include "IOverlayRenderPass.h"
+#include "RenderPassBase.h"
+
 #include <optional>
 
 using namespace NCL;
 using namespace Rendering;
 
 RendererBase::RendererBase(Window& window) : hostWindow(window)	{
-	windowWidth  = static_cast<int>(window.GetScreenSize().x);
-	windowHeight = static_cast<int>(window.GetScreenSize().y);
-}
-
-RendererBase::~RendererBase() {
 }
 
 void RendererBase::EnableRenderScene(bool enable) {
@@ -119,9 +121,8 @@ void RendererBase::ResizeViewport() {
 	}
 }
 
-void RendererBase::RenderViewPort(int viewportID, int cameraID, const std::vector<float>& viewports, bool displayHudDebug)
-{
-	size_t index = viewportID * 4;
+void RendererBase::RenderViewPort(int viewportID, int cameraID, const std::vector<float>& viewports, bool displayHudDebug) {
+	size_t index = (size_t)viewportID * 4;
 	GetConfig().SetDefaultViewport(0, 0, viewports[index + 2], viewports[index + 3]);
 	SetGameWorldMainCamera(cameraID);
 	RenderScene();

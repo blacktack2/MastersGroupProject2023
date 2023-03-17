@@ -8,8 +8,8 @@
  */
 
 #include"HudRPass.h"
-#include "GameTechRenderer.h"
 #include "GameWorld.h"
+#include "GameTechRenderer.h"
 
 #include "AssetLibrary.h"
 #include "AssetLoader.h"
@@ -20,7 +20,7 @@
 #include "TextureBase.h"
 
 #include "Debug.h"
-#include "UIObject.h"
+
 using namespace NCL;
 using namespace CSC8503;
 HudRPass::HudRPass():OGLOverlayRenderPass(),

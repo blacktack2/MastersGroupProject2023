@@ -15,23 +15,16 @@
 #include "OGLShader.h"
 #include "OGLTexture.h"
 
-#include "SimpleFont.h"
 #include "AssetLoader.h"
-
-#include "Vector2.h"
-#include "Vector3.h"
-#include "Matrix4.h"
-
-#include "MeshGeometry.h"
 
 #ifdef _WIN32
 #include "Win32Window.h"
 
-#include "KHR\khrplatform.h"
 #include "glad\gl.h"
+#include "KHR\khrplatform.h"
 #include "KHR/WGLext.h"
 
-PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = NULL;
+PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = nullptr;
 #endif
 
 using namespace NCL;
@@ -42,12 +35,9 @@ static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum
 #endif;
 
 OGLRenderer::OGLRenderer(Window& w) : RendererBase(w), config(*this) {
-	initState = false;
 #ifdef _WIN32
 	InitWithWin32(w);
 #endif
-	windowWidth  = (int)w.GetScreenSize().x;
-	windowHeight = (int)w.GetScreenSize().y;
 
 	if (initState) {
 		AssetLoader::RegisterMeshLoadFunction(OGLMesh::LoadMesh);
@@ -61,8 +51,6 @@ OGLRenderer::OGLRenderer(Window& w) : RendererBase(w), config(*this) {
 		AssetLoader::RegisterShaderCreateAndInitFunction(OGLShader::CreateShaderAndInit);
 	}
 
-	forceValidDebugState = false;
-
 	GetConfig().ResetAll();
 }
 
@@ -74,8 +62,6 @@ OGLRenderer::~OGLRenderer() {
 
 void OGLRenderer::OnWindowResize(int width, int height) {
 	RendererBase::OnWindowResize(width, height);
-	windowWidth  = width;
-	windowHeight = height;
 
 	GetConfig().SetViewport();
 }
@@ -114,7 +100,7 @@ void OGLRenderer::InitWithWin32(Window& w) {
 	Win32Code::Win32Window* realWindow = (Win32Code::Win32Window*)&w;
 
 	if (!(deviceContext = GetDC(realWindow->GetHandle()))) {
-		std::cout << __FUNCTION__ << " Failed to create window!" << std::endl;
+		std::cout << __FUNCTION__ << " Failed to create window!\n";
 		return;
 	}
 
@@ -133,29 +119,29 @@ void OGLRenderer::InitWithWin32(Window& w) {
 
 	GLuint PixelFormat;
 	if (!(PixelFormat = ChoosePixelFormat(deviceContext, &pfd))) { // Did Windows Find A Matching Pixel Format for our PFD?
-		std::cout << __FUNCTION__ << " Failed to choose a pixel format!" << std::endl;
+		std::cout << __FUNCTION__ << " Failed to choose a pixel format!\n";
 		return;
 	}
 
 	if (!SetPixelFormat(deviceContext, PixelFormat, &pfd)) { // Are We Able To Set The Pixel Format?
-		std::cout << __FUNCTION__ << " Failed to set a pixel format!" << std::endl;
+		std::cout << __FUNCTION__ << " Failed to set a pixel format!\n";
 		return;
 	}
 
 	HGLRC tempContext; //We need a temporary OpenGL context to check for OpenGL 3.2 compatibility...stupid!!!
 	if (!(tempContext = wglCreateContext(deviceContext))) { // Are We Able To get the temporary context?
-		std::cout << __FUNCTION__ <<"  Cannot create a temporary context!" << std::endl;
+		std::cout << __FUNCTION__ << " Cannot create a temporary context!\n";
 		wglDeleteContext(tempContext);
 		return;
 	}
 
 	if (!wglMakeCurrent(deviceContext, tempContext)) { // Try To Activate The Rendering Context
-		std::cout << __FUNCTION__ << " Cannot set temporary context!" << std::endl;
+		std::cout << __FUNCTION__ << " Cannot set temporary context!\n";
 		wglDeleteContext(tempContext);
 		return;
 	}
 	if (!gladLoaderLoadGL()) {
-		std::cout << __FUNCTION__ << " Cannot initialise GLAD!" << std::endl; //It's all gone wrong!
+		std::cout << __FUNCTION__ << " Cannot initialise GLAD!\n";
 		return;
 	}
 	//Now we have a temporary context, we can find out if we support OGL 4.x
@@ -163,18 +149,17 @@ void OGLRenderer::InitWithWin32(Window& w) {
 	int major = ver[0] - '0'; //casts the 'correct' major version integer from our version string
 	int minor = ver[2] - '0'; //casts the 'correct' minor version integer from our version string
 
-	if (major < 3) { //Graphics hardware does not support OGL 4! Erk...
-		std::cout << __FUNCTION__ << " Device does not support OpenGL 4.x!" << std::endl;
+	if (major < 3) {
+		std::cout << __FUNCTION__ << " Device does not support OpenGL 4.x!\n";
 		wglDeleteContext(tempContext);
 		return;
 	}
 
-	if (major == 4 && minor < 1) { //Graphics hardware does not support ENOUGH of OGL 4! Erk...
-		std::cout << __FUNCTION__ << " Device does not support OpenGL 4.1!" << std::endl;
+	if (major == 4 && minor < 1) {
+		std::cout << __FUNCTION__ << " Device does not support OpenGL 4.1!\n";
 		wglDeleteContext(tempContext);
 		return;
 	}
-	//We do support OGL 4! Let's set it up...
 
 	int attribs[] = {
 		WGL_CONTEXT_MAJOR_VERSION_ARB, major,
@@ -184,7 +169,7 @@ void OGLRenderer::InitWithWin32(Window& w) {
 		| WGL_CONTEXT_DEBUG_BIT_ARB
 #endif //No deprecated stuff!! DIE DIE DIE glBegin!!!!
 		,WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-		0 //That's enough attributes...
+		0
 	};
 
 	//Everywhere else in the Renderers, we use function pointers provided by GLEW...but we can't initialise GLEW yet! So we have to use the 'Wiggle' API
@@ -194,23 +179,22 @@ void OGLRenderer::InitWithWin32(Window& w) {
 
 	// Check for the context, and try to make it the current rendering context
 	if (!renderContext || !wglMakeCurrent(deviceContext, renderContext)) {
-		std::cout << __FUNCTION__ <<" Cannot set OpenGL 3 context!" << std::endl; //It's all gone wrong!
+		std::cout << __FUNCTION__ << " Cannot set OpenGL 3 context!\n";
 		wglDeleteContext(renderContext);
 		wglDeleteContext(tempContext);
 		return;
 	}
 
-	wglDeleteContext(tempContext); //We don't need the temporary context any more!
+	wglDeleteContext(tempContext);
 
-	std::cout << __FUNCTION__ << " Initialised OpenGL " << major << "." << minor << " rendering context" << std::endl;	//It's all gone wrong!
+	std::cout << __FUNCTION__ << " Initialised OpenGL " << major << "." << minor << " rendering context\n";
 
 #ifdef OPENGL_DEBUGGING
-	glDebugMessageCallback(DebugCallback, NULL);
+	glDebugMessageCallback(DebugCallback, nullptr);
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 #endif
 
-	//If we get this far, everything's going well!
 	initState = true; 
 
 	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
@@ -219,7 +203,7 @@ void OGLRenderer::InitWithWin32(Window& w) {
 }
 
 HGLRC OGLRenderer::CreateContext() {
-	HGLRC context;
+	HGLRC context = nullptr;
 	if (!initState) return context;
 
 	char* ver = (char*)glGetString(GL_VERSION); // ver must equal "4.1.0" (or greater!)
@@ -239,11 +223,9 @@ HGLRC OGLRenderer::CreateContext() {
 
 	PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
 	context = wglCreateContextAttribsARB(deviceContext, 0, attribs);
-	if (!wglShareLists(renderContext, context))
-	{
+	if (!wglShareLists(renderContext, context)) {
 		wglDeleteContext(context);
-		std::cout << "Error Sharing Between Files" << std::endl;
-		HGLRC context;
+		std::cout << "Error Sharing Between Files\n";
 	}
 
 	return context;
@@ -262,6 +244,7 @@ bool OGLRenderer::SetVerticalSync(VerticalSyncState s) {
 
 	switch (s) {
 		case VerticalSyncState::Off      : state =  0; break;
+		default:
 		case VerticalSyncState::On       : state =  1; break;
 		case VerticalSyncState::Adaptive : state = -1; break;
 	}
@@ -277,29 +260,29 @@ static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum
 	std::string severityName;
 
 	switch (source) {
-	case GL_DEBUG_SOURCE_API: sourceName = "Source(OpenGL)"; break;
-	case GL_DEBUG_SOURCE_WINDOW_SYSTEM: sourceName = "Source(Window System)"; break;
-	case GL_DEBUG_SOURCE_SHADER_COMPILER: sourceName = "Source(Shader Compiler)"; break;
-	case GL_DEBUG_SOURCE_THIRD_PARTY: sourceName = "Source(Third Party)"; break;
-	case GL_DEBUG_SOURCE_APPLICATION: sourceName = "Source(Application)"; break;
-	case GL_DEBUG_SOURCE_OTHER: sourceName = "Source(Other)"; break;
+		case GL_DEBUG_SOURCE_API             : sourceName = "Source(OpenGL)"         ; break;
+		case GL_DEBUG_SOURCE_WINDOW_SYSTEM   : sourceName = "Source(Window System)"  ; break;
+		case GL_DEBUG_SOURCE_SHADER_COMPILER : sourceName = "Source(Shader Compiler)"; break;
+		case GL_DEBUG_SOURCE_THIRD_PARTY     : sourceName = "Source(Third Party)"    ; break;
+		case GL_DEBUG_SOURCE_APPLICATION     : sourceName = "Source(Application)"    ; break;
+		case GL_DEBUG_SOURCE_OTHER           : sourceName = "Source(Other)"          ; break;
 	}
 
 	switch (type) {
-	case GL_DEBUG_TYPE_ERROR: typeName = "Type(Error)"; break;
-	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: typeName = "Type(Deprecated Behaviour)"; break;
-	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: typeName = "Type(Undefined Behaviour)"; break;
-	case GL_DEBUG_TYPE_PORTABILITY: typeName = "Type(Portability)"; break;
-	case GL_DEBUG_TYPE_PERFORMANCE: typeName = "Type(Performance)"; break;
-	case GL_DEBUG_TYPE_OTHER: typeName = "Type(Other)"; break;
+		case GL_DEBUG_TYPE_ERROR               : typeName = "Type(Error)"               ; break;
+		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR : typeName = "Type(Deprecated Behaviour)"; break;
+		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR  : typeName = "Type(Undefined Behaviour)" ; break;
+		case GL_DEBUG_TYPE_PORTABILITY         : typeName = "Type(Portability)"         ; break;
+		case GL_DEBUG_TYPE_PERFORMANCE         : typeName = "Type(Performance)"         ; break;
+		case GL_DEBUG_TYPE_OTHER               : typeName = "Type(Other)"               ; break;
 	}
 
 	switch (severity) {
-	case GL_DEBUG_SEVERITY_HIGH: severityName = "Priority(High)"; break;
-	case GL_DEBUG_SEVERITY_MEDIUM: severityName = "Priority(Medium)"; break;
-	case GL_DEBUG_SEVERITY_LOW: severityName = "Priority(Low)"; break;
+		case GL_DEBUG_SEVERITY_HIGH   : severityName = "Priority(High)"  ; break;
+		case GL_DEBUG_SEVERITY_MEDIUM : severityName = "Priority(Medium)"; break;
+		case GL_DEBUG_SEVERITY_LOW    : severityName = "Priority(Low)"   ; break;
 	}
 
-	std::cout << "OpenGL Debug Output: " + sourceName + ", " + typeName + ", " + severityName + ", " + std::string(message) << std::endl;
+	std::cout << "OpenGL Debug Output: " + sourceName + ", " + typeName + ", " + severityName + ", " + std::string(message) << "\n";
 }
 #endif

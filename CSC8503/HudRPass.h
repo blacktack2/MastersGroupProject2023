@@ -9,20 +9,19 @@
 
 #pragma once
 #include "OGLOverlayRenderPass.h"
-#include "GameWorld.h"
-#include "UIObject.h"
 #include "Hud.h"
-#include "OGLTexture.h"
-#include "OGLShader.h"
+
 namespace NCL::Rendering {
-	class OGLShader;
-	class OGLTexture;
+	class ShaderBase;
+	class TextureBase;
 }
 
 using namespace NCL::Rendering;
 
 namespace NCL::CSC8503 {
+	class GameWorld;
 	class GameTechRenderer;
+
 	class HudRPass : public OGLOverlayRenderPass {
 	public:
 		HudRPass();
@@ -30,9 +29,6 @@ namespace NCL::CSC8503 {
 
 		virtual void Render() override;
 
-		Hud& GetHud() {
-			return hud;
-		};
 	private:
 		GameTechRenderer& renderer;
 		GameWorld& gameWorld;
