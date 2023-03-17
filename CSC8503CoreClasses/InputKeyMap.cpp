@@ -148,15 +148,15 @@ void InputKeyMap::UpdateWindows(int playerID)
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN ) || Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT))
 	{
-		buttonstates |= InputType::DOWN;
+		SetButton(InputType::DOWN, playerID);
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP) || Window::GetKeyboard()->KeyDown(KeyboardKeys::LEFT))
 	{
-		buttonstates |= InputType::UP;
+		SetButton(InputType::UP, playerID);
 	}
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN))
 	{
-		buttonstates |= InputType::Confirm;
+		SetButton(InputType::Confirm, playerID);
 	}
 
 	if (Window::GetMouse()) {
