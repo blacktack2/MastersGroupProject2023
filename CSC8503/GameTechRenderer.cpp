@@ -39,6 +39,7 @@ void GameTechRenderer::InitPipeline() {
 	lightingPass = std::make_unique<LightingRPass>();
 	lightingPass->SetDepthTexIn(modelPass->GetDepthOutTex());
 	lightingPass->SetNormalTexIn(modelPass->GetNormalOutTex());
+	lightingPass->SetSpecTexIn(modelPass->GetSpecOutTex());
 	AddMainPass(*lightingPass);
 
 	ssaoPass = std::make_unique<SSAORPass>();
