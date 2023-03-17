@@ -216,7 +216,7 @@ void Boss::BuildTree() {
 }
 
 void Boss::Update(float dt) {
-    NCL::DebugViewPoint::Instance().MarkTime("Boss Update");
+    //NCL::DebugViewPoint::Instance().MarkTime("Boss Update");
     GetTarget();
     BossAction prevState = bossAction;
     health.Update(dt);
@@ -246,7 +246,7 @@ void Boss::Update(float dt) {
     if (bossAction != prevState) {
         ChangeTarget();
     }
-    NCL::DebugViewPoint::Instance().FinishTime("Boss Update");
+    //NCL::DebugViewPoint::Instance().FinishTime("Boss Update");
 }
 
 void Boss::ChangeLoseState()

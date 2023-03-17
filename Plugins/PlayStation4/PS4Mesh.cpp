@@ -60,7 +60,7 @@ PS4Mesh* PS4Mesh::GenerateSinglePoint() {
 
 	mesh->SetVertexPositions({ Vector3(0.0f, 0.0f, 0.0f) });
 	mesh->SetVertexNormals({ Vector3(0, 0, 1) });
-	mesh->SetVertexTangents({ Vector3(1, 0, 0) });
+	mesh->SetVertexTangents({ Vector4(1, 0, 0,0) });
 	mesh->SetVertexIndices({ 0 });
 
 	return mesh;
@@ -92,14 +92,14 @@ void	PS4Mesh::UploadToGPU() {
 	Gnm::registerResource(nullptr, ownerHandle, vertexBuffer, vertexDataSize, "VertexData", Gnm::kResourceTypeIndexBufferBaseAddress, 0);
 
 	for (int i = 0; i < GetVertexCount(); ++i) {
-		memcpy(&vertexBuffer[i].position,	  &positions[i], sizeof(float) * 3);
-		memcpy(&vertexBuffer[i].textureCoord, &texCoords[i], sizeof(float) * 2);
-		memcpy(&vertexBuffer[i].normal,		  &normals[i],   sizeof(float) * 3);
-		memcpy(&vertexBuffer[i].tangent,	  &tangents[i],  sizeof(float) * 3);
+		memcpy(&vertexBuffer[i].position,	  &GetPositionData()[i], sizeof(float) * 3);
+		memcpy(&vertexBuffer[i].textureCoord, &GetTextureCoordData()[i], sizeof(float) * 2);
+		memcpy(&vertexBuffer[i].normal,		  &GetNormalData()[i], sizeof(float) * 3);
+		memcpy(&vertexBuffer[i].tangent,	  &GetTangentData()[i], sizeof(float) * 3);
 	}
 
 	for (int i = 0; i < GetIndexCount(); ++i) { //Our index buffer might not have the same data size as the source indices?
-		indexBuffer[i] = indices[i];
+		indexBuffer[i] = GetIndexData()[i];
 	}	
 
 	attributeCount		= 4;

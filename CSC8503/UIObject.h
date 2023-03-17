@@ -8,7 +8,7 @@
 #pragma once
 #include "MenuRenderObject.h"
 
-#include "Vector4.h"
+#include "../NCLCoreClasses/Vector4.h"
 
 #include <functional>
 #include <memory>

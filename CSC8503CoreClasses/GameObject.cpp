@@ -32,10 +32,14 @@ GameObject::GameObject(GameObject& other) : gameWorld(GameWorld::instance()), tr
 }
 
 GameObject::~GameObject()	{
+#ifdef x64
 	if (networkObject != nullptr) {
 		gameWorld.RemoveNetworkObject(networkObject);
 		delete networkObject;
-	}
+}
+#endif // WIN32
+
+	
 		
 	delete boundingVolume;
 	delete physicsObject;

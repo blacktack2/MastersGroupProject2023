@@ -31,7 +31,7 @@ set(Source_Files
     "StateGameObject.cpp"
     "TutorialGame.cpp"
 )
-
+if(NOT USE_ORBIS)
 set(Render_Files
     "AnimatedRenderObject.h"
     "AnimatedRenderObject.cpp"
@@ -68,6 +68,8 @@ set(Render_Files
     "HudRPass.h"
     "HudRPass.cpp"
 )
+source_group("Rendering" FILES ${Render_Files})
+endif()
 
 if(USE_VULKAN)
     list(APPEND Header_Files "GameTechVulkanRenderer.h")
@@ -81,11 +83,13 @@ if(USE_ORBIS)
    source_group("PS4 Shader Files" FILES ${PS4_SHADER_FILES})
    file(GLOB_RECURSE Textures ${ASSET_ROOT}/Textures/*.*)
    source_group("Textures" FILES ${Textures})
+   
+   list(APPEND Header_Files "PS4Renderer.h" "PS4TutorialGame.h")
+   list(APPEND Source_Files "PS4Renderer.cpp" "PS4TutorialGame.cpp")
 endif()
 
 
 source_group("Source Files" FILES ${Source_Files})
-source_group("Rendering" FILES ${Render_Files})
 
 set(Audio_Files 
     "dr_wav_impl.cpp"
@@ -142,6 +146,10 @@ set(Enemy_Files
 )
 source_group("Enemy Files" FILES ${Enemy_Files})
 
+
+
+if(NOT USE_ORBIS)
+
 set(Menu_Files 
     "MenuManager.h"
     "MenuManager.cpp"
@@ -171,7 +179,7 @@ set(Menu_Files
     "Hud.cpp"
 )
 source_group("Menu Files" FILES ${Menu_Files})
-if(NOT USE_ORBIS)
+
 set(network_Files 
     "NetworkedGame.h"
     "NetworkedGame.cpp"

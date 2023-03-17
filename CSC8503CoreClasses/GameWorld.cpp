@@ -8,7 +8,7 @@
 
 #include "Camera.h"
 #ifdef _ORBIS
-#include "../Plugins/PlayStation4/PS4Camera.h"
+//#include "../Plugins/PlayStation4/PS4Camera.h"
 #endif // _ORBIS
 
 

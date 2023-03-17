@@ -104,7 +104,7 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <vector>
     <map>
     <stack>
-    <string>
+    <std::string>
     <list>
     <thread>
     <atomic>

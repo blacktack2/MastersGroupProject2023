@@ -7,7 +7,6 @@
  * @date   March 2023
  */
 #include "AssetLoader.h"
-#ifdef x64
 #include "Assets.h"
 
 #include "BufferObjectBase.h"
@@ -20,7 +19,9 @@
 #include "./stb/stb_image.h"
 
 #include <iostream>
+#ifdef WIN32
 #include <filesystem>
+#endif
 
 using namespace NCL;
 using namespace Rendering;
@@ -42,9 +43,13 @@ void AssetLoader::RegisterTextureDataLoadFunction(TextureDataLoadFunction f, con
 }
 
 std::string AssetLoader::GetFileExtension(const std::string& fileExtension) {
+#ifdef WIN32
 	auto p = std::filesystem::path(fileExtension);
 	auto ext = p.extension();
 	return ext.string();
+#else
+	return std::string();
+#endif
 }
 
 void AssetLoader::RegisterMeshLoadFunction(MeshLoadFunction f) {
@@ -108,15 +113,11 @@ bool AssetLoader::LoadTextureData(const std::string& filename, char*& outData, u
 		return false;
 	}
 
-	std::filesystem::path path(filename);
-
-	std::string extension = path.extension().string();
-
-	bool isAbsolute = path.is_absolute();
+	std::string extension = GetFileExtension(filename);
 
 	auto it = fileHandlers.find(extension);
 
-	std::string realPath = isAbsolute ? filename : Assets::TEXTUREDIR + filename;
+	std::string realPath = Assets::TEXTUREDIR + filename;
 
 	if (it != fileHandlers.end()) {
 		return it->second(realPath, outData, width, height, channels, flags);
@@ -196,4 +197,3 @@ std::unique_ptr<TextureBase> AssetLoader::CreateTexture(TextureType type, unsign
 	}
 	return textureCreate(type, width, height);
 }
-#endif //x64

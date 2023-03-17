@@ -36,13 +36,8 @@ namespace NCL {
 			follow = transform;
 		}
 
-		void SetFollow(Transform* transform, bool isSmooth = false);
-#ifdef x64
 		void UpdateCamera(float dt);
-#endif // x64
-#ifdef _ORBIS
-		virtual void UpdateCamera(float dt);
-#endif // _ORBIS
+
 
 		
 

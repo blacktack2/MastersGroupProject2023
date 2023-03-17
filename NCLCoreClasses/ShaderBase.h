@@ -34,6 +34,7 @@ namespace NCL {
 		};
 		class ShaderBase {
 		public:
+			ShaderBase();
 			ShaderBase(const std::string& vert, const std::string& frag, const std::string& tesc, const std::string& tese, const std::string& geom);
 			virtual ~ShaderBase() = default;
 

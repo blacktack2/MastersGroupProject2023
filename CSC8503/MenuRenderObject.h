@@ -6,7 +6,7 @@
  * @date   February 2023
  */
 #pragma once
-#include "Vector4.h"
+#include "../NCLCoreClasses/Vector4.h"
 
 #include <memory>
 #include <string>

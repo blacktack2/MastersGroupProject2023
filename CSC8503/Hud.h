@@ -10,7 +10,7 @@
 #pragma once
 
 #include "HealthBar.h"
-#include "Assetlibrary.h"
+#include "../NCLCoreClasses/AssetLibrary.h"
 
 namespace NCL {
 	namespace CSC8503 {

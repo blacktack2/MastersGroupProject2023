@@ -71,7 +71,7 @@ void Camera::UpdateCamera(float dt) {
 		pitch -= (rightAnalog.y);
 		yaw -= (rightAnalog.x);
 
-		pitch = NCL::Maths::(pitch, -90.0f, 90.0f);
+		pitch = NCL::Maths::Clamp(pitch, -90.0f, 90.0f);
 		yaw += (yaw < 0) ? 360.0f : ((yaw > 360.0f) ? -360.0f : 0.0f);
 
 		float frameSpeed = 32 * dt;

@@ -28,6 +28,9 @@ namespace NCL {
 			static PS4Mesh* GenerateQuad();
 			static PS4Mesh* GenerateSinglePoint();
 
+			void Initilize() override {};
+			void Draw() override {};
+			void Draw(unsigned int subLayer) override{};
 			void	UploadToGPU() override;
 			void	SubmitDraw(sce::Gnmx::GnmxGfxContext& cmdList, sce::Gnm::ShaderStage stage);
 

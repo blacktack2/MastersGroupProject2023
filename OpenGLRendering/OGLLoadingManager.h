@@ -1,4 +1,5 @@
 #pragma once
+#ifndef _ORBIS
 #include "LoadingManager.h"
 
 #ifdef _WIN32
@@ -32,3 +33,4 @@ namespace NCL {
 #endif
 	};
 }
+#endif //_ORBIS

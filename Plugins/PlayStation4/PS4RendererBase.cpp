@@ -192,8 +192,8 @@ void	PS4RendererBase::DestroyVideoSystem() {
 }
 
 void	PS4RendererBase::OnWindowResize(int w, int h)  {
-	currentWidth	= w;
-	currentHeight	= h;
+	/*currentWidth	= w;
+	currentHeight	= h;*/
 }
 
 void	PS4RendererBase::BeginFrame()   {

@@ -4,8 +4,8 @@
 #include"UIObject.h"
 #include "Health.h"
 
-#include "Vector2.h"
-#include "Vector4.h"
+#include "../NCLCoreClasses/Vector2.h"
+#include "../NCLCoreClasses/Vector4.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -28,8 +28,8 @@ namespace NCL {
 		private:
 			Health* health;
 			
-			Vector2 screenPos;
-			Vector2 dimension;
+			Maths::Vector2 screenPos;
+			Maths::Vector2 dimension;
 
 
 

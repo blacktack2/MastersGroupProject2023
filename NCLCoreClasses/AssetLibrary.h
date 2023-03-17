@@ -29,7 +29,7 @@ namespace NCL {
 		 * @brief Get asset stored in location name.
 		 * @brief Will cause undefined behaviour/access violations if name
 		 * does not exist.
-		 * 
+		 *
 		 * @param name  Unique location id to store asset in.
 		 */
 		static std::shared_ptr<T> GetAsset(const std::string& name);
@@ -58,7 +58,7 @@ namespace NCL {
 
 	template<typename T>
 	inline bool AssetLibrary<T>::HasAsset(const std::string& name) {
-		return assets.contains(name);
+		return assets.find(name) != assets.end();
 	}
 
 	template<typename T>

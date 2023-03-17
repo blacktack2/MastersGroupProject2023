@@ -16,6 +16,11 @@
 
 #include <memory>
 
+#ifdef _ORBIS
+#include "../CSC8503/PS4Renderer.h"
+#endif // _ORBIS
+
+
 using namespace NCL;
 using namespace CSC8503;
 
@@ -36,7 +41,14 @@ private:
 	};
 	
 	GameStateManager& gameStateManager = GameStateManager::instance();
+#ifdef x64
 	GameTechRenderer& renderer = GameTechRenderer::instance();
+#endif // x64
+#ifdef _ORBIS
+	NCL::PS4::PS4Renderer* renderer = new NCL::PS4::PS4Renderer();
+#endif // _ORBIS
+
+	
 	MenuManager& menuManager = MenuManager::instance();
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 

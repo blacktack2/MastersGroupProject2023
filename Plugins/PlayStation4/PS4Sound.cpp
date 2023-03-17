@@ -20,7 +20,7 @@ double	Sound::GetLength() {
 	return length;
 }
 
-void	Sound::LoadFromWAV(string filename) {
+void	Sound::LoadFromWAV(std::string filename) {
 	ifstream	file(filename.c_str(), ios::in | ios::binary);
 
 	if (!file) {
@@ -28,7 +28,7 @@ void	Sound::LoadFromWAV(string filename) {
 		return;
 	}
 
-	string		 chunkName;
+	std::string		 chunkName;
 	unsigned int chunkSize;
 
 	while (!file.eof()) {
@@ -70,19 +70,19 @@ void	Sound::LoadFromWAV(string filename) {
 	file.close();
 }
 
-void	Sound::LoadWAVChunkInfo(ifstream &file, string &name, unsigned int &size) {
+void	Sound::LoadWAVChunkInfo(ifstream &file, std::string &name, unsigned int &size) {
 	char chunk[4];
 	file.read((char*)&chunk, 4);
 	file.read((char*)&size, 4);
 
-	name = string(chunk, 4);
+	name = std::string(chunk, 4);
 }
 
-void	Sound::AddSound(string name) {
+void	Sound::AddSound(std::string name) {
 	Sound *s = GetSound(name);
 
 	if (!s) {
-		string extension = name.substr(name.length() - 3, 3);
+		std::string extension = name.substr(name.length() - 3, 3);
 
 		if (extension == "wav") {
 			s = new Sound();
@@ -100,13 +100,13 @@ void	Sound::AddSound(string name) {
 	}
 }
 
-Sound*		Sound::GetSound(string name) {
-	map<string, Sound*>::iterator s = sounds.find(name);
+Sound*		Sound::GetSound(std::string name) {
+	map<std::string, Sound*>::iterator s = sounds.find(name);
 	return (s != sounds.end() ? s->second : NULL);
 }
 
 void	Sound::DeleteSounds() {
-	for (map<string, Sound*>::iterator i = sounds.begin(); i != sounds.end(); ++i) {
+	for (map<std::string, Sound*>::iterator i = sounds.begin(); i != sounds.end(); ++i) {
 		delete i->second;
 	}
 }

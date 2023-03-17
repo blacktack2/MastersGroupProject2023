@@ -12,14 +12,14 @@ using std::ifstream;
 using namespace NCL;
 using namespace NCL::PS4;
 
-PS4Shader::PS4Shader() 
+PS4Shader::PS4Shader()
 {
 	fetchShader		= NULL;
 	vertexShader	= NULL;
 	pixelShader		= NULL;
 }
 
-PS4Shader* PS4Shader::GenerateShader(const string& vertex,const string& pixel) {
+PS4Shader* PS4Shader::GenerateShader(const std::string& vertex,const std::string& pixel) {
 	PS4Shader* shader = new PS4Shader();
 
 	shader->GenerateVertexShader(vertex, true);
@@ -32,7 +32,7 @@ PS4Shader::~PS4Shader()
 {
 }
 
-void PS4Shader::GenerateVertexShader(const string&name, bool makeFetch) {
+void PS4Shader::GenerateVertexShader(const std::string&name, bool makeFetch) {
 	char*	binData = NULL;	//resulting compiled shader bytes
 	int		binSize = 0;
 	Gnmx::ShaderInfo shaderInfo;
@@ -60,7 +60,7 @@ void PS4Shader::GenerateVertexShader(const string&name, bool makeFetch) {
 		}
 	}
 	else {
-		string shaderString;
+		std::string shaderString;
 		if (LoadShaderText(name, shaderString)) {
 			//shaderString now contains the pssl shader data
 			//MAGIC GOES HERE
@@ -91,7 +91,7 @@ void PS4Shader::GenerateFetchShader(char* binData) {
 	vertexShader->applyFetchShaderModifier(shaderModifier);
 }
 
-void PS4Shader::GeneratePixelShader(const string&name) {
+void PS4Shader::GeneratePixelShader(const std::string&name) {
 	char*	binData = NULL;	//resulting compiled shader bytes
 	int		binSize = 0;
 	Gnmx::ShaderInfo shaderInfo;
@@ -125,12 +125,12 @@ void PS4Shader::GeneratePixelShader(const string&name) {
 
 
 
-bool PS4Shader::LoadShaderText(const string &name, string&into) {
+bool PS4Shader::LoadShaderText(const std::string &name, std::string&into) {
 
 	return false;
 }
 
-bool PS4Shader::LoadShaderBinary(const string &name, char*& into, int& dataSize) {
+bool PS4Shader::LoadShaderBinary(const std::string &name, char*& into, int& dataSize) {
 	std::ifstream binFile(name, std::ios::binary);
 
 	if (!binFile) {
@@ -149,7 +149,7 @@ bool PS4Shader::LoadShaderBinary(const string &name, char*& into, int& dataSize)
 	return true;
 }
 
-bool PS4Shader::ShaderIsBinary(const string& name) {
+bool PS4Shader::ShaderIsBinary(const std::string& name) {
 	if (name.length() >= 3 && 
 		name[name.length() - 3] == '.' &&
 		name[name.length() - 2] == 's' &&
@@ -166,7 +166,7 @@ void	PS4Shader::SubmitShaderSwitch(Gnmx::GnmxGfxContext& cmdList) {
 	cmdList.setPsShader(pixelShader, &pixelCache);
 }
 
-int		PS4Shader::GetConstantBufferIndex(const string &name) {
+int		PS4Shader::GetConstantBufferIndex(const std::string &name) {
 	sce::Shader::Binary::Buffer* constantBuffer = vertexBinary.getBufferResourceByName(name.c_str());
 	if (!constantBuffer) {
 		return -1;

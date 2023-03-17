@@ -122,6 +122,7 @@ namespace NCL {
 
 #ifdef _ORBIS
 		void UpdatePS4(int playerID);
+		void UpdatePS4GameStateDependant(int playerID);
 #endif // _ORBIS
 
 		unsigned int buttonstates;

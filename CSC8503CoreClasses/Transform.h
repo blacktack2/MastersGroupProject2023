@@ -1,7 +1,7 @@
 #pragma once
-#include "Matrix4.h"
-#include "Quaternion.h"
-#include "Vector3.h"
+#include "../NCLCoreClasses/Matrix4.h"
+#include "../NCLCoreClasses/Quaternion.h"
+#include "../NCLCoreClasses/Vector3.h"
 #include <vector>
 
 namespace NCL {

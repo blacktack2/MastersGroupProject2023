@@ -33,6 +33,11 @@ namespace NCL {
 		class RenderObject {
 		public:
 			RenderObject(Transform& parentTransform, std::shared_ptr<MeshGeometry> mesh, std::shared_ptr<MeshMaterial> material);
+#ifdef _ORBIS
+			RenderObject(Transform* parentTransform,MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader = nullptr);
+#endif // _ORBIS
+
+
 			RenderObject(RenderObject& other, Transform& parentTransform);
 			virtual ~RenderObject();
 

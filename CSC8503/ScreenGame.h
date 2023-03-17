@@ -13,6 +13,12 @@
 #include "NetworkedGame.h"
 #include "ScreenPause.h"
 
+#ifdef _ORBIS
+#include "../CSC8503/PS4Renderer.h"
+#endif // _ORBIS
+
+
+
 using namespace NCL;
 using namespace NCL::CSC8503;
 
@@ -37,7 +43,16 @@ private:
 	int count = 0;
 	
 	GameStateManager& gameStateManager = GameStateManager::instance();
+#ifdef x64
 	GameTechRenderer& renderer = GameTechRenderer::instance();
+#endif // x64
+
+#ifdef _ORBIS
+	PS4Renderer* renderer = new PS4Renderer();
+#endif // _ORBIS
+
+
+
 	MenuManager& menuManager = MenuManager::instance();
 	InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 

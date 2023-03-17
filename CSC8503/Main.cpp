@@ -1,4 +1,3 @@
-#pragma once
 /**
  * @file   Main.cpp
  * @brief  
@@ -6,6 +5,7 @@
  * @author Stuart Lewis
  * @date   February 2023
  */
+#ifdef x64
 #include "Window.h"
 
 #include "Debug.h"
@@ -152,7 +152,7 @@ void LoadMenuAsset() {
 	AssetLibrary<TextureBase>::AddAsset("num7", AssetLoader::LoadTexture("Menu/num7.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("num8", AssetLoader::LoadTexture("Menu/num8.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("num9", AssetLoader::LoadTexture("Menu/num9.jpg"));
-	
+
 	AssetLibrary<TextureBase>::AddAsset("fontAtlas", std::move(AssetLoader::LoadTexture("PressStart2P.png")));
 	AssetLibrary<TextureBase>::AddAsset("BossHealthBarBorder", std::move(AssetLoader::LoadTexture("HP/Borders/Border_Style_3.png")));
 	AssetLibrary<TextureBase>::AddAsset("BossHealthBar", std::move(AssetLoader::LoadTexture("HP/Style_3.png")));
@@ -247,22 +247,107 @@ void StartPushdownAutomata(Window* w) {
 		}
 	}
 }
+#endif // x64
+
+#ifdef _ORBIS
+#include <stdlib.h>
+unsigned int sceLibcHeapExtendedAlloc = 1;			/* Switch to dynamic allocation */
+size_t       sceLibcHeapSize = 256 * 1024 * 1024;	/* Set up heap area upper limit as 256 MiB */
+
+#include "../Plugins/PlayStation4/PS4Window.h"
+#include "../Plugins/PlayStation4/Ps4AudioSystem.h"
+#include "../Plugins/PlayStation4/PS4InputManager.h"
+#include "PS4TutorialGame.h"
+
+#include <iostream>
+
+using namespace NCL;
+using namespace NCL::PS4;
+
+#endif // _ORBIS
+
 
 int main() {
+
+#ifdef x64
 	Window* w = Window::CreateGameWindow("CSC8507 Game technology!", 1280, 720);
+
 	GameTechRenderer& renderer = GameTechRenderer::instance();
 	OGLLoadingManager loadingScreen = OGLLoadingManager(w, renderer);
 
+
 	std::cout << "loading\n";
-	
+
 	loadingScreen.Load(LoadAsset);
 	renderer.InitPipeline();
-	
+
 	if (!w->HasInitialised()) {
 		return -1;
-	}	
+	}
 
 	StartPushdownAutomata(w);
 
 	Window::DestroyGameWindow();
+#endif //x64
+
+#ifdef _ORBIS
+	PS4Window* w = (PS4Window*)Window::CreateGameWindow("PS4 Example Code", 1920, 1080);
+
+	/*ExampleRenderer renderer(w);*/
+	//
+	//PS4Input		input		= PS4Input();
+
+	PS4::PS4InputManager::Initialize();
+
+	/*renderer.CreateCamera(&input);*/
+
+	TutorialGame* game = new TutorialGame();
+
+	Ps4AudioSystem* audioSystem = new Ps4AudioSystem(8);
+
+	GameTimer t;
+
+	while (w->UpdateWindow()) {
+		float time = w->GetTimer()->GetTimeDeltaSeconds();
+
+		//input.Poll();
+
+		PS4InputManager::Update();
+
+		game->UpdateGame(time);
+
+		/*renderer.Update(time);
+		renderer.Render();*/
+		//Player1
+		if (PS4InputManager::GetButtons(0, 0)) {
+			std::cout << "Player 1:Triangle button pressed" << std::endl;
+		}
+		if (PS4InputManager::GetButtons(0, 1)) {
+			std::cout << "Player 1: Circle button pressed" << std::endl;
+			return 1;
+		}
+
+		//Player2
+		if (PS4InputManager::GetButtons(1, 0)) {
+			std::cout << "Player 2:Triangle button pressed" << std::endl;
+		}
+		if (PS4InputManager::GetButtons(1, 1)) {
+			std::cout << "Player 2:Circle button pressed" << std::endl;
+			return 1;
+		}
+
+
+		//if (input.GetButton(0)) {
+		//	std::cout << "LOL BUTTON" << std::endl;
+		//}
+
+		//if (input.GetButton(1)) {
+		//	return 1;
+		//}
+	}
+
+	delete audioSystem;
+	PS4InputManager::Destroy();
+	return 1;
+#endif
 }

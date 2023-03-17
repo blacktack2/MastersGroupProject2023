@@ -17,6 +17,11 @@
 
 #include <functional>
 
+#ifdef _ORBIS
+#include "../CSC8503/PS4Renderer.h"
+#endif // _ORBIS
+
+
 using namespace NCL;
 using namespace CSC8503;
 
@@ -37,8 +42,12 @@ private:
 	};
 
 	void InitMenu();
-
+#ifdef x64
 	GameTechRenderer& renderer = GameTechRenderer::instance();
+#endif
+#ifdef _ORBIS
+	PS4Renderer* renderer = new PS4Renderer();
+#endif
 	MenuManager& menuManager = MenuManager::instance();
 	InputKeyMap& keyMap = InputKeyMap::instance();
 	OptionManager& optionManager = OptionManager::instance();

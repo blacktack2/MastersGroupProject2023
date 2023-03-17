@@ -164,7 +164,6 @@ set(ALL_FILES
     ${AI_State_Machine}
     ${AI_Pathfinding}
     ${Collision_Detection}
-    ${Networking}
     ${Physics}
 )
 endif()

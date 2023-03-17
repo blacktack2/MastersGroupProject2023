@@ -46,7 +46,7 @@ void BulletInstanceManager::ObjectIntiation() {
 		indexs[i] = 0;
 	}
 }
-
+#ifndef _ORBIS
 void BulletInstanceManager::AddNetworkObject(int startInt) {
 	GameWorld& world = GameWorld::instance();
 	for (size_t i = 0; i < BULLETTYPECOUNT; i++)
@@ -59,3 +59,5 @@ void BulletInstanceManager::AddNetworkObject(int startInt) {
 		}
 	}
 }
+#endif // !_ORBIS
+

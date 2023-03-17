@@ -17,7 +17,10 @@ namespace NCL {
 			}
 
 			void ObjectIntiation();
+#ifndef _ORBIS
 			void AddNetworkObject(int startInt = 0);
+#endif // !_ORBIS
+
 
 			void NullifyArray() {
 				for (size_t i = 0; i < BULLETTYPECOUNT; i++)

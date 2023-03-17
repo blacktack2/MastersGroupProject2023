@@ -42,7 +42,7 @@ namespace NCL {
 
 
 			void SetCurrentMenu(std::string name) {
-				if (menus.contains(name)) {
+				if (menus.find(name)!=menus.end()) {
 					currentMenu = name;
 				}
 			}

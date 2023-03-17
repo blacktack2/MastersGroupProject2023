@@ -14,6 +14,10 @@
 #include "GameStateManager.h"
 #include "NetworkedGame.h"
 
+#ifdef _ORBIS
+#include "../CSC8503/PS4Renderer.h"
+#endif //_ORBIS
+
 using namespace NCL;
 using namespace CSC8503;
 
@@ -37,7 +41,12 @@ private:
 	TutorialGame* game;
 
 	GameStateManager& gameStateManager = GameStateManager::instance();
+#ifdef x64
 	GameTechRenderer& renderer = GameTechRenderer::instance();
+#endif //x64
+#ifdef _ORBIS
+	PS4Renderer* renderer = new PS4Renderer();
+#endif //ORBIS
 	MenuManager& menuManager = MenuManager::instance();
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	OptionManager& optionManager = OptionManager::instance();

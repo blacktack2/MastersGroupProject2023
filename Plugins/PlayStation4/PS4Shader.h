@@ -24,9 +24,9 @@ namespace NCL {
 		public:
 			~PS4Shader();
 
-			static PS4Shader* GenerateShader(const string& vertex, const string& pixel);
+			static PS4Shader* GenerateShader(const std::string& vertex, const std::string& pixel);
 
-			int		GetConstantBufferIndex(const string& name);
+			int		GetConstantBufferIndex(const std::string& name);
 			void	SubmitShaderSwitch(Gnmx::GnmxGfxContext& cmdList);
 
 		protected:
@@ -36,17 +36,17 @@ namespace NCL {
 				//we load binaries in directly...
 			}
 
-			void GenerateVertexShader(const string& name, bool makeFetch);
+			void GenerateVertexShader(const std::string& name, bool makeFetch);
 
-			void GeneratePixelShader(const string& name);
+			void GeneratePixelShader(const std::string& name);
 
 			void GenerateFetchShader(char* binData);
 
-			bool LoadShaderText(const string& name, string& into);
+			bool LoadShaderText(const std::string& name, std::string& into);
 
-			bool LoadShaderBinary(const string& name, char*& into, int& dataSize);
+			bool LoadShaderBinary(const std::string& name, char*& into, int& dataSize);
 
-			bool ShaderIsBinary(const string& name);
+			bool ShaderIsBinary(const std::string& name);
 
 		protected:
 			void* fetchShader;

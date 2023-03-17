@@ -15,6 +15,8 @@
 #include <optional>
 #include <vector>
 #include <string>
+#include <iostream>
+#include "Maths.h"
 
 using namespace NCL::Maths;
 
@@ -148,7 +150,9 @@ namespace NCL {
 		inline const std::vector<Vector4>& GetTangentData() const {
 			return tangents;
 		}
-
+		inline const std::vector<unsigned int>& GetIndexData() const {
+			return indices;
+		}
 		inline const std::vector<Vector4>& GetSkinWeightData() const {
 			return skinWeights;
 		}
@@ -159,8 +163,6 @@ namespace NCL {
 		inline const std::vector<int>& GetJointParents() const {
 			return jointParents;
 		}
-
-		const std::vector<unsigned int>& GetIndexData() const { return indices; }
 
 		inline void SetVertexPositions(const std::vector<Vector3>& newVerts) {
 			positions = newVerts;
