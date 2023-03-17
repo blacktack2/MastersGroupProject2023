@@ -50,7 +50,7 @@ protected:
 	ReadWavData mWavData;
 
 	bool  mStreaming;			//Part 2
-	float length;
+	float length = 0;
 
 	static std::map<std::string, Sound*> sSounds;
 };
