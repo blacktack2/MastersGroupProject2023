@@ -86,6 +86,7 @@ void LoadGlobalAssets() {
 	AssetLibrary<MeshGeometry>::AddAsset("capsule", AssetLoader::LoadMesh("capsule.msh"));
 
 	AssetLibrary<MeshGeometry>::AddAsset("fenceX", AssetLoader::LoadMesh("fenceXCube.msh"));
+	//AssetLibrary<MeshMaterial>::AddAsset("fenceX", AssetLoader::LoadMesh("fenceXCube.msh"));
 	AssetLibrary<MeshGeometry>::AddAsset("fenceY", AssetLoader::LoadMesh("fenceYCube.msh"));
 	AssetLibrary<MeshGeometry>::AddAsset("wall", AssetLoader::LoadMesh("cube.msh"));
 	AssetLibrary<MeshGeometry>::AddAsset("shelter", AssetLoader::LoadMesh("shelterCube.msh"));
