@@ -226,12 +226,16 @@ void Boss::Update(float dt) {
     if(node)
         InkEffectManager::instance().ApplyInkEffect(node->inkType, GetHealth(), 1);
     //check boss health
-    if (GetHealth()->GetHealth() <= 0) {
-        ChangeLoseState();
+    if (gameStateManager->GetGameState() == GameState::OnGoing) {
+        if (GetHealth()->GetHealth() <= 0) {
+            ChangeLoseState();
+        }
+        if (this->transform.GetGlobalPosition().y < -10) {
+            health.SetHealth(0);
+            ChangeLoseState();
+        }
     }
-    if (this->transform.GetGlobalPosition().y < -10) {
-        ChangeLoseState();
-    }
+    
     if (health.GetHealth() > 0 )
     {
         bossAction = NoAction;
@@ -293,7 +297,7 @@ void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
             Vector3 a = tempSteps[i - 1];
             Vector3 b = tempSteps[i];
 
-            Debug::DrawLine(a, b, Vector4{ 0,1,0,1 }, 0.0f);
+            //Debug::DrawLine(a, b, Vector4{ 0,1,0,1 }, 0.0f);
         }
     }
 }
@@ -350,7 +354,7 @@ bool Boss::RandomWalk() {
         this->GetTransform().SetOrientation(orientation);
         return true;
     }
-    Debug::DrawLine(GetTransform().GetGlobalPosition(), GetTransform().GetGlobalPosition() + randomWalkDirection * 15, Vector4{ 0,1,0,1 }, 0.0f);
+    //Debug::DrawLine(GetTransform().GetGlobalPosition(), GetTransform().GetGlobalPosition() + randomWalkDirection * 15, Vector4{ 0,1,0,1 }, 0.0f);
     GetTransform().SetPosition(GetTransform().GetGlobalPosition() + randomWalkDirection * speed * deltaTime);
     return false;
 }

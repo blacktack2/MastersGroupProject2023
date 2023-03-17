@@ -22,6 +22,26 @@ XboxController::~XboxController()
 
 }
 
+void XboxController::CheckPorts()
+{
+    connectedControllers.clear();
+    for (int i = 0; i < 4; i++)
+    {
+        ZeroMemory(&state, sizeof(XINPUT_STATE));
+        ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
+        dwResult = XInputGetState(i, &state);
+        if (dwResult == ERROR_SUCCESS)
+        {
+            connectedControllers.push_back(i+1);
+        }
+    }
+}
+
+int XboxController::GetActiveControllerNumber()
+{
+    return connectedControllers.size();
+}
+
 bool XboxController::UpdateConnection(unsigned int controllerNum)   // controllerNum == 1,2,3,4
 {
     controllerNum--;
@@ -144,4 +164,15 @@ bool XboxController::GetLeftTrigger(unsigned int controllerNum, float& n)      /
         n = (1.0f / 255) * keyDown;
     }
     return true;
+}
+bool XboxController::GetButton(unsigned int controllerNum, short int button)      // n normalized to 0 ~ 1
+{
+    if (!UpdateConnection(controllerNum))   // Controller is not connected OR controllerNum is out of range
+    {
+        return false;   // n is unchanged if connection fails
+    }
+
+    WORD   keyDown = state.Gamepad.wButtons;
+    
+    return keyDown & button;
 }

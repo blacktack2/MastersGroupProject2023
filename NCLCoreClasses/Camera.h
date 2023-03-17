@@ -10,6 +10,11 @@ https://research.ncl.ac.uk/game/
 #include "Matrix4.h"
 #include "../CSC8503CoreClasses/Transform.h"
 #include "Vector3.h"
+namespace NCL {
+	namespace CSC8503 {
+		class Hud;
+	}
+}
 
 namespace NCL {
 	using namespace Maths;
@@ -26,11 +31,21 @@ namespace NCL {
 
 		Camera(float pitch, float yaw, const Vector3& position);
 
-		~Camera(void) = default;
+		~Camera(void);
 
 		void SetFollow(Transform* transform, bool isSmooth = false);
 
 		void UpdateCamera(float dt);
+
+		int GetPlayerID()
+		{
+			return playerID;
+		}
+
+		void SetPlayerID(int playerID)
+		{
+			this->playerID = playerID;
+		}
 
 		float GetFieldOfVision() const {
 			return fov;
@@ -58,7 +73,7 @@ namespace NCL {
 		//to a vertex shader (i.e it's already an 'inverse camera matrix').
 		Matrix4 BuildViewMatrix() const;
 
-		Matrix4 BuildProjectionMatrix(float aspectRatio = 1.0f) const;
+		Matrix4 BuildProjectionMatrix(float aspectRatio) const;
 
 		//Gets position in world space
 		Vector3 GetPosition() const { return position; }
@@ -78,10 +93,12 @@ namespace NCL {
 		static Camera BuildPerspectiveCamera(const Vector3& pos, float pitch, float yaw, float fov, float near, float far);
 		static Camera BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, float left, float right, float top, float bottom, float near, float far);
 
+		Hud& GetHud();
+
 		//smoothing
 		bool isSmooth;
 		Vector3 LastPos;
-		float smoothFactor = 60.0f;
+		float smoothFactor = 50.0f;
 	protected:
 		CameraType camType;
 
@@ -102,5 +119,9 @@ namespace NCL {
 		float followLat;
 		float followLon;
 		Vector3 lookat;
+
+		int playerID = 0;
+
+		Hud& hud;
 	};
 }

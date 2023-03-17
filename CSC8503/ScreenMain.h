@@ -3,6 +3,7 @@
  * @brief  A class for defining the main menu.
  *
  * @author Felix Chiu
+ * @author Yifei Hu
  * @author Stuart Lewis
  * @date   February 2023
  */
@@ -39,8 +40,14 @@ private:
 	GameTechRenderer& renderer = GameTechRenderer::instance();
 	MenuManager& menuManager = MenuManager::instance();
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
+	OptionManager& optionManager = OptionManager::instance();
 
 	ChangeState menuState = ChangeState::None;
 
 	const std::string NAME = "main";
+
+	bool StartPointer = false;
+	bool MultiPointer = false;
+	bool OptionPointer = false;
+	bool QuitPointer = false;
 };

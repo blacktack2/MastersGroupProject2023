@@ -55,6 +55,8 @@ namespace NCL {
 			void Disconnect();
 
 		protected:
+			void BossTarget() override;
+
 			void UpdateAsServer(float dt);
 			void UpdateAsClient(float dt);
 
@@ -65,7 +67,7 @@ namespace NCL {
 			void ClientProcessNetworkObject(GamePacket* payload, int objID);
 			void ServerProcessNetworkObject(GamePacket* payload, int playerID);
 
-			void PlayerJoinedServer(int playerID);
+			PlayerObject* PlayerJoinedServer(int playerID);
 			void PlayerLeftServer(int playerID);
 
 			//packet handle
@@ -79,9 +81,9 @@ namespace NCL {
 			void HandleGameStatePacket(GamePacket* payload, int source);
 			void HandleLobbyPacket(GamePacket* payload, int source);
 
-			PlayerObject* AddNetworkPlayerToWorld(const Vector3& position, bool cameraFollow, int playerID);
+			PlayerObject* AddNetworkPlayerToWorld(const Vector3& position, int playerID);
 			NetworkBoss* AddNetworkBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
-
+			
 			void ProcessState() override;
 
 			std::map<int, int> stateIDs;

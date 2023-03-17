@@ -13,6 +13,8 @@
 #include<Xinput.h>
 #include <iostream>
 #include <vector>
+#include <map>
+#include <string>
 
 namespace NCL
 {
@@ -23,11 +25,15 @@ namespace NCL
 
         ~XboxController();
 
+        void CheckPorts();
+        int GetActiveControllerNumber();
 
         bool GetThumbLeft(unsigned int controllerNum, Maths::Vector2& v);
         bool GetThumbRight(unsigned int controllerNum, Maths::Vector2& v);
         bool GetRightTrigger(unsigned int controllerNum, float& n);
         bool GetLeftTrigger(unsigned int controllerNum, float& n);
+
+        bool GetButton(unsigned int controllerNum, short int button);
 
     protected:
 
@@ -36,5 +42,6 @@ namespace NCL
         XINPUT_STATE state;
         DWORD dwResult;
         XINPUT_VIBRATION vibration;
+        std::vector<int> connectedControllers;
     };
 }

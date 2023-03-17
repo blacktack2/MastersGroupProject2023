@@ -11,8 +11,10 @@
 #include <vector>
 #include <string>
 
-namespace NCL::Maths {
-	class Matrix4;
+namespace NCL {
+	namespace Maths {
+		class Matrix4;
+	}
 }
 
 using namespace NCL::Maths;

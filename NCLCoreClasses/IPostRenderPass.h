@@ -8,18 +8,20 @@
 #pragma once
 #include "IRenderPass.h"
 
-namespace NCL::Rendering {
-	class TextureBase;
+namespace NCL {
+	namespace Rendering {
+		class TextureBase;
 
-	/**
-	 * @brief Interface class for post-processing stage render passes.
-	 * @brief This pass must take a pre-rendered scene in from the SetSceneTexIn
-	 * method, and output a new texture with a post-processing effect applied to
-	 * the GetOutTex() method.
-	 */
-	class IPostRenderPass : public IRenderPass {
-	public:
-		virtual void SetSceneTexIn(TextureBase& sceneTex) = 0;
-		virtual TextureBase& GetOutTex() const = 0;
-	};
+		/**
+		 * @brief Interface class for post-processing stage render passes.
+		 * @brief This pass must take a pre-rendered scene in from the SetSceneTexIn
+		 * method, and output a new texture with a post-processing effect applied to
+		 * the GetOutTex() method.
+		 */
+		class IPostRenderPass : public IRenderPass {
+		public:
+			virtual void SetSceneTexIn(TextureBase& sceneTex) = 0;
+			virtual TextureBase& GetOutTex() const = 0;
+		};
+	}
 }

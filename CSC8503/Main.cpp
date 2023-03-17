@@ -34,6 +34,9 @@
 #include "ScreenMain.h"
 
 #include "AssetLibrary.h"
+#include "OGLLoadingManager.h"
+
+
 #include "AssetLoader.h"
 #include "PrefabLibrary.h"
 
@@ -88,38 +91,77 @@ void LoadGlobalAssets() {
 	AssetLibrary<MeshGeometry>::AddAsset("shelter", AssetLoader::LoadMesh("shelterCube.msh"));
 	AssetLibrary<MeshGeometry>::AddAsset("pillar", AssetLoader::LoadMesh("pillarMsh.msh"));
 
-	AssetLibrary<TextureBase>::AddAsset("defaultDiffuse", AssetLoader::LoadTexture("DefaultDiffuse.png"));
-	AssetLibrary<TextureBase>::AddAsset("defaultBump", AssetLoader::LoadTexture("DefaultBump.png"));
-	AssetLibrary<TextureBase>::AddAsset("defaultSpec", AssetLoader::LoadTexture("DefaultSpec.png"));
-	AssetLibrary<TextureBase>::AddAsset("basic", AssetLoader::LoadTexture("checkerboard.png"));
-	AssetLibrary<TextureBase>::AddAsset("healingKitTex", AssetLoader::LoadTexture("shelterTex.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("pillarTex", AssetLoader::LoadTexture("pillarTex.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("defaultAlbedo", std::move(AssetLoader::LoadTexture("DefaultAlbedo.png")));
+	AssetLibrary<TextureBase>::AddAsset("defaultBump", std::move(AssetLoader::LoadTexture("DefaultBump.png")));
+	AssetLibrary<TextureBase>::AddAsset("defaultSpec", std::move(AssetLoader::LoadTexture("DefaultSpec.png")));
+	AssetLibrary<TextureBase>::AddAsset("basic", std::move(AssetLoader::LoadTexture("checkerboard.png")));
+	AssetLibrary<TextureBase>::AddAsset("pillarTex", std::move(AssetLoader::LoadTexture("pillarTex.jpg")));
 
 	AssetLibrary<MeshMaterial>::AddAsset("default", std::make_shared<MeshMaterial>("Default.mat"));
 	AssetLibrary<MeshMaterial>::AddAsset("pillar", std::make_shared<MeshMaterial>("pillar.mat"));
+	AssetLibrary<MeshMaterial>::AddAsset("floor", std::make_shared<MeshMaterial>("Floor.mat"));
 
 	AssetLibrary<ShaderBase>::AddAsset("modelDefault", std::move(AssetLoader::CreateShader("modelDefault.vert", "modelDefault.frag")));
 	AssetLibrary<ShaderBase>::AddAsset("paintDefault", std::move(AssetLoader::CreateShader("modelDefault.vert", "modelPaintTexture.frag")));
 	AssetLibrary<ShaderBase>::AddAsset("animationDefault", std::move(AssetLoader::CreateShader("modelAnimated.vert", "modelAnimated.frag")));
+	AssetLibrary<ShaderBase>::AddAsset("shadowDefault", std::move(AssetLoader::CreateShader("shadowDefault.vert", "shadowDefault.frag")));
 }
 
 void LoadMenuAsset() {
 	std::cout << "Loading menu assets\n";
-	AssetLibrary<TextureBase>::AddAsset("menuMain", AssetLoader::LoadTexture("defaultMain.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("menuPause", AssetLoader::LoadTexture("defaultpause.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("menuOption", AssetLoader::LoadTexture("defaultMain.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("menuMain", AssetLoader::LoadTexture("Menu/defaultMain.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("menuPause", AssetLoader::LoadTexture("Menu/defaultpause.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("menuOption", AssetLoader::LoadTexture("Menu/defaultOption.jpg"));
 
-	AssetLibrary<TextureBase>::AddAsset("button1", AssetLoader::LoadTexture("button1.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("button2", AssetLoader::LoadTexture("button2.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("button3", AssetLoader::LoadTexture("button3.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("button4", AssetLoader::LoadTexture("button4.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("button5", AssetLoader::LoadTexture("button5.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("button6", AssetLoader::LoadTexture("button6.jpg"));
-	AssetLibrary<TextureBase>::AddAsset("button7", AssetLoader::LoadTexture("button7.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button0", AssetLoader::LoadTexture("Menu/button0.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button1", AssetLoader::LoadTexture("Menu/button1.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button2", AssetLoader::LoadTexture("Menu/button2.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button3", AssetLoader::LoadTexture("Menu/button3.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button4", AssetLoader::LoadTexture("Menu/button4.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button5", AssetLoader::LoadTexture("Menu/button5.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button6", AssetLoader::LoadTexture("Menu/button6.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button7", AssetLoader::LoadTexture("Menu/button7.jpg"));
 
-	AssetLibrary<TextureBase>::AddAsset("fontAtlas", AssetLoader::LoadTexture("PressStart2P.png"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide0", AssetLoader::LoadTexture("Menu/buttonSlide0.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide1", AssetLoader::LoadTexture("Menu/buttonSlide1.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide2", AssetLoader::LoadTexture("Menu/buttonSlide2.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide3", AssetLoader::LoadTexture("Menu/buttonSlide3.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide4", AssetLoader::LoadTexture("Menu/buttonSlide4.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide5", AssetLoader::LoadTexture("Menu/buttonSlide5.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide6", AssetLoader::LoadTexture("Menu/buttonSlide6.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide7", AssetLoader::LoadTexture("Menu/buttonSlide7.jpg"));
+
+	AssetLibrary<TextureBase>::AddAsset("checkbox0", AssetLoader::LoadTexture("Menu/checkbox.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("checkbox1", AssetLoader::LoadTexture("Menu/checkboxmark.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("checkboxSlide0", AssetLoader::LoadTexture("Menu/checkboxslide0.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("checkboxSlide1", AssetLoader::LoadTexture("Menu/checkboxslide1.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("plus", AssetLoader::LoadTexture("Menu/plus.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("plusslide", AssetLoader::LoadTexture("Menu/plusslide.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("minus", AssetLoader::LoadTexture("Menu/minus.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("minusslide", AssetLoader::LoadTexture("Menu/minusslide.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("return", AssetLoader::LoadTexture("Menu/return.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("returnSlide", AssetLoader::LoadTexture("Menu/returnslide.jpg"));
+
+	AssetLibrary<TextureBase>::AddAsset("num0", AssetLoader::LoadTexture("Menu/num0.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num1", AssetLoader::LoadTexture("Menu/num1.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num2", AssetLoader::LoadTexture("Menu/num2.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num3", AssetLoader::LoadTexture("Menu/num3.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num4", AssetLoader::LoadTexture("Menu/num4.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num5", AssetLoader::LoadTexture("Menu/num5.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num6", AssetLoader::LoadTexture("Menu/num6.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num7", AssetLoader::LoadTexture("Menu/num7.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num8", AssetLoader::LoadTexture("Menu/num8.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num9", AssetLoader::LoadTexture("Menu/num9.jpg"));
+	
+	AssetLibrary<TextureBase>::AddAsset("fontAtlas", std::move(AssetLoader::LoadTexture("PressStart2P.png")));
+	AssetLibrary<TextureBase>::AddAsset("BossHealthBarBorder", std::move(AssetLoader::LoadTexture("HP/Borders/Border_Style_3.png")));
+	AssetLibrary<TextureBase>::AddAsset("BossHealthBar", std::move(AssetLoader::LoadTexture("HP/Style_3.png")));
+
+	AssetLibrary<TextureBase>::AddAsset("PlayerHealthBarBorder", std::move(AssetLoader::LoadTexture("HP/Borders/Border_Style_4.png")));
+	AssetLibrary<TextureBase>::AddAsset("PlayerHealthBar", std::move(AssetLoader::LoadTexture("HP/Style_2.png")));
 
 	AssetLibrary<ShaderBase>::AddAsset("menu", std::move(AssetLoader::CreateShader("menuVertex.vert", "menuFragment.frag")));
+	AssetLibrary<ShaderBase>::AddAsset("button", std::move(AssetLoader::CreateShader("buttonVertex.vert", "buttonFragment.frag")));
 }
 
 void LoadAnimationAsset() {
@@ -136,6 +178,17 @@ void LoadAnimationAsset() {
 	AssetLibrary<MeshAnimation>::AddAsset("Attack4", std::make_shared<MeshAnimation>("Boss/RumbaDancing.anm"));
 	AssetLibrary<MeshAnimation>::AddAsset("Attack5", std::make_shared<MeshAnimation>("Boss/NorthernSoulSpin.anm"));
 	AssetLibrary<MeshAnimation>::AddAsset("Attack6", std::make_shared<MeshAnimation>("Boss/SambaDancing.anm"));
+
+	AssetLibrary<MeshGeometry>::AddAsset("player", AssetLoader::LoadMesh("Player/Player.msh"));
+
+	AssetLibrary<MeshMaterial>::AddAsset("player", std::make_shared<MeshMaterial>("Player/Player.mat"));
+
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerJump", std::make_shared<MeshAnimation>("Player/Jump.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerIdle", std::make_shared<MeshAnimation>("Player/PlayerIdle.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerForward", std::make_shared<MeshAnimation>("Player/PlayerForward.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerBackward", std::make_shared<MeshAnimation>("Player/PlayerBackward.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerLeft", std::make_shared<MeshAnimation>("Player/PlayerLeft.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerRight", std::make_shared<MeshAnimation>("Player/PlayerRight.anm"));
 }
 
 void LoadPrefabs() {
@@ -181,7 +234,6 @@ void LoadAsset() {
 	LoadPrefabs();
 }
 
-
 void StartPushdownAutomata(Window* w) {
 	PushdownMachine machine(new ScreenMain());
 	while (w->UpdateWindow()) {
@@ -198,10 +250,12 @@ void StartPushdownAutomata(Window* w) {
 
 int main() {
 	Window* w = Window::CreateGameWindow("CSC8507 Game technology!", 1280, 720);
+	GameTechRenderer& renderer = GameTechRenderer::instance();
+	OGLLoadingManager loadingScreen = OGLLoadingManager(w, renderer);
 
 	std::cout << "loading\n";
-	GameTechRenderer& renderer = GameTechRenderer::instance();
-	LoadAsset();
+	
+	loadingScreen.Load(LoadAsset);
 	renderer.InitPipeline();
 	
 	if (!w->HasInitialised()) {

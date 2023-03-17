@@ -16,7 +16,7 @@ OGLRendererConfig::OGLRendererConfig(RendererBase& renderer) : RendererConfigBas
 }
 
 void OGLRendererConfig::SetViewport(int x, int y, unsigned int width, unsigned int height) {
-	glViewport(0, 0, width, height);
+	glViewport(x, y, width, height);
 }
 
 void OGLRendererConfig::SetClearColour(float r, float g, float b, float a) {
@@ -86,6 +86,10 @@ void OGLRendererConfig::SetBlend(bool enabled, BlendFuncSrc srcFactor, BlendFunc
 	} else {
 		glDisable(GL_BLEND);
 	}
+}
+
+void OGLRendererConfig::SetColourMask(bool red, bool green, bool blue, bool alpha) {
+//	glColorMask(red, green, blue, alpha);
 }
 
 void OGLRendererConfig::SetCullFace(bool enabled, CullFace mode) {

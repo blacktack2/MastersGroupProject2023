@@ -5,7 +5,8 @@
  * 
  * @author Rich Davidson
  * @author Stuart Lewis
- * @date   February 2023
+ * @author Xiaoyang Liu
+ * @date   March 2023
  */
 #pragma once
 #include "Window.h"
@@ -17,97 +18,104 @@
 #include "IOverlayRenderPass.h"
 #include "RenderPassBase.h"
 
+#include "Camera.h"
+
 #include <memory>
 #include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "Vector4.h"
 
-namespace NCL::Rendering {
-	enum class VerticalSyncState {
-		On,
-		Off,
-		Adaptive
-	};
+namespace NCL {
+	namespace Rendering {
+		enum class VerticalSyncState {
+			On,
+			Off,
+			Adaptive
+		};
 
-	enum class ClearBit {
-		Color,
-		Depth,
-		Stencil,
-		ColorDepth,
-		ColorStencil,
-		DepthStencil,
-		ColorDepthStencil,
-	};
+		enum class ClearBit {
+			Color,
+			Depth,
+			Stencil,
+			ColorDepth,
+			ColorStencil,
+			DepthStencil,
+			ColorDepthStencil,
+		};
 
-	class RendererConfigBase;
-
-	/**
-	 * @brief Base rendering class for handling general updates and pipeline
-	 * organisation.
-	 */
-	class RendererBase {
-	public:
-		friend class NCL::Window;
-
-		RendererBase(Window& w);
-		virtual ~RendererBase();
-
-		virtual bool HasInitialised() const {return true;}
-
-		virtual void Update(float dt) {}
-
-		void Render() {
-			BeginFrame();
-			RenderFrame();
-			EndFrame();
-			SwapBuffers();
-		}
-
-		virtual bool SetVerticalSync(VerticalSyncState s) {
-			return false;
-		}
+		class RendererConfigBase;
 
 		/**
-		 * @brief Enable or disable general scene rendering and post-processing.
-		 * Must be followed by a call to UpdatePipeline() to take effect.
+		 * @brief Base rendering class for handling general updates and pipeline
+		 * organisation.
 		 */
-		void EnableRenderScene(bool enable);
-		/**
-		 * @brief Enable or disable post-processing. Must be followed by a call to
-		 * UpdatePipeline() to take effect.
-		 */
-		void EnablePostProcessing(bool enable);
-		/**
-		 * @brief Enable or disable the overlay passes. Must be followed by a call
-		 * to UpdatePipeline() to take effect.
-		 */
-		void EnableRenderOverlay(bool enable);
+		class RendererBase {
+		public:
+			friend class NCL::Window;
 
-		/**
-		 * @brief Enable or disable specific post-processing pass. Must be followed
-		 * by a call to UpdatePipeline() to take effect.
-		 * 
-		 * @param name Name of the pass defined during the initial call to
-		 * AddPostPass().
-		 * @param enable If true enable the pass, otherwise disable it.
-		 */
-		void EnablePostPass(const std::string& name, bool enable);
-		/**
-		 * @brief Enable or disable specific overlay pass. Must be followed
-		 * by a call to UpdatePipeline() to take effect.
-		 * 
-		 * @param name Name of the pass defined during the initial call to
-		 * AddOverlayPass().
-		 * @param enable If true enable the pass, otherwise disable it.
-		 */
-		void EnableOverlayPass(const std::string& name, bool enable);
+			RendererBase(Window& w);
+			virtual ~RendererBase();
 
-		/**
-		 * @brief Update the render pipeline to match the state defined by the
-		 * pipeline setter functions.
-		 */
-		void UpdatePipeline();
+			virtual bool HasInitialised() const { return true; }
+
+			virtual void Update(float dt) {}
+
+			void Render() {
+				BeginFrame();
+				RenderFrame();
+				EndFrame();
+				SwapBuffers();
+			}
+
+			virtual bool SetVerticalSync(VerticalSyncState s) {
+				return false;
+			}
+			inline void SetNumPlayers(unsigned int numPlayers) {
+				this->numPlayers = numPlayers;
+				ResizeViewport();
+			}
+			/**
+			 * @brief Enable or disable general scene rendering and post-processing.
+			 * Must be followed by a call to UpdatePipeline() to take effect.
+			 */
+			void EnableRenderScene(bool enable);
+			/**
+			 * @brief Enable or disable post-processing. Must be followed by a call to
+			 * UpdatePipeline() to take effect.
+			 */
+			void EnablePostProcessing(bool enable);
+			/**
+			 * @brief Enable or disable the overlay passes. Must be followed by a call
+			 * to UpdatePipeline() to take effect.
+			 */
+			void EnableRenderOverlay(bool enable);
+
+			/**
+			 * @brief Enable or disable specific post-processing pass. Must be followed
+			 * by a call to UpdatePipeline() to take effect.
+			 *
+			 * @param name Name of the pass defined during the initial call to
+			 * AddPostPass().
+			 * @param enable If true enable the pass, otherwise disable it.
+			 */
+			void EnablePostPass(const std::string& name, bool enable);
+			/**
+			 * @brief Enable or disable specific overlay pass. Must be followed
+			 * by a call to UpdatePipeline() to take effect.
+			 *
+			 * @param name Name of the pass defined during the initial call to
+			 * AddOverlayPass().
+			 * @param enable If true enable the pass, otherwise disable it.
+			 */
+			void EnableOverlayPass(const std::string& name, bool enable);
+
+			/**
+			 * @brief Update the render pipeline to match the state defined by the
+			 * pipeline setter functions.
+			 */
+			void UpdatePipeline();
 
 		inline float GetAspect() const {
 			return (float)windowWidth / (float)windowHeight;
@@ -118,6 +126,12 @@ namespace NCL::Rendering {
 		inline int GetHeight() const {
 			return windowHeight;
 		}
+		inline int GetSplitWidth() const {
+			return splitWidth;
+		}
+		inline int GetSplitHeight() const {
+			return splitHeight;
+		}
 
 		/**
 		 * @brief Clear the backbuffer, or the current framebuffer.
@@ -126,6 +140,15 @@ namespace NCL::Rendering {
 		 */
 		virtual void ClearBuffers(ClearBit mask) = 0;
 		virtual RendererConfigBase& GetConfig() = 0;
+
+		virtual void SetGameWorldMainCamera(int num) = 0;
+		virtual int GetGameWorldMainCamera() = 0;
+
+		virtual void UpdateHudDisplay(int playerID) = 0;
+
+		virtual void DisplayWinLoseInformation(int playerID) = 0;
+
+		virtual void SetGameWorldDeltaTime(float dt) = 0;
 	protected:
 		/**
 		 * @brief Add main render pass. Meant to add to, or modify, the GBuffer
@@ -199,54 +222,76 @@ namespace NCL::Rendering {
 			overlayMap.insert({ name, overlayRenderPasses.size() - 1 });
 		}
 
-		virtual void OnWindowResize(int width, int height);
-		virtual void OnWindowDetach() {};
+			virtual void OnWindowResize(int width, int height);
+			virtual void OnWindowDetach() {};
 
-		/**
-		 * @brief Update method called before executing the render pipeline.
-		 */
-		virtual void BeginFrame()  = 0;
-		/**
-		 * @brief Update method called after executing the render pipeline.
-		 * 
-		 */
-		virtual void EndFrame()    = 0;
+			/**
+			 * @brief Update method called before executing the render pipeline.
+			 */
+			virtual void BeginFrame() = 0;
+			/**
+			 * @brief Update method called after executing the render pipeline.
+			 *
+			 */
+			virtual void EndFrame() = 0;
 
-		virtual void SwapBuffers() = 0;
-		virtual void ClearBackbuffer() = 0;
+			virtual void SwapBuffers() = 0;
+			virtual void ClearBackbuffer() = 0;
 
-		Window& hostWindow;
+			Window& hostWindow;
 
-		int windowWidth;
-		int windowHeight;
-	private:
-		struct MainPass {
-			IMainRenderPass& pass;
-		};
-		struct PostPass {
-			IPostRenderPass& pass;
-			bool enabled;
-		};
-		struct OverPass {
-			IOverlayRenderPass& pass;
-			bool enabled;
-		};
+			int windowWidth;
+			int windowHeight;
+		private:
+			struct MainPass {
+				IMainRenderPass& pass;
+			};
+			struct PostPass {
+				IPostRenderPass& pass;
+				bool enabled;
+			};
+			struct OverPass {
+				IOverlayRenderPass& pass;
+				bool enabled;
+			};
 
+		void ResizeViewport();
+		void RenderViewPort(int viewportID, int cameraID, const std::vector<float>& viewports, bool displayHudDebug);
 		void RenderFrame();
+		void RenderScene();
+		void RenderPresent();
+		void RenderOverlay();
 
-		bool doRenderScene = true;
-		bool doRenderPost  = true;
-		bool doRenderOver  = true;
+		unsigned int numPlayers = 4;
+		int splitWidth = 1, splitHeight = 1;
 
-		std::vector<MainPass> mainRenderPasses;
-		ICombineRenderPass* combinePass;
-		std::vector<PostPass> postRenderPasses;
-		IPresentRenderPass* presentPass;
-		std::vector<OverPass> overlayRenderPasses;
+			bool doRenderScene = true;
+			bool doRenderPost = true;
+			bool doRenderOver = true;
 
-		std::unordered_map<std::string, size_t> postMap;
-		std::unordered_map<std::string, size_t> overlayMap;
+			std::vector<MainPass> mainRenderPasses;
+			ICombineRenderPass* combinePass;
+			std::vector<PostPass> postRenderPasses;
+			IPresentRenderPass* presentPass;
+			std::vector<OverPass> overlayRenderPasses;
 
-		std::vector<std::reference_wrapper<IRenderPass>> renderPipeline;
-	};
+			std::unordered_map<std::string, size_t> postMap;
+			std::unordered_map<std::string, size_t> overlayMap;
+
+			std::vector<std::reference_wrapper<IRenderPass>> renderPipeline;
+			std::vector<std::reference_wrapper<IRenderPass>> overlayPipeline;
+
+			NCL::Maths::Vector4 player1Viewport = NCL::Maths::Vector4(0, 0, 1, 1);
+			NCL::Maths::Vector4 player2Viewport = NCL::Maths::Vector4(0, 0, 1, 1);
+			NCL::Maths::Vector4 player3Viewport = NCL::Maths::Vector4(0, 0, 1, 1);
+			NCL::Maths::Vector4 player4Viewport = NCL::Maths::Vector4(0, 0, 1, 1);
+
+			/**
+			* TODO:
+			*	Split renderePipeline&overlayPipeline to have one for each player
+			*	Store player specific viewports in Vector4 member variables
+			*	Try to simplify the RenderFrame mainloop (preferably to just a few for loops)
+			*/
+		};
+	}
 }

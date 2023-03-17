@@ -1,14 +1,13 @@
 /**
  * @file   TutorialGame.h
- * @brief  
- * 
+ * @brief
+ *
  * @author Rich Davidson
  * @author Stuart Lewis
  * @date   March 2023
  */
 #pragma once
 #include "Vector3.h"
-
 #include <memory>
 
 namespace NCL {
@@ -18,72 +17,83 @@ namespace NCL {
 
 using namespace NCL::Maths;
 
-namespace NCL::CSC8503 {
-	class GameGridManager;
-	class GameStateManager;
-	class GameTechRenderer;
-	class GameWorld;
-	class MenuManager;
 
-	class GameLevel;
-	class PhysicsSystem;
 
-	class GameObject;
+namespace NCL {
+	namespace CSC8503 {
+		class GameGridManager;
+		class GameStateManager;
+		class GameTechRenderer;
+		class GameWorld;
+		class MenuManager;
+		class OptionManager;
+		class GameLevel;
+		class PhysicsSystem;
 
-	class GameGrid;
-	class Boss;
-	class BossBehaviorTree;
-	class PlayerObject;
+		class GameObject;
 
-	struct Light;
+		class GameGrid;
+		class Boss;
+		class BossBehaviorTree;
+		class PlayerObject;
 
-	class TutorialGame {
-	public:
-		TutorialGame();
-		~TutorialGame();
+		struct DirectionalLight;
 
-		virtual void Clear();
-		virtual void StartLevel();
+		class TutorialGame {
+		public:
+			TutorialGame();
+			~TutorialGame();
 
-		void InitWorld();
+			virtual void Clear();
+			virtual void StartLevel();
 
-		virtual void UpdateGame(float dt);
+			void InitWorld();
 
-		bool IsQuit();
-	protected:
-		void UpdateGameCore(float dt);
-		virtual void ProcessState();
+			virtual void UpdateGame(float dt);
 
-		void InitCamera();
-		void InitGameExamples();
+			bool IsQuit();
+		protected:
+			void UpdateGameCore(float dt);
 
-		void InitDefaultFloor();
+			virtual void BossTarget();
 
-		GameObject* AddFloorToWorld(const Vector3& position);
+			virtual void ProcessState();
 
-		PlayerObject* AddPlayerToWorld(const Vector3& position, bool cameraFollow = true);
+			void SetCameraFollow(PlayerObject* p);
 
-		Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
-		void BuildLevel();
-		void UpdateLevel();
+			void InitCamera();
+			void InitGameExamples();
 
-		DebugViewPoint&   debugViewPoint;
-		GameGridManager&  gridManager;
-		GameStateManager& gameStateManager;
-		GameTechRenderer& renderer;
-		GameWorld&        gameWorld;
-		InputKeyMap&      keyMap;
-		MenuManager&      menuManager;
+			void InitDefaultFloor();
 
-		std::unique_ptr<PhysicsSystem> physics;
+			GameObject* AddFloorToWorld(const Vector3& position);
 
-		Light* sunLight = nullptr;
-		PlayerObject* player = nullptr;
-		GameLevel* gameLevel = nullptr;
+			PlayerObject* AddPlayerToWorld(int playerID, const Vector3& position);
 
-		GameGrid* gameGrid = nullptr;
-		Boss* boss = nullptr;
+			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
+			void BuildLevel();
+			void UpdateLevel();
 
-		float interval = 0.0f;
-	};
+			DebugViewPoint& debugViewPoint;
+			GameGridManager& gridManager;
+			GameStateManager& gameStateManager;
+			GameTechRenderer& renderer;
+			GameWorld& gameWorld;
+			InputKeyMap& keyMap;
+			MenuManager& menuManager;
+			OptionManager& optionManager;
+
+			std::unique_ptr<PhysicsSystem> physics;
+
+			PlayerObject* players[4];
+
+			DirectionalLight* sunLight = nullptr;
+
+			GameLevel* gameLevel = nullptr;
+			Boss* boss = nullptr;
+
+			int playerNum = 0;
+			float interval = 0.0f;
+		};
+	}
 }

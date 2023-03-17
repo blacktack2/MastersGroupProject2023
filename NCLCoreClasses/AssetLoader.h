@@ -12,12 +12,14 @@
 #include <functional>
 #include <string>
 
-namespace NCL::Rendering {
-	class BufferObjectBase;
-	class FrameBuffer;
-	class ShaderBase;
-	class TextureBase;
-	enum class TextureType;
+namespace NCL {
+	namespace Rendering {
+		class BufferObjectBase;
+		class FrameBuffer;
+		class ShaderBase;
+		class TextureBase;
+		enum class TextureType;
+	}
 }
 
 using namespace NCL::Rendering;
@@ -47,6 +49,7 @@ namespace NCL {
 		static void RegisterFrameBufferCreateFunction(FrameBufferCreateFunction f);
 		static void RegisterMeshCreateFunction(MeshCreateFunction f);
 		static void RegisterShaderCreateFunction(ShaderCreateFunction f);
+		static void RegisterShaderCreateAndInitFunction(ShaderCreateFunction f);
 		static void RegisterTextureCreateFunction(TextureCreateFunction f);
 
 		static bool LoadTextureData(const std::string& filename, char*& outData, unsigned int& width, unsigned int &height, int &channels, int&flags);
@@ -58,6 +61,7 @@ namespace NCL {
 		static std::unique_ptr<FrameBuffer>      CreateFrameBuffer();
 		static std::unique_ptr<MeshGeometry>     CreateMesh();
 		static std::unique_ptr<ShaderBase>       CreateShader(const std::string& vertex, const std::string& fragment);
+		static std::unique_ptr<ShaderBase>       CreateShaderAndInit(const std::string& vertex, const std::string& fragment);
 		static std::unique_ptr<TextureBase>      CreateTexture(TextureType type, unsigned int width, unsigned int height);
 	protected:
 		static std::string GetFileExtension(const std::string& fileExtension);
@@ -65,12 +69,14 @@ namespace NCL {
 		static std::map<std::string, TextureDataLoadFunction> fileHandlers;
 
 		static MeshLoadFunction     meshLoad;
+		
 		static TextureLoadFunction  textureLoad;
 
 		static BufferObjectCreateFunction bufferObjectCreate;
 		static FrameBufferCreateFunction  frameBufferCreate;
 		static MeshCreateFunction         meshCreate;
 		static ShaderCreateFunction       shaderCreate;
+		static ShaderCreateFunction       shaderCreateAndInit;
 		static TextureCreateFunction      textureCreate;
 	};
 }

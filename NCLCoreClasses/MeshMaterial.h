@@ -14,9 +14,11 @@
 #include <string>
 #include <vector>
 
-namespace NCL::Rendering {
-	class ShaderBase;
-	class TextureBase;
+namespace NCL {
+	namespace Rendering {
+		class ShaderBase;
+		class TextureBase;
+	}
 }
 
 using namespace NCL::Rendering;
@@ -39,9 +41,16 @@ namespace NCL {
 		inline ShaderBase* GetShader() const {
 			return shader.get();
 		}
+		inline void SetShadowShader(std::shared_ptr<ShaderBase> shader) {
+			shadowShader = shader;
+		}
+		inline ShaderBase* GetShadowShader() const {
+			return shadowShader.get();
+		}
 	protected:
 		std::unordered_map<std::string, std::shared_ptr<TextureBase>> textures{};
 		std::shared_ptr<ShaderBase> shader = nullptr;
+		std::shared_ptr<ShaderBase> shadowShader = nullptr;
 	};
 
 	class MeshMaterial {

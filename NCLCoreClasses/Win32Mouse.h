@@ -11,23 +11,25 @@ https://research.ncl.ac.uk/game/
 #include "Mouse.h"
 #include "Win32Window.h"
 
-namespace NCL::Win32Code {
-	class Win32Mouse : public NCL::Mouse {
-	public:
-		friend class Win32Window;
+namespace NCL{
+	namespace Win32Code {
+		class Win32Mouse : public NCL::Mouse {
+		public:
+			friend class Win32Window;
 
-	protected:
-		Win32Mouse(HWND &hwnd);
-		virtual ~Win32Mouse(void) {}
+		protected:
+			Win32Mouse(HWND& hwnd);
+			virtual ~Win32Mouse(void) {}
 
-		void UpdateWindowPosition(const Vector2& newPos) {
-			windowPosition = newPos;
-		}
+			void UpdateWindowPosition(const Vector2& newPos) {
+				windowPosition = newPos;
+			}
 
-		virtual void	UpdateRAW(RAWINPUT* raw);
-		RAWINPUTDEVICE	rid;			//Windows OS hook 
+			virtual void	UpdateRAW(RAWINPUT* raw);
+			RAWINPUTDEVICE	rid;			//Windows OS hook 
 
-		bool		setAbsolute;
-	};
+			bool		setAbsolute;
+		};
+	}
 }
 #endif //_WIN32

@@ -8,16 +8,18 @@
 #pragma once
 #include "OGLRenderPass.h"
 #include "IPresentRenderPass.h"
-namespace NCL::Rendering {
-	/**
-	 * @brief Base OpenGL implementation of the presentation render pass.
-	 */
-	class OGLPresentRenderPass : public OGLRenderPass, public IPresentRenderPass {
-	public:
-		OGLPresentRenderPass() : OGLRenderPass() {}
+namespace NCL {
+	namespace Rendering {
+		/**
+		 * @brief Base OpenGL implementation of the presentation render pass.
+		 */
+		class OGLPresentRenderPass : public OGLRenderPass, public IPresentRenderPass {
+		public:
+			OGLPresentRenderPass() : OGLRenderPass() {}
 
-		virtual void OnWindowResize(int width, int height) override {
-			OGLRenderPass::OnWindowResize(width, height);
-		}
-	};
+			virtual void OnWindowResize(int width, int height) override {
+				OGLRenderPass::OnWindowResize(width, height);
+			}
+		};
+	}
 }

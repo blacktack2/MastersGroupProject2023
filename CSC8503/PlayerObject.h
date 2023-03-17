@@ -5,8 +5,9 @@
 #include "GameStateManager.h"
 #include "Health.h"
 #include "PlayerBullet.h"
-
+#include"AnimatedRenderObject.h"
 namespace NCL {
+	class Camera;
 	namespace CSC8503 {
 		class Bullet;
 
@@ -21,10 +22,14 @@ namespace NCL {
 
 			void CollisionWith(GameObject* other);
 
-			void AttachedCamera() {
-				hasCamera = true;
+			void AttachCamera(int b) {
+				hasCamera = b;
 				//camera = cam;
 			};
+
+			Camera* GetCamera() {
+				return camera;
+			}
 
 			const std::vector<GameObject*> GetLastInstancedObjects() {
 				return lastInstancedObjects;
@@ -34,25 +39,36 @@ namespace NCL {
 				return &health;
 			}
 
+			int GetPlayerID()
+			{
+				return playerID;
+			}
+
 		protected:
+			void Movement(float dt);
+
 			void MoveTo(Vector3 position);
 			void Move(Vector3 dir);
 			void MoveByPosition(float dt, Vector3 dir);
-			void GetInput(Vector3& dir, unsigned int keyPress = InputType::Empty);
-			void GetControllerInput(unsigned int controllerNum, Vector3& movingDir3D);
+			void GetButtonInput(unsigned int keyPress);
+			void GetAxisInput();
+			void GetDir(Vector3& movingDir3D);
 
 			void RotateYaw(float yaw);
 			void RotateToCamera();
-
-			void MoveCamera();
-
+			void RotateByAxis();
+			void RotatePlayer();
+		public:
+			void MoveCamera(float dt);
+		protected:
 			void CheckGround();
 
 			PlayerBullet* PrepareBullet();
 			virtual void Shoot();
+			void Jump();
 			void BulletModification(PlayerBullet* bullet){};
 
-			int playerID;
+			int playerID = -1;
 
 			//network
 			bool isNetwork = false;
@@ -60,17 +76,25 @@ namespace NCL {
 			//keymap
 			NCL::InputKeyMap& keyMap;
 			unsigned int lastKey;
+			float axis[AxisInput::AxisInputDataMax];
 			
 			//gameplay
 			Health health = Health(100);
 
 			//shooting related
-			float projectileForce = 10;
+			float projectileForce = 15;
 			const Vector3 projectileSpawnPoint = Vector3(0.0f, 0.9f, -1.0f);
 			float projectileLifespan = 5.0f;
 			float projectileFireRate = 0.1f;
 			float projectileFireRateTimer = 0;
 
+			float pitch = 0.0f;
+			float yaw = 0.0f;
+			
+			//camera related
+			Vector3 lookingAt = Vector3(0);
+
+			void MoveAnimation(Vector3 dir);
 		private:
 
 			void SetupAudio();
@@ -87,11 +111,10 @@ namespace NCL {
 			Vector3 lastDir = Vector3(0,0,0);
 			
 			//camera related
-			//Camera& camera;
-			bool hasCamera = false;
+			Camera* camera;
+			int hasCamera = 0;		// 0 means no camera; 1,2,3,4 indicates which playerCamera it is attached to.
 			bool isFreeLook = false;
 			float camTurnSpeed = 0.5f;
-			Vector3 cameraOffset = Vector3(0.5f, 5.0f, 2.0f);
 
 			//instantiated objs
 			std::vector<GameObject*> lastInstancedObjects;

@@ -3,7 +3,14 @@
 #include <string>
 
 
+
 namespace NCL {
+	namespace CSC8503 {
+		class OptionManager;
+	}
+
+	using namespace CSC8503;
+
 	class DebugViewPoint
 	{
 	public:
@@ -42,6 +49,8 @@ namespace NCL {
 		bool state = true;
 		std::map<std::string, std::chrono::steady_clock::time_point> startingPoints;
 		int itemsPrinted;
+
+		OptionManager& optionManager;
 	};
 }
 
