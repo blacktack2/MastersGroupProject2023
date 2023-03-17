@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "../CSC8503CoreClasses/InputKeyMap.h"
 #include "../CSC8503/Hud.h"
+//#include "../CSC8503/PlayerObject.h"
 
 #include <algorithm>
 
@@ -94,7 +95,6 @@ void Camera::UpdateCamera(float dt) {
 		}
 	} else {
 		Vector3 followPos = follow->GetGlobalPosition();
-		//followPos = Vector3::Lerp(LastPos, followPos, std::min(smoothFactor * dt, 1.0f));
 		LastPos = followPos;
 
 		/*

@@ -98,13 +98,15 @@ namespace NCL {
 
 		void SetButton(InputType key, int PlayerID);
 
-		void UpdateGameStateDependant();
-
 		void UpdatePlayer(int playerID);
 
 		void UpdateWindows(int playerID);
 
+		void UpdateWindowsGameStateDependant(int playerID);
+
 		void UpdateXbox(int playerID);
+
+		void UpdateXboxGameStateDependant(int playerID);
 
 		unsigned int buttonstates;
 		float AxisDataArray[MAXPLAYER][AxisInput::AxisInputDataMax] = { 0 };

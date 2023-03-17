@@ -55,6 +55,8 @@ namespace NCL {
 			void Disconnect();
 
 		protected:
+			void BossTarget() override;
+
 			void UpdateAsServer(float dt);
 			void UpdateAsClient(float dt);
 

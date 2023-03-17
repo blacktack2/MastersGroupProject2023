@@ -37,7 +37,6 @@ PlayerObject::PlayerObject(int playerID) : GameObject(), playerID(playerID), key
 	AttachCamera(playerID);
 	camera->SetPlayerID(playerID);
 	camera->SetFollow(&this->GetTransform());
-
 }
 
 PlayerObject::~PlayerObject() {
@@ -54,7 +53,7 @@ void PlayerObject::Update(float dt) {
 	//Change game state
 	if (health.GetHealth() <= 0) {
 		MoveCamera(dt);
-		ChangeLoseState();
+		//ChangeLoseState();
 		return;
 	}
 		
@@ -138,11 +137,14 @@ void PlayerObject::MoveCamera(float dt) {
 	camera->SetYaw(yaw);
 	Ray ray = CollisionDetection::BuildRayFromCamera(*camera);
 	RayCollision closestCollision;
+	lookingAt = transform.GetGlobalPosition() + ray.GetDirection() * 30;
 	if (gameWorld.Raycast(ray, closestCollision, true, this)) {
-		lookingAt = closestCollision.collidedAt;
-	}
-	else {
-		lookingAt = transform.GetGlobalPosition() + ray.GetDirection() * 20;
+		if (closestCollision.rayDistance > 6) {
+			lookingAt = closestCollision.collidedAt;
+		}
+		else {
+			std::cout << "dist " << closestCollision.rayDistance << std::endl;
+		}
 	}
 	//camera->UpdateCamera(dt);
 }

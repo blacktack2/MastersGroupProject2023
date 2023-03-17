@@ -37,6 +37,7 @@ NetworkedGame::NetworkedGame(bool isServer)	{
 	thisClient = nullptr;
 
 	NetworkBase::Initialise();
+	gameStateManager.SetIsNetworked(true);
 	timeToNextPacket  = 0.0f;
 	packetsToSnapshot = 0;
 	stateID = 0;
@@ -54,6 +55,7 @@ NetworkedGame::NetworkedGame(bool isServer)	{
 }
 
 NetworkedGame::~NetworkedGame()	{
+	gameStateManager.SetIsNetworked(false);
 	Disconnect();
 	delete thisServer;
 	delete thisClient;
@@ -96,9 +98,10 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 
 void NetworkedGame::Clear()
 {
-	std::cout << "clear" << std::endl;
+	if(localPlayer)
+		localPlayer->GetCamera()->GetHud().ClearAndErase();
 	TutorialGame::Clear();
-	for (int i = 0; i <= 4; i++) {
+	for (int i = 0; i < 4; i++) {
 		players[0] = nullptr;
 	}
 	localPlayer = nullptr;
@@ -137,7 +140,6 @@ void NetworkedGame::SpawnPlayers() {
 	if (thisServer) {
 		localPlayer = SpawnPlayer(0, true);
 		localPlayer->GetCamera()->GetHud().AddHealthBar(localPlayer->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
-		std::cout << "added hud " << std::endl;
 	}
 	if (thisClient && selfID != NULL) {
 		localPlayer = SpawnPlayer(selfID, true);
@@ -173,28 +175,6 @@ void NetworkedGame::UpdateGame(float dt) {
 		timeToNextPacket = packetGap;
 	}
 
-	//boss special
-	if (boss) {
-		//Change boss target
-		Vector3 displacement;
-		PlayerObject* target = boss->GetTarget();
-		PlayerObject* player;
-		float minDist = 300;
-		for (auto pair : serverPlayers) {
-			player = static_cast<PlayerObject*>(pair.second);
-			if (player->GetHealth()->GetHealth() <= 0) {
-				continue;
-			}
-			displacement = player->GetTransform().GetGlobalPosition() - boss->GetTransform().GetGlobalPosition();
-			float dist = abs(displacement.Length());
-			if (dist < minDist) {
-				target = static_cast<PlayerObject*>(player);
-				minDist = dist;
-			}
-		}
-		boss->SetNextTarget(target);
-	}
-
 	TutorialGame::UpdateGame(dt);
 }
 
@@ -217,10 +197,31 @@ GameServer* NetworkedGame::GetServer()
 
 void NetworkedGame::Disconnect()
 {
-	std::cout << "attempt disconnect" << std::endl;
 	if (thisClient) {
 		thisClient->Disconnect();
 	}
+}
+
+void NetworkedGame::BossTarget()
+{
+	//Change boss target
+	Vector3 displacement;
+	PlayerObject* target = boss->GetTarget();
+	PlayerObject* player;
+	float minDist = 300;
+	for (auto pair : serverPlayers) {
+		player = static_cast<PlayerObject*>(pair.second);
+		if (player->GetHealth()->GetHealth() <= 0) {
+			continue;
+		}
+		displacement = player->GetTransform().GetGlobalPosition() - boss->GetTransform().GetGlobalPosition();
+		float dist = abs(displacement.Length());
+		if (dist < minDist) {
+			target = static_cast<PlayerObject*>(player);
+			minDist = dist;
+		}
+	}
+	boss->SetNextTarget(target);
 }
 
 void NetworkedGame::UpdateAsServer(float dt) {
@@ -677,6 +678,29 @@ NetworkBoss* NetworkedGame::AddNetworkBossToWorld(const Vector3& position, Vecto
 }
 
 void NetworkedGame::ProcessState() {
+
+	switch (gameStateManager.GetGameState()) {
+	case GameState::Win:
+	case GameState::Lose:
+		if(thisServer){
+			Debug::Print("Press [R] or [Start] to return to lobby", Vector2(5, 80), Vector4(1, 1, 1, 1));
+		}
+		if (thisClient) {
+			Debug::Print("Please Wait for server to return to lobby", Vector2(5, 80), Vector4(1, 1, 1, 1));
+		}
+		break;
+	case GameState::Lobby:
+		if (thisServer) {
+			Debug::Print("Press [R] or [Start] to Start the Game", Vector2(5, 80), Vector4(1, 1, 1, 1));
+		}
+		if (thisClient) {
+			Debug::Print("Please Wait for server to Start the Game", Vector2(5, 80), Vector4(1, 1, 1, 1));
+		}
+		break;
+	}
+
+	std::cout << (int)gameStateManager.GetGameState() << std::endl;
+
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	if (thisServer) {
 		if (keyMap.GetButton(InputType::Start)) {
