@@ -209,11 +209,24 @@ void InputKeyMap::UpdateXbox(int playerID)
 	{
 		AxisDataArray[playerID][AxisInput::Axis1] = thumbLeft.x;
 		AxisDataArray[playerID][AxisInput::Axis2] = thumbLeft.y;
+
+		if (AxisDataArray[playerID][AxisInput::Axis2] > 0) {
+			SetButton(InputType::UP);
+		}
+		if (AxisDataArray[playerID][AxisInput::Axis2] < 0) {
+			SetButton(InputType::DOWN);
+		}
 	}
 	if (XboxControllerManager::GetXboxController().GetThumbRight(playerID, thumbRight))
 	{
 		AxisDataArray[playerID][AxisInput::Axis3] = thumbRight.x;
 		AxisDataArray[playerID][AxisInput::Axis4] = thumbRight.y;
+		if (AxisDataArray[playerID][AxisInput::Axis4] > 0) {
+			SetButton(InputType::UP);
+		}
+		if (AxisDataArray[playerID][AxisInput::Axis4] < 0) {
+			SetButton(InputType::DOWN);
+		}
 	}
 	if (XboxControllerManager::GetXboxController().GetRightTrigger(playerID, rightTriggerDepth))
 	{
@@ -223,8 +236,15 @@ void InputKeyMap::UpdateXbox(int playerID)
 	{
 		AxisDataArray[playerID][AxisInput::Axis6] = leftTriggerDepth;
 	}
-
-
+	if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_X)) {
+		SetButton(InputType::Jump);
+	}
+	if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_DPAD_UP)) {
+		SetButton(InputType::UP);
+	}
+	if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_DPAD_DOWN)) {
+		SetButton(InputType::DOWN);
+	}
 }
 
 void InputKeyMap::UpdateXboxGameStateDependant(int playerID) {
@@ -232,8 +252,8 @@ void InputKeyMap::UpdateXboxGameStateDependant(int playerID) {
 	GameState gameState = gameStateManager->GetGameState();
 	switch (gameState) {
 	case GameState::Lobby:
-		if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_Y)) {
-			SetButton(InputType::Pause);
+		if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_START)) {
+			SetButton(InputType::Start);
 		}
 	case GameState::OnGoing: default:
 		if(XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_BACK)) {

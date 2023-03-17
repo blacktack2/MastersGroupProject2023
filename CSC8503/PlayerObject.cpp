@@ -45,8 +45,13 @@ PlayerObject::~PlayerObject() {
 	SoundSystem::GetSoundSystem()->SetListener(nullptr);
 	delete playerSource;
 	delete attackSource;
+	ClearCamera();
 
+}
 
+void PlayerObject::ClearCamera() {
+	camera->GetHud().ClearAndErase();
+	camera->SetFollow(nullptr);
 }
 
 void PlayerObject::Update(float dt) {

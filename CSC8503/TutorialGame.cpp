@@ -108,8 +108,7 @@ void TutorialGame::StartLevel() {
 
 void TutorialGame::Clear() {
 	for (int i = 0; i < playerNum; i++) {
-		//if (players[i] != nullptr)
-		players[i]->GetCamera()->GetHud().ClearAndErase();
+		//players[i]->GetCamera()->GetHud().ClearAndErase();
 		players[i] = nullptr;
 	}
 	playerNum = 0;
@@ -154,6 +153,9 @@ void TutorialGame::UpdateGame(float dt) {
 		renderer.SetNumPlayers(4);
 		gameWorld.SetScreenNum(4);
 	}
+
+	// TODO - makeshift crosshair
+	Debug::Print("+", Vector2(49.5f, 49.5f), Vector4(1, 1, 1, 1));
 
 	debugViewPoint.BeginFrame();
 	debugViewPoint.MarkTime("Update");

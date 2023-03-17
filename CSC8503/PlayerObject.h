@@ -18,6 +18,8 @@ namespace NCL {
 
 			void Update(float dt);
 
+			void ClearCamera();
+
 			virtual void ChangeLoseState();
 
 			void CollisionWith(GameObject* other);
