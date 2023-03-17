@@ -114,7 +114,7 @@ namespace NCL {
 
 			//jump related 
 			bool onGround = false;
-			float jumpTriggerDist = 1.1f;
+			float jumpTriggerDist = 1.85f;
 			float jumpTimer = 0.0f;
 			const float jumpCooldown = 0.005f;
 			float jumpSpeed = 10.0f;

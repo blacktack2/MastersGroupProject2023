@@ -253,7 +253,7 @@ void PlayerObject::CheckGround() {
 	{
 		objClosest = (GameObject*)closestCollision.node;
 		float groundDist = (closestCollision.collidedAt - this->GetTransform().GetGlobalPosition()).Length();
-		//std::cout << "ground dist " << groundDist << std::endl;
+		std::cout << "ground dist " << groundDist << std::endl;
 		if (groundDist < jumpTriggerDist)
 		{
 			onGround = true;
