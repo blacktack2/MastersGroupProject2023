@@ -188,6 +188,7 @@ void NCL::CSC8503::PlayerObject::GetDir(Vector3& movingDir3D)
 	if (leftTriggerDepth > 0.5f)
 	{
 		Jump();
+		
 	}
 }
 
@@ -306,6 +307,10 @@ void NCL::CSC8503::PlayerObject::Jump()
 		Vector3 upDir = this->GetTransform().GetGlobalOrientation() * Vector3(0, 1, 0);
 		jumpTimer = jumpCooldown;
 		this->GetPhysicsObject()->ApplyLinearImpulse(upDir * jumpSpeed);
+		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerJump").get()) {
+			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerJump"));
+		}
 	}
 }
 
