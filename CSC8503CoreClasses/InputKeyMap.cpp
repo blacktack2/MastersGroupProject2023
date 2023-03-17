@@ -7,6 +7,13 @@ using namespace CSC8503;
 using namespace NCL;
 
 InputKeyMap::InputKeyMap() {
+	XboxControllerManager::GetXboxController().CheckPorts();
+	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
+	if (numOfPlayers >= 4)
+		numOfPlayers = 4;
+	for (int i = 1; i <= numOfPlayers; i++) {
+		ChangePlayerControlTypeMap(i, ControllerType::Xbox);
+	}
 	buttonstates = InputType::Empty;
 	movementAxis = Vector2(0);
 	cameraAxis = Vector2(0);
@@ -161,7 +168,7 @@ void InputKeyMap::UpdateWindows(int playerID)
 
 		if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
 		{
-			SetButton(InputType::Confirm, playerID);
+			SetButton(InputType::Confirm);
 		}
 
 		AxisDataArray[playerID][AxisInput::Axis4] = -1.0f * Window::GetMouse()->GetRelativePosition().y;
@@ -237,7 +244,7 @@ void InputKeyMap::UpdateXbox(int playerID)
 		AxisDataArray[playerID][AxisInput::Axis6] = leftTriggerDepth;
 	}
 	if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_X)) {
-		SetButton(InputType::Jump);
+		SetButton(InputType::Jump, playerID);
 	}
 	if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_DPAD_UP)) {
 		SetButton(InputType::UP);
@@ -245,6 +252,10 @@ void InputKeyMap::UpdateXbox(int playerID)
 	if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_DPAD_DOWN)) {
 		SetButton(InputType::DOWN);
 	}
+	if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_A)) {
+		SetButton(InputType::Confirm);
+	}
+	XboxControllerManager::GetXboxController().UpdateALastState(playerID);
 }
 
 void InputKeyMap::UpdateXboxGameStateDependant(int playerID) {

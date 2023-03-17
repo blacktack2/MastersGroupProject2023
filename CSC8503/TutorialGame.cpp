@@ -79,7 +79,6 @@ TutorialGame::~TutorialGame() {
 
 void TutorialGame::StartLevel() {
 	InitWorld();
-	std::cout << "tutorial " << std::endl;
 	XboxControllerManager::GetXboxController().CheckPorts();
 	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
 	if (numOfPlayers >= 4)
