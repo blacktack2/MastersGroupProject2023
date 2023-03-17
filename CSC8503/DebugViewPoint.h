@@ -1,4 +1,5 @@
 #pragma once
+#ifndef _ORBIS
 #include <chrono>
 #include <string>
 
@@ -20,7 +21,7 @@ namespace NCL {
 			static DebugViewPoint INSTANCE;
 			return INSTANCE;
 		}
-		
+
 		/**
 		* @breif called at the start of the main loop to mark the begining of a frame
 		* @breif it will also display the memory used and current FPS
@@ -39,7 +40,7 @@ namespace NCL {
 		*/
 		void FinishTime(std::string name);
 
-		
+
 
 	private:
 		DebugViewPoint();
@@ -53,4 +54,7 @@ namespace NCL {
 		OptionManager& optionManager;
 	};
 }
+
+#endif // !_ORBIS
+
 

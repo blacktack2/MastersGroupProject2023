@@ -171,7 +171,7 @@ set(Menu_Files
     "Hud.cpp"
 )
 source_group("Menu Files" FILES ${Menu_Files})
-
+if(NOT USE_ORBIS)
 set(network_Files 
     "NetworkedGame.h"
     "NetworkedGame.cpp"
@@ -194,6 +194,19 @@ set(ALL_FILES
     ${Menu_Files}
     ${network_Files}
 )
+else()
+set(ALL_FILES
+    ${Header_Files}
+    ${Source_Files}
+    ${Audio_Files}
+    ${Render_Files}
+    ${Ink_Files}
+    ${Bullet_Files}
+	${Player_Files}
+    ${Enemy_Files}
+    ${Menu_Files}
+)
+endif()
 
 if(USE_VULKAN)
     set(ALL_FILES 

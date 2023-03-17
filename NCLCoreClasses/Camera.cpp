@@ -14,6 +14,10 @@
 #include "Window.h"
 
 #include <algorithm>
+#ifdef _ORBIS
+#include "../Plugins/PlayStation4/PS4InputManager.h"
+#endif // _ORBIS
+
 
 using namespace NCL;
 using namespace NCL::CSC8503;
@@ -29,6 +33,7 @@ pitch(pitch), yaw(yaw), position(position) {
 
 void Camera::UpdateCamera(float dt) {
 	if (follow == nullptr) {
+#ifdef x64
 		pitch -= (Window::GetMouse()->GetRelativePosition().y);
 		yaw -= (Window::GetMouse()->GetRelativePosition().x);
 
@@ -57,11 +62,63 @@ void Camera::UpdateCamera(float dt) {
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SPACE)) {
 			position.y += frameSpeed;
 		}
+#endif // x64
+#ifdef _ORBIS
+		Maths::Vector2 leftAnalog = PS4::PS4InputManager::GetAxis(PS4::Player1, PS4::LEFTSTICK);
+		Maths::Vector2 rightAnalog = PS4::PS4InputManager::GetAxis(PS4::Player1, PS4::RIGHTSTICK);
+		Maths::Vector2 directionKeys = PS4::PS4InputManager::GetAxis(PS4::Player1, PS4::KEYPAD);
+		//Update based on right analog stick
+		pitch -= (rightAnalog.y);
+		yaw -= (rightAnalog.x);
+
+		pitch = NCL::Maths::(pitch, -90.0f, 90.0f);
+		yaw += (yaw < 0) ? 360.0f : ((yaw > 360.0f) ? -360.0f : 0.0f);
+
+		float frameSpeed = 32 * dt;
+
+		//left analog stick
+		float right = leftAnalog.x;
+		float forward = leftAnalog.y;
+
+		//right = std::min(right, 1.0f);
+		//right = std::max(right, -1.0f);
+
+		//forward = std::min(forward, 1.0f);
+		//forward = std::max(forward, -1.0f);
+
+		//std::cout << "Forward: " << forward << std::endl;
+		//std::cout << "Right: " << right<< std::endl;
+
+		if (directionKeys.y > 0 || forward < 0) {
+			position += Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
+		}
+		if (directionKeys.x > 0 || right > 0) {
+			position += Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(1, 0, 0) * frameSpeed;
+		}
+
+		if (directionKeys.y < 0 || forward>0) {
+			position -= Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
+		}
+		if (directionKeys.x < 0 || right < 0) {
+			position -= Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(1, 0, 0) * frameSpeed;
+		}
+
+		if (PS4::PS4InputManager::GetButtons(PS4::Player1, PS4::CROSS)) {
+			position.y += frameSpeed;
+		}
+		if (PS4::PS4InputManager::GetButtons(PS4::Player1, PS4::SQUARE)) {
+			position.y -= frameSpeed;
+		}
+#endif // _ORBIS
+
+		
 	} else {
+
+
 		Vector3 followPos = follow->GetGlobalPosition();
-
+#ifdef x64
 		followDistance = Maths::Clamp(followDistance - (float)Window::GetMouse()->GetWheelMovement(), 5.0f, 40.0f);
-
+#endif // x64
 		Vector3 newPos = followPos - Vector3(
 			std::cos(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch)),
 			std::sin( Maths::DegreesToRadians(pitch)),

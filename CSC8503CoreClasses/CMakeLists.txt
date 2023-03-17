@@ -120,7 +120,7 @@ set(Source_Files
     "XboxController.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
-
+if(NOT USE_ORBIS)
 set(enet_Files
     #"./enet/callbacks.h"
     "./enet/callbacks.c"
@@ -155,6 +155,19 @@ set(ALL_FILES
     ${Physics}
     ${enet_Files}   
 )
+else()
+set(ALL_FILES
+    ${Header_Files}
+    ${Source_Files}
+    ${AI_Behaviour_Tree}
+    ${AI_Pushdown_Automata}
+    ${AI_State_Machine}
+    ${AI_Pathfinding}
+    ${Collision_Detection}
+    ${Networking}
+    ${Physics}
+)
+endif()
 
 set_source_files_properties(${ALL_FILES} PROPERTIES LANGUAGE CXX)
 

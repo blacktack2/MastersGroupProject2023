@@ -7,7 +7,7 @@
  * @date   February 2023
  */
 #pragma once
-
+#include<cstddef>
 namespace NCL {
 	namespace Rendering {
 		/**

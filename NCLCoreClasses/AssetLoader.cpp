@@ -7,7 +7,7 @@
  * @date   March 2023
  */
 #include "AssetLoader.h"
-
+#ifdef x64
 #include "Assets.h"
 
 #include "BufferObjectBase.h"
@@ -196,3 +196,4 @@ std::unique_ptr<TextureBase> AssetLoader::CreateTexture(TextureType type, unsign
 	}
 	return textureCreate(type, width, height);
 }
+#endif //x64

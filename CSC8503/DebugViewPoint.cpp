@@ -1,3 +1,4 @@
+#ifndef _ORBIS
 #include "DebugViewPoint.h"
 #include "Debug.h"
 #include "Vector2.h"
@@ -12,11 +13,11 @@ using namespace CSC8503;
 using namespace Maths;
 
 DebugViewPoint::DebugViewPoint() : optionManager(OptionManager::instance()) {
-	itemsPrinted = 0; 
-	startingPoints["FrameStart"] = std::chrono::high_resolution_clock::now(); 
+	itemsPrinted = 0;
+	startingPoints["FrameStart"] = std::chrono::high_resolution_clock::now();
 }
 
-void DebugViewPoint::BeginFrame() { 
+void DebugViewPoint::BeginFrame() {
 	state = optionManager.GetDebugMode();
 	if (state)
 	{
@@ -60,3 +61,4 @@ size_t DebugViewPoint::CalculateMemory() {
 #endif
 	return 0;
 }
+#endif // !_ORBIS
