@@ -119,8 +119,8 @@ namespace NCL {
 		};
 
 		struct MessagePacket : public GamePacket {
-			short playerID;
-			short messageID;
+			short playerID = 0;
+			short messageID = 0;
 
 			MessagePacket() {
 				type = Message;
@@ -128,7 +128,7 @@ namespace NCL {
 			}
 		};
 		struct GameStatePacket : public GamePacket {
-			GameState state;
+			GameState state = GameState::Invalid;
 
 			GameStatePacket() {
 				type = GameState_Message;

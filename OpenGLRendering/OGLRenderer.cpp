@@ -203,8 +203,8 @@ void OGLRenderer::InitWithWin32(Window& w) {
 }
 
 HGLRC OGLRenderer::CreateContext() {
-	HGLRC context = nullptr;
-	if (!initState) return context;
+	HGLRC context;
+	if (!initState) return 0;
 
 	char* ver = (char*)glGetString(GL_VERSION); // ver must equal "4.1.0" (or greater!)
 	int major = ver[0] - '0'; //casts the 'correct' major version integer from our version string
