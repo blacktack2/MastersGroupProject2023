@@ -8,6 +8,7 @@
 #include "SkyboxRPass.h"
 
 #include "GameTechRenderer.h"
+#include "GameWorld.h"
 
 #include "AssetLibrary.h"
 #include "AssetLoader.h"
@@ -17,8 +18,11 @@
 #include "ShaderBase.h"
 #include "TextureBase.h"
 
+#include "Vector3.h"
+
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Rendering;
 
 SkyboxRPass::SkyboxRPass() : OGLMainRenderPass(),
 gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
@@ -46,9 +50,6 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	shader->SetUniformMatrix("projMatrix", projMatrix);
 
 	shader->Unbind();
-}
-
-SkyboxRPass::~SkyboxRPass() {
 }
 
 void SkyboxRPass::Render() {

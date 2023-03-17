@@ -18,21 +18,16 @@
 
 namespace NCL {
 	class MeshGeometry;
-}
 
-namespace NCL {
 	namespace Rendering {
 		class FrameBuffer;
 		class ShaderBase;
 		class TextureBase;
 	}
-}
 
-using namespace NCL;
-using namespace Rendering;
-using namespace Maths;
+	using namespace NCL::Maths;
+	using namespace NCL::Rendering;
 
-namespace NCL {
 	namespace CSC8503 {
 		class GameTechRenderer;
 		class GameWorld;
@@ -40,9 +35,11 @@ namespace NCL {
 		class DebugRPass : public OGLOverlayRenderPass {
 		public:
 			DebugRPass();
-			~DebugRPass();
+			~DebugRPass() = default;
+
+			void Render() override;
+
 			void RenderWinLoseInformation(bool win);
-			virtual void Render() override;
 		private:
 			void RenderLines();
 			void RenderText();

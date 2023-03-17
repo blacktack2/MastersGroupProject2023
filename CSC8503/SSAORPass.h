@@ -18,33 +18,28 @@
 
 namespace NCL {
 	class MeshGeometry;
-}
 
-namespace NCL{
 	namespace Rendering {
 		class BufferObjectBase;
 		class FrameBuffer;
 		class ShaderBase;
 		class TextureBase;
 	}
-}
 
-using namespace NCL;
-using namespace Rendering;
-using namespace Maths;
+	using namespace NCL::Rendering;
+	using namespace NCL::Maths;
 
-namespace NCL {
 	namespace CSC8503 {
 		class GameTechRenderer;
 
 		class SSAORPass : public OGLMainRenderPass {
 		public:
 			SSAORPass();
-			~SSAORPass();
+			~SSAORPass() = default;
 
-			virtual void OnWindowResize(int width, int height) override;
+			void OnWindowResize(int width, int height) override;
 
-			virtual void Render() override;
+			void Render() override;
 
 			void SetRadius(float radius);
 			void SetBias(float bias);
@@ -75,7 +70,7 @@ namespace NCL {
 			std::unique_ptr<FrameBuffer> ssaoFrameBuffer;
 			std::unique_ptr<FrameBuffer> blurFrameBuffer;
 
-			TextureBase* depthTexIn = nullptr;
+			TextureBase* depthTexIn  = nullptr;
 			TextureBase* normalTexIn = nullptr;
 
 			std::unique_ptr<TextureBase> noiseTex;
@@ -90,9 +85,6 @@ namespace NCL {
 			unsigned int noiseTexSize = 4;
 			size_t numKernels = 64;
 			std::vector<Vector3> kernels{};
-
-			std::uniform_real_distribution<float> random = std::uniform_real_distribution(0.0f, 1.0f);
-			std::default_random_engine generator;
 		};
 	}
 }

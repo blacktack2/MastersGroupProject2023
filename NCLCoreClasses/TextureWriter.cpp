@@ -1,16 +1,17 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   TextureWriter.cpp
+ * @brief  See TextureWriter.h
+ * 
+ * @author Rich Davidson
+ * @date   March 2023
+ */
 #include "TextureWriter.h"
-#define STB_IMAGE_WRITE_IMPLEMENTATION
 
-#include "./stb/stb_image_write.h"
 #include "Assets.h"
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "./stb/stb_image_write.h"
+
 using namespace NCL;
 
 void TextureWriter::WritePNG(const std::string& filename, char* data, int width, int height, int channels) {

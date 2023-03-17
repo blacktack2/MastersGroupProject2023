@@ -1,6 +1,6 @@
 /**
  * @file   SimpleFont.h
- * @brief  
+ * @brief  Utility class for encapsulating font texture functionality.
  * 
  * @author Rich Davidson
  * @author Stuart Lewis
@@ -38,7 +38,7 @@ namespace NCL {
 			inline const TextureBase& GetTexture() const {
 				return texture;
 			}
-		protected:
+		private:
 			//matches stbtt_bakedchar
 			struct FontChar {
 				unsigned short x0;

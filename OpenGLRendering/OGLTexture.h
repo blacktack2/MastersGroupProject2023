@@ -8,6 +8,7 @@
  */
 #pragma once
 #include "TextureBase.h"
+
 #include "glad\gl.h"
 
 #include <memory>
@@ -30,7 +31,7 @@ namespace NCL {
 			 * info).
 			 */
 			OGLTexture(TextureType type, unsigned int width, unsigned int height);
-			~OGLTexture();
+			~OGLTexture() override;
 
 			void Resize(unsigned int width, unsigned int height) override;
 			void Upload(void* data, PixelDataFormat format = PixelDataFormat::RGBA, PixelDataType type = PixelDataType::UnsignedByte) override;
@@ -54,9 +55,10 @@ namespace NCL {
 			static std::unique_ptr<TextureBase> CreateTexture(TextureType type, unsigned int width, unsigned int height);
 			static std::unique_ptr<TextureBase> CreateTextureFromData(char* data, unsigned int width, unsigned int height, int channels);
 		private:
-			GLuint texID;
-			GLint pixComponents;
-			GLenum dummyFormat, dummyType;
+			GLuint texID        = 0;
+			GLint pixComponents = 0;
+			GLenum dummyFormat  = 0;
+			GLenum dummyType    = 0;
 
 			unsigned int width, height;
 

@@ -18,7 +18,8 @@
 #include "TextureBase.h"
 
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Rendering;
 
 BloomRPass::BloomRPass() : OGLPostRenderPass(), renderer(GameTechRenderer::instance()) {
 	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
@@ -30,7 +31,6 @@ BloomRPass::BloomRPass() : OGLPostRenderPass(), renderer(GameTechRenderer::insta
 	bloomFrameBuffer = AssetLoader::CreateFrameBuffer();
 	bloomFrameBuffer->Bind();
 	bloomFrameBuffer->DrawBuffers(1);
-	bloomFrameBuffer->Unbind();
 
 	combineFrameBuffer = AssetLoader::CreateFrameBuffer();
 	combineFrameBuffer->Bind();
@@ -58,9 +58,6 @@ BloomRPass::BloomRPass() : OGLPostRenderPass(), renderer(GameTechRenderer::insta
 	combineShader->Unbind();
 }
 
-BloomRPass::~BloomRPass() {
-}
-
 void BloomRPass::Render() {
 	bloomFrameBuffer->Bind();
 	Downsample();
@@ -83,7 +80,7 @@ void BloomRPass::SetBloomDepth(size_t depth) {
 
 		BloomMip mip{
 			mipWidth, mipHeight,
-			AssetLoader::CreateTexture(TextureType::ColourRGBF, (unsigned int)mipWidth, (unsigned int)mipHeight)
+			AssetLoader::CreateTexture(TextureType::ColourRGBA16F, (unsigned int)mipWidth, (unsigned int)mipHeight)
 		};
 		mip.texture->Bind();
 		mip.texture->SetEdgeWrap(EdgeWrap::ClampToEdge);

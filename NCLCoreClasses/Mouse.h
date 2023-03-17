@@ -1,117 +1,139 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   Mouse.h
+ * @brief  Handler class for system mouse input.
+ * 
+ * @author Rich Davidson
+ * @date   March 2023
+ */
 #pragma once
 #include "Vector2.h"
 
 namespace NCL {
 	using namespace NCL::Maths;
 	enum class MouseButtons {
-		LEFT		= 0,
-		RIGHT		= 1,
-		MIDDLE		= 2,
-		FOUR		= 3,
-		FIVE		= 4,
-		MAXVAL		= 5
+		LEFT   = 0,
+		RIGHT  = 1,
+		MIDDLE = 2,
+		FOUR   = 3,
+		FIVE   = 4,
+		MAXVAL = 5,
 	};
 
+	/**
+	 * @brief Handler class for system mouse input.
+	 */
 	class Mouse {
 	public:
 		friend class Window;
+		/**
+		 * @return true if button has been pressed this frame, otherwise false.
+		 */
 		inline bool ButtonPressed(MouseButtons button) const {
 			return buttons[(int)button] && !holdButtons[(int)button];
 		}
-
-		//Is this mouse button currently pressed down?
-		inline bool	ButtonDown(MouseButtons button) const { return buttons[(int)button]; }
-		//Has this mouse button been held down for multiple frames?
-		inline bool	ButtonHeld(MouseButtons button) const { return buttons[(int)button] && holdButtons[(int)button]; }
-		//Has this mouse button been double clicked?
-		inline bool	DoubleClicked(MouseButtons button) const {
+		/**
+		 * @return true if button is currently pressed, otherwise false.
+		 */
+		inline bool ButtonDown(MouseButtons button) const {
+			return buttons[(int)button];
+		}
+		/**
+		 * @return true if button has been held down for multiple frames,
+		 * otherwise false.
+		 */
+		inline bool ButtonHeld(MouseButtons button) const {
+			return buttons[(int)button] && holdButtons[(int)button];
+		}
+		/**
+		 * @return true if two mouse clicks have been received in a short
+		 * time span, otherwise false (see Mouse::SetDoubleClickLimit()).
+		 */
+		inline bool DoubleClicked(MouseButtons button) const {
 			return (buttons[(int)button] && doubleClicks[(int)button]);
 		}
 
-		//Get how much this mouse has moved since last frame
-		inline Vector2	GetRelativePosition() const { return relativePosition; }
-		//Get the window position of the mouse pointer
-		inline Vector2	GetAbsolutePosition() const { return absolutePosition; }
+		/**
+		 * @return How much the mouse has moved since last frame
+		 */
+		inline Vector2 GetRelativePosition() const {
+			return relativePosition;
+		}
+		/**
+		 * @return Absolution position of the mouse pointer on the window.
+		 */
+		inline Vector2 GetAbsolutePosition() const {
+			return absolutePosition;
+		}
 
 		inline Vector2 GetWindowPosition() const {
 			return windowPosition;
 		}
 
-		//Has the mouse wheel moved since the last update?
-		inline bool	WheelMoved() const { return frameWheel != 0; }
-		//Get the mousewheel movement. Positive means scroll up,
-		//negative means scroll down, 0 means no movement.
-		inline int	GetWheelMovement() const { return (int)frameWheel; }
+		inline bool WheelMoved() const {
+			return frameWheel != 0;
+		}
+		/**
+		 * @returns Positive if receiving scroll up input, negative if
+		 * receiving scroll down input, 0 if no scroll input is received.
+		 */
+		inline int GetWheelMovement() const {
+			return (int)frameWheel;
+		}
 
-		//Sets the mouse sensitivity. Currently only affects the 'relative'
-		//(i.e FPS-style) mouse movement. Students! Maybe you'd like to
-		//implement a 'MenuSensitivity' for absolute movement?
-		inline void	SetMouseSensitivity(float amount) {
+		/**
+		 * @brief Set the mouse sensitivity.
+		 * @brief Currently only affects the 'relative' (i.e FPS-style) mouse
+		 * movement.
+		 */
+		inline void SetMouseSensitivity(float amount) {
 			if (amount == 0.0f) {
 				amount = 1.0f;
 			}
 			sensitivity = amount;
 		}
 
-		//Determines the maximum amount of ms that can pass between
-		//2 mouse presses while still counting as a 'double click'
-		void	SetDoubleClickLimit(float msec) { clickLimit = msec; }
-
+		/**
+		 * @brief Set the maximum amount of ms that can pass between
+		 * 2 mouse presses while still counting as a 'double click'.
+		 */
+		void SetDoubleClickLimit(float msec) {
+			clickLimit = msec;
+		}
 	protected:
 		Mouse();
-		virtual ~Mouse() {}
+		virtual ~Mouse() = default;
 
-		//Set the mouse's current screen position. Maybe should be public?
-		void	SetAbsolutePosition(const Vector2& pos);
+		void SetAbsolutePosition(const Vector2& pos);
 
-		//Set the absolute screen bounds (<0 is always assumed dissallowed). Used
-		//by the window resize routine...
-		void	SetAbsolutePositionBounds(const Vector2& bounds);
+		/**
+		 * @brief Set the absolute screen bounds.
+		 * @brief < 0 is always assumed dissallowed.
+		 */
+		void SetAbsolutePositionBounds(const Vector2& bounds);
 
-		void	UpdateFrameState(float msec);
-		void	Sleep();
-		void	Wake();
+		void UpdateFrameState(float msec);
+		void Sleep();
+		void Wake();
 
-		bool		isAwake;		//Is the device awake...
+		bool isAwake;
 
-		//Screen position if windowing API provides it
-		Vector2		windowPosition;
-		//Current mouse absolute position
-		Vector2		absolutePosition;
-		//Current mouse absolute position maximum bounds
-		Vector2		absolutePositionBounds;
-		//How much as the mouse moved since the last raw packet?
-		Vector2		relativePosition;
-		//Current button down state for each button
-		bool		buttons[(int)MouseButtons::MAXVAL];
-		//Current button held state for each button
-		bool		holdButtons[(int)MouseButtons::MAXVAL];
-		//Current doubleClick counter for each button
-		bool		doubleClicks[(int)MouseButtons::MAXVAL];
-		//Counter to remember when last mouse click occured
-		float		lastClickTime[(int)MouseButtons::MAXVAL];
+		Vector2 windowPosition;
+		Vector2 absolutePosition;
+		Vector2 absolutePositionBounds;
+		Vector2 relativePosition;
+		bool buttons[(int)MouseButtons::MAXVAL];
+		bool holdButtons[(int)MouseButtons::MAXVAL];
+		bool doubleClicks[(int)MouseButtons::MAXVAL];
+		float lastClickTime[(int)MouseButtons::MAXVAL];
 
-		//last mousewheel updated position
-		int			lastWheel;
+		int lastWheel;
 
-		//Current mousewheel updated position
-		int			frameWheel;
+		int frameWheel;
 
-		//Max amount of ms between clicks count as a 'double click'
-		float		clickLimit;
+		float clickLimit;
 
-		//Mouse pointer sensitivity. Set this negative to get a headache!
-		float		sensitivity;
+		float sensitivity;
 
-		//mouse position
 		float m_fPosX;
 		float m_fPosY;
 		float m_fWidth;

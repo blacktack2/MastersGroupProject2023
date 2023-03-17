@@ -14,14 +14,13 @@
 #include "AssetLoader.h"
 
 #include "FrameBuffer.h"
-#include "MeshGeometry.h"
 #include "ShaderBase.h"
 #include "TextureBase.h"
 
 #include "RenderObject.h"
 
-using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Rendering;
 
 ModelRPass::ModelRPass() : OGLMainRenderPass(),
 gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
@@ -43,9 +42,6 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	AddModelShader(AssetLibrary<ShaderBase>::GetAsset("modelDefault"));
 	AddModelShader(AssetLibrary<ShaderBase>::GetAsset("paintDefault"));
 	AddModelShader(AssetLibrary<ShaderBase>::GetAsset("animationDefault"));
-}
-
-ModelRPass::~ModelRPass() {
 }
 
 void ModelRPass::Render() {
@@ -89,6 +85,7 @@ void ModelRPass::AddModelShader(std::shared_ptr<ShaderBase> shader) {
 
 	shader->SetUniformInt("albedoTex", 0);
 	shader->SetUniformInt("bumpTex"  , 1);
+	shader->SetUniformInt("specTex"  , 2);
 
 	shader->Unbind();
 }

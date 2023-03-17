@@ -8,6 +8,7 @@
 #include "SSAORPass.h"
 
 #include "GameTechRenderer.h"
+#include "GameWorld.h"
 
 #include "AssetLibrary.h"
 #include "AssetLoader.h"
@@ -19,7 +20,9 @@
 #include "TextureBase.h"
 
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Maths;
+using namespace NCL::Rendering;
 
 SSAORPass::SSAORPass() : OGLMainRenderPass(), renderer(GameTechRenderer::instance()) {
 	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
@@ -33,7 +36,6 @@ SSAORPass::SSAORPass() : OGLMainRenderPass(), renderer(GameTechRenderer::instanc
 	ssaoFrameBuffer->Bind();
 	ssaoFrameBuffer->AddTexture(*ssaoTex);
 	ssaoFrameBuffer->DrawBuffers();
-	ssaoFrameBuffer->Unbind();
 
 	blurFrameBuffer = AssetLoader::CreateFrameBuffer();
 	blurFrameBuffer->Bind();
@@ -61,9 +63,6 @@ SSAORPass::SSAORPass() : OGLMainRenderPass(), renderer(GameTechRenderer::instanc
 	kernelSSBO = AssetLoader::CreateBufferObject(numKernels, 1);
 	GenerateKernels();
 	GenerateNoiseTex();
-}
-
-SSAORPass::~SSAORPass() {
 }
 
 void SSAORPass::OnWindowResize(int width, int height) {
@@ -136,6 +135,10 @@ void SSAORPass::BlurSSAO() {
 }
 
 void SSAORPass::GenerateKernels() {
+	static std::uniform_real_distribution<float> random01 = std::uniform_real_distribution(0.0f, 1.0f);
+	static std::uniform_real_distribution<float> random11 = std::uniform_real_distribution(-1.0f, 1.0f);
+	static std::default_random_engine generator;
+
 	kernelSSBO->Bind();
 	if (kernels.size() != numKernels) {
 		kernels.resize(numKernels);
@@ -144,13 +147,13 @@ void SSAORPass::GenerateKernels() {
 
 	for (size_t i = 0; i < numKernels; i++) {
 		Vector3 sample = Vector3(
-			random(generator) * 2.0f - 1.0f,
-			random(generator) * 2.0f - 1.0f,
-			random(generator)
+			random11(generator),
+			random11(generator),
+			random01(generator)
 		);
 
 		sample.Normalise();
-		sample *= random(generator);
+		sample *= random01(generator);
 		
 		float scale = (float)i / (float)numKernels;
 		scale = 0.1f + (scale * scale) * 0.9f;
@@ -165,16 +168,18 @@ void SSAORPass::GenerateKernels() {
 }
 
 void SSAORPass::GenerateNoiseTex() {
+	static std::uniform_real_distribution<float> random = std::uniform_real_distribution(-1.0f, 1.0f);
+	static std::default_random_engine generator;
+
 	std::vector<Vector3> noiseData;
 	noiseData.resize((size_t)noiseTexSize * (size_t)noiseTexSize);
 
 	for (size_t i = 0; i < (size_t)noiseTexSize * (size_t)noiseTexSize; i++) {
-		Vector3 noise = Vector3(
-			random(generator) * 2.0f - 1.0f,
-			random(generator) * 2.0f - 1.0f,
+		noiseData[i] = Vector3(
+			random(generator),
+			random(generator),
 			0.0f
 		);
-		noiseData[i] = noise;
 	}
 
 	noiseTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, noiseTexSize, noiseTexSize);

@@ -7,5 +7,4 @@
  */
 #include "OGLRenderPass.h"
 
-using namespace NCL;
-using namespace Rendering;
+using namespace NCL::Rendering;

@@ -1,90 +1,54 @@
+/**
+ * @file   Camera.cpp
+ * @brief  See Camera.h.
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #include "Camera.h"
+
 #include "Maths.h"
+#include "Matrix4.h"
+
 #include "Window.h"
-#include "../CSC8503CoreClasses/InputKeyMap.h"
-#include "../CSC8503/Hud.h"
-//#include "../CSC8503/PlayerObject.h"
 
 #include <algorithm>
 
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Maths;
 
-void Camera::SetFollow(Transform* transform, bool isSmooth) {
-	follow = transform;
-	this->isSmooth = isSmooth;
+Camera::Camera() :
+pitch(0.0f), yaw(0.0f), position(0.0f) {
 }
 
-Camera::Camera() : hud(*new Hud()) {
-	left	= 0;
-	right	= 0;
-	top		= 0;
-	bottom	= 0;
-
-	pitch		= 0.0f;
-	yaw			= 0.0f;
-
-	fov			= 45.0f;
-	nearPlane	= 1.0f;
-	farPlane	= 100.0f;
-
-	followDistance = 10.0f;
-	followLat = 0.0f;
-	followLon = 0.0f;
-	lookat = Vector3(1, 0, 0);
-
-	camType		= CameraType::Perspective;
-
-	isSmooth = true;
+Camera::Camera(float pitch, float yaw, const Vector3& position) :
+pitch(pitch), yaw(yaw), position(position) {
 }
 
-Camera::Camera(float pitch, float yaw, const Vector3& position) : Camera() {
-	this->pitch		= pitch;
-	this->yaw		= yaw;
-	this->position	= position;
-
-	this->fov		= 45.0f;
-	this->nearPlane = 1.0f;
-	this->farPlane	= 100.0f;
-
-	this->followDistance = 10.0f;
-	this->followLat = 0.0f;
-	this->followLon = 0.0f;
-	this->lookat = Vector3(1, 0, 0);
-
-	this->camType	= CameraType::Perspective;
-}
-Camera::~Camera(void) {
-	delete& hud;
-};
-/*
-Polls the camera for keyboard / mouse movement.
-Should be done once per frame! Pass it the msec since
-last frame (default value is for simplicities sake...)
-*/
 void Camera::UpdateCamera(float dt) {
 	if (follow == nullptr) {
-		//Update the mouse by how much
 		pitch -= (Window::GetMouse()->GetRelativePosition().y);
 		yaw -= (Window::GetMouse()->GetRelativePosition().x);
 
 		pitch = std::clamp(pitch, -90.0f, 90.0f);
-		yaw += (yaw < 0) ? 360.0f : ((yaw > 360.0f) ? -360.0f : 0.0f);
+		yaw += (yaw < 0.0f) ? 360.0f : ((yaw > 360.0f) ? -360.0f : 0.0f);
 
 		float frameSpeed = (Window::GetKeyboard()->KeyDown(KeyboardKeys::CONTROL) ? 200 : 25) * dt;
 
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W)) {
-			position += Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
+			position += Matrix4::Rotation(yaw, Vector3(0.0f, 1.0f, 0.0f)) * Vector3(0.0f, 0.0f, -1.0f) * frameSpeed;
 		}
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S)) {
-			position -= Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
+			position -= Matrix4::Rotation(yaw, Vector3(0.0f, 1.0f, 0.0f)) * Vector3(0.0f, 0.0f, -1.0f) * frameSpeed;
 		}
 
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A)) {
-			position += Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(-1, 0, 0) * frameSpeed;
+			position += Matrix4::Rotation(yaw, Vector3(0.0f, 1.0f, 0.0f)) * Vector3(-1.0f, 0.0f, 0.0f) * frameSpeed;
 		}
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D)) {
-			position -= Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(-1, 0, 0) * frameSpeed;
+			position -= Matrix4::Rotation(yaw, Vector3(0.0f, 1.0f, 0.0f)) * Vector3(-1.0f, 0.0f, 0.0f) * frameSpeed;
 		}
 
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SHIFT)) {
@@ -95,93 +59,56 @@ void Camera::UpdateCamera(float dt) {
 		}
 	} else {
 		Vector3 followPos = follow->GetGlobalPosition();
-		LastPos = followPos;
-
-		/*
-		NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
-		Vector2 orientationData{ 0,0 };
-		if (keyMap.GetAxisData(playerID, AxisInput::Axis3, orientationData.x) && keyMap.GetAxisData(playerID, AxisInput::Axis4, orientationData.y))
-		{
-			if (!(orientationData.x == 0 && orientationData.y == 0))
-			{
-				float sensitivity = 1.5f;
-				pitch += (orientationData.y * sensitivity);
-				yaw -= (orientationData.x * sensitivity);
-			}
-		}
-		*/
 
 		followDistance = std::clamp(followDistance - (float)Window::GetMouse()->GetWheelMovement(), 5.0f, 40.0f);
-		/*
-		position = followPos - Vector3(
-			std::cos(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch)),
-			std::min(std::sin(Maths::DegreesToRadians(pitch)), 0.0f),
-			std::sin(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch))
-		) * followDistance;
-		*/
+
 		Vector3 newPos = followPos - Vector3(
 			std::cos(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch)),
-			std::sin(Maths::DegreesToRadians(pitch)),
+			std::sin( Maths::DegreesToRadians(pitch)),
 			std::sin(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch))
 		) * followDistance;
-		//position = Vector3::Lerp(position, newPos, std::min(smoothFactor * dt, 1.0f));
 		newPos.y += 1.0f;
-		position = Vector3::Lerp(position, newPos + follow->GetGlobalOrientation() * Vector3(1.0f, 0, 0) * 1.5f, std::min(smoothFactor * dt, 1.0f));
+		position = Vector3::Lerp(position, newPos + follow->GetGlobalOrientation() * Vector3(1.0f, 0.0f, 0.0f) * 1.5f, std::min(smoothFactor * dt, 1.0f));
 		position.y = std::max(position.y, 0.1f);
-
 	}
 }
 
-/*
-Generates a view matrix for the camera's viewpoint. This matrix can be sent
-straight to the shader...it's already an 'inverse camera' matrix.
-*/
 Matrix4 Camera::BuildViewMatrix() const {
-	return
-		(Matrix4::Rotation(-pitch, Vector3(1, 0, 0)) *
-		Matrix4::Rotation(-yaw, Vector3(0, 1, 0))) *
-		Matrix4::Translation(-position);
-};
+	return (Matrix4::Rotation(-pitch, Vector3(1.0f, 0.0f, 0.0f)) *
+			Matrix4::Rotation(-yaw  , Vector3(0.0f, 1.0f, 0.0f))) *
+			Matrix4::Translation(-position);
+}
 
 Matrix4 Camera::BuildProjectionMatrix(float currentAspect) const {
-	if (camType == CameraType::Orthographic) {
-		return Matrix4::Orthographic(left, right, bottom, top, nearPlane, farPlane);
+	switch (camType) {
+		default:
+		case CameraType::Perspective:
+			return Matrix4::Perspective(nearPlane, farPlane, currentAspect, fov);
+		case CameraType::Orthographic:
+			return Matrix4::Orthographic(left, right, bottom, top, nearPlane, farPlane);
 	}
-	//else if (camType == CameraType::Perspective) {
-		return Matrix4::Perspective(nearPlane, farPlane, currentAspect, fov);
-	//}
 }
 
 Camera Camera::BuildPerspectiveCamera(const Vector3& pos, float pitch, float yaw, float fov, float nearPlane, float farPlane) {
-	Camera c;
-	c.camType	= CameraType::Perspective;
-	c.position	= pos;
-	c.pitch		= pitch;
-	c.yaw		= yaw;
+	Camera c = Camera(pitch, yaw, pos);
+	c.camType  = CameraType::Perspective;
+
 	c.nearPlane = nearPlane;
 	c.farPlane  = farPlane;
-
-	c.fov		= fov;
+	c.fov       = fov;
 
 	return c;
 }
 Camera Camera::BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, float left, float right, float top, float bottom, float nearPlane, float farPlane) {
-	Camera c;
-	c.camType	= CameraType::Orthographic;
-	c.position	= pos;
-	c.pitch		= pitch;
-	c.yaw		= yaw;
-	c.nearPlane = nearPlane;
-	c.farPlane	= farPlane;
+	Camera c = Camera(pitch, yaw, pos);
+	c.camType  = CameraType::Orthographic;
 
-	c.left		= left;
-	c.right		= right;
-	c.top		= top;
-	c.bottom	= bottom;
+	c.nearPlane = nearPlane;
+	c.farPlane  = farPlane;
+	c.left      = left;
+	c.right     = right;
+	c.top       = top;
+	c.bottom    = bottom;
 
 	return c;
-}
-
-Hud& Camera::GetHud() {
-	return hud;
 }

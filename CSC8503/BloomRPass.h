@@ -15,31 +15,26 @@
 
 namespace NCL {
 	class MeshGeometry;
-}
 
-namespace NCL {
 	namespace Rendering {
 		class FrameBuffer;
 		class ShaderBase;
 		class TextureBase;
 	}
-}
 
-using namespace NCL;
-using namespace Rendering;
+	using namespace NCL::Rendering;
 
-namespace NCL {
 	namespace CSC8503 {
 		class GameTechRenderer;
 
 		class BloomRPass : public OGLPostRenderPass {
 		public:
 			BloomRPass();
-			~BloomRPass();
+			~BloomRPass() override = default;
 
-			virtual void OnWindowResize(int width, int height) override;
+			void OnWindowResize(int width, int height) override;
 
-			virtual void Render() override;
+			void Render() override;
 
 			TextureBase& GetOutTex() const override {
 				return *colourOutTex;
@@ -56,6 +51,7 @@ namespace NCL {
 				float width, height;
 				std::unique_ptr<TextureBase> texture;
 			};
+
 			void Downsample();
 			void Upsample();
 			void Combine();

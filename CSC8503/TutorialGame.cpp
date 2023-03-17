@@ -161,7 +161,7 @@ void TutorialGame::UpdateGame(float dt) {
 	if (optionManager.GetSunMove()) {
 		float runtime = gameWorld.GetRunTime();
 		sunLight->SetDirection(Vector3(std::sin(runtime), std::cos(runtime), 0.0f));
-		renderer.GetSkyboxPass().SetSunDir(sunLight->GetDirection());
+		renderer.SetSunDir(sunLight->GetDirection());
 	}
 
 	if (!optionManager.GetSound()) {
@@ -206,7 +206,6 @@ void TutorialGame::UpdateGameCore(float dt) {
 	gameWorld.PreUpdateWorld();
 
 	gameWorld.UpdateWorld(dt);
-	renderer.Update(dt);
 	physics->Update(dt);
 
 	gameWorld.PostUpdateWorld();

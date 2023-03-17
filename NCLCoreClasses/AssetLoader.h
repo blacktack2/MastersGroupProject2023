@@ -1,6 +1,6 @@
 /**
  * @file   AssetLoader.h
- * @brief  
+ * @brief  Static utility class for creation/loading of assets.
  * 
  * @author Rich Davidson
  * @author Stuart Lewis
@@ -13,6 +13,8 @@
 #include <string>
 
 namespace NCL {
+	class MeshGeometry;
+
 	namespace Rendering {
 		class BufferObjectBase;
 		class FrameBuffer;
@@ -20,12 +22,8 @@ namespace NCL {
 		class TextureBase;
 		enum class TextureType;
 	}
-}
 
-using namespace NCL::Rendering;
-
-namespace NCL {
-	class MeshGeometry;
+	using namespace NCL::Rendering;
 
 	typedef std::function<bool(const std::string& filename, char*& outData, unsigned int& width, unsigned int &height, int &channels, int&flags)> TextureDataLoadFunction;
 
@@ -38,6 +36,9 @@ namespace NCL {
 	typedef std::function<std::unique_ptr<ShaderBase>(const std::string& vertex, const std::string& fragment)> ShaderCreateFunction;
 	typedef std::function<std::unique_ptr<TextureBase>(TextureType type, unsigned int width, unsigned int height)> TextureCreateFunction;
 
+	/**
+	 * @brief Static utility class for creation/loading of assets.
+	 */
 	class AssetLoader {
 	public:
 		static void RegisterTextureDataLoadFunction(TextureDataLoadFunction f, const std::string& fileExtension);
@@ -52,7 +53,7 @@ namespace NCL {
 		static void RegisterShaderCreateAndInitFunction(ShaderCreateFunction f);
 		static void RegisterTextureCreateFunction(TextureCreateFunction f);
 
-		static bool LoadTextureData(const std::string& filename, char*& outData, unsigned int& width, unsigned int &height, int &channels, int&flags);
+		static bool LoadTextureData(const std::string& filename, char*& outData, unsigned int& width, unsigned int& height, int& channels, int& flags);
 
 		static std::unique_ptr<MeshGeometry> LoadMesh(const std::string& filename);
 		static std::unique_ptr<TextureBase>  LoadTexture(const std::string& filename);

@@ -1,11 +1,11 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   Vector3.h
+ * @brief  Wrapper classes for three-component vector types.
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #pragma once
 #include <algorithm>
 #include <cmath>
@@ -27,7 +27,7 @@ namespace NCL {
 				float array[3];
 			};
 		public:
-			constexpr Vector3(void) : x(0.0f), y(0.0f), z(0.0f) {}
+			constexpr Vector3() : x(0.0f), y(0.0f), z(0.0f) {}
 
 			explicit constexpr Vector3(float val) : x(val), y(val), z(val) {}
 
@@ -36,24 +36,10 @@ namespace NCL {
 			Vector3(const Vector2& v2, float z);
 			Vector3(const Vector4& v4);
 
-			~Vector3(void) = default;
+			~Vector3() = default;
 
-			Vector3 Normalised() const {
-				Vector3 temp(*this);
-				temp.Normalise();
-				return temp;
-			}
-
-			void Normalise() {
-				float length = Length();
-
-				if (length != 0.0f) {
-					length = 1.0f / length;
-					x = x * length;
-					y = y * length;
-					z = z * length;
-				}
-			}
+			Vector3 Normalised() const;
+			void Normalise();
 
 			inline float Length() const {
 				return std::sqrt((x * x) + (y * y) + (z * z));
@@ -87,12 +73,24 @@ namespace NCL {
 				);
 			}
 
+			static inline constexpr Vector3 Clamp(const Vector3& input, float min, float max) {
+				return Vector3(
+					std::clamp(input.x, min, max),
+					std::clamp(input.y, min, max),
+					std::clamp(input.z, min, max)
+				);
+			}
+
 			static inline constexpr Vector3 Abs(const Vector3& input) {
 				return Vector3(
 					std::abs(input.x),
 					std::abs(input.y),
 					std::abs(input.z)
 				);
+			}
+
+			static inline constexpr Vector3 Lerp(const Vector3& a, const Vector3& b, float by) {
+				return (a * (1.0f - by) + (b * by));
 			}
 
 			static inline constexpr float Dot(const Vector3& a, const Vector3& b) {
@@ -109,8 +107,7 @@ namespace NCL {
 					Vector3 n = Cross(a, b - a);
 					m = Cross(a.Normalised(), n.Normalised());
 					return std::make_pair(m, n != Vector3(0));
-				}
-				else {
+				} else {
 					return std::make_pair(m, true);
 				}
 			}
@@ -200,9 +197,29 @@ namespace NCL {
 				o << "Vector3(" << v.x << "," << v.y << "," << v.z << ")\n";
 				return o;
 			}
+		};
 
-			static inline constexpr Vector3 Lerp(const Vector3& a, const Vector3& b, const float t) {
-				return Vector3(std::lerp(a.x, b.x, t), std::lerp(a.y, b.y, t), std::lerp(a.z, b.z, t));
+		class Vector3i {
+		public:
+			union {
+				struct {
+					int x;
+					int y;
+					int z;
+				};
+				int array[3];
+			};
+		public:
+			Vector3i() : x(0), y(0), z(0) {}
+
+			Vector3i(int x, int y, int z) : x(x), y(y), z(z) {}
+
+			inline int operator[](int i) const {
+				return array[i];
+			}
+
+			inline int& operator[](int i) {
+				return array[i];
 			}
 		};
 	}

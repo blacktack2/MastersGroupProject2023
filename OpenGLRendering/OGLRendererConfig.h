@@ -18,7 +18,7 @@ namespace NCL {
 		class OGLRendererConfig : public RendererConfigBase {
 		public:
 			OGLRendererConfig(RendererBase& renderer);
-			virtual ~OGLRendererConfig() = default;
+			~OGLRendererConfig() override = default;
 
 			void SetViewport(int x, int y, unsigned int width, unsigned int height) override;
 			void SetClearColour(float r, float g, float b, float a) override;

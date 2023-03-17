@@ -1,28 +1,34 @@
+/**
+ * @file   Assets.cpp
+ * @brief  See Assets.h.
+ * 
+ * @author Rich Davidson
+ * @date   March 2023
+ */
 #include "Assets.h"
+
 #include <fstream>
 #include <sstream>
 #include <iostream>
 
-using namespace NCL;
+using namespace NCL::Assets;
 
-bool Assets::ReadTextFile(const std::string &filepath, std::string& result) {
+bool NCL::Assets::ReadTextFile(const std::string &filepath, std::string& result) {
 	std::ifstream file(filepath, std::ios::in);
-	if (file) {
-		std::ostringstream stream;
-
-		stream << file.rdbuf();
-
-		result = stream.str();
-
-		return true;
-	}
-	else {
+	if (!file) {
 		std::cout << __FUNCTION__ << " can't read file " << filepath << "\n";
 		return false;
 	}
+	std::ostringstream stream;
+
+	stream << file.rdbuf();
+
+	result = stream.str();
+
+	return true;
 }
 
-bool	Assets::ReadBinaryFile(const std::string& filename, char** into, size_t& size) {
+bool NCL::Assets::ReadBinaryFile(const std::string& filename, char** into, size_t& size) {
 	std::ifstream file(filename, std::ios::binary);
 
 	if (!file) {
@@ -44,5 +50,5 @@ bool	Assets::ReadBinaryFile(const std::string& filename, char** into, size_t& si
 	*into = data;
 	size = filesize;
 
-	return data == NULL ? true : false;
+	return data == nullptr ? true : false;
 }

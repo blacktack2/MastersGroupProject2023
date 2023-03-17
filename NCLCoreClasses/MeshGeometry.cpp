@@ -9,17 +9,18 @@
 #include "MeshGeometry.h"
 
 #include "Assets.h"
+
+#include "Maths.h"
+#include "Matrix4.h"
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
-#include "Matrix4.h"
-#include "Maths.h"
 
 #include <fstream>
 #include <string>
 
 using namespace NCL;
-using namespace Maths;
+using namespace NCL::Maths;
 
 enum class GeometryChunkTypes {
 	VPositions = 1 << 0,
@@ -44,37 +45,37 @@ enum class GeometryChunkTypes {
 
 void ReadTextInts(std::ifstream& file, std::vector<Vector2i>& element, int numVertices) {
 	for (int i = 0; i < numVertices; ++i) {
-		Vector2i temp;
-		file >> temp.array[0];
-		file >> temp.array[1];
+		Vector2i temp{};
+		file >> temp.x;
+		file >> temp.y;
 		element.emplace_back(temp);
 	}
 }
 
 void ReadTeReadTextIntsxtFloats(std::ifstream& file, std::vector<Vector3i>& element, int numVertices) {
 	for (int i = 0; i < numVertices; ++i) {
-		Vector3i temp;
-		file >> temp.array[0];
-		file >> temp.array[1];
-		file >> temp.array[2];
+		Vector3i temp{};
+		file >> temp.x;
+		file >> temp.y;
+		file >> temp.z;
 		element.emplace_back(temp);
 	}
 }
 
 void ReadTextInts(std::ifstream& file, std::vector<Vector4i>& element, int numVertices) {
 	for (int i = 0; i < numVertices; ++i) {
-		Vector4i temp;
-		file >> temp.array[0];
-		file >> temp.array[1];
-		file >> temp.array[2];
-		file >> temp.array[3];
+		Vector4i temp{};
+		file >> temp.x;
+		file >> temp.y;
+		file >> temp.z;
+		file >> temp.w;
 		element.emplace_back(temp);
 	}
 }
 
 void ReadTextFloats(std::ifstream& file, std::vector<Vector2>& element, int numVertices) {
 	for (int i = 0; i < numVertices; ++i) {
-		Vector2 temp;
+		Vector2 temp{};
 		file >> temp.x;
 		file >> temp.y;
 		element.emplace_back(temp);
@@ -83,7 +84,7 @@ void ReadTextFloats(std::ifstream& file, std::vector<Vector2>& element, int numV
 
 void ReadTextFloats(std::ifstream& file, std::vector<Vector3>& element, int numVertices) {
 	for (int i = 0; i < numVertices; ++i) {
-		Vector3 temp;
+		Vector3 temp{};
 		file >> temp.x;
 		file >> temp.y;
 		file >> temp.z;
@@ -93,7 +94,7 @@ void ReadTextFloats(std::ifstream& file, std::vector<Vector3>& element, int numV
 
 void ReadTextFloats(std::ifstream& file, std::vector<Vector4>& element, int numVertices) {
 	for (int i = 0; i < numVertices; ++i) {
-		Vector4 temp;
+		Vector4 temp{};
 		file >> temp.x;
 		file >> temp.y;
 		file >> temp.z;
@@ -141,8 +142,6 @@ MeshGeometry::MeshGeometry(const std::string& filename) {
 	std::ifstream file(Assets::MESHDIR + filename);
 
 	std::string filetype;
-	int fileVersion;
-
 	file >> filetype;
 
 	if (filetype != "MeshGeometry") {
@@ -150,6 +149,7 @@ MeshGeometry::MeshGeometry(const std::string& filename) {
 		return;
 	}
 
+	int fileVersion;
 	file >> fileVersion;
 
 	if (fileVersion != 1) {
@@ -157,10 +157,10 @@ MeshGeometry::MeshGeometry(const std::string& filename) {
 		return;
 	}
 
-	int numMeshes = 0;
+	int numMeshes   = 0;
 	int numVertices = 0;
-	int numIndices = 0;
-	int numChunks = 0;
+	int numIndices  = 0;
+	int numChunks   = 0;
 
 	file >> numMeshes;
 	file >> numVertices;
@@ -194,9 +194,6 @@ MeshGeometry::MeshGeometry(const std::string& filename) {
 
 		}
 	}
-}
-
-MeshGeometry::~MeshGeometry() {
 }
 
 enum class GeometryChunkData {
@@ -233,80 +230,32 @@ bool MeshGeometry::GetVertexIndicesForTri(size_t i, size_t& a, size_t& b, size_t
 }
 
 bool MeshGeometry::GetTriangle(unsigned int i, Vector3& va, Vector3& vb, Vector3& vc) const {
-	bool hasTri = false;
 	size_t a, b, c;
-	hasTri = GetVertexIndicesForTri(i, a, b, c);
-	if (!hasTri) {
+	if (!GetVertexIndicesForTri(i, a, b, c)) {
 		return false;
 	}
+
 	va = positions[a];
 	vb = positions[b];
 	vc = positions[c];
+
 	return true;
 }
 
 
 bool MeshGeometry::GetNormalForTri(unsigned int i, Vector3& n) const {
 	Vector3 a, b, c;
-
-	bool hasTri = GetTriangle(i, a, b, c);
-	if (!hasTri) {
+	if (!GetTriangle(i, a, b, c)) {
 		return false;
 	}
 
 	Vector3 ba = b - a;
 	Vector3 ca = c - a;
+
 	n = Vector3::Cross(ba, ca);
 	n.Normalise();
+
 	return true;
-}
-
-void MeshGeometry::TransformVertices(const Matrix4& byMatrix) {
-
-}
-
-void MeshGeometry::RecalculateNormals() {
-
-}
-
-void MeshGeometry::RecalculateTangents() {
-
-}
-
-void MeshGeometry::SetVertexPositions(const std::vector<Vector3>& newVerts) {
-	positions = newVerts;
-}
-
-void MeshGeometry::SetVertexTextureCoords(const std::vector<Vector2>& newTex) {
-	texCoords = newTex;
-}
-
-void MeshGeometry::SetVertexColours(const std::vector<Vector4>& newColours) {
-	colours = newColours;
-}
-
-void MeshGeometry::SetVertexNormals(const std::vector<Vector3>& newNorms) {
-	normals = newNorms;
-}
-
-void MeshGeometry::SetVertexTangents(const std::vector<Vector4>& newTans) {
-	tangents = newTans;
-}
-
-void MeshGeometry::SetVertexIndices(const std::vector<unsigned int>& newIndices) {
-	indices = newIndices;
-}
-
-void MeshGeometry::SetVertexSkinWeights(const std::vector<Vector4>& newSkinWeights) {
-	skinWeights = newSkinWeights;
-}
-
-void MeshGeometry::SetVertexSkinIndices(const std::vector<Vector4i>& newSkinIndices) {
-	skinIndices = newSkinIndices;
-}
-
-void MeshGeometry::SetDebugName(const std::string& newName) {
-	debugName = newName;
 }
 
 int MeshGeometry::GetIndexForJoint(const std::string& name) const {
@@ -318,22 +267,6 @@ int MeshGeometry::GetIndexForJoint(const std::string& name) const {
 	return -1;
 }
 
-void MeshGeometry::SetJointNames(std::vector < std::string >& newNames) {
-	jointNames = newNames;
-}
-
-void MeshGeometry::SetJointParents(std::vector<int>& newParents) {
-	jointParents = newParents;
-}
-
-void MeshGeometry::SetBindPose(std::vector<Matrix4>& newMats) {
-	bindPose = newMats;
-}
-
-void MeshGeometry::SetInverseBindPose(std::vector<Matrix4>& newMats) {
-	inverseBindPose = newMats;
-}
-
 void MeshGeometry::CalculateInverseBindPose() {
 	inverseBindPose.resize(bindPose.size());
 
@@ -343,35 +276,33 @@ void MeshGeometry::CalculateInverseBindPose() {
 }
 
 void MeshGeometry::ReadRigPose(std::ifstream& file, std::vector<Matrix4>& into) {
-	int matCount = 0;
+	int matCount;
 	file >> matCount;
 
 	for (int m = 0; m < matCount; ++m) {
-		Matrix4 mat;
-
+		Matrix4 mat{};
 		for (int i = 0; i < 4; ++i) {
 			for (int j = 0; j < 4; ++j) {
 				file >> mat.array[i][j];
 			}
 		}
-
 		into.emplace_back(mat);
 	}
 }
 
 void MeshGeometry::ReadJointParents(std::ifstream& file) {
-	int jointCount = 0;
+	int jointCount;
 	file >> jointCount;
 
 	for (int i = 0; i < jointCount; ++i) {
-		int id = -1;
+		int id;
 		file >> id;
 		jointParents.emplace_back(id);
 	}
 }
 
 void MeshGeometry::ReadJointNames(std::ifstream& file) {
-	int jointCount = 0;
+	int jointCount;
 	file >> jointCount;
 	std::string jointName;
 	std::getline(file, jointName);
@@ -385,7 +316,7 @@ void MeshGeometry::ReadJointNames(std::ifstream& file) {
 
 void MeshGeometry::ReadSubMeshes(std::ifstream& file, int count) {
 	for (int i = 0; i < count; ++i) {
-		SubMesh m;
+		SubMesh m{};
 		file >> m.start;
 		file >> m.count;
 		subMeshes.emplace_back(m);
@@ -429,7 +360,6 @@ bool MeshGeometry::ValidateMeshData() {
 		std::cout << __FUNCTION__ << " mesh " << debugName << " has an incorrect skin weight attribute count!\n";
 		return false;
 	}
-
 	if (!GetSkinIndexData().empty() && GetSkinIndexData().size() != GetVertexCount()) {
 		std::cout << __FUNCTION__ << " mesh " << debugName << " has an incorrect skin index attribute count!\n";
 		return false;

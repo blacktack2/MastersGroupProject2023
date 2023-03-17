@@ -9,6 +9,7 @@
 #include "OGLShader.h"
 
 #include "Assets.h"
+
 #include "Matrix2.h"
 #include "Matrix3.h"
 #include "Matrix4.h"
@@ -18,7 +19,6 @@
 
 #include <iostream>
 
-using namespace NCL;
 using namespace NCL::Rendering;
 
 GLuint shaderTypes[(size_t)ShaderStage::Max] = {
@@ -38,7 +38,7 @@ std::string ShaderNames[(size_t)ShaderStage::Max] = {
 };
 
 OGLShader::OGLShader(const std::string& vert, const std::string& frag, const std::string& tesc, const std::string& tese, const std::string& geom) :
-ShaderBase(vert, frag, tesc, tese, geom) {
+	ShaderBase(vert, frag, tesc, tese, geom) {
 }
 
 OGLShader::~OGLShader() {
@@ -58,9 +58,9 @@ void OGLShader::ReloadShader() {
 	programID = glCreateProgram();
 	std::string fileContents = "";
 	for (size_t i = 0; i < (size_t)ShaderStage::Max; i++) {
-		if (shaderFiles[i].empty() || !Assets::ReadTextFile(Assets::SHADERDIR + shaderFiles[i], fileContents))
-			continue;
-		LoadPass((GLchar*)fileContents.c_str(), (ShaderStage)i);
+		if (!(shaderFiles[i].empty() || !Assets::ReadTextFile(Assets::SHADERDIR + shaderFiles[i], fileContents))) {
+			LoadPass((GLchar*)fileContents.c_str(), (ShaderStage)i);
+		}
 	}
 	glLinkProgram(programID);
 	glGetProgramiv(programID, GL_LINK_STATUS, &programValid);
@@ -179,8 +179,6 @@ void OGLShader::LoadPass(const GLchar* code, ShaderStage type) {
 	}
 	glAttachShader(programID, shaderID);
 
-	
-
 	glDeleteShader(shaderID);
 }
 
@@ -206,7 +204,7 @@ std::unique_ptr<ShaderBase> OGLShader::CreateShader(const std::string& vertex, c
 
 std::unique_ptr<ShaderBase> OGLShader::CreateShaderAndInit(const std::string& vertex, const std::string& fragment) {
 	std::unique_ptr<ShaderBase> shader = std::make_unique<OGLShader>(vertex, fragment);
-	((OGLShader*)shader.get())->Initialize();
+	(static_cast<OGLShader*>(shader.get()))->Initialize();
 	return shader;
 }
 
@@ -223,7 +221,7 @@ void OGLShader::PrintCompileLog(GLuint object) {
 	}
 
 	std::string infoLog((size_t)logLength, 0);
-	glGetShaderInfoLog(object, logLength, NULL, infoLog.data());
+	glGetShaderInfoLog(object, logLength, nullptr, infoLog.data());
 	std::cout << "Compile Log:\n" << infoLog << "\n";
 }
 
@@ -235,6 +233,6 @@ void OGLShader::PrintLinkLog(GLuint program) {
 	}
 
 	std::string infoLog((size_t)logLength, 0);
-	glGetProgramInfoLog(program, logLength, NULL, infoLog.data());
+	glGetProgramInfoLog(program, logLength, nullptr, infoLog.data());
 	std::cout << "Link Log:\n" << infoLog << "\n";
 }

@@ -10,20 +10,19 @@
 #include <string>
 #include <vector>
 
-namespace NCL{
+namespace NCL {
 	namespace Maths {
 		class Vector2;
 		class Vector3;
 		class Vector4;
+
 		class Matrix2;
 		class Matrix3;
 		class Matrix4;
 	}
-}
 
-using namespace NCL::Maths;
+	using namespace NCL::Maths;
 
-namespace NCL {
 	namespace Rendering {
 		enum class ShaderStage {
 			Vertex = 0ull,
@@ -36,10 +35,26 @@ namespace NCL {
 		class ShaderBase {
 		public:
 			ShaderBase(const std::string& vert, const std::string& frag, const std::string& tesc, const std::string& tese, const std::string& geom);
-			virtual ~ShaderBase();
+			virtual ~ShaderBase() = default;
 
+			/**
+			 * @brief Generate, compile and initialize the shader program.
+			 */
+			virtual void Initialize() = 0;
+
+			/**
+			 * @brief Bind this shader's program for use.
+			 */
 			virtual void Bind() = 0;
+			/**
+			 * @brief Unbind this shader' program (by binding the default
+			 * program).
+			 */
 			virtual void Unbind() = 0;
+			/**
+			 * @brief Load (or re-load) and compile the contents of the
+			 * provided shader files.
+			 */
 			virtual void ReloadShader() = 0;
 
 			virtual void SetUniformFloat(const std::string& uniform, float v1) = 0;
@@ -66,8 +81,6 @@ namespace NCL {
 			virtual void SetUniformMatrix(const std::string& uniform, const std::vector<Matrix4>& m) = 0;
 
 			virtual int GetUniformLocation(const std::string& uniform) = 0;
-
-			virtual void Initialize() = 0;
 		protected:
 			std::string shaderFiles[(size_t)ShaderStage::Max];
 		};

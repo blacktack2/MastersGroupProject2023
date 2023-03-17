@@ -20,8 +20,12 @@
 
 #include "RenderObject.h"
 
+#include "Light.h"
+
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Maths;
+using namespace NCL::Rendering;
 
 LightingRPass::LightingRPass() : OGLMainRenderPass(),
 gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
@@ -61,9 +65,6 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	lightShader->Unbind();
 
 	AddShadowShader(AssetLibrary<ShaderBase>::GetAsset("shadowDefault"));
-}
-
-LightingRPass::~LightingRPass() {
 }
 
 void LightingRPass::OnWindowResize(int width, int height) {

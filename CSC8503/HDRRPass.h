@@ -14,29 +14,24 @@
 
 namespace NCL {
 	class MeshGeometry;
-}
 
-namespace NCL {
 	namespace Rendering {
 		class FrameBuffer;
 		class ShaderBase;
 		class TextureBase;
 	}
-}
 
-using namespace NCL;
-using namespace Rendering;
+	using namespace NCL::Rendering;
 
-namespace NCL {
 	namespace CSC8503 {
 		class GameTechRenderer;
 
 		class HDRRPass : public OGLPostRenderPass {
 		public:
 			HDRRPass();
-			~HDRRPass();
+			~HDRRPass() = default;
 
-			virtual void Render() override;
+			void Render() override;
 
 			void SetExposure(float exposure);
 

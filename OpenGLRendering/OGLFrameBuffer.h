@@ -1,6 +1,6 @@
 /**
  * @file   OGLFrameBuffer.h
- * @brief  Base OpenGL implementation of a framebuffer.
+ * @brief  OpenGL implementation of a framebuffer.
  * 
  * @author Stuart Lewis
  * @date   February 2023
@@ -8,7 +8,7 @@
 #pragma once
 #include "FrameBuffer.h"
 
-#include <glad/gl.h>
+#include "glad/gl.h"
 
 #include <memory>
 #include <vector>
@@ -25,13 +25,13 @@ namespace NCL {
 			OGLFrameBuffer();
 			~OGLFrameBuffer();
 
-			virtual void Bind() override;
-			virtual void Unbind() override;
+			virtual void Bind() const override;
+			virtual void Unbind() const override;
 
-			void DrawBuffers() override;
-			void DrawBuffers(unsigned int numBuffers) override;
+			void DrawBuffers() const override;
+			void DrawBuffers(unsigned int numBuffers) const override;
 
-			bool InitSuccess() override;
+			bool InitSuccess() const override;
 
 			static std::unique_ptr<FrameBuffer> CreateFrameBuffer();
 		protected:

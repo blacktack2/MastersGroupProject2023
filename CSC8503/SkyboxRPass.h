@@ -8,29 +8,26 @@
 #pragma once
 #include "OGLMainRenderPass.h"
 
-#include "Vector3.h"
-
 #include <functional>
 #include <memory>
 #include <optional>
 
 namespace NCL {
 	class MeshGeometry;
-}
 
-namespace NCL {
+	namespace Maths {
+		class Vector3;
+	}
+
 	namespace Rendering {
 		class FrameBuffer;
 		class ShaderBase;
 		class TextureBase;
 	}
-}
 
-using namespace NCL;
-using namespace Rendering;
-using namespace Maths;
+	using namespace NCL::Maths;
+	using namespace NCL::Rendering;
 
-namespace NCL {
 	namespace CSC8503 {
 		class GameTechRenderer;
 		class GameWorld;
@@ -38,9 +35,9 @@ namespace NCL {
 		class SkyboxRPass : public OGLMainRenderPass {
 		public:
 			SkyboxRPass();
-			~SkyboxRPass();
+			~SkyboxRPass() = default;
 
-			virtual void Render() override;
+			void Render() override;
 
 			void SetSunDir(const Vector3& direction);
 

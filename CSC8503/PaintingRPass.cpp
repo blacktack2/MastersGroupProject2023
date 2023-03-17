@@ -16,22 +16,17 @@
 #include "PaintRenderObject.h"
 
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Rendering;
 
 PaintingRPass::PaintingRPass() : OGLMainRenderPass(),
-gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
+debugView(DebugViewPoint::Instance()), gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	frameBuffer = AssetLoader::CreateFrameBuffer();
 
 	shader = AssetLoader::CreateShaderAndInit("paintStencil.vert", "paintStencil.frag");
 }
 
-PaintingRPass::~PaintingRPass() {
-}
-
 void PaintingRPass::Render() {
-	DebugViewPoint& debugView = DebugViewPoint::Instance();
-	debugView.MarkTime("Paint Objects");
-
 	frameBuffer->Bind();
 	shader->Bind();
 
@@ -42,8 +37,9 @@ void PaintingRPass::Render() {
 
 	world.OperateOnContents([&](GameObject* gameObject) {
 		const CollisionVolume* volume = gameObject->GetBoundingVolume();
-		if (!volume) return;
-		if (volume->layer != CollisionLayer::PaintAble) return;
+		if (!volume || volume->layer != CollisionLayer::PaintAble) {
+			return;
+		}
 
 		PaintRenderObject* renderObj = (PaintRenderObject*)gameObject->GetRenderObject();
 
@@ -62,7 +58,6 @@ void PaintingRPass::Render() {
 		}
 
 		renderObj->ClearPaintCollisions();
-		
 	});
 
 	renderer.GetConfig().SetViewport();
@@ -72,6 +67,4 @@ void PaintingRPass::Render() {
 
 	shader->Unbind();
 	frameBuffer->Unbind();
-
-	debugView.FinishTime("Paint Objects");
 }

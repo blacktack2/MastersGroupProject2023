@@ -19,10 +19,10 @@ namespace NCL {
 		class FrameBuffer {
 		public:
 			FrameBuffer();
-			virtual ~FrameBuffer();
+			virtual ~FrameBuffer() = default;
 
-			virtual void Bind() = 0;
-			virtual void Unbind() = 0;
+			virtual void Bind() const = 0;
+			virtual void Unbind() const = 0;
 
 			/**
 			 * @brief Define the buffers to be drawn to this framebuffer.
@@ -30,15 +30,15 @@ namespace NCL {
 			 * of added textures. If you are using non-colour textures then use the
 			 * other overload of this function.
 			 */
-			virtual void DrawBuffers() = 0;
+			virtual void DrawBuffers() const = 0;
 			/**
 			 * @brief Define the buffers to be drawn to this framebuffer.
 			 *
 			 * @param numBuffers Number of colour buffers to be drawn to.
 			 */
-			virtual void DrawBuffers(unsigned int numBuffers) = 0;
+			virtual void DrawBuffers(unsigned int numBuffers) const = 0;
 
-			virtual bool InitSuccess() = 0;
+			virtual bool InitSuccess() const = 0;
 
 			/**
 			 * @brief Add and bind a texture to this framebuffer.

@@ -7,28 +7,21 @@
  */
 #include "PresentRPass.h"
 
-#include "GameTechRenderer.h"
-
 #include "AssetLibrary.h"
 #include "AssetLoader.h"
 
-#include "FrameBuffer.h"
 #include "MeshGeometry.h"
 #include "ShaderBase.h"
 #include "TextureBase.h"
 
 using namespace NCL;
-using namespace CSC8503;
-
 using namespace NCL::CSC8503;
+using namespace NCL::Rendering;
 
 PresentRPass::PresentRPass() : OGLPresentRenderPass() {
 	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
 	shader = AssetLoader::CreateShaderAndInit("present.vert", "present.frag");
-}
-
-PresentRPass::~PresentRPass() {
 }
 
 void PresentRPass::Render() {

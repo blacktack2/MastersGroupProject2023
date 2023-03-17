@@ -14,21 +14,14 @@
 #include <vector>
 
 namespace NCL {
-	class MeshGeometry;
-}
-
-namespace NCL {
 	namespace Rendering {
 		class FrameBuffer;
 		class ShaderBase;
 		class TextureBase;
 	}
-}
 
-using namespace NCL;
-using namespace Rendering;
+	using namespace NCL::Rendering;
 
-namespace NCL {
 	namespace CSC8503 {
 		class GameTechRenderer;
 		class GameWorld;
@@ -36,9 +29,9 @@ namespace NCL {
 		class ModelRPass : public OGLMainRenderPass {
 		public:
 			ModelRPass();
-			~ModelRPass();
+			~ModelRPass() = default;
 
-			virtual void Render() override;
+			void Render() override;
 
 			void AddModelShader(std::shared_ptr<ShaderBase> shader);
 

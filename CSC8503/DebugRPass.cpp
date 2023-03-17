@@ -21,7 +21,9 @@
 #include "Debug.h"
 
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Maths;
+using namespace NCL::Rendering;
 
 DebugRPass::DebugRPass() :
 OGLOverlayRenderPass(), gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
@@ -39,9 +41,6 @@ OGLOverlayRenderPass(), gameWorld(GameWorld::instance()), renderer(GameTechRende
 	lineMesh = AssetLoader::CreateMesh();
 	lineMesh->SetPrimitiveType(GeometryPrimitive::Lines);
 	textMesh = AssetLoader::CreateMesh();
-}
-
-DebugRPass::~DebugRPass() {
 }
 
 void DebugRPass::Render() {
@@ -132,9 +131,8 @@ void DebugRPass::RenderWinLoseInformation(bool win) {
 	debugTextColours.clear();
 	debugTextUVs.clear();
 
-	float size = 20.0f;
-	if (win) Debug::GetDebugFont()->BuildVerticesForString("You Win!", Vector2(5, 80), Vector4(0, 1, 0, 1), size, debugTextPos, debugTextUVs, debugTextColours);
-	else Debug::GetDebugFont()->BuildVerticesForString("You got Inked!", Vector2(5, 80), Vector4(1, 0, 0, 1), size, debugTextPos, debugTextUVs, debugTextColours);
+	constexpr float size = 20.0f;
+	Debug::GetDebugFont()->BuildVerticesForString(win ? "You Win!" : "You got Inked!", Vector2(5.0f, 80.0f), Vector4(0.0f, 1.0f, 0.0f, 1.0f), size, debugTextPos, debugTextUVs, debugTextColours);
 
 	textMesh->SetVertexPositions(debugTextPos);
 	textMesh->SetVertexColours(debugTextColours);
