@@ -9,8 +9,7 @@ using namespace NCL;
 InputKeyMap::InputKeyMap() {
 	XboxControllerManager::GetXboxController().CheckPorts();
 	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
-	if (numOfPlayers >= 4)
-		numOfPlayers = 4;
+	if (numOfPlayers >= 4)	numOfPlayers = 4;
 	for (int i = 1; i <= numOfPlayers; i++) {
 		ChangePlayerControlTypeMap(i, ControllerType::Xbox);
 	}
@@ -30,6 +29,11 @@ void InputKeyMap::Update() {
 
 	for (auto playerTypePair : playerControlTypeMap) {
 		UpdatePlayer(playerTypePair.first);
+	}
+	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
+	if (numOfPlayers >= 4)	numOfPlayers = 4;
+	for (int i = 1; i <= numOfPlayers; i++) {
+		XboxControllerManager::GetXboxController().UpdateALastState(i);
 	}
 
 	upStates   = oldStates & (buttonstates ^ oldStates);
@@ -181,14 +185,15 @@ void InputKeyMap::UpdateWindows(int playerID)
 void InputKeyMap::UpdateWindowsGameStateDependant(int playerID) {
 	GameStateManager* gameStateManager = &GameStateManager::instance();
 	GameState gameState = gameStateManager->GetGameState();
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
+		SetButton(InputType::Pause);
+	}
+
 	switch (gameState) {
 	case GameState::Lobby:
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::R)) {
 			SetButton(InputType::Start);
-		}
-	case GameState::OnGoing: default:
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
-			SetButton(InputType::Pause);
 		}
 		break;
 	case GameState::Win:
@@ -255,20 +260,19 @@ void InputKeyMap::UpdateXbox(int playerID)
 	if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_A)) {
 		SetButton(InputType::Confirm);
 	}
-	XboxControllerManager::GetXboxController().UpdateALastState(playerID);
 }
 
 void InputKeyMap::UpdateXboxGameStateDependant(int playerID) {
 	GameStateManager* gameStateManager = &GameStateManager::instance();
 	GameState gameState = gameStateManager->GetGameState();
+
+	if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_BACK)) {
+		SetButton(InputType::Pause);
+	}
 	switch (gameState) {
 	case GameState::Lobby:
 		if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_START)) {
 			SetButton(InputType::Start);
-		}
-	case GameState::OnGoing: default:
-		if(XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_BACK)) {
-			SetButton(InputType::Pause);
 		}
 		break;
 	case GameState::Win:
