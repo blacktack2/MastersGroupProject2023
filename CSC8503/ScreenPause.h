@@ -40,8 +40,14 @@ private:
 	GameTechRenderer& renderer = GameTechRenderer::instance();
 	MenuManager& menuManager = MenuManager::instance();
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
+	OptionManager& optionManager = OptionManager::instance();
 
 	ChangeState menuState = ChangeState::None;
 
 	std::string NAME = "pause";
+
+	bool ResumePointer = false;
+	bool OptionPointer = false;
+	bool TitlePointer = false;
+	bool QuitPointer = false;
 };

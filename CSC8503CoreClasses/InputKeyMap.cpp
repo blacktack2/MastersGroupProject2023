@@ -16,6 +16,7 @@ InputKeyMap::InputKeyMap() {
 InputKeyMap::~InputKeyMap() {}
 
 void InputKeyMap::Update() {
+	unsigned int oldStates = buttonstates;
 	buttonstates = InputType::Empty;
 	movementAxis = Vector2(0);
 	cameraAxis = Vector2(0);
@@ -23,6 +24,9 @@ void InputKeyMap::Update() {
 	for (auto playerTypePair : playerControlTypeMap) {
 		UpdatePlayer(playerTypePair.first);
 	}
+
+	upStates   = oldStates & (buttonstates ^ oldStates);
+	downStates = buttonstates & (oldStates ^ buttonstates);
 }
 
 bool InputKeyMap::GetButton(InputType key, int PlayerID) {
@@ -77,33 +81,6 @@ void InputKeyMap::SetButton(InputType key, int PlayerID = 0)
 	
 }
 
-void InputKeyMap::UpdateGameStateDependant() {
-	GameStateManager* gameStateManager = &GameStateManager::instance();
-	GameState gameState = gameStateManager->GetGameState();
-	switch (gameState) {
-	case GameState::Lobby:
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::R)) {
-			SetButton(InputType::Start);
-		}
-	case GameState::OnGoing: default:
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
-			SetButton(InputType::Pause);
-		}
-		break;
-	case GameState::Win:
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) {
-			SetButton(InputType::Restart);
-		}
-		break;
-	case GameState::Lose:
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) {
-			SetButton(InputType::Restart);
-		}
-		break;
-	}
-
-}
-
 void InputKeyMap::UpdatePlayer(int playerID)
 {
 	for (int j = 0; j < AxisInput::AxisInputDataMax; j++)
@@ -114,16 +91,18 @@ void InputKeyMap::UpdatePlayer(int playerID)
 	{
 	case ControllerType::KeyboardMouse:
 		UpdateWindows(playerID);
+		UpdateWindowsGameStateDependant(playerID);
 		break;
 	case ControllerType::Xbox:
 		UpdateXbox(playerID);
+		UpdateXboxGameStateDependant(playerID);
 		break;
 	default:
 		break;
 	}
-	UpdateGameStateDependant();
 
 }
+
 
 void InputKeyMap::UpdateWindows(int playerID)
 {
@@ -156,6 +135,19 @@ void InputKeyMap::UpdateWindows(int playerID)
 	{
 		SetButton(InputType::Pause, playerID);
 	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN ) || Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT))
+	{
+		buttonstates |= InputType::DOWN;
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP) || Window::GetKeyboard()->KeyDown(KeyboardKeys::LEFT))
+	{
+		buttonstates |= InputType::UP;
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN))
+	{
+		buttonstates |= InputType::Confirm;
+	}
+
 	if (Window::GetMouse()) {
 		if (Window::GetMouse()->ButtonDown(MouseButtons::LEFT))
 		{
@@ -177,6 +169,33 @@ void InputKeyMap::UpdateWindows(int playerID)
 
 		mousePosition = Window::GetMouse()->GetAbsolutePosition();
 	}
+}
+
+void InputKeyMap::UpdateWindowsGameStateDependant(int playerID) {
+	GameStateManager* gameStateManager = &GameStateManager::instance();
+	GameState gameState = gameStateManager->GetGameState();
+	switch (gameState) {
+	case GameState::Lobby:
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::R)) {
+			SetButton(InputType::Start);
+		}
+	case GameState::OnGoing: default:
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
+			SetButton(InputType::Pause);
+		}
+		break;
+	case GameState::Win:
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::R)) {
+			SetButton(InputType::Restart);
+		}
+		break;
+	case GameState::Lose:
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::R)) {
+			SetButton(InputType::Restart);
+		}
+		break;
+	}
+
 }
 
 void InputKeyMap::UpdateXbox(int playerID)
@@ -204,4 +223,33 @@ void InputKeyMap::UpdateXbox(int playerID)
 	{
 		AxisDataArray[playerID][AxisInput::Axis6] = leftTriggerDepth;
 	}
+
+
+}
+
+void InputKeyMap::UpdateXboxGameStateDependant(int playerID) {
+	GameStateManager* gameStateManager = &GameStateManager::instance();
+	GameState gameState = gameStateManager->GetGameState();
+	switch (gameState) {
+	case GameState::Lobby:
+		if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_Y)) {
+			SetButton(InputType::Pause);
+		}
+	case GameState::OnGoing: default:
+		if(XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_BACK)) {
+			SetButton(InputType::Pause);
+		}
+		break;
+	case GameState::Win:
+		if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_START)) {
+			SetButton(InputType::Restart);
+		}
+		break;
+	case GameState::Lose:
+		if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_START)) {
+			SetButton(InputType::Restart);
+		}
+		break;
+	}
+
 }

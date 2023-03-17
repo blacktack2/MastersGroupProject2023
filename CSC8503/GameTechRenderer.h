@@ -98,14 +98,13 @@ namespace NCL {
 				playersHP[id] = hp;
 			}
 
-			void UpdateHudDisplay(int playerID) override {
-			}
-
 			void DisplayWinLoseInformation(int playerID) override;
 		protected:
 			GameTechRenderer();
 			~GameTechRenderer() override = default;
 		private:
+			void SetGameWorldDeltaTime(float dt) override;
+
 			GameWorld& gameWorld;
 
 			std::unique_ptr<PaintingRPass> paintingRPass = nullptr;
@@ -129,10 +128,12 @@ namespace NCL {
 			float bloomBias = 0.04f;
 
 			float hdrExposure = 1.0f;
-			int bossHP = -1;
-			int playersHP[4];
+			
 			float ssaoRadius = 0.5f;
 			float ssaoBias = 0.025f;
+			
+			int bossHP = -1;
+			int playersHP[4];
 		};
 	}
 }

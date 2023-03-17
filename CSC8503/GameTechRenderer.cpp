@@ -22,6 +22,10 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()), gameWo
 	}
 }
 
+void GameTechRenderer::SetGameWorldDeltaTime(float dt) {
+	gameWorld.SetDeltaTime(dt);
+}
+
 void GameTechRenderer::InitPipeline() {
 	paintingRPass = std::make_unique<PaintingRPass>();
 	AddMainPass(*paintingRPass);

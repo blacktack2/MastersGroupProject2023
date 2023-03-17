@@ -16,13 +16,17 @@ namespace NCL {
 			GameStateManager();
 			~GameStateManager();
 			GameState gameState;
-
+			bool isNetworked = false;
 		public:
 			static GameStateManager& instance() {
 				static GameStateManager INSTANCE;
 				return INSTANCE;
 			}
 			void Update(float dt);
+
+			void SetIsNetworked(bool isNetworked) {
+				this->isNetworked = isNetworked;
+			}
 
 			GameState GetGameState() {
 				return gameState;

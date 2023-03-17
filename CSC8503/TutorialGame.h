@@ -55,6 +55,8 @@ namespace NCL {
 		protected:
 			void UpdateGameCore(float dt);
 
+			virtual void BossTarget();
+
 			virtual void ProcessState();
 
 			void SetCameraFollow(PlayerObject* p);
@@ -90,7 +92,7 @@ namespace NCL {
 			GameLevel* gameLevel = nullptr;
 			Boss* boss = nullptr;
 
-
+			int playerNum = 0;
 			float interval = 0.0f;
 		};
 	}

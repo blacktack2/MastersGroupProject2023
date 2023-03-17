@@ -10,6 +10,7 @@
 #include "Debug.h"
 #include "InputKeyMap.h"
 #include "UIObject.h"
+#include "OptionManager.h"
 
 #include "Vector4.h"
 
@@ -33,7 +34,7 @@ namespace NCL {
         public:
             typedef std::function<void(Button& button)> overlap_func;
 
-            Button(float PosX, float PosY, float Width, float Height, std::shared_ptr<TextureBase> texture, overlap_func onclick);
+            Button(float PosX, float PosY, float Width, float Height, std::shared_ptr<TextureBase> texture, overlap_func onclick, overlap_func onselect, overlap_func onpress);
             ~Button();
 
             void Update(float dt) override;
@@ -44,10 +45,13 @@ namespace NCL {
             };
 
             void OnClick();
+            void OnSelect();
+            void OnPress();
         protected:
             void DrawExtras() override;
         private:
             void CheckMousePosition(Vector2 mousePos);
+            void CheckPointer(float pointerPosY);
 
             NCL::InputKeyMap& keyMap;
             GameTechRenderer& renderer;
@@ -60,8 +64,16 @@ namespace NCL {
             Vector4 btncolour = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 
             bool isMouseHover;
+            bool isPointer;
 
             overlap_func OnClickCallback = nullptr;
+            overlap_func OnSelectCallback = nullptr;
+            overlap_func OnPressCallback = nullptr;
+
+            OptionManager& optionManager = OptionManager::instance();
+
+            int counter = 12000;
+            int t = 0;
         };
     }
 }
