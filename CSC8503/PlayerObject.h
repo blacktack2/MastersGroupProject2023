@@ -11,7 +11,7 @@ namespace NCL {
 	namespace CSC8503 {
 		class Bullet;
 
-		enum PlayerAnimation {
+		enum PlayerMovingDirection {
 			Idle,
 
 			MoveForward,
@@ -107,7 +107,7 @@ namespace NCL {
 			//camera related
 			Vector3 lookingAt = Vector3(0);
 
-			void MoveAnimation(Vector3 dir);
+			void MoveAnimation();
 		private:
 
 			void SetupAudio();
@@ -122,6 +122,7 @@ namespace NCL {
 			//movement related
 			float moveSpeed = 0.4f;
 			Vector3 lastDir = Vector3(0,0,0);
+			PlayerMovingDirection playerMovingDirection = PlayerMovingDirection::Idle;
 			
 			//camera related
 			Camera* camera;
