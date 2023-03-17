@@ -11,6 +11,19 @@ namespace NCL {
 	namespace CSC8503 {
 		class Bullet;
 
+		enum PlayerAnimation {
+			Idle,
+
+			MoveForward,
+			MoveBackward,
+			MoveToLeft,
+			MoveToRight,
+			MoveForwardLeft,
+			MoveForwardRight,
+			MoveBackwardLeft,
+			MoveBackwardRight,
+		};
+
 		class PlayerObject : public GameObject {
 		public:
 			PlayerObject(int playerID);
