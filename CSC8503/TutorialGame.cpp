@@ -271,9 +271,18 @@ void TutorialGame::InitGameExamples() {
 }
 
 void TutorialGame::InitDefaultFloor() {
+	AddBackGroundToWorld(Vector3(0,-2, 0));
 	AddFloorToWorld(Vector3(0, -2, 0));
 }
-
+GameObject* TutorialGame::AddBackGroundToWorld(const Vector3& position) {
+	GameObject* backGround = new GameObject("BackGround");
+	backGround->GetTransform()
+		.SetScale(Vector3(10, 10, 10))
+		.SetPosition(position);
+	backGround->SetRenderObject(new PaintRenderObject(backGround->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("mountMesh"), AssetLibrary<MeshMaterial>::GetAsset("mountMat")));
+	gameWorld.AddGameObject(backGround);
+	return backGround;
+}
 GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 	GameObject* floor = new GameObject("Floor");
 
@@ -389,15 +398,15 @@ void TutorialGame::UpdateLevel() {
 				gameWorld.AddGameObject(pillar);
 			}
 			if (object->objectType == ObjectType::FenceX){
-				Vector3 dimensions{ interval / 6.0f, 1.0f, interval / 5.0f };
+				Vector3 dimensions{ interval / 2.0f, 3.0f, interval / 5.0f };
 				Obstacle* fenceX = new Obstacle{ object, true };
-				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * 2, CollisionLayer::PaintAble));
+				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions*2, CollisionLayer::PaintAble));
 				fenceX->GetTransform()
-					.SetPosition(object->worldPos + Vector3{ 0,2,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,3,0 })
 					.SetScale(dimensions * 2);
 				//fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), basicTex, nullptr));		// TODO: change to the right Mesh
 				
-				PaintRenderObject* render = new PaintRenderObject(fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), nullptr);
+				PaintRenderObject* render = new PaintRenderObject(fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), AssetLibrary<MeshMaterial>::GetAsset("fenceX"));
 				fenceX->SetRenderObject(render);
 
 				fenceX->SetPhysicsObject(new PhysicsObject(&fenceX->GetTransform(), fenceX->GetBoundingVolume()));
@@ -406,15 +415,15 @@ void TutorialGame::UpdateLevel() {
 				gameWorld.AddGameObject(fenceX);
 			}
 			if (object->objectType == ObjectType::FenceY) {
-				Vector3 dimensions{ interval / 5.0f, 0.5f, interval / 4.0f };
+				Vector3 dimensions{ interval / 5.0f, 3.0f, interval / 2.0f };
 				Obstacle* fenceY = new Obstacle{ object, true };
 				fenceY->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * 2, CollisionLayer::PaintAble));
 				fenceY->GetTransform()
-					.SetPosition(object->worldPos + Vector3{ 0,2,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,3,0 })
 					.SetScale(dimensions * 2);
 				//fenceY->SetRenderObject(new RenderObject(&fenceY->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceY"), basicTex, nullptr));		// TODO: change to the right Mesh
 				
-				PaintRenderObject* render = new PaintRenderObject(fenceY->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceY"), nullptr);
+				PaintRenderObject* render = new PaintRenderObject(fenceY->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceY"), AssetLibrary<MeshMaterial>::GetAsset("fenceY"));
 				fenceY->SetRenderObject(render);
 				
 				fenceY->SetPhysicsObject(new PhysicsObject(&fenceY->GetTransform(), fenceY->GetBoundingVolume()));
@@ -423,15 +432,15 @@ void TutorialGame::UpdateLevel() {
 				gameWorld.AddGameObject(fenceY);
 			}
 			if (object->objectType == ObjectType::Shelter) {
-				Vector3 dimensions{ interval / 5.0f, 2.0f, interval / 2.0f };
+				Vector3 dimensions{ interval / 1.0f, 5.0f, interval / 1.0f };
 				Obstacle* shelter = new Obstacle{ object, false };
-				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
+				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions*Vector3{0.5f,1.0f,1.0f}, CollisionLayer::PaintAble));
 				shelter->GetTransform()
-					.SetPosition(object->worldPos + Vector3{ 0.0f, 2.2f, 0.0f })
+					.SetPosition(object->worldPos + Vector3{ 0.0f,2.7f, 0.0f })
 					.SetScale(dimensions);
 				//shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("shelter"), basicTex, nullptr));
 
-				PaintRenderObject* render = new PaintRenderObject(shelter->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("shelter"), nullptr);
+				PaintRenderObject* render = new PaintRenderObject(shelter->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("shelter"), AssetLibrary<MeshMaterial>::GetAsset("shelter"));
 				shelter->SetRenderObject(render);
 
 				shelter->SetPhysicsObject(new PhysicsObject(&shelter->GetTransform(), shelter->GetBoundingVolume()));
