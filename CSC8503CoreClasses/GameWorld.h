@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <random>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -68,6 +69,9 @@ namespace NCL {
 			Camera* GetCamera(int n) const;
 			void UpdateCamera(float dt);
 			Camera* SetMainCamera(int n);
+			int GetMainCameraIndex() {
+				return mainCameraIndex;
+			}
 
 			void ShuffleConstraints(bool state) {
 				shuffleConstraints = state;
@@ -108,6 +112,16 @@ namespace NCL {
 			inline float GetDeltaTime() const {
 				return deltaTime;
 			}
+			inline void SetDeltaTime(float dt) {
+				deltaTime = dt;
+			}
+
+			inline int GetScreenNum() {
+				return screenNum;
+			}
+			inline void SetScreenNum(int n) {
+				screenNum = n;
+			}
 		protected:
 			std::vector<GameObject*> gameObjects;
 			std::vector<Constraint*> constraints;
@@ -119,6 +133,13 @@ namespace NCL {
 			QuadTree dynamicQuadTree;
 			QuadTree staticQuadTree;
 
+			int mainCameraIndex = 1;
+			//Check if needed
+			std::unique_ptr<Camera> playerCamera1 = nullptr;
+			std::unique_ptr<Camera> playerCamera2 = nullptr;
+			std::unique_ptr<Camera> playerCamera3 = nullptr;
+			std::unique_ptr<Camera> playerCamera4 = nullptr;
+
 			Camera* mainCamera;
 			Camera* cameras[CAM_COUNT];
 
@@ -129,6 +150,8 @@ namespace NCL {
 
 			float runTime;
 			float deltaTime = 0.0f;		// Used by Animation
+
+			int screenNum = 1;
 		};
 	}
 }

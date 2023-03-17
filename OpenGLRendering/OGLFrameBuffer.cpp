@@ -11,7 +11,6 @@
 
 using namespace NCL::Rendering;
 
-// Can be safely expanded to include additional buffers if necessary
 static const GLenum colourBuffers[]{
 	GL_COLOR_ATTACHMENT0,
 	GL_COLOR_ATTACHMENT1,
@@ -33,19 +32,19 @@ OGLFrameBuffer::~OGLFrameBuffer() {
 	glDeleteFramebuffers(1, &fboID);
 }
 
-void OGLFrameBuffer::Bind() {
+void OGLFrameBuffer::Bind() const {
 	glBindFramebuffer(GL_FRAMEBUFFER, fboID);
 }
 
-void OGLFrameBuffer::Unbind() {
+void OGLFrameBuffer::Unbind() const {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void OGLFrameBuffer::DrawBuffers() {
+void OGLFrameBuffer::DrawBuffers() const {
 	DrawBuffers(numColourTexs);
 }
 
-bool OGLFrameBuffer::InitSuccess() {
+bool OGLFrameBuffer::InitSuccess() const {
 	Bind();
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	Unbind();
@@ -68,7 +67,7 @@ void OGLFrameBuffer::BindToTexture(TextureBase& texture, unsigned int attachment
 	glFramebufferTexture2D(GL_FRAMEBUFFER, attach, GL_TEXTURE_2D, static_cast<OGLTexture&>(texture).GetObjectID(), 0);
 }
 
-void OGLFrameBuffer::DrawBuffers(unsigned int numBuffers) {
+void OGLFrameBuffer::DrawBuffers(unsigned int numBuffers) const {
 	if (numBuffers == 0) {
 		glDrawBuffer(GL_NONE);
 	} else {

@@ -36,6 +36,8 @@ enum InputType : unsigned int {
 	Action2_4 = (1u << 14),
 	FreeLook_4 = (1u << 15),
 
+	DOWN = (1u << 25),
+	UP = (1u << 26),
 
 	Start = (1u << 27),
 	Pause = (1u << 28),
@@ -78,6 +80,14 @@ namespace NCL {
 
 		void Update();
 
+		bool GetButtonUp(InputType key) {
+			return upStates & key;
+		}
+
+		bool GetButtonDown(InputType key) {
+			return downStates & key;
+		}
+
 		bool GetButton(InputType key, int PlayerID = 0);
 
 		unsigned int GetButtonState();
@@ -99,14 +109,15 @@ namespace NCL {
 
 		void SetButton(InputType key, int PlayerID);
 
-		void UpdateGameStateDependant();
-
 		void UpdatePlayer(int playerID);
 
 #ifdef x64
 		void UpdateWindows(int playerID);
 
+		void UpdateWindowsGameStateDependant(int playerID);
+
 		void UpdateXbox(int playerID);
+		void UpdateXboxGameStateDependant(int playerID);
 #endif // x64
 
 #ifdef _ORBIS
@@ -115,6 +126,8 @@ namespace NCL {
 
 		unsigned int buttonstates;
 		float AxisDataArray[MAXPLAYER][AxisInput::AxisInputDataMax] = { 0 };
+		unsigned int upStates;
+		unsigned int downStates;
 		Maths::Vector2 movementAxis;
 		Maths::Vector2 cameraAxis;
 		Maths::Vector2 mousePosition;

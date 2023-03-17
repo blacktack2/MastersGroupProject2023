@@ -1,7 +1,10 @@
 #include "OGLLoadingManager.h"
+
 #include "OGLMesh.h"
-#include "OGLShader.h"
 #include "OGLRenderer.h"
+#include "OGLShader.h"
+#include "OGLTexture.h"
+
 #include "AssetLibrary.h"
 
 using namespace NCL;

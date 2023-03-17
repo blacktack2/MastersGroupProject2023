@@ -14,20 +14,15 @@
 
 namespace NCL {
 	class MeshGeometry;
-}
 
-namespace NCL {
 	namespace Rendering {
 		class FrameBuffer;
 		class ShaderBase;
 		class TextureBase;
 	}
-}
 
-using namespace NCL;
-using namespace Rendering;
+	using namespace NCL::Rendering;
 
-namespace NCL {
 	namespace CSC8503 {
 		class GameTechRenderer;
 
@@ -43,9 +38,9 @@ namespace NCL {
 		class CombineRPass : public OGLCombineRenderPass {
 		public:
 			CombineRPass();
-			~CombineRPass();
+			~CombineRPass() = default;
 
-			virtual void Render() override;
+			void Render() override;
 
 			void SetRenderMode(RenderMode mode);
 
@@ -81,13 +76,13 @@ namespace NCL {
 
 			std::unique_ptr<FrameBuffer> frameBuffer;
 
-			TextureBase* skyboxTexIn = nullptr;
-			TextureBase* albedoTexIn = nullptr;
-			TextureBase* diffuseTexIn = nullptr;
+			TextureBase* skyboxTexIn   = nullptr;
+			TextureBase* albedoTexIn   = nullptr;
+			TextureBase* diffuseTexIn  = nullptr;
 			TextureBase* specularTexIn = nullptr;
-			TextureBase* ssaoTexIn = nullptr;
-			TextureBase* normalTexIn = nullptr;
-			TextureBase* depthTexIn = nullptr;
+			TextureBase* ssaoTexIn     = nullptr;
+			TextureBase* normalTexIn   = nullptr;
+			TextureBase* depthTexIn    = nullptr;
 
 			std::unique_ptr<TextureBase> sceneOutTex;
 

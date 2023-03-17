@@ -7,37 +7,33 @@
  * @date   March 2023
  */
 #pragma once
+#include "Matrix4.h"
+
 #include <optional>
 #include <vector>
 #include <string>
 
 namespace NCL {
-	namespace Maths {
-		class Matrix4;
-	}
-}
+	using namespace NCL::Maths;
 
-using namespace NCL::Maths;
-
-namespace NCL {
 	class MeshAnimation {
 	public:
 		MeshAnimation();
 
-		MeshAnimation(unsigned int jointCount, unsigned int frameCount, float frameRate, std::vector<Maths::Matrix4>& frames);
+		MeshAnimation(unsigned int jointCount, unsigned int frameCount, float frameRate, std::vector<Matrix4>& frames);
 
 		MeshAnimation(const std::string& filename);
 		virtual ~MeshAnimation();
 
-		unsigned int GetJointCount() const {
+		inline unsigned int GetJointCount() const {
 			return jointCount;
 		}
 
-		unsigned int GetFrameCount() const {
+		inline unsigned int GetFrameCount() const {
 			return frameCount;
 		}
 
-		float GetFrameRate() const {
+		inline float GetFrameRate() const {
 			return frameRate;
 		}
 
@@ -47,12 +43,11 @@ namespace NCL {
 		 * frameCount.
 		 */
 		const std::vector<Matrix4> GetJointData(unsigned int frame) const;
-	protected:
-		unsigned int jointCount;
-		unsigned int frameCount;
-		float frameRate;
+	private:
+		unsigned int jointCount = 0;
+		unsigned int frameCount = 0;
+		float frameRate = 0.0f;
 
-		std::vector<Matrix4> allJoints;
+		std::vector<Matrix4> allJoints{};
 	};
 }
-

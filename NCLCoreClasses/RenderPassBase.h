@@ -20,7 +20,7 @@ namespace NCL {
 		 */
 		class RenderPassBase {
 		public:
-			virtual ~RenderPassBase();
+			virtual ~RenderPassBase() = default;
 
 			virtual void OnWindowResize(int width, int height);
 

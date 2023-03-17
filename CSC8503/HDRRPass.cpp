@@ -18,12 +18,13 @@
 #include "TextureBase.h"
 
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Rendering;
 
 HDRRPass::HDRRPass() : OGLPostRenderPass(), renderer(GameTechRenderer::instance()) {
 	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
-	sceneOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA16F, renderer.GetWidth(), renderer.GetHeight());
+	sceneOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA16F, renderer.GetSplitWidth(), renderer.GetSplitHeight());
 	AddScreenTexture(*sceneOutTex);
 
 	frameBuffer = AssetLoader::CreateFrameBuffer();
@@ -33,15 +34,11 @@ HDRRPass::HDRRPass() : OGLPostRenderPass(), renderer(GameTechRenderer::instance(
 	frameBuffer->Unbind();
 
 	shader = AssetLoader::CreateShaderAndInit("hdr.vert", "hdr.frag");
-
 	shader->Bind();
 
 	shader->SetUniformInt("sceneTex", 0);
 
 	shader->Unbind();
-}
-
-HDRRPass::~HDRRPass() {
 }
 
 void HDRRPass::Render() {

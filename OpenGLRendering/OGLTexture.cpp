@@ -7,7 +7,6 @@
  * @date   February 2023
  */
 #include "OGLTexture.h"
-#include "OGLRenderer.h"
 
 #include "AssetLoader.h"
 
@@ -15,7 +14,7 @@ using namespace NCL::Rendering;
 
 OGLTexture::OGLTexture(TextureType type, unsigned int width, unsigned int height) : TextureBase(type),
 width(width), height(height) {
-	switch (type) {
+	switch (GetType()) {
 		case TextureType::ColourR8      :
 			pixComponents = GL_R8               ; dummyFormat = GL_RED            ; dummyType = GL_UNSIGNED_BYTE; break;
 		case TextureType::ColourR16     :
@@ -110,13 +109,14 @@ void OGLTexture::SoftUpload(void* data, size_t amount, PixelDataFormat format, P
 void OGLTexture::Initialize() {
 	glGenTextures(1, &texID);
 	Bind();
-	if (type == TextureType::Shadow) {
+	if (GetType() == TextureType::Shadow) {
 		SetFilters(MinFilter::Linear, MagFilter::Linear);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
 	} else {
 		SetFilters(MinFilter::Nearest, MagFilter::Nearest);
 	}
-	SetEdgeWrap(EdgeWrap::ClampToEdge);
+	SetEdgeWrap(GetType() == TextureType::ColourRGBA32F ? EdgeWrap::Repeat : EdgeWrap::ClampToEdge);
+
 	Resize(width, height);
 	if (!data.empty()) {
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, dummyFormat, dummyType, data.data());
@@ -179,7 +179,7 @@ void OGLTexture::SetEdgeWrap(EdgeWrap edgeWrap) {
 std::unique_ptr<TextureBase> OGLTexture::LoadTexture(const std::string& filename) {
 	char* texData = nullptr;
 
-	unsigned int width = 0;
+	unsigned int width  = 0;
 	unsigned int height = 0;
 
 	int channels = 0;
@@ -189,9 +189,7 @@ std::unique_ptr<TextureBase> OGLTexture::LoadTexture(const std::string& filename
 		return nullptr;
 	}
 
-	std::unique_ptr<TextureBase> glTex = CreateTextureFromData(texData, width, height, channels);
-
-	return glTex;
+	return CreateTextureFromData(texData, width, height, channels);
 }
 
 std::unique_ptr<TextureBase> OGLTexture::CreateTexture(TextureType type, unsigned int width, unsigned int height) {

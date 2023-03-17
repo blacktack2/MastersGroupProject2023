@@ -79,6 +79,10 @@ const std::vector<Debug::DebugStringEntry>& Debug::GetDebugStrings() {
 	return stringEntries;
 }
 
+void Debug::ClearDebugStrings() {
+	stringEntries.clear();
+}
+
 const std::vector<Debug::DebugLineEntry>& Debug::GetDebugLines() {
 	return lineEntries;
 }

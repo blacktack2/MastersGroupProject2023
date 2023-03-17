@@ -5,7 +5,7 @@
 #include "GameStateManager.h"
 #include "Health.h"
 #include "PlayerBullet.h"
-
+#include"AnimatedRenderObject.h"
 namespace NCL {
 	class Camera;
 	namespace CSC8503 {
@@ -26,6 +26,10 @@ namespace NCL {
 				hasCamera = b;
 				//camera = cam;
 			};
+
+			Camera* GetCamera() {
+				return camera;
+			}
 
 			const std::vector<GameObject*> GetLastInstancedObjects() {
 				return lastInstancedObjects;
@@ -90,6 +94,7 @@ namespace NCL {
 			//camera related
 			Vector3 lookingAt = Vector3(0);
 
+			void MoveAnimation(Vector3 dir);
 		private:
 
 			void SetupAudio();

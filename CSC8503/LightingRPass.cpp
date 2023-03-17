@@ -20,8 +20,12 @@
 
 #include "RenderObject.h"
 
+#include "Light.h"
+
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Maths;
+using namespace NCL::Rendering;
 
 LightingRPass::LightingRPass() : OGLMainRenderPass(),
 gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
@@ -30,8 +34,8 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 
 	shadowMapTex = AssetLoader::CreateTexture(TextureType::Shadow, SHADOWSIZE, SHADOWSIZE);
 
-	lightDiffuseOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetWidth(), renderer.GetHeight());
-	lightSpecularOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetWidth(), renderer.GetHeight());
+	lightDiffuseOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	lightSpecularOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetSplitWidth(), renderer.GetSplitHeight());
 	AddScreenTexture(*lightDiffuseOutTex);
 	AddScreenTexture(*lightSpecularOutTex);
 
@@ -52,7 +56,7 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 
 	lightShader->Bind();
 
-	lightShader->SetUniformFloat("pixelSize", 1.0f / (float)renderer.GetWidth(), 1.0f / (float)renderer.GetHeight());
+	lightShader->SetUniformFloat("pixelSize", 1.0f / (float)renderer.GetSplitWidth(), 1.0f / (float)renderer.GetSplitHeight());
 
 	lightShader->SetUniformInt("depthTex", 0);
 	lightShader->SetUniformInt("normalTex", 1);
@@ -63,14 +67,11 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	AddShadowShader(AssetLibrary<ShaderBase>::GetAsset("shadowDefault"));
 }
 
-LightingRPass::~LightingRPass() {
-}
-
 void LightingRPass::OnWindowResize(int width, int height) {
 	RenderPassBase::OnWindowResize(width, height);
 	lightShader->Bind();
 
-	lightShader->SetUniformFloat("pixelSize", 1.0f / (float)width, 1.0f / (float)height);
+	lightShader->SetUniformFloat("pixelSize", 1.0f / (float)renderer.GetSplitWidth(), 1.0f / (float)renderer.GetSplitHeight());
 
 	lightShader->Unbind();
 }

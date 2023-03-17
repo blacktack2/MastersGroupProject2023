@@ -17,7 +17,3 @@ TextureBase::TextureBase(TextureType type) : type(type) {
 		case TextureType::Stencil: bufferType = BufferType::StencilAttachment; break;
 	}
 }
-
-
-TextureBase::~TextureBase() {
-}

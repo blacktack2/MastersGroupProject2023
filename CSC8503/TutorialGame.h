@@ -27,7 +27,6 @@ namespace NCL {
 		class GameWorld;
 		class MenuManager;
 		class OptionManager;
-		class Hud;
 		class GameLevel;
 		class PhysicsSystem;
 
@@ -55,7 +54,8 @@ namespace NCL {
 			bool IsQuit();
 		protected:
 			void UpdateGameCore(float dt);
-			virtual void UpdateHud(float dt);
+
+			virtual void BossTarget();
 
 			virtual void ProcessState();
 
@@ -88,7 +88,6 @@ namespace NCL {
 			MenuManager& menuManager;
 			OptionManager& optionManager;
 
-			std::unique_ptr<Hud> hud;
 			std::unique_ptr<PhysicsSystem> physics;
 
 			PlayerObject* players[4];
@@ -98,7 +97,7 @@ namespace NCL {
 			GameLevel* gameLevel = nullptr;
 			Boss* boss = nullptr;
 
-
+			int playerNum = 0;
 			float interval = 0.0f;
 		};
 	}

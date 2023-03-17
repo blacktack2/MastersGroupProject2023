@@ -165,4 +165,15 @@ bool XboxController::GetLeftTrigger(unsigned int controllerNum, float& n)      /
     }
     return true;
 }
+bool XboxController::GetButton(unsigned int controllerNum, short int button)      // n normalized to 0 ~ 1
+{
+    if (!UpdateConnection(controllerNum))   // Controller is not connected OR controllerNum is out of range
+    {
+        return false;   // n is unchanged if connection fails
+    }
+
+    WORD   keyDown = state.Gamepad.wButtons;
+    
+    return keyDown & button;
+}
 #endif //x64

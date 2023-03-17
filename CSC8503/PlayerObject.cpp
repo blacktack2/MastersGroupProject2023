@@ -20,7 +20,7 @@
 #include "Sound.h"
 #include "SoundSystem.h"
 #include "BulletInstanceManager.h"
-
+#include"AnimatedRenderObject.h"
 #include <iostream>
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -37,7 +37,6 @@ PlayerObject::PlayerObject(int playerID) : GameObject(), playerID(playerID), key
 	AttachCamera(playerID);
 	camera->SetPlayerID(playerID);
 	camera->SetFollow(&this->GetTransform());
-
 }
 
 PlayerObject::~PlayerObject() {
@@ -54,7 +53,7 @@ void PlayerObject::Update(float dt) {
 	//Change game state
 	if (health.GetHealth() <= 0) {
 		MoveCamera(dt);
-		ChangeLoseState();
+		//ChangeLoseState();
 		return;
 	}
 		
@@ -138,11 +137,14 @@ void PlayerObject::MoveCamera(float dt) {
 	camera->SetYaw(yaw);
 	Ray ray = CollisionDetection::BuildRayFromCamera(*camera);
 	RayCollision closestCollision;
+	lookingAt = transform.GetGlobalPosition() + ray.GetDirection() * 30;
 	if (gameWorld.Raycast(ray, closestCollision, true, this)) {
-		lookingAt = closestCollision.collidedAt;
-	}
-	else {
-		lookingAt = transform.GetGlobalPosition() + ray.GetDirection() * 20;
+		if (closestCollision.rayDistance > 6) {
+			lookingAt = closestCollision.collidedAt;
+		}
+		else {
+			std::cout << "dist " << closestCollision.rayDistance << std::endl;
+		}
 	}
 	//camera->UpdateCamera(dt);
 }
@@ -328,4 +330,47 @@ void NCL::CSC8503::PlayerObject::SetupAudio()
 
 	SoundSystem::GetSoundSystem()->SetListener(this);
 
+}
+void  NCL::CSC8503::PlayerObject::MoveAnimation(Vector3 dir) {
+	if (this->GetPhysicsObject()->GetLinearVelocity().y > 0.01) {
+		//jump
+		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerJump").get()) {
+			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerJump"));
+		}
+	}
+	else if (this->GetPhysicsObject()->GetLinearVelocity().x<0.2 && this->GetPhysicsObject()->GetLinearVelocity().x>-0.2 && this->GetPhysicsObject()->GetLinearVelocity().z<0.2 && this->GetPhysicsObject()->GetLinearVelocity().z>-0.2) {
+		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle").get()) {
+			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle"));
+		}
+	}
+	else if ((dir.z < 0) && (dir.x * dir.x < dir.z * dir.z)) {
+		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerForward").get()) {
+			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerForward"));
+		}
+		//forward
+	}
+	else if ((dir.z > 0) && (dir.x * dir.x < dir.z * dir.z)) {
+		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerBackward").get()) {
+			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerBackward"));
+		}
+		//backward
+	}
+	else if ((dir.x > 0) && (dir.x * dir.x > dir.z * dir.z)) {
+		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerRight").get()) {
+			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerRight"));
+		}
+		//right
+	}
+	else if ((dir.x < 0) && (dir.x * dir.x > dir.z * dir.z)) {
+		//left
+		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerLeft").get()) {
+			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerLeft"));
+		}
+	}
 }

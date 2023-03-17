@@ -18,19 +18,19 @@
 #include "TextureBase.h"
 
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Rendering;
 
 BloomRPass::BloomRPass() : OGLPostRenderPass(), renderer(GameTechRenderer::instance()) {
 	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
 	SetBloomDepth(bloomDepth);
-	colourOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA16F, renderer.GetWidth(), renderer.GetHeight());
+	colourOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA16F, renderer.GetSplitWidth(), renderer.GetSplitHeight());
 	AddScreenTexture(*colourOutTex);
 
 	bloomFrameBuffer = AssetLoader::CreateFrameBuffer();
 	bloomFrameBuffer->Bind();
 	bloomFrameBuffer->DrawBuffers(1);
-	bloomFrameBuffer->Unbind();
 
 	combineFrameBuffer = AssetLoader::CreateFrameBuffer();
 	combineFrameBuffer->Bind();
@@ -58,14 +58,6 @@ BloomRPass::BloomRPass() : OGLPostRenderPass(), renderer(GameTechRenderer::insta
 	combineShader->Unbind();
 }
 
-BloomRPass::~BloomRPass() {
-}
-
-void BloomRPass::OnWindowResize(int width, int height) {
-	RenderPassBase::OnWindowResize(width, height);
-	SetBloomDepth(bloomDepth);
-}
-
 void BloomRPass::Render() {
 	bloomFrameBuffer->Bind();
 	Downsample();
@@ -88,7 +80,7 @@ void BloomRPass::SetBloomDepth(size_t depth) {
 
 		BloomMip mip{
 			mipWidth, mipHeight,
-			AssetLoader::CreateTexture(TextureType::ColourRGBF, (unsigned int)mipWidth, (unsigned int)mipHeight)
+			AssetLoader::CreateTexture(TextureType::ColourRGBA16F, (unsigned int)mipWidth, (unsigned int)mipHeight)
 		};
 		mip.texture->Bind();
 		mip.texture->SetEdgeWrap(EdgeWrap::ClampToEdge);
@@ -104,6 +96,11 @@ void BloomRPass::SetBias(float bias) {
 	combineShader->SetUniformFloat("bias", bias);
 
 	combineShader->Unbind();
+}
+
+void BloomRPass::OnWindowResize(int width, int height) {
+	RenderPassBase::OnWindowResize(width, height);
+	SetBloomDepth(bloomDepth);
 }
 
 void BloomRPass::Downsample() {

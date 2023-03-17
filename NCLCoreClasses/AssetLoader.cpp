@@ -25,7 +25,7 @@
 using namespace NCL;
 using namespace Rendering;
 
-std::map<std::string, TextureDataLoadFunction> AssetLoader::fileHandlers;
+std::map<std::string, TextureDataLoadFunction> AssetLoader::fileHandlers{};
 
 MeshLoadFunction    AssetLoader::meshLoad    = nullptr;
 TextureLoadFunction AssetLoader::textureLoad = nullptr;

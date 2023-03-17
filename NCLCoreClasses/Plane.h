@@ -1,36 +1,46 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   Plane.h
+ * @brief  Wrapper class for a 3D plane.
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #pragma once
-#include "vector3.h"
+#include "Vector3.h"
+
 namespace NCL {
 	namespace Maths {
+		/**
+		 * @brief Wrapper class for a 3D plane.
+		 */
 		class Plane {
 		public:
-			Plane(void);
+			Plane();
 			Plane(const Vector3& normal, float distance, bool normalise = false);
 
-			~Plane(void) {};
+			~Plane() = default;
 
-			//Sets the planes normal, which should be UNIT LENGTH!!!
-			Plane& SetNormal(const Vector3& normal) { this->normal = normal; return *this; }
-			//Gets the planes normal.
-			Vector3 GetNormal() const { return normal; }
-			//Sets the planes distance from the origin
-			Plane& SetDistance(float dist) { distance = dist; return *this; }
-			//Gets the planes distance from the origin
-			float	GetDistance() const { return distance; }
-			//Performs a simple sphere / plane test
+			inline Plane& SetNormal(const Vector3& normal) {
+				this->normal = normal;
+				return *this;
+			}
+			inline Vector3 GetNormal() const {
+				return normal;
+			}
+
+			inline Plane& SetDistance(float dist) {
+				distance = dist;
+				return *this;
+			}
+			inline float GetDistance() const {
+				return distance;
+			}
+
 			bool SphereInPlane(const Vector3& position, float radius) const;
-			//Performs a simple sphere / point test
 			bool PointInPlane(const Vector3& position) const;
 
-			float	DistanceFromPlane(const Vector3& in) const;
+			float DistanceFromPlane(const Vector3& in) const;
 
 			Vector3 GetPointOnPlane() const {
 				return normal * -distance;
@@ -38,14 +48,10 @@ namespace NCL {
 
 			Vector3 ProjectPointOntoPlane(const Vector3& point) const;
 
-
 			static Plane PlaneFromTri(const Vector3& v0, const Vector3& v1, const Vector3& v2);
-
 		protected:
-			//Unit-length plane normal
 			Vector3 normal;
-			//Distance from origin
-			float	distance;
+			float distance;
 		};
 	}
 }

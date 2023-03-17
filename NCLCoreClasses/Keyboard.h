@@ -1,15 +1,16 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   Keyboard.h
+ * @brief  Handler class for system keyboard input.
+ * 
+ * @author Rich Davidson
+ * @date   March 2023
+ */
 #pragma once
 
 namespace NCL {
-	//http://msdn.microsoft.com/en-us/library/ms645540(VS.85).aspx
+	/**
+	 * @brief Source http://msdn.microsoft.com/en-us/library/ms645540(VS.85).aspx
+	 */
 	enum class KeyboardKeys {
 		LBUTTON = 0x01,  // Left mouse button  
 		RBUTTON = 0x02,  // Right mouse button  
@@ -161,25 +162,32 @@ namespace NCL {
 	public:
 		friend class Window;
 
-		//Is this key currently pressed down?
+		/**
+		 * @return true if key is currently pressed down, otherwise false.
+		 */
 		bool KeyDown(KeyboardKeys key) const {
 			return keyStates[(int)key];
 		}
 		//Has this key been held down for multiple frames?
+		/**
+		 * @return true if key has been held down for multiple frames,
+		 * otherwise false.
+		 */
 		bool KeyHeld(KeyboardKeys key) const {
 			if (KeyDown(key) && holdStates[(int)key]) {
 				return true;
 			}
 			return false;
 		}
-		//Is this the first update the key has been pressed for?
+		/**
+		 * @return true if key has been pressed this frame, otherwise false.
+		 */
 		bool KeyPressed(KeyboardKeys key) const {
 			return (KeyDown(key) && !KeyHeld(key));
 		}
-
 	protected:
 		Keyboard();
-		virtual ~Keyboard() {}
+		virtual ~Keyboard() = default;
 
 		void UpdateFrameState(float msec);
 
@@ -187,7 +195,7 @@ namespace NCL {
 		void Wake();
 
 		bool isAwake;
-		bool keyStates[(int)KeyboardKeys::MAXVALUE];		//Is the key down?
-		bool holdStates[(int)KeyboardKeys::MAXVALUE];		//Has the key been down for multiple updates?
+		bool keyStates[(int)KeyboardKeys::MAXVALUE];
+		bool holdStates[(int)KeyboardKeys::MAXVALUE];
 	};
 }

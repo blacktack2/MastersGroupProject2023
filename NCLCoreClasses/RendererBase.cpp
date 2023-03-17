@@ -3,10 +3,20 @@
  * @brief  See RendererBase.h.
  * 
  * @author Stuart Lewis
+ * @author Xiaoyang Liu
  * @author Rich Davidson
- * @date   February 2023
+ * @date   March 2023
  */
 #include "RendererBase.h"
+
+#include "RendererConfigBase.h"
+
+#include "IMainRenderPass.h"
+#include "ICombineRenderPass.h"
+#include "IPostRenderPass.h"
+#include "IPresentRenderPass.h"
+#include "IOverlayRenderPass.h"
+#include "RenderPassBase.h"
 
 #include <optional>
 
@@ -14,11 +24,6 @@ using namespace NCL;
 using namespace Rendering;
 
 RendererBase::RendererBase(Window& window) : hostWindow(window)	{
-	windowWidth  = static_cast<int>(window.GetScreenSize().x);
-	windowHeight = static_cast<int>(window.GetScreenSize().y);
-}
-
-RendererBase::~RendererBase() {
 }
 
 void RendererBase::EnableRenderScene(bool enable) {
@@ -74,38 +79,117 @@ void RendererBase::UpdatePipeline() {
 		} else {
 			presentPass->SetSceneTexIn(combinePass->GetOutTex());
 		}
-		renderPipeline.push_back(*presentPass);
 	}
+	overlayPipeline.clear();
 	if (doRenderOver) {
 		for (auto& pass : overlayRenderPasses) {
 			if (pass.enabled) {
-				renderPipeline.push_back(pass.pass);
+				overlayPipeline.push_back(pass.pass);
 			}
 		}
 	}
 }
 
 void RendererBase::OnWindowResize(int width, int height) {
+	ResizeViewport();
+}
+
+void RendererBase::ResizeViewport() {
+	switch (numPlayers) {
+	default:
+	case 1:
+		splitWidth = GetWidth(); splitHeight = GetHeight(); break;
+	case 2:
+		splitWidth = GetWidth() * 0.5f; splitHeight = GetHeight(); break;
+	case 3: case 4:
+		splitWidth = GetWidth() * 0.5f; splitHeight = GetHeight() * 0.5f; break;
+	}
 	for (auto& pass : mainRenderPasses) {
-		pass.pass.OnWindowResize(width, height);
+		pass.pass.OnWindowResize(splitWidth, splitHeight);
 	}
 	if (combinePass) {
-		combinePass->OnWindowResize(width, height);
+		combinePass->OnWindowResize(splitWidth, splitHeight);
 	}
 	for (auto& pass : postRenderPasses) {
-		pass.pass.OnWindowResize(width, height);
+		pass.pass.OnWindowResize(splitWidth, splitHeight);
 	}
 	if (presentPass) {
-		presentPass->OnWindowResize(width, height);
+		presentPass->OnWindowResize(splitWidth, splitHeight);
 	}
 	for (auto& pass : overlayRenderPasses) {
-		pass.pass.OnWindowResize(width, height);
+		pass.pass.OnWindowResize(splitWidth, splitHeight);
 	}
 }
 
+void RendererBase::RenderViewPort(int viewportID, int cameraID, const std::vector<float>& viewports, bool displayHudDebug) {
+	size_t index = (size_t)viewportID * 4;
+	GetConfig().SetDefaultViewport(0, 0, viewports[index + 2], viewports[index + 3]);
+	SetGameWorldMainCamera(cameraID);
+	RenderScene();
+	GetConfig().SetDefaultViewport(viewports[index], viewports[index + 1], viewports[index + 2], viewports[index + 3]);
+	RenderPresent();
+	//DisplayWinLoseInformation(i);
+	EnableOverlayPass("Menu", false);
+	if (!displayHudDebug) {
+		EnableOverlayPass("Hud", true);
+		EnableOverlayPass("Debug", true);
+	}
+	UpdatePipeline();
+	RenderOverlay();
+}
+
 void RendererBase::RenderFrame() {
+	static const std::vector<float> viewports1 = {
+		0.0f, 0.0f, 1.0f, 1.0f,
+	};
+	static const std::vector<float> viewports2 = {
+		0.0f, 0.0f, 0.5f, 1.0f,
+		0.5f, 0.0f, 0.5f, 1.0f,
+	};
+	static const std::vector<float> viewports4 = {
+		0.0f, 0.0f, 0.5f, 0.5f,
+		0.0f, 0.5f, 0.5f, 0.5f,
+		0.5f, 0.0f, 0.5f, 0.5f,
+		0.5f, 0.5f, 0.5f, 0.5f,
+	};
+	const std::vector<float>& viewports = numPlayers > 2 ? viewports4 : (numPlayers > 1 ? viewports2 : viewports1);
 	ClearBackbuffer();
+	int mainCamera = GetGameWorldMainCamera();
+	bool temp1 = overlayRenderPasses[overlayMap["Menu"]].enabled;
+
+	//viewport 0 is always main camera
+	RenderViewPort(0, mainCamera, viewports, temp1);
+	int cameraID = 0;
+	for (size_t i = 1; i < numPlayers; i++) {
+		if (cameraID == mainCamera) {
+			cameraID++;
+		}
+		//if (i > 1) { SetGameWorldDeltaTime(0.0f); }
+		RenderViewPort(i, cameraID, viewports, temp1);
+		cameraID++;
+	}
+	
+	SetGameWorldMainCamera(mainCamera);
+	GetConfig().SetDefaultViewport();
+	EnableOverlayPass("Menu", temp1);
+	EnableOverlayPass("Hud", false);
+	EnableOverlayPass("Debug", false);
+	UpdatePipeline();
+	RenderOverlay();
+}
+
+void RendererBase::RenderScene() {
 	for (auto& pass : renderPipeline) {
+		pass.get().Render();
+	}
+}
+
+void RendererBase::RenderPresent() {
+	presentPass->Render();
+}
+
+void RendererBase::RenderOverlay() {
+	for (auto& pass : overlayPipeline) {
 		pass.get().Render();
 	}
 }

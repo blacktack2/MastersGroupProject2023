@@ -14,29 +14,23 @@
 
 namespace NCL {
 	class MeshGeometry;
-}
 
-namespace NCL {
 	namespace Rendering {
-		class FrameBuffer;
 		class ShaderBase;
 		class TextureBase;
 	}
-}
 
-using namespace NCL;
-using namespace Rendering;
+	using namespace NCL::Rendering;
 
-namespace NCL {
 	namespace CSC8503 {
 		class PresentRPass : public OGLPresentRenderPass {
 		public:
 			PresentRPass();
-			~PresentRPass();
+			~PresentRPass() = default;
 
-			virtual void Render() override;
+			void Render() override;
 
-			virtual void SetSceneTexIn(TextureBase& sceneTex) override {
+			void SetSceneTexIn(TextureBase& sceneTex) override {
 				sceneTexIn = &sceneTex;
 			}
 

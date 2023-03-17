@@ -1,30 +1,32 @@
 /**
  * @file   RendererBase.h
- * @brief  Base rendering class for handling general updates and pipeline
- * organisation.
+ * @brief  Base rendering class for handling general updates and render
+ * pipeline organisation.
  * 
  * @author Rich Davidson
  * @author Stuart Lewis
- * @date   February 2023
+ * @author Xiaoyang Liu
+ * @date   March 2023
  */
 #pragma once
 #include "Window.h"
-
-#include "IMainRenderPass.h"
-#include "ICombineRenderPass.h"
-#include "IPostRenderPass.h"
-#include "IPresentRenderPass.h"
-#include "IOverlayRenderPass.h"
-#include "RenderPassBase.h"
 
 #include <memory>
 #include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "Vector4.h"
 
 namespace NCL {
 	namespace Rendering {
+		class IRenderPass;
+		class IMainRenderPass;
+		class ICombineRenderPass;
+		class IPostRenderPass;
+		class IPresentRenderPass;
+		class IOverlayRenderPass;
+
 		enum class VerticalSyncState {
 			On,
 			Off,
@@ -52,11 +54,9 @@ namespace NCL {
 			friend class Window;
 
 			RendererBase(Window& w);
-			virtual ~RendererBase();
+			virtual ~RendererBase() = default;
 
-			virtual bool HasInitialised() const { return true; }
-
-			virtual void Update(float dt) {}
+			virtual bool HasInitialised() const = 0;
 
 			void Render() {
 				BeginFrame();
@@ -65,8 +65,10 @@ namespace NCL {
 				SwapBuffers();
 			}
 
-			virtual bool SetVerticalSync(VerticalSyncState s) {
-				return false;
+			virtual bool SetVerticalSync(VerticalSyncState s) = 0;
+			inline void SetNumPlayers(unsigned int numPlayers) {
+				this->numPlayers = numPlayers;
+				ResizeViewport();
 			}
 
 			/**
@@ -110,23 +112,37 @@ namespace NCL {
 			 */
 			void UpdatePipeline();
 
+			inline int GetSplitWidth() const {
+				return splitWidth;
+			}
+			inline int GetSplitHeight() const {
+				return splitHeight;
+			}
+
 			inline float GetAspect() const {
-				return (float)windowWidth / (float)windowHeight;
+				return hostWindow.GetScreenAspect();
 			}
 			inline int GetWidth() const {
-				return windowWidth;
+				return (int)hostWindow.GetScreenSize().x;
 			}
 			inline int GetHeight() const {
-				return windowHeight;
+				return (int)hostWindow.GetScreenSize().y;
 			}
 
 			/**
 			 * @brief Clear the backbuffer, or the current framebuffer.
-			 *
+			 * 
 			 * @param mask Which buffers to clear.
 			 */
 			virtual void ClearBuffers(ClearBit mask) = 0;
 			virtual RendererConfigBase& GetConfig() = 0;
+
+			virtual void SetGameWorldMainCamera(int num) = 0;
+			virtual int GetGameWorldMainCamera() = 0;
+
+			virtual void DisplayWinLoseInformation(int playerID) = 0;
+
+			virtual void SetGameWorldDeltaTime(float dt) = 0;
 		protected:
 			/**
 			 * @brief Add main render pass. Meant to add to, or modify, the GBuffer
@@ -161,7 +177,7 @@ namespace NCL {
 			 * @brief Enabled passes are called in the same order they are added
 			 * using this method.
 			 * @brief Must be followed by a call to UpdatePipeline() to take effect.
-			 *
+			 * 
 			 * @param name Unique name identifier for this render pass.
 			 */
 			inline void AddPostPass(IPostRenderPass& pass, const std::string& name) {
@@ -192,7 +208,7 @@ namespace NCL {
 			 * @brief Enabled passes are called in the same order they are added
 			 * using this method.
 			 * @brief Must be followed by a call to UpdatePipeline() to take effect.
-			 *
+			 * 
 			 * @param name Unique name identifier for this render pass.
 			 */
 			inline void AddOverlayPass(IOverlayRenderPass& pass, const std::string& name) {
@@ -215,11 +231,6 @@ namespace NCL {
 
 			virtual void SwapBuffers() = 0;
 			virtual void ClearBackbuffer() = 0;
-
-			Window& hostWindow;
-
-			int windowWidth;
-			int windowHeight;
 		private:
 			struct MainPass {
 				IMainRenderPass& pass;
@@ -233,22 +244,45 @@ namespace NCL {
 				bool enabled;
 			};
 
+			void ResizeViewport();
+			void RenderViewPort(int viewportID, int cameraID, const std::vector<float>& viewports, bool displayHudDebug);
 			void RenderFrame();
+			void RenderScene();
+			void RenderPresent();
+			void RenderOverlay();
+
+			unsigned int numPlayers = 4;
+			int splitWidth = 1, splitHeight = 1;
+
+			Window& hostWindow;
 
 			bool doRenderScene = true;
 			bool doRenderPost = true;
 			bool doRenderOver = true;
 
-			std::vector<MainPass> mainRenderPasses;
-			ICombineRenderPass* combinePass;
-			std::vector<PostPass> postRenderPasses;
-			IPresentRenderPass* presentPass;
-			std::vector<OverPass> overlayRenderPasses;
+			std::vector<MainPass> mainRenderPasses{};
+			ICombineRenderPass* combinePass = nullptr;
+			std::vector<PostPass> postRenderPasses{};
+			IPresentRenderPass* presentPass = nullptr;
+			std::vector<OverPass> overlayRenderPasses{};
 
-			std::unordered_map<std::string, size_t> postMap;
-			std::unordered_map<std::string, size_t> overlayMap;
+			std::unordered_map<std::string, size_t> postMap{};
+			std::unordered_map<std::string, size_t> overlayMap{};
 
-			std::vector<std::reference_wrapper<IRenderPass>> renderPipeline;
+			std::vector<std::reference_wrapper<IRenderPass>> renderPipeline{};
+			std::vector<std::reference_wrapper<IRenderPass>> overlayPipeline{};
+
+			Vector4 player1Viewport = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+			Vector4 player2Viewport = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+			Vector4 player3Viewport = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+			Vector4 player4Viewport = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+
+			/**
+			* TODO:
+			*	Split renderePipeline&overlayPipeline to have one for each player
+			*	Store player specific viewports in Vector4 member variables
+			*	Try to simplify the RenderFrame mainloop (preferably to just a few for loops)
+			*/
 		};
 	}
 }

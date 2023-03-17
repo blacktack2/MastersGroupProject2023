@@ -18,12 +18,13 @@
 #include "TextureBase.h"
 
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Rendering;
 
 CombineRPass::CombineRPass() : OGLCombineRenderPass(), renderer(GameTechRenderer::instance()) {
 	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
-	sceneOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetWidth(), renderer.GetHeight());
+	sceneOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetSplitWidth(), renderer.GetSplitHeight());
 	AddScreenTexture(*sceneOutTex);
 
 	frameBuffer = AssetLoader::CreateFrameBuffer();
@@ -48,9 +49,6 @@ CombineRPass::CombineRPass() : OGLCombineRenderPass(), renderer(GameTechRenderer
 	shader->SetUniformInt("depthTex", 6);
 
 	shader->Unbind();
-}
-
-CombineRPass::~CombineRPass() {
 }
 
 void CombineRPass::Render() {

@@ -17,8 +17,8 @@ using namespace CSC8503;
 using namespace Maths;
 
 
-Button::Button(float PosX, float PosY, float Width, float Height, std::shared_ptr<TextureBase> texture, overlap_func onclick): UIObject(texture),
-keyMap(NCL::InputKeyMap::instance()), renderer(GameTechRenderer::instance()), OnClickCallback(onclick) {
+Button::Button(float PosX, float PosY, float Width, float Height, std::shared_ptr<TextureBase> texture, overlap_func onclick, overlap_func onselect, overlap_func onpress):
+    UIObject(texture), keyMap(NCL::InputKeyMap::instance()), renderer(GameTechRenderer::instance()), OnClickCallback(onclick), OnSelectCallback(onselect), OnPressCallback(onpress) {
     posX = PosX;
     posY = PosY;
     width = Width;
@@ -40,6 +40,26 @@ void Button::Update(float dt){
     if (isMouseHover && keyMap.GetButton(InputType::Confirm)) {
         OnClick();
     }
+
+    if (keyMap.GetButtonDown(InputType::DOWN)) {
+        counter++;
+        t++;
+        optionManager.SetCounter(counter);
+        OnSelect();
+    }
+    if (keyMap.GetButtonUp(InputType::UP)) {
+        if (t == 0) {
+            counter += 2;
+        }
+        t++;
+        counter--;
+        optionManager.SetCounter(counter);
+        OnSelect();
+    }
+
+    if (keyMap.GetButtonDown(InputType::Confirm)) {
+        OnPress();
+    }
 }
 
 Vector4 Button::GetDimension() const {
@@ -55,9 +75,24 @@ void Button::OnClick() {
     OnClickCallback(*this);
 }
 
+void Button::OnSelect() {
+    if (!OnSelectCallback) {
+        std::cout << "Button has no OnSelect callback!\n";
+        return;
+    }
+    OnSelectCallback(*this);
+}
+
+void Button::OnPress() {
+    if (!OnPressCallback) {
+        std::cout << "Button has no OnPress callback!\n";
+        return;
+    }
+    OnPressCallback(*this);
+}
+
 void Button::DrawExtras() {
-    Debug::Print("[]", Vector2(posX, posY), btncolour, 1.0f);
-    Debug::Print("[]", Vector2(posX + width, posY + height), btncolour, 1.0f);
+    
 }
 
 void Button::CheckMousePosition(Vector2 mousePos) {
@@ -65,4 +100,9 @@ void Button::CheckMousePosition(Vector2 mousePos) {
     mousePos.y = -(mousePos.y * 2 / (float)renderer.GetHeight() - 1);
     isMouseHover = !(mousePos.x < (posX - width ) || mousePos.x > (posX + width) ||
                      mousePos.y < (posY - height) || mousePos.y > (posY + height));
+}
+
+void Button::CheckPointer(float pointerPosY) {
+    pointerPosY = -(pointerPosY * 2 / (float)renderer.GetHeight() - 1);
+    isPointer = !(pointerPosY < (posY - height) || pointerPosY >(posY + height));
 }

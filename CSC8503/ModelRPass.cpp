@@ -14,20 +14,19 @@
 #include "AssetLoader.h"
 
 #include "FrameBuffer.h"
-#include "MeshGeometry.h"
 #include "ShaderBase.h"
 #include "TextureBase.h"
 
 #include "RenderObject.h"
 
-using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Rendering;
 
 ModelRPass::ModelRPass() : OGLMainRenderPass(),
 gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
-	albedoOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetWidth(), renderer.GetHeight());
-	normalOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetWidth(), renderer.GetHeight());
-	depthOutTex  = AssetLoader::CreateTexture(TextureType::Depth, renderer.GetWidth(), renderer.GetHeight());
+	albedoOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	normalOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	depthOutTex  = AssetLoader::CreateTexture(TextureType::Depth, renderer.GetSplitWidth(), renderer.GetSplitHeight());
 	AddScreenTexture(*albedoOutTex);
 	AddScreenTexture(*normalOutTex);
 	AddScreenTexture(*depthOutTex);
@@ -45,9 +44,6 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	AddModelShader(AssetLibrary<ShaderBase>::GetAsset("animationDefault"));
 }
 
-ModelRPass::~ModelRPass() {
-}
-
 void ModelRPass::Render() {
 	frameBuffer->Bind();
 	renderer.GetConfig().SetDepthMask(true);
@@ -59,7 +55,8 @@ void ModelRPass::Render() {
 		shader->Bind();
 
 		Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-		Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetAspect());
+		float screenAspect = (float)renderer.GetSplitWidth() / (float)renderer.GetSplitHeight();
+		Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
 
 		shader->SetUniformMatrix("viewMatrix", viewMatrix);
 		shader->SetUniformMatrix("projMatrix", projMatrix);
@@ -88,6 +85,7 @@ void ModelRPass::AddModelShader(std::shared_ptr<ShaderBase> shader) {
 
 	shader->SetUniformInt("albedoTex", 0);
 	shader->SetUniformInt("bumpTex"  , 1);
+	shader->SetUniformInt("specTex"  , 2);
 
 	shader->Unbind();
 }

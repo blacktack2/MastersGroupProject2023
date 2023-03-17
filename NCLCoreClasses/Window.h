@@ -1,13 +1,12 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   Window.h
+ * @brief  Handler class for base window functionality.
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #pragma once
-
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "GameTimer.h"
@@ -20,50 +19,71 @@ namespace NCL {
 	namespace Rendering {
 		class RendererBase;
 	};
-	using namespace Rendering;
+	using namespace NCL::Rendering;
 	
+	/**
+	 * @brief Handler class for base window functionality.
+	 */
 	class Window {
 	public:
 		static Window* CreateGameWindow(std::string title = "NCLGL!", int sizeX = 800, int sizeY = 600, bool fullScreen = false, int offsetX = 100, int offsetY = 100);
 
-		static void DestroyGameWindow() {
+		static inline void DestroyGameWindow() {
 			delete window;
 			window = nullptr;
 		}
 
-		bool		IsMinimised() const { return minimised;	 }
+		inline bool IsMinimised() const {
+			return minimised;
+		}
 
-		bool		UpdateWindow();
-		void		SetRenderer(RendererBase* r);
+		bool UpdateWindow();
+		void SetRenderer(RendererBase* r);
 
-		bool		HasInitialised()	const { return init; }
+		inline bool HasInitialised() const {
+			return init;
+		}
 
-		float		GetScreenAspect()	const {
+		inline float GetScreenAspect() const {
 			return size.x / size.y;
 		}
 
-		Vector2		GetScreenSize()		const { return size; }
-		Vector2		GetScreenPosition()	const { return position; }
+		inline Vector2 GetScreenSize() const {
+			return size;
+		}
+		inline Vector2 GetScreenPosition() const {
+			return position;
+		}
 
-		const std::string&  GetTitle()   const { return windowTitle; }
-		void				SetTitle(const std::string& title) {
+		inline const std::string& GetTitle() const {
+			return windowTitle;
+		}
+		inline void SetTitle(const std::string& title) {
 			windowTitle = title;
 			UpdateTitle();
 		};
 
-		virtual void	LockMouseToWindow(bool lock) = 0;
-		virtual void	ShowOSPointer(bool show) = 0;
+		virtual void LockMouseToWindow(bool lock) = 0;
+		virtual void ShowOSPointer(bool show) = 0;
 
-		virtual void	SetWindowPosition(int x, int y) {};
-		virtual void	SetFullScreen(bool state) {};
-		virtual void	SetConsolePosition(int x, int y) {};
-		virtual void	ShowConsole(bool state) {};
+		virtual void SetWindowPosition(int x, int y) {};
+		virtual void SetFullScreen(bool state) {};
+		virtual void SetConsolePosition(int x, int y) {};
+		virtual void ShowConsole(bool state) {};
 
-		static const Keyboard*	 GetKeyboard() { return keyboard; }
-		static const Mouse*		 GetMouse() { return mouse; }
-		static const GameTimer*	 GetTimer() { return timer; }
+		static inline const Keyboard* GetKeyboard() {
+			return keyboard;
+		}
+		static inline const Mouse* GetMouse() {
+			return mouse;
+		}
+		static inline const GameTimer* GetTimer() {
+			return timer;
+		}
 
-		static Window*	const GetWindow() { return window; }
+		static inline Window* const GetWindow() {
+			return window;
+		}
 	protected:
 		Window();
 		virtual ~Window();
@@ -74,19 +94,19 @@ namespace NCL {
 
 		void ResizeRenderer();
 
-		RendererBase*	renderer;
+		RendererBase* renderer;
 
-		bool				minimised;
-		bool				init;
-		Vector2				position;
-		Vector2				size;
-		Vector2				defaultSize;
+		bool minimised = false;
+		bool init = false;
+		Vector2 position;
+		Vector2 size;
+		Vector2 defaultSize;
 
-		std::string			windowTitle;
+		std::string windowTitle;
 
-		static Window*		window;
-		static Keyboard*	keyboard;
-		static Mouse*		mouse;
-		static GameTimer*	timer;
+		static Window*    window;
+		static Keyboard*  keyboard;
+		static Mouse*     mouse;
+		static GameTimer* timer;
 	};
 }
