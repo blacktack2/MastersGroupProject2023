@@ -459,10 +459,8 @@ void NetworkedGame::HandlePlayerConnectedPacket(GamePacket* payload, int source)
 		}
 		std::vector<int> connectedClients = connectedPlayerIDs;
 		for (auto i : connectedClients) {
-			//std::cout << "Server sending to : " << i << std::endl;
 			if (i == playerID) {
 				//send the id to the new player
-				//std::cout << playerID << " : " << i << std::endl;
 				PlayerSyncPacket payload;
 				payload.objectID = playerID;
 				thisServer->SendPacket(&payload, i, true);
@@ -474,7 +472,6 @@ void NetworkedGame::HandlePlayerConnectedPacket(GamePacket* payload, int source)
 				thisServer->SendPacket(&newPacket, i);
 
 				//send old player's id to new player
-				//std::cout << "Server sending create player " << i << " to : " << playerID<< std::endl;
 				PlayerConnectionPacket existingPacket;
 				existingPacket.playerID = i;
 				thisServer->SendPacket(&existingPacket, playerID, true);
@@ -497,11 +494,8 @@ void NetworkedGame::HandlePlayerDisconnectedPacket(GamePacket* payload, int sour
 }
 
 void NetworkedGame::HandlePlayerSyncPacket(GamePacket* payload, int source) {
-	std::cout << "PlayerSyncPacket" << std::endl;
 	selfID = ((PlayerSyncPacket*)payload)->objectID;
-	std::cout << name << " " << selfID << " recieved PlayerSyncPacket" << std::endl;
 	if (thisClient && localPlayer == nullptr) {
-		std::cout << name << " " << selfID << " Creating localhost player " << selfID << std::endl;
 		localPlayer = SpawnPlayer(selfID, true);
 		localPlayer->GetCamera()->GetHud().AddHealthBar(localPlayer->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
 	}
@@ -603,7 +597,6 @@ PlayerObject* NetworkedGame::PlayerJoinedServer(int playerID) {
 
 void NetworkedGame::PlayerLeftServer(int playerID) {
 	if (serverPlayers.contains(playerID)) {
-		std::cout << name << " " << selfID << " deleting player " << playerID << std::endl;
 		if (gameStateManager.GetGameState() == GameState::Lobby) {
 			serverPlayers[playerID]->SetActive(false);
 		}
@@ -698,8 +691,6 @@ void NetworkedGame::ProcessState() {
 		}
 		break;
 	}
-
-	std::cout << (int)gameStateManager.GetGameState() << std::endl;
 
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	if (thisServer) {

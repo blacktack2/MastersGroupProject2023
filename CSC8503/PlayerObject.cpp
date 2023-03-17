@@ -43,8 +43,13 @@ PlayerObject::~PlayerObject() {
 	SoundSystem::GetSoundSystem()->SetListener(nullptr);
 	delete playerSource;
 	delete attackSource;
+	ClearCamera();
 
+}
 
+void PlayerObject::ClearCamera() {
+	camera->GetHud().ClearAndErase();
+	camera->SetFollow(nullptr);
 }
 
 void PlayerObject::Update(float dt) {
@@ -251,7 +256,6 @@ void PlayerObject::CheckGround() {
 	{
 		objClosest = (GameObject*)closestCollision.node;
 		float groundDist = (closestCollision.collidedAt - this->GetTransform().GetGlobalPosition()).Length();
-		std::cout << "ground dist " << groundDist << std::endl;
 		if (groundDist < jumpTriggerDist)
 		{
 			onGround = true;
