@@ -11,6 +11,19 @@ namespace NCL {
 	namespace CSC8503 {
 		class Bullet;
 
+		enum PlayerMovingDirection {
+			Idle,
+
+			MoveForward,
+			MoveBackward,
+			MoveToLeft,
+			MoveToRight,
+			MoveForwardLeft,
+			MoveForwardRight,
+			MoveBackwardLeft,
+			MoveBackwardRight,
+		};
+
 		class PlayerObject : public GameObject {
 		public:
 			PlayerObject(int playerID);
@@ -96,14 +109,14 @@ namespace NCL {
 			//camera related
 			Vector3 lookingAt = Vector3(0);
 
-			void MoveAnimation(Vector3 dir);
+			void MoveAnimation();
 		private:
 
 			void SetupAudio();
 
 			//jump related 
 			bool onGround = false;
-			float jumpTriggerDist = 1.1f;
+			float jumpTriggerDist = 1.85f;
 			float jumpTimer = 0.0f;
 			const float jumpCooldown = 0.005f;
 			float jumpSpeed = 10.0f;
@@ -111,6 +124,7 @@ namespace NCL {
 			//movement related
 			float moveSpeed = 0.4f;
 			Vector3 lastDir = Vector3(0,0,0);
+			PlayerMovingDirection playerMovingDirection = PlayerMovingDirection::Idle;
 			
 			//camera related
 			Camera* camera;

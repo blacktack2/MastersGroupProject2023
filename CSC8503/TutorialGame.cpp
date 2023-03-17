@@ -304,15 +304,15 @@ PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& positi
 	static int id = 0;
 
 	PlayerObject* character = new PlayerObject(playerID);
-	SphereVolume* volume = new SphereVolume(1.0f, CollisionLayer::Player);
+	SphereVolume* volume = new SphereVolume(1.8f, CollisionLayer::Player);
 
 	character->SetBoundingVolume((CollisionVolume*)volume);
 
 	character->GetTransform()
-		.SetScale(Vector3(1, 1, 1))
+		.SetScale(Vector3(3,3,3))
 		.SetPosition(position);
 
-	character->SetRenderObject(new RenderObject(character->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("goat"), nullptr));
+	character->SetRenderObject(new AnimatedRenderObject(character->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("player"), AssetLibrary<MeshMaterial>::GetAsset("player"), AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle")));
 	
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 
@@ -371,13 +371,13 @@ void TutorialGame::UpdateLevel() {
 		if (object->HasDestroyed()){
 			object->Destroy(false);
 			if (object->objectType == ObjectType::Pillar){
-				Vector3 dimensions{ interval / 2.0f, 10, interval / 2.0f };
+				Vector3 dimensions{ interval / 2.0f, 15, interval / 2.0f };
 				Obstacle* pillar = new Obstacle{ object, true };
 
 				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3f, 2.0f, 1.3f }, CollisionLayer::PaintAble));
 
 				pillar->GetTransform()
-					.SetPosition(object->worldPos + Vector3{ 0,20,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,15,0 })
 					.SetScale(dimensions * 2);
 				//pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("pillar"), healingKitTex, nullptr));
 				

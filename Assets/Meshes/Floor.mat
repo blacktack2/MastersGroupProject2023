@@ -5,6 +5,6 @@ MeshMat
 defaultModel
 3
 Albedo:Floor/Floor_basecolor.tga
-Bump:Floor_normal.tga
-Spec:Floor_roughness.tga
+Bump:Floor/Floor_normal.tga
+Spec:Floor/Floor_roughness.tga
 0
