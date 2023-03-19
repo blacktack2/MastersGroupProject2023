@@ -146,9 +146,6 @@ void TutorialGame::UpdateGame(float dt) {
 		gameWorld.SetScreenNum(4);
 	}
 
-	// TODO - makeshift crosshair
-	Debug::Print("+", Vector2(49.5f, 49.5f), Vector4(1, 1, 1, 1));
-
 	debugViewPoint.BeginFrame();
 	debugViewPoint.MarkTime("Update");
 	
@@ -242,6 +239,10 @@ void TutorialGame::ProcessState() {
 	}
 
 	switch (gameStateManager.GetGameState()) {
+	case GameState::OnGoing:
+		// TODO - makeshift crosshair
+		Debug::Print("+", Vector2(49.5f, 49.5f), Vector4(1, 1, 1, 1));
+		break;
 	case GameState::Win:
 		Debug::Print("You Win!", Vector2(5.0f, 70.0f), Debug::GREEN);
 		[[fallthrough]];
