@@ -75,6 +75,7 @@ namespace NCL {
 			void HandleFullPacket(GamePacket* payload, int source);
 			void HandlePlayerConnectedPacket(GamePacket* payload, int source);
 			void HandlePlayerDisconnectedPacket(GamePacket* payload, int source);
+			void HandleClientIDPacket(GamePacket* payload, int source);
 			void HandlePlayerSyncPacket(GamePacket* payload, int source);
 			void HandleItemInitPacket(GamePacket* payload, int source);
 			void HandleBossActionPacket(GamePacket* payload, int source);
@@ -137,11 +138,20 @@ namespace NCL {
 			~GameStatePacket() {}
 		};
 		struct PlayerSyncPacket : public GamePacket {
-			int		objectID = -1;
+			int		playerID = -1;
+			int		health = -1;
 
 			PlayerSyncPacket() {
 				type = PlayerSync_Message;
 				size = sizeof(PlayerSyncPacket) - sizeof(GamePacket);
+			}
+		};
+		struct ClientIDPacket : public GamePacket {
+			int		objectID = -1;
+
+			ClientIDPacket() {
+				type = ClientID_Message;
+				size = sizeof(ClientIDPacket) - sizeof(GamePacket);
 			}
 		};
 		struct LobbyPacket : public GamePacket {

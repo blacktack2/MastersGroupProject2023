@@ -84,6 +84,7 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(Player_Connected, this);
 	thisClient->RegisterPacketHandler(Player_Disconnected, this);
 	thisClient->RegisterPacketHandler(PlayerSync_Message, this);
+	thisClient->RegisterPacketHandler(ClientID_Message, this);
 	thisClient->RegisterPacketHandler(Item_Init_Message, this);
 	thisClient->RegisterPacketHandler(BossAction_Message, this);
 	thisClient->RegisterPacketHandler(GameState_Message, this);
@@ -472,7 +473,7 @@ void NetworkedGame::HandlePlayerConnectedPacket(GamePacket* payload, int source)
 		for (auto i : connectedClients) {
 			if (i == playerID) {
 				//send the id to the new player
-				PlayerSyncPacket payload;
+				ClientIDPacket payload;
 				payload.objectID = playerID;
 				thisServer->SendPacket(&payload, i, true);
 			}
@@ -504,12 +505,16 @@ void NetworkedGame::HandlePlayerDisconnectedPacket(GamePacket* payload, int sour
 	}
 }
 
-void NetworkedGame::HandlePlayerSyncPacket(GamePacket* payload, int source) {
-	selfID = ((PlayerSyncPacket*)payload)->objectID;
+void NetworkedGame::HandleClientIDPacket(GamePacket* payload, int source) {
+	selfID = ((ClientIDPacket*)payload)->objectID;
 	if (thisClient && localPlayer == nullptr) {
 		localPlayer = SpawnPlayer(selfID, true);
 		localPlayer->GetCamera()->GetHud().AddHealthBar(localPlayer->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
 	}
+}
+
+void NetworkedGame::HandlePlayerSyncPacket(GamePacket* payload, int source) {
+	
 }
 
 void NetworkedGame::HandleItemInitPacket(GamePacket* payload, int source) {
@@ -580,6 +585,9 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		break;
 	case Player_Disconnected:
 		HandlePlayerDisconnectedPacket(payload, source);
+		break;
+	case ClientID_Message:
+		HandleClientIDPacket(payload, source);
 		break;
 	case PlayerSync_Message:
 		HandlePlayerSyncPacket(payload, source);
