@@ -80,21 +80,15 @@ TutorialGame::~TutorialGame() {
 void TutorialGame::StartLevel() {
 	InitWorld();
 	XboxControllerManager::GetXboxController().CheckPorts();
-	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
-	if (numOfPlayers >= 4)
+	numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
+	if (numOfPlayers > 4)
 		numOfPlayers = 4;
-
 	boss = AddBossToWorld({ 0, 5, -20 }, Vector3(4), 2);
 
-	players[0] = AddPlayerToWorld(0, Vector3(0, 5, 90));
-	keyMap.ChangePlayerControlTypeMap(0, ControllerType::KeyboardMouse);
-	players[0]->GetCamera()->GetHud().AddHealthBar(players[0]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
-	players[0]->GetCamera()->GetHud().AddHealthBar(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
+	// A messy way of spawning multiple player and 
+	AddPlayer(0, ControllerType::KeyboardMouse);
 	for (int i = 1; i <= numOfPlayers; i++) {
-		players[i] = AddPlayerToWorld(i, Vector3(0, 5, 90));		// TODO: currently this will result in access violation if 4 controllers are connected
-		keyMap.ChangePlayerControlTypeMap(i, ControllerType::Xbox);
-		players[i]->GetCamera()->GetHud().AddHealthBar(players[i]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
-		players[i]->GetCamera()->GetHud().AddHealthBar(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
+		AddPlayer(i, ControllerType::Xbox);
 	}
 	numOfPlayers++;		// +1 accounts for players[0] who uses Keyboard & Mouse
 	playerNum = numOfPlayers;
@@ -107,7 +101,6 @@ void TutorialGame::StartLevel() {
 
 void TutorialGame::Clear() {
 	for (int i = 0; i < playerNum; i++) {
-		//players[i]->GetCamera()->GetHud().ClearAndErase();
 		players[i] = nullptr;
 	}
 	playerNum = 0;
@@ -238,18 +231,23 @@ void TutorialGame::BossTarget() {
 }
 
 void TutorialGame::ProcessState() {
-	int totalHealth = 0;
-	for (int i = 0; i < playerNum; i++) {
-		totalHealth += players[i]->GetHealth()->GetHealth();
-	}
-	if (totalHealth <= 0) {
-		gameStateManager.SetGameState(GameState::Lose);
+	if (gameStateManager.GetGameState() == GameState::OnGoing) {
+		int totalHealth = 0;
+		for (int i = 0; i < playerNum; i++) {
+			totalHealth += players[i]->GetHealth()->GetHealth();
+		}
+		if (totalHealth <= 0) {
+			gameStateManager.SetGameState(GameState::Lose);
+		}
 	}
 
 	switch (gameStateManager.GetGameState()) {
 	case GameState::Win:
+		Debug::Print("You Win!", Vector2(5.0f, 70.0f), Debug::GREEN);
+		[[fallthrough]];
 	case GameState::Lose:
-		Debug::Print("Press [R] or [Start] to play again", Vector2(5, 80), Vector4(1, 1, 1, 1));
+		Debug::Print("You Lose!", Vector2(5.0f, 70.0f), Debug::RED);
+		Debug::Print("Press [R] or [Start] to play again", Vector2(5, 80), Debug::WHITE);
 		break;
 	}
 
@@ -298,6 +296,14 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 	gameWorld.AddGameObject(floor);
 
 	return floor;
+}
+
+void TutorialGame::AddPlayer(int index, ControllerType type) {
+	players[index] = AddPlayerToWorld(index, Vector3(0, 5, 90));
+	keyMap.ChangePlayerControlTypeMap(index, type);
+	players[index]->GetCamera()->GetHud().AddHealthBar(players[index]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
+	players[index]->GetCamera()->GetHud().SetPlayerHealth(players[index]->GetHealth());
+	players[index]->GetCamera()->GetHud().AddHealthBar(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
 }
 
 PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& position) {
@@ -365,7 +371,6 @@ void TutorialGame::BuildLevel() {
 
 	UpdateLevel();
 }
-
 void TutorialGame::UpdateLevel() {
 	for (auto& object : gameLevel->GetGameStuffs()){
 		if (object->HasDestroyed()){

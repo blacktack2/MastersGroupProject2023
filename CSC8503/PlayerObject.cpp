@@ -53,7 +53,8 @@ void PlayerObject::ClearCamera() {
 }
 
 void PlayerObject::Update(float dt) {
-	//Change game state
+	//Change game 
+
 	if (health.GetHealth() <= 0) {
 		MoveCamera(dt);
 		//ChangeLoseState();
@@ -230,7 +231,6 @@ void NCL::CSC8503::PlayerObject::GetDir(Vector3& movingDir3D)
 	}
 }
 
-
 void PlayerObject::GetButtonInput(unsigned int keyPress) {
 	isFreeLook = false;
 	if (keyMap.CheckButtonPressed(keyPress, InputType::Jump, playerID))
@@ -309,7 +309,6 @@ void PlayerObject::CollisionWith(GameObject* other) {
 	//gameWorld.RemoveGameObject(this);
 }
 
-
 PlayerBullet* PlayerObject::PrepareBullet()
 {
 	Vector3 dir = lookingAt - transform.GetGlobalPosition();
@@ -348,7 +347,6 @@ void NCL::CSC8503::PlayerObject::Jump()
 	}
 }
 
-
 void NCL::CSC8503::PlayerObject::SetupAudio()
 {
 	playerSource = new SoundSource();
@@ -370,6 +368,7 @@ void NCL::CSC8503::PlayerObject::SetupAudio()
 	SoundSystem::GetSoundSystem()->SetListener(this);
 
 }
+
 void  NCL::CSC8503::PlayerObject::MoveAnimation() {
 	if (this->GetPhysicsObject()->GetLinearVelocity().y > 0.01f) {		// Jumping	
 		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());

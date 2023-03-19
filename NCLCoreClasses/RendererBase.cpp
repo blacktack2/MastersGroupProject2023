@@ -98,11 +98,11 @@ void RendererBase::ResizeViewport() {
 	switch (numPlayers) {
 	default:
 	case 1:
-		splitWidth = GetWidth(); splitHeight = GetHeight(); break;
+		splitWidth = static_cast<int>(GetWidth()); splitHeight = static_cast<int>(GetHeight()); break;
 	case 2:
-		splitWidth = GetWidth() * 0.5f; splitHeight = GetHeight(); break;
+		splitWidth = static_cast<int>(GetWidth() * 0.5f); splitHeight = static_cast<int>(GetHeight()); break;
 	case 3: case 4:
-		splitWidth = GetWidth() * 0.5f; splitHeight = GetHeight() * 0.5f; break;
+		splitWidth = static_cast<int>(GetWidth() * 0.5f); splitHeight = static_cast<int>(GetHeight() * 0.5f); break;
 	}
 	for (auto& pass : mainRenderPasses) {
 		pass.pass.OnWindowResize(splitWidth, splitHeight);
@@ -128,7 +128,7 @@ void RendererBase::RenderViewPort(int viewportID, int cameraID, const std::vecto
 	RenderScene();
 	GetConfig().SetDefaultViewport(viewports[index], viewports[index + 1], viewports[index + 2], viewports[index + 3]);
 	RenderPresent();
-	//DisplayWinLoseInformation(i);
+	DisplayWinLoseInformation(cameraID);
 	EnableOverlayPass("Menu", false);
 	if (!displayHudDebug) {
 		EnableOverlayPass("Hud", true);

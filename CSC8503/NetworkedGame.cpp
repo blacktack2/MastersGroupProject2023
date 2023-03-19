@@ -142,10 +142,12 @@ void NetworkedGame::SpawnPlayers() {
 	if (thisServer) {
 		localPlayer = SpawnPlayer(0, true);
 		localPlayer->GetCamera()->GetHud().AddHealthBar(localPlayer->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
+		localPlayer->GetCamera()->GetHud().SetPlayerHealth(localPlayer->GetHealth());
 	}
 	if (thisClient && selfID != NULL) {
 		localPlayer = SpawnPlayer(selfID, true);
 		localPlayer->GetCamera()->GetHud().AddHealthBar(localPlayer->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
+		localPlayer->GetCamera()->GetHud().SetPlayerHealth(localPlayer->GetHealth());
 	}
 	int count = 1;
 	for (int id : connectedPlayerIDs) {
