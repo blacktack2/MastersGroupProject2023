@@ -310,12 +310,13 @@ PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& positi
 	static int id = 0;
 
 	PlayerObject* character = new PlayerObject(playerID);
-	SphereVolume* volume = new SphereVolume(1.8f, CollisionLayer::Player);
+	SphereVolume* volume = new SphereVolume(1.2f, CollisionLayer::Player);
 
-	character->SetBoundingVolume((CollisionVolume*)volume);
+	character->SetBoundingVolume(volume);
 
+	float scale = 2.0f;
 	character->GetTransform()
-		.SetScale(Vector3(3,3,3))
+		.SetScale(Vector3(scale))
 		.SetPosition(position);
 
 	character->SetRenderObject(new AnimatedRenderObject(character->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("player"), AssetLibrary<MeshMaterial>::GetAsset("player"), AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle")));

@@ -229,6 +229,7 @@ void NetworkedGame::BossTarget()
 }
 
 void NetworkedGame::UpdateAsServer(float dt) {
+	Debug::DrawAxisLines(localPlayer->GetTransform().GetGlobalMatrix());
 	//update Game state
 	float health = 0;
 	health += static_cast<NetworkPlayer*>(localPlayer)->GetHealth()->GetHealth();
@@ -632,16 +633,18 @@ void NetworkedGame::OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b) {
 }
 
 PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, int playerID) {
+	static int id = 0;
 	NetworkPlayer* character = new NetworkPlayer( this, playerID);
-	SphereVolume* volume = new SphereVolume(1.0f, CollisionLayer::Player);
+	SphereVolume* volume = new SphereVolume(1.2f, CollisionLayer::Player);
 
-	character->SetBoundingVolume((CollisionVolume*)volume);
+	character->SetBoundingVolume(volume);
 
+	float scale = 2.0f;
 	character->GetTransform()
-		.SetScale(Vector3(1, 1, 1))
+		.SetScale(Vector3(scale))
 		.SetPosition(position);
 
-	character->SetRenderObject(new RenderObject(character->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("goat"), nullptr));
+	character->SetRenderObject(new AnimatedRenderObject(character->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("player"), AssetLibrary<MeshMaterial>::GetAsset("player"), AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle")));
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 
 	character->GetRenderObject()->SetColour(Vector4(1, 0.9f, 0.8f, 1));

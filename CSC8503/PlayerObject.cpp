@@ -53,8 +53,12 @@ void PlayerObject::ClearCamera() {
 }
 
 void PlayerObject::Update(float dt) {
-	//Change game 
+	Vector3 t = transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition();
+	Debug::DrawLine(t, t + Vector3(0, 0.5f, 0), Debug::BLUE);
+	Debug::DrawLine(t, t + Vector3(0, -0.5f, 0), Debug::GREEN);
 
+	Debug::DrawLine(transform.GetGlobalPosition() - Vector3(0, radius, 0), transform.GetGlobalPosition() - Vector3(0, jumpTriggerDist,0), Debug::RED);
+	//Change game 
 	if (health.GetHealth() <= 0) {
 		MoveCamera(dt);
 		//ChangeLoseState();
@@ -85,6 +89,13 @@ void PlayerObject::ChangeLoseState()
 	gameStateManager->SetGameState(GameState::Lose);
 }
 
+void PlayerObject::SetBoundingVolume(SphereVolume* vol)
+{
+	radius = vol->GetRadius();
+	jumpTriggerDist += vol->GetRadius();
+	GameObject::SetBoundingVolume((CollisionVolume*)vol);
+}
+
 void NCL::CSC8503::PlayerObject::Movement(float dt)
 {
 	isFreeLook = false;
@@ -103,16 +114,6 @@ void NCL::CSC8503::PlayerObject::Movement(float dt)
 	MoveAnimation();
 }
 
-void PlayerObject::MoveTo(Vector3 position) {
-	Vector3 diff = position - this->GetTransform().GetGlobalPosition();
-
-	if (diff.Length() > 0.1f) {
-		Vector3 dir = (position - this->GetTransform().GetGlobalPosition()).Normalised();
-		this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
-	}
-
-}
-
 void PlayerObject::MoveByPosition(float dt, Vector3 dir)
 /*
 This is a temporary member function. Feel free to merge this into PlayerObject::Move when necessary.
@@ -124,13 +125,6 @@ This is a temporary member function. Feel free to merge this into PlayerObject::
 void PlayerObject::Move(Vector3 dir) {
 	this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
 
-	if (lastDir != Vector3(0, 0, 0)) {
-		//Vector3 stopDir = dir - lastDir;
-		if (NCL::InputKeyMap::instance().GetButtonState() != lastKey) {
-			this->GetPhysicsObject()->ApplyLinearImpulse(-lastDir * moveSpeed);
-		}
-
-	}
 	if(dir != Vector3(0)){
 		playerSource->Play(Sound::AddSound("footstep06.wav"));
 	}
@@ -248,6 +242,7 @@ void PlayerObject::GetButtonInput(unsigned int keyPress) {
 }
 
 void PlayerObject::CheckGround() {
+	
 	Ray r = Ray(this->GetTransform().GetGlobalPosition(), Vector3(0, -1, 0));
 	RayCollision closestCollision;
 	GameObject* objClosest;
