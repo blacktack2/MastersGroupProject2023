@@ -32,6 +32,8 @@ constexpr auto COLLISION_MSG = 30;
 constexpr auto OBJECTID_START = 10; //reserve 0-4 for playerID;
 constexpr auto BOSSID = 5; //reserve 0-4 for playerID;
 
+constexpr auto MAXCLIENTCONNECT = MAXPLAYER - 1;
+
 NetworkedGame::NetworkedGame(bool isServer)	{
 	thisServer = nullptr;
 	thisClient = nullptr;
@@ -65,7 +67,7 @@ NetworkedGame::~NetworkedGame()	{
 
 void NetworkedGame::StartAsServer() {
 	SetName("server");
-	thisServer = new GameServer(NetworkBase::GetDefaultPort(), 4);
+	thisServer = new GameServer(NetworkBase::GetDefaultPort(), MAXCLIENTCONNECT);
 	thisServer->RegisterPacketHandler(Received_State, this);
 	thisServer->RegisterPacketHandler(Player_Connected, this);
 	thisServer->RegisterPacketHandler(Player_Disconnected, this);
@@ -444,6 +446,12 @@ void NetworkedGame::HandlePlayerConnectedPacket(GamePacket* payload, int source)
 		thisServer->SendPacket(&newPacket, source, true);
 		return;
 	}
+	if (connectedPlayerIDs.size() > MAXCLIENTCONNECT) {
+		LobbyPacket newPacket;
+		newPacket.status = LobbyState::Started;
+		thisServer->SendPacket(&newPacket, source, true);
+		return;
+	}
 
 	int playerID = ((PlayerConnectionPacket*)payload)->playerID;
 	connectedPlayerIDs.push_back(playerID);
@@ -676,18 +684,21 @@ void NetworkedGame::ProcessState() {
 	case GameState::Win:
 	case GameState::Lose:
 		if(thisServer){
-			Debug::Print("Press [R] or [Start] to return to lobby", Vector2(5, 80), Vector4(1, 1, 1, 1));
+			Debug::Print("Press [R] or [Start] to return to lobby", Vector2(5, 80), Debug::WHITE);
 		}
 		if (thisClient) {
-			Debug::Print("Please Wait for server to return to lobby", Vector2(5, 80), Vector4(1, 1, 1, 1));
+			Debug::Print("Please Wait for server to return to lobby", Vector2(5, 80), Debug::WHITE);
 		}
 		break;
 	case GameState::Lobby:
+		std::string s = "Connected Player: ";
+		s += std::to_string(connectedPlayerIDs.size() + 1 ) + "/" + std::to_string(MAXPLAYER);
+		Debug::Print(s.c_str(), Vector2(55, 06), Debug::WHITE);
 		if (thisServer) {
-			Debug::Print("Press [R] or [Start] to Start the Game", Vector2(5, 80), Vector4(1, 1, 1, 1));
+			Debug::Print("Press [R] or [Start] to Start the Game", Vector2(5, 80), Debug::WHITE);
 		}
 		if (thisClient) {
-			Debug::Print("Please Wait for server to Start the Game", Vector2(5, 80), Vector4(1, 1, 1, 1));
+			Debug::Print("Please Wait for server to Start the Game", Vector2(5, 80), Debug::WHITE);
 		}
 		break;
 	}

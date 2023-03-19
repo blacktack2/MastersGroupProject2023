@@ -105,10 +105,10 @@ namespace NCL {
 				SetViewport(vpX, vpY, vpWidth, vpHeight);
 			}
 			inline void SetDefaultViewport(float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f) {
-				vpX = x * renderer.GetWidth();
-				vpY = y * renderer.GetHeight();
-				vpWidth = width * renderer.GetWidth();
-				vpHeight = height * renderer.GetHeight();
+				vpX = static_cast<int>(x * renderer.GetWidth());
+				vpY = static_cast<int>(y * renderer.GetHeight());
+				vpWidth = static_cast<int>(width * renderer.GetWidth());
+				vpHeight = static_cast<int>(height * renderer.GetHeight());
 				SetViewport();
 			}
 			/**
