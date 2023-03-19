@@ -10,6 +10,7 @@
 #include "SphereVolume.h"
 #include "CapsuleVolume.h"
 #include "Ray.h"
+#include "Vector3.h"
 
 using NCL::Camera;
 using namespace NCL::Maths;
@@ -19,27 +20,38 @@ namespace NCL {
 	{
 	public:
 		struct ContactPoint {
-			Vector3 contactPoint;
-			Vector3 normal;
-			float	penetration;
+			Vector3 localA = Vector3();
+			Vector3 localB = Vector3();
+			Vector3 contactPoint = Vector3();
+			Vector3 normal = Vector3();
+			float	penetration = 0;
 		};
 
 		struct CollisionInfo {
-			GameObject* a;
-			GameObject* b;		
-			int framesLeft;
-			bool isEntered;
+			GameObject* a = nullptr;
+			GameObject* b = nullptr;
+			int framesLeft = 0;
+			bool isEntered = false;
 
-			ContactPoint point;
+			std::vector<ContactPoint> point;
 
 			CollisionInfo() {
 
 			}
 
-			void AddContactPoint(const Vector3& contactPoint, const Vector3& normal, float p) {
-				point.contactPoint  = contactPoint;
-				point.normal		= normal;
-				point.penetration	= p;
+			void AddContactPoint(const Vector3& normal, float p, const Vector3& localA = Vector3(), const Vector3& localB = Vector3()) {
+				if (point.empty()) {
+					point.resize(1);
+				}
+				size_t pSize = point.size() - 1;
+				if (pSize != 0) {
+					point.resize(point.size() + 1);
+					pSize++;
+				}
+				point[pSize].localA			= localA;
+				point[pSize].localB			= localB;
+				point[pSize].normal			= normal;
+				point[pSize].penetration	= p;
 			}
 
 			//Advanced collision detection / resolution
@@ -86,6 +98,7 @@ namespace NCL {
 		static bool	AABBTest(const Vector3& posA, const Vector3& posB, const Vector3& halfSizeA, const Vector3& halfSizeB);
 
 		static bool SeparatingPlane(const Vector3& delta, const Vector3& plane, const Vector3* axes0, const Vector3& halfSize0, const Vector3* axes1, const Vector3& halfSize1);
+		static Vector3 OBBSupport(const Transform& worldTransform, Vector3 worldDir);
 
 		static bool AABBIntersection(	const AABBVolume& volumeA, const Transform& worldTransformA,
 										const AABBVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo);

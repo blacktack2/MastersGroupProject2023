@@ -1,39 +1,45 @@
 /**
  * @file   OGLFrameBuffer.h
- * @brief  OpenGL based implementation of a framebuffer.
+ * @brief  OpenGL implementation of a framebuffer.
  * 
  * @author Stuart Lewis
  * @date   February 2023
  */
+#pragma once
 #include "FrameBuffer.h"
 
-#include <glad/gl.h>
+#include "glad/gl.h"
 
+#include <memory>
 #include <vector>
 
-namespace NCL::Rendering {
-	class OGLTexture;
+namespace NCL {
+	namespace Rendering {
+		class OGLTexture;
 
-	class OGLFrameBuffer : public FrameBuffer {
-	public:
-		OGLFrameBuffer();
-		~OGLFrameBuffer();
+		/**
+		 * @brief Base OpenGL implementation of a framebuffer.
+		 */
+		class OGLFrameBuffer : public FrameBuffer {
+		public:
+			OGLFrameBuffer();
+			~OGLFrameBuffer();
 
-		virtual void Bind() override;
-		virtual void Unbind() override;
+			virtual void Bind() const override;
+			virtual void Unbind() const override;
 
-		void AddTexture(OGLTexture* texture);
+			void DrawBuffers() const override;
+			void DrawBuffers(unsigned int numBuffers) const override;
 
-		void DrawBuffers();
+			bool InitSuccess() const override;
 
-		bool InitSuccess() {
-			return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
-		}
-	private:
-		GLuint fboID;
+			static std::unique_ptr<FrameBuffer> CreateFrameBuffer();
+		protected:
+			void BindToTexture(TextureBase& texture, unsigned int attachment) override;
+		private:
+			GLuint fboID;
 
-		GLsizei numColourTexs = 0ull;
-
-		std::vector<OGLTexture*> textures{};
-	};
+			GLsizei numColourTexs = 0;
+		};
+	}
 }

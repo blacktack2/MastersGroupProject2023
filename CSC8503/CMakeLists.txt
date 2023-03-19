@@ -3,40 +3,38 @@ set(PROJECT_NAME CSC8503)
 ################################################################################
 # Source groups
 ################################################################################
+
 set(Header_Files
-	"Bullet.h"
-	"Bonus.h"
-    
-	"EnemyObject.h"
+    "DebugViewPoint.h"
+    "GameLevel.h"
+    "GameGrid.h"
+    "GameGridManager.h"
+    "GameStateManager.h"
 	"Maze.h"
-    "NetworkedGame.h"
-    "NetworkPlayer.h"
-	"NPCObject.h"
-	"PlayerObject.h"
+    "MenuRenderObject.h"
+    "Obstacle.h"
     "StateGameObject.h"
     "TutorialGame.h"
-    "DebugViewPoint.h"
-    "Boss.h"
-    "GameGrid.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
-	"Bullet.cpp"
-	"Bonus.cpp"
-	"EnemyObject.cpp"
+    "DebugViewPoint.cpp"
+    "GameLevel.cpp"
+    "GameGrid.cpp"
+    "GameGridManager.cpp"
+    "GameStateManager.cpp"
     "Main.cpp"
 	"Maze.cpp"
-    "NetworkedGame.cpp"
-    "NetworkPlayer.cpp"
-	"NPCObject.cpp"
-	"PlayerObject.cpp"
+    "MenuRenderObject.cpp"
+
     "StateGameObject.cpp"
     "TutorialGame.cpp"
-    "DebugViewPoint.cpp"
 )
 
 set(Render_Files
+    "AnimatedRenderObject.h"
+    "AnimatedRenderObject.cpp"
     "GameTechRenderer.h"
     "GameTechRenderer.cpp"
     "SkyboxRPass.h"
@@ -45,6 +43,8 @@ set(Render_Files
     "ModelRPass.cpp"
     "LightingRPass.h"
     "LightingRPass.cpp"
+    "SSAORPass.h"
+    "SSAORPass.cpp"
     "CombineRPass.h"
     "CombineRPass.cpp"
     "BloomRPass.h"
@@ -55,6 +55,18 @@ set(Render_Files
     "PresentRPass.cpp"
     "DebugRPass.h"
     "DebugRPass.cpp"
+    "PresentRPass.h"
+    "PresentRPass.cpp"
+    "PaintRenderObject.h"
+    "PaintRenderObject.cpp"
+    "PaintingRPass.cpp"
+    "PaintingRPass.h"
+    "ModelRPass.h"
+    "ModelRPass.cpp"
+    "MenuRPass.h"
+    "MenuRPass.cpp"
+    "HudRPass.h"
+    "HudRPass.cpp"
 )
 
 if(USE_VULKAN)
@@ -75,10 +87,6 @@ set(Audio_Files
     "SoundSystem.cpp"
     "Sound.h"
     "Sound.cpp"
-    "SoundObject.h"
-    "SoundObject.cpp"
-    "SoundManager.h"
-    "SoundManager.cpp"
     "SoundSource.h"
     "SoundSource.cpp"
     "SoundDevice.h"
@@ -88,11 +96,95 @@ set(Audio_Files
 )
 source_group("Audio Files" FILES ${Audio_Files})
 
+set(Ink_Files 
+    "InkEffectManager.h"
+    "InkEffectManager.cpp"
+    "InkEffect.h"
+	"InkEffect.cpp"
+    "InkEffectOverTime.h"
+    "InkEffectOverTime.cpp"
+)
+source_group("Ink Files" FILES ${Ink_Files})
+
+set(Bullet_Files 
+    "Bullet.h"
+    "Bullet.cpp"
+    "BossBullet.h"
+	"BossBullet.cpp"
+    "PlayerBullet.h"
+    "PlayerBullet.cpp"
+    "BulletInstanceManager.h"
+    "BulletInstanceManager.cpp"
+	
+)
+source_group("Bullet Files" FILES ${Bullet_Files})
+
+set(Player_Files 
+    "health.h"
+	"health.cpp"
+    "PlayerObject.h"
+    "PlayerObject.cpp"
+	
+)
+source_group("Player Files" FILES ${Player_Files})
+
+set(Enemy_Files 
+    "Boss.h"
+    "Boss.cpp"
+)
+source_group("Enemy Files" FILES ${Enemy_Files})
+
+set(Menu_Files 
+    "MenuManager.h"
+    "MenuManager.cpp"
+    "UIObject.h"
+    "UIObject.cpp"
+    "Menu.h"
+    "Menu.cpp"
+    "Button.h"
+    "Button.cpp"
+    "ScreenMain.h"
+    "ScreenGame.h"
+    "ScreenPause.h"
+    "ScreenMain.cpp"
+    "ScreenGame.cpp"
+    "ScreenPause.cpp"
+    "ScreenOption.h"
+    "ScreenOption.cpp"
+    "ScreenMultiplayer.h"
+    "ScreenMultiplayer.cpp"
+    "ScreenMultiplayerOption.h"
+    "ScreenMultiplayerOption.cpp"
+    "OptionManager.h"
+    "OptionManager.cpp"
+    "HealthBar.h"
+    "HealthBar.cpp"
+    "Hud.h"
+    "Hud.cpp"
+)
+source_group("Menu Files" FILES ${Menu_Files})
+
+set(network_Files 
+    "NetworkedGame.h"
+    "NetworkedGame.cpp"
+    "NetworkPlayer.h"
+    "NetworkPlayer.cpp"
+    "NetworkBoss.h"
+    "NetworkBoss.cpp"
+)
+source_group("Network Files" FILES ${network_Files})
+
 set(ALL_FILES
     ${Header_Files}
     ${Source_Files}
     ${Audio_Files}
     ${Render_Files}
+    ${Ink_Files}
+    ${Bullet_Files}
+	${Player_Files}
+    ${Enemy_Files}
+    ${Menu_Files}
+    ${network_Files}
 )
 
 if(USE_VULKAN)
@@ -101,6 +193,12 @@ if(USE_VULKAN)
         ${Source_Files}
         ${SHADER_FILES}
         ${Audio_Files}
+        ${Ink_Files}
+        ${Bullet_Files}
+	    ${Player_Files}
+        ${Enemy_Files}
+        ${Menu_Files}
+        ${network_Files}
     )
 
 foreach (file ${SHADER_FILES})

@@ -7,101 +7,130 @@
  * @date   February 2023
  */
 #include "GameTechRenderer.h"
-#include "GameObject.h"
-#include "RenderObject.h"
+
+#include "GameWorld.h"
+
 #include "Camera.h"
-#include "TextureLoader.h"
+
 using namespace NCL;
-using namespace Rendering;
-using namespace CSC8503;
+using namespace NCL::Rendering;
+using namespace NCL::CSC8503;
 
-Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(Vector3(0.5f, 0.5f, 0.5f));
+GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()), gameWorld(GameWorld::instance()) {
+	for (size_t i = 0; i < 4; i++) {
+		playersHP[i] = -1;
+	}
+}
 
-GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetWindow()), gameWorld(world) {
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
+void GameTechRenderer::SetGameWorldDeltaTime(float dt) {
+	gameWorld.SetDeltaTime(dt);
+}
 
-	skyboxPass = new SkyboxRPass(*this, gameWorld);
-	renderPasses.push_back(skyboxPass);
+void GameTechRenderer::InitPipeline() {
+	paintingRPass = std::make_unique<PaintingRPass>();
+	AddMainPass(*paintingRPass);
 
-	modelPass = new ModelRPass(*this, gameWorld);
-	renderPasses.push_back(modelPass);
+	skyboxPass = std::make_unique<SkyboxRPass>();
+	AddMainPass(*skyboxPass);
 
-	lightingPass = new LightingRPass(*this, gameWorld,
-		modelPass->GetDepthOutTex(), modelPass->GetNormalOutTex());
-	renderPasses.push_back(lightingPass);
+	modelPass = std::make_unique<ModelRPass>();
+	AddMainPass(*modelPass);
 
-	combinePass = new CombineRPass(*this,
-		skyboxPass->GetOutTex(), modelPass->GetDiffuseOutTex(),
-		lightingPass->GetDiffuseOutTex(), lightingPass->GetSpecularOutTex(),
-		modelPass->GetNormalOutTex(), modelPass->GetDepthOutTex());
-	renderPasses.push_back(combinePass);
+	lightingPass = std::make_unique<LightingRPass>();
+	lightingPass->SetDepthTexIn(modelPass->GetDepthOutTex());
+	lightingPass->SetNormalTexIn(modelPass->GetNormalOutTex());
+	lightingPass->SetSpecTexIn(modelPass->GetSpecOutTex());
+	AddMainPass(*lightingPass);
 
-	bloomPass = new BloomRPass(*this, combinePass->GetOutTex());
+	ssaoPass = std::make_unique<SSAORPass>();
+	ssaoPass->SetDepthTexIn(modelPass->GetDepthOutTex());
+	ssaoPass->SetNormalTexIn(modelPass->GetNormalOutTex());
+	AddMainPass(*ssaoPass);
+
+	combinePass = std::make_unique<CombineRPass>();
+	combinePass->SetSkyboxTexIn(skyboxPass->GetOutTex());
+	combinePass->SetAlbedoTexIn(modelPass->GetAlbedoOutTex());
+	combinePass->SetDiffuseTexIn(lightingPass->GetDiffuseOutTex());
+	combinePass->SetSpecularTexIn(lightingPass->GetSpecularOutTex());
+	combinePass->SetSSAOTexIn(ssaoPass->GetOutTex());
+	combinePass->SetNormalTexIn(modelPass->GetNormalOutTex());
+	combinePass->SetDepthTexIn(modelPass->GetDepthOutTex());
+	SetCombinePass(*combinePass);
+
+	bloomPass = std::make_unique<BloomRPass>();
 	SetBloomAmount(bloomAmount);
-	SetBloomThreshold(bloomThreshold);
-	renderPasses.push_back(bloomPass);
+	SetBloomBias(bloomBias);
+	AddPostPass(*bloomPass, "Bloom");
 
-	hdrPass = new HDRRPass(*this, bloomPass->GetOutTex());
+	hdrPass = std::make_unique<HDRRPass>();
 	SetHDRExposure(hdrExposure);
-	renderPasses.push_back(hdrPass);
+	AddPostPass(*hdrPass, "HDR");
 
-	presentPass = new PresentRPass(*this, hdrPass->GetOutTex());
+	presentPass = std::make_unique<PresentRPass>();
 	SetGamma(gamma);
-	renderPasses.push_back(presentPass);
+	SetPresentPass(*presentPass);
 
-	debugPass = new DebugRPass(*this, gameWorld);
-	renderPasses.push_back(debugPass);
+	menuPass = std::make_unique<MenuRPass>();
+	AddOverlayPass(*menuPass, "Menu");
+
+	debugPass = std::make_unique<DebugRPass>();
+	AddOverlayPass(*debugPass, "Debug");
+
+	hudPass = std::make_unique<HudRPass>();
+	AddOverlayPass(*hudPass, "Hud");
+
+	UpdatePipeline();
 }
 
-GameTechRenderer::~GameTechRenderer() {
-	delete skyboxPass;
-	delete modelPass;
-	delete lightingPass;
-	delete combinePass;
-	delete presentPass;
-	delete debugPass;
+void GameTechRenderer::SetGamma(float g) {
+	gamma = g;
+	modelPass->SetGamma(gamma);
+	presentPass->SetGamma(gamma);
 }
 
-void GameTechRenderer::RenderFrame() {
-	glClearColor(0, 0, 0, 0);
-	OGLRenderer::RenderFrame();
+void GameTechRenderer::SetSunDir(Vector3 direction) {
+	sunDirection = direction;
+	skyboxPass->SetSunDir(direction);
 }
 
-void GameTechRenderer::BuildObjectList() {
-	activeObjects.clear();
-
-	gameWorld.OperateOnContents(
-		[&](GameObject* o) {
-			if (o->IsActive()) {
-				const RenderObject* g = o->GetRenderObject();
-				if (g) {
-					activeObjects.emplace_back(g);
-				}
-			}
-		}
-	);
+void GameTechRenderer::SetBloomAmount(size_t depth) {
+	bloomAmount = std::min(std::max(depth, 1ull), 100ull);
+	bloomPass->SetBloomDepth(bloomAmount);
 }
 
-void GameTechRenderer::SortObjectList() {
-
+void GameTechRenderer::SetBloomBias(float bias) {
+	bloomBias = bias;
+	bloomPass->SetBias(bloomBias);
 }
 
-MeshGeometry* GameTechRenderer::LoadMesh(const std::string& name) {
-	OGLMesh* mesh = new OGLMesh(name);
-	mesh->SetPrimitiveType(GeometryPrimitive::Triangles);
-	mesh->UploadToGPU();
-	return mesh;
+void GameTechRenderer::SetHDRExposure(float exposure) {
+	hdrExposure = exposure;
+	hdrPass->SetExposure(hdrExposure);
 }
 
-TextureBase* GameTechRenderer::LoadTexture(const std::string& name) {
-	return TextureLoader::LoadAPITexture(name);
+void GameTechRenderer::SetSSAORadius(float radius) {
+	ssaoRadius = radius;
+	ssaoPass->SetRadius(ssaoRadius);
 }
 
-ShaderBase* GameTechRenderer::LoadShader(const std::string& vertex, const std::string& fragment) {
-	return new OGLShader(vertex, fragment);
+void GameTechRenderer::SetSSAOBias(float bias) {
+	ssaoBias = bias;
+	ssaoPass->SetBias(ssaoBias);
 }
 
-void GameTechRenderer::Update(float dt) {
+void GameTechRenderer::SetGameWorldMainCamera(int cameraNum) {
+	gameWorld.SetMainCamera(cameraNum);
+}
+
+int GameTechRenderer::GetGameWorldMainCamera() {
+	return gameWorld.GetMainCameraIndex();
+}
+
+void GameTechRenderer::DisplayWinLoseInformation(int playerID) {
+	gameWorld.GetCamera(playerID);
+	if (bossHP <= 0) {
+		debugPass->RenderWinLoseInformation(true);
+	} else if (playersHP[playerID] <= 0) {
+		debugPass->RenderWinLoseInformation(false);
+	}
 }

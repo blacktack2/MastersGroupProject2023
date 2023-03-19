@@ -1,7 +1,16 @@
 #pragma once
+/**
+ * @file   Main.cpp
+ * @brief  
+ * 
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
 #include "Window.h"
 
 #include "Debug.h"
+
+#include "PlayerBullet.h"
 
 #include "StateMachine.h"
 #include "StateTransition.h"
@@ -20,374 +29,246 @@
 
 #include "PushdownState.h"
 
-#include "BehaviourNode.h"
-#include "BehaviourSelector.h"
-#include "BehaviourSequence.h"
-#include "BehaviourParallel.h"
-#include "BehaviourParallelSelector.h"
-#include "BehaviourAction.h"
-
 #include "TestAudio.h"
 
-using namespace NCL;
-using namespace CSC8503;
+#include "ScreenMain.h"
+
+#include "AssetLibrary.h"
+#include "OGLLoadingManager.h"
+
+
+#include "AssetLoader.h"
+#include "PrefabLibrary.h"
+
+#include "MeshAnimation.h"
+#include "MeshGeometry.h"
+#include "MeshMaterial.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
 
 #include <chrono>
 #include <thread>
 #include <sstream>
 
-void TestStateMachine() {
-	StateMachine* testMachine = new StateMachine();
-	int data = 0;
+using namespace NCL;
+using namespace CSC8503;
 
-	State* A = new State([&](float dt)->void {
-		std::cout << "In state A\n";
-		data++;
-	});
-	State* B = new State([&](float dt)->void {
-		std::cout << "In state B\n";
-		data--;
-	});
-
-	StateTransition* stateAB = new StateTransition(A, B, [&](void)->bool {
-		return data > 10;
-	});
-	StateTransition* stateBA = new StateTransition(B, A, [&](void)->bool {
-		return data < 0;
-	});
-
-	testMachine->AddState(A);
-	testMachine->AddState(B);
-	testMachine->AddTransition(stateAB);
-	testMachine->AddTransition(stateBA);
-
-	for (int i = 0; i < 100; i++) {
-		testMachine->Update(1.0f);
+// TODO Move asset loading functions to a specialised class
+void LoadGlobalAssets() {
+	std::cout << "Loading global assets\n";
+	{
+		std::shared_ptr<MeshGeometry> quad = AssetLoader::CreateMesh();
+		quad->SetVertexPositions({
+			Vector3(-1, 1, -1),
+			Vector3(-1, -1, -1),
+			Vector3(1, -1, -1),
+			Vector3(1, 1, -1),
+			});
+		quad->SetVertexTextureCoords({
+			Vector2(0, 1),
+			Vector2(0, 0),
+			Vector2(1, 0),
+			Vector2(1, 1),
+			});
+		quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
+		quad->SetVertexColours({
+			Vector4(1, 1, 1, 1),
+			Vector4(1, 1, 1, 1),
+			Vector4(1, 1, 1, 1),
+			Vector4(1, 1, 1, 1),
+			});
+		quad->UploadToGPU();
+		AssetLibrary<MeshGeometry>::AddAsset("quad", std::move(quad));
 	}
+	AssetLibrary<MeshGeometry>::AddAsset("cube", AssetLoader::LoadMesh("cube.msh"));
+	AssetLibrary<MeshGeometry>::AddAsset("sphere", AssetLoader::LoadMesh("sphere.msh"));
+	AssetLibrary<MeshGeometry>::AddAsset("goat", AssetLoader::LoadMesh("Goat.msh"));
+	AssetLibrary<MeshGeometry>::AddAsset("capsule", AssetLoader::LoadMesh("capsule.msh"));
+
+	AssetLibrary<MeshGeometry>::AddAsset("fenceX", AssetLoader::LoadMesh("fenceXCube.msh"));
+	//AssetLibrary<MeshMaterial>::AddAsset("fenceX", AssetLoader::LoadMesh("fenceXCube.msh"));
+	AssetLibrary<MeshGeometry>::AddAsset("fenceY", AssetLoader::LoadMesh("fenceYCube.msh"));
+	AssetLibrary<MeshGeometry>::AddAsset("wall", AssetLoader::LoadMesh("cube.msh"));
+	AssetLibrary<MeshGeometry>::AddAsset("shelter", AssetLoader::LoadMesh("shelterCube.msh"));
+	AssetLibrary<MeshGeometry>::AddAsset("pillar", AssetLoader::LoadMesh("Building/Column_04_Old.msh"));
+
+	AssetLibrary<TextureBase>::AddAsset("defaultAlbedo", std::move(AssetLoader::LoadTexture("DefaultAlbedo.png")));
+	AssetLibrary<TextureBase>::AddAsset("defaultBump", std::move(AssetLoader::LoadTexture("DefaultBump.png")));
+	AssetLibrary<TextureBase>::AddAsset("defaultSpec", std::move(AssetLoader::LoadTexture("DefaultSpec.png")));
+	AssetLibrary<TextureBase>::AddAsset("basic", std::move(AssetLoader::LoadTexture("checkerboard.png")));
+	AssetLibrary<TextureBase>::AddAsset("pillarTex", std::move(AssetLoader::LoadTexture("pillarTex.jpg")));
+
+	AssetLibrary<MeshMaterial>::AddAsset("default", std::make_shared<MeshMaterial>("Default.mat"));
+	AssetLibrary<MeshMaterial>::AddAsset("pillar", std::make_shared<MeshMaterial>("Building/Column_04_Old.mat"));
+	AssetLibrary<MeshMaterial>::AddAsset("floor", std::make_shared<MeshMaterial>("Floor.mat"));
+
+	AssetLibrary<ShaderBase>::AddAsset("modelDefault", std::move(AssetLoader::CreateShader("modelDefault.vert", "modelDefault.frag")));
+	AssetLibrary<ShaderBase>::AddAsset("paintDefault", std::move(AssetLoader::CreateShader("modelDefault.vert", "modelPaintTexture.frag")));
+	AssetLibrary<ShaderBase>::AddAsset("animationDefault", std::move(AssetLoader::CreateShader("modelAnimated.vert", "modelAnimated.frag")));
+	AssetLibrary<ShaderBase>::AddAsset("shadowDefault", std::move(AssetLoader::CreateShader("shadowDefault.vert", "shadowDefault.frag")));
 }
 
-void TestBehaviourTree() {
-	float behaviourTimer;
-	float distanceToTarget;
+void LoadMenuAsset() {
+	std::cout << "Loading menu assets\n";
+	AssetLibrary<TextureBase>::AddAsset("menuMain", AssetLoader::LoadTexture("Menu/defaultMain.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("menuPause", AssetLoader::LoadTexture("Menu/defaultpause.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("menuOption", AssetLoader::LoadTexture("Menu/defaultOption.jpg"));
 
-	BehaviourAction* findKey = new BehaviourAction("Find Key", [&](float dt, BehaviourState state)->BehaviourState {
-		if (state == Initialise) {
-			std::cout << "Looking for key!\n";
-			behaviourTimer = rand() % 100;
-			return Ongoing;
-		} else if (state == Ongoing) {
-			behaviourTimer -= dt;
-			if (behaviourTimer <= 0.0f) {
-				std::cout << "Found a key!\n";
-				return Success;
-			}
-		}
-		return state;
-	});
+	AssetLibrary<TextureBase>::AddAsset("button0", AssetLoader::LoadTexture("Menu/button0.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button1", AssetLoader::LoadTexture("Menu/button1.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button2", AssetLoader::LoadTexture("Menu/button2.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button3", AssetLoader::LoadTexture("Menu/button3.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button4", AssetLoader::LoadTexture("Menu/button4.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button5", AssetLoader::LoadTexture("Menu/button5.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button6", AssetLoader::LoadTexture("Menu/button6.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button7", AssetLoader::LoadTexture("Menu/button7.jpg"));
 
-	BehaviourAction* goToRoom = new BehaviourAction("Go To Room", [&](float dt, BehaviourState state)->BehaviourState {
-		if (state == Initialise) {
-			std::cout << "Going to the loot room!\n";
-			return Ongoing;
-		} else if (state == Ongoing) {
-			distanceToTarget -= dt;
-			if (distanceToTarget <= 0.0f) {
-				std::cout << "Reached room!\n";
-				return Success;
-			}
-		}
-		return state;
-	});
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide0", AssetLoader::LoadTexture("Menu/buttonSlide0.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide1", AssetLoader::LoadTexture("Menu/buttonSlide1.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide2", AssetLoader::LoadTexture("Menu/buttonSlide2.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide3", AssetLoader::LoadTexture("Menu/buttonSlide3.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide4", AssetLoader::LoadTexture("Menu/buttonSlide4.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide5", AssetLoader::LoadTexture("Menu/buttonSlide5.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide6", AssetLoader::LoadTexture("Menu/buttonSlide6.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide7", AssetLoader::LoadTexture("Menu/buttonSlide7.jpg"));
 
-	BehaviourAction* openDoor = new BehaviourAction("Open Door", [&](float dt, BehaviourState state)->BehaviourState {
-		if (state == Initialise) {
-			std::cout << "Opening Door!\n";
-			return Success;
-		}
-		return state;
-	});
+	AssetLibrary<TextureBase>::AddAsset("checkbox0", AssetLoader::LoadTexture("Menu/checkbox.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("checkbox1", AssetLoader::LoadTexture("Menu/checkboxmark.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("checkboxSlide0", AssetLoader::LoadTexture("Menu/checkboxslide0.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("checkboxSlide1", AssetLoader::LoadTexture("Menu/checkboxslide1.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("plus", AssetLoader::LoadTexture("Menu/plus.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("plusslide", AssetLoader::LoadTexture("Menu/plusslide.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("minus", AssetLoader::LoadTexture("Menu/minus.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("minusslide", AssetLoader::LoadTexture("Menu/minusslide.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("return", AssetLoader::LoadTexture("Menu/return.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("returnSlide", AssetLoader::LoadTexture("Menu/returnslide.jpg"));
 
-	BehaviourAction* lookForTreasure = new BehaviourAction("Look For Treasure", [&](float dt, BehaviourState state)->BehaviourState {
-		if (state == Initialise) {
-			std::cout << "Looking for treasure!\n";
-			return Ongoing;
-		} else if (state == Ongoing) {
-			bool found = rand() % 2;
-			if (found) {
-				std::cout << "Treasure found!\n";
-				return Success;
-			}
-			std::cout << "No treasure...\n";
-			return Failure;
-		}
-		return state;
-	});
+	AssetLibrary<TextureBase>::AddAsset("num0", AssetLoader::LoadTexture("Menu/num0.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num1", AssetLoader::LoadTexture("Menu/num1.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num2", AssetLoader::LoadTexture("Menu/num2.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num3", AssetLoader::LoadTexture("Menu/num3.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num4", AssetLoader::LoadTexture("Menu/num4.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num5", AssetLoader::LoadTexture("Menu/num5.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num6", AssetLoader::LoadTexture("Menu/num6.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num7", AssetLoader::LoadTexture("Menu/num7.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num8", AssetLoader::LoadTexture("Menu/num8.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num9", AssetLoader::LoadTexture("Menu/num9.jpg"));
+	
+	AssetLibrary<TextureBase>::AddAsset("fontAtlas", std::move(AssetLoader::LoadTexture("PressStart2P.png")));
+	AssetLibrary<TextureBase>::AddAsset("BossHealthBarBorder", std::move(AssetLoader::LoadTexture("HP/Borders/Border_Style_3.png")));
+	AssetLibrary<TextureBase>::AddAsset("BossHealthBar", std::move(AssetLoader::LoadTexture("HP/Style_3.png")));
 
-	BehaviourAction* lookForItems = new BehaviourAction("Look For Items", [&](float dt, BehaviourState state)->BehaviourState {
-		if (state == Initialise) {
-			std::cout << "Looking for items!\n";
-			return Ongoing;
-		} else if (state == Ongoing) {
-			bool found = rand() % 2;
-			if (found) {
-				std::cout << "Items found!\n";
-				return Success;
-			}
-			std::cout << "No items...\n";
-			return Failure;
-		}
-		return state;
-	});
+	AssetLibrary<TextureBase>::AddAsset("PlayerHealthBarBorder", std::move(AssetLoader::LoadTexture("HP/Borders/Border_Style_4.png")));
+	AssetLibrary<TextureBase>::AddAsset("PlayerHealthBar", std::move(AssetLoader::LoadTexture("HP/Style_2.png")));
 
-	BehaviourSequence* roomSequence = new BehaviourSequence("Room Sequence");
-	roomSequence->AddChild(findKey);
-	roomSequence->AddChild(goToRoom);
-	roomSequence->AddChild(openDoor);
-
-	BehaviourParallelSelector* lootSelection = new BehaviourParallelSelector("Loot Selection");
-	lootSelection->AddChild(lookForTreasure);
-	lootSelection->AddChild(lookForItems);
-
-	BehaviourSequence* behaviourRoot = new BehaviourSequence("Root Sequence");
-	behaviourRoot->AddChild(roomSequence);
-	behaviourRoot->AddChild(lootSelection);
-
-	std::cout << "Beginning Behaviour Tree test\n";
-	for (int i = 0; i < 5; i++) {
-		behaviourRoot->Reset();
-		behaviourTimer = 0.0f;
-		distanceToTarget = rand() % 250;
-		BehaviourState state = Ongoing;
-		std::cout << "Going on an adventure!\n";
-		while (state == Ongoing) {
-			state = behaviourRoot->Execute(1.0f);
-		}
-		if (state == Success) {
-			std::cout << "A successful excursion!\n";
-		} else if (state == Failure) {
-			std::cout << "A waste of time!\n";
-		}
-	}
-	std::cout << "Behaviour Tree test complete\n";
+	AssetLibrary<ShaderBase>::AddAsset("menu", std::move(AssetLoader::CreateShader("menuVertex.vert", "menuFragment.frag")));
+	AssetLibrary<ShaderBase>::AddAsset("button", std::move(AssetLoader::CreateShader("buttonVertex.vert", "buttonFragment.frag")));
 }
 
-static std::vector<Vector3> testNodes;
+void LoadAnimationAsset() {
+	std::cout << "Loading animation assets\n";
+	AssetLibrary<MeshGeometry>::AddAsset("boss", AssetLoader::LoadMesh("Boss/Boss.msh"));
 
-void TestPathfinding() {
-	NavigationGrid grid("TestGrid1.txt");
+	AssetLibrary<MeshMaterial>::AddAsset("boss", std::make_shared<MeshMaterial>("Boss/Boss.mat"));
 
-	NavigationPath outPath;
+	AssetLibrary<MeshAnimation>::AddAsset("WalkForward", std::make_shared<MeshAnimation>("Boss/walk.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("Jump", std::make_shared<MeshAnimation>("Boss/Jump.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("Attack1", std::make_shared<MeshAnimation>("Boss/SillyDancing.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("Attack2", std::make_shared<MeshAnimation>("Boss/HipHopDancing.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("Attack3", std::make_shared<MeshAnimation>("Boss/JoyfulJump.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("Attack4", std::make_shared<MeshAnimation>("Boss/RambaDancing.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("Attack5", std::make_shared<MeshAnimation>("Boss/NorthernSoulSpin.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("Attack6", std::make_shared<MeshAnimation>("Boss/newSambaDancing.anm"));
 
-	Vector3 startPos(70, 0, 10);
-	Vector3 endPos(60, 0, 80);
+	AssetLibrary<MeshGeometry>::AddAsset("player", AssetLoader::LoadMesh("Player/Player.msh"));
 
-	bool found = grid.FindPath(startPos, endPos, outPath);
+	AssetLibrary<MeshMaterial>::AddAsset("player", std::make_shared<MeshMaterial>("Player/Player.mat"));
 
-	Vector3 pos;
-	while (outPath.PopWaypoint(pos)) {
-		testNodes.push_back(pos);
-	}
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerJump", std::make_shared<MeshAnimation>("Player/PlayerJump.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerJumpUp", std::make_shared<MeshAnimation>("Player/PlayerJumpUp.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerIdle", std::make_shared<MeshAnimation>("Player/PlayerIdle.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerRight", std::make_shared<MeshAnimation>("Player/PlayerRight.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerLeft", std::make_shared<MeshAnimation>("Player/PlayerLeft.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerForwardRight", std::make_shared<MeshAnimation>("Player/PlayerForwardRight.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerForwardLeft", std::make_shared<MeshAnimation>("Player/PlayerForwardLeft.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerForward", std::make_shared<MeshAnimation>("Player/PlayerForward.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerBackwardRight", std::make_shared<MeshAnimation>("Player/PlayerBackwardRight.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerBackwardLeft", std::make_shared<MeshAnimation>("Player/PlayerBackwardLeft.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerBackward", std::make_shared<MeshAnimation>("Player/PlayerBackward.anm"));
 }
 
-void DisplayPathfinding() {
-	for (int i = 1; i < testNodes.size(); i++) {
-		Vector3 a = testNodes[i - 1];
-		Vector3 b = testNodes[i];
+void LoadPrefabs() {
+	float bulletRadius = 0.2f;
+	std::unique_ptr<GameObject> bulletPrefab = std::make_unique<PlayerBullet>();
 
-		Debug::DrawLine(a, b, Vector4(0, 1, 0, 1));
-	}
+	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::PlayerProj));
+	bulletPrefab->GetTransform().SetScale(Vector3(bulletRadius));
+
+	bulletPrefab->SetRenderObject(new RenderObject(bulletPrefab->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("sphere"), nullptr));
+	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume(), true));
+	bulletPrefab->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.8f, 1.0f));
+
+	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
+	bulletPrefab->GetPhysicsObject()->SetGravWeight(1.0f);
+	bulletPrefab->GetPhysicsObject()->InitCapsuleInertia();
+
+	PrefabLibrary::AddPrefab("bullet", std::move(bulletPrefab));
+
+	bulletRadius = 0.75f;
+
+	bulletPrefab = std::make_unique<BossBullet>();
+
+	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::EnemyProj));
+	bulletPrefab->GetTransform().SetScale(Vector3(bulletRadius));
+
+	bulletPrefab->SetRenderObject(new RenderObject(bulletPrefab->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("sphere"), nullptr));
+	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume(), true));
+
+	bulletPrefab->GetRenderObject()->SetColour(Vector4(0.2f, 1.0f, 0.5f, 1.0f));
+
+	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
+	bulletPrefab->GetPhysicsObject()->SetGravWeight(1.0f);
+	bulletPrefab->GetPhysicsObject()->InitCapsuleInertia();
+
+	PrefabLibrary::AddPrefab("bossBullet", std::move(bulletPrefab));
 }
 
-class PauseScreen : public PushdownState {
-	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::U)) {
-			return PushdownResult::Pop;
-		}
-		return PushdownResult::NoChange;
-	}
-	void OnAwake() override {
-		std::cout << "Press U to unpause game\n";
-	}
-};
+void LoadAsset() {
+	LoadMenuAsset();
+	LoadGlobalAssets();
+	LoadAnimationAsset();
+	LoadPrefabs();
+}
 
-class GameScreen : public PushdownState {
-	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
-		pauseReminder -= dt;
-		if (pauseReminder < 0) {
-			std::cout << "Coins mined: " << coinsMined << "\n";
-			std::cout << "Press P to pause the game,\n or C to return to main menu\n";
-			pauseReminder += 1.0f;
-		}
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::P)) {
-			*newState = new PauseScreen();
-			return PushdownResult::Push;
-		}
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::C)) {
-			std::cout << "Returning to main menu!\n";
-			return PushdownResult::Pop;
-		}
-		if (rand() % 7 == 0) {
-			coinsMined++;
-		}
-		return PushdownResult::NoChange;
-	}
-	void OnAwake() override {
-		std::cout << "Preparing to mine coins!\n";
-	}
-protected:
-	int coinsMined = 0;
-	float pauseReminder = 1;
-};
-
-class IntroScreen : public PushdownState {
-	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) {
-			*newState = new GameScreen();
-			return PushdownResult::Push;
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
-			return PushdownResult::Pop;
-		}
-		return PushdownResult::NoChange;
-	}
-	void OnAwake() override {
-		std::cout << "Welcome!\n";
-		std::cout << "Press space to begin, or escape to quit!\n";
-	}
-};
-
-void TestPushdownAutomata(Window* w) {
-	PushdownMachine machine(new IntroScreen());
+void StartPushdownAutomata(Window* w) {
+	PushdownMachine machine(new ScreenMain());
 	while (w->UpdateWindow()) {
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
+		if (dt > 0.1f) {
+			std::cout << "Skipping large time delta\n";
+			continue;
+		}
 		if (!machine.Update(dt)) {
 			return;
 		}
 	}
 }
 
-class TestPacketReceiver : public PacketReceiver {
-public:
-	TestPacketReceiver(std::string name) {
-		this->name = name;
-	}
-
-	void ReceivePacket(int type, GamePacket* payload, int source) {
-		if (type == String_Message) {
-			StringPacket* realPacket = (StringPacket*)payload;
-
-			std::string msg = realPacket->GetStringFromData();
-
-			std::cout << name << " received message: " << msg << "\n";
-		}
-	}
-protected:
-	std::string name;
-};
-
-
-void TestNetworking() {
-	NetworkBase::Initialise();
-
-	TestPacketReceiver serverReceiver("Server");
-	TestPacketReceiver clientReceiver("Client");
-	TestPacketReceiver clientReceiver2("Client");
-
-	int port = NetworkBase::GetDefaultPort();
-
-	GameServer* server = new GameServer(port, 2);
-	GameClient* client = new GameClient();
-	GameClient* client02 = new GameClient();
-
-	server->RegisterPacketHandler(String_Message, &serverReceiver);
-	client->RegisterPacketHandler(String_Message, &clientReceiver);
-	client02->RegisterPacketHandler(String_Message, &clientReceiver2);
-	server->RegisterPacketHandler(Player_Connected, &serverReceiver);
-	server->RegisterPacketHandler(Player_Disconnected, &serverReceiver);
-
-	std::cout << "thisServer mem address " << &serverReceiver << std::endl;
-
-	bool canConnect = client->Connect(127, 0, 0, 1, port);
-	bool canConnect02 = client02->Connect(127, 0, 0, 1, port);
-
-	std::cout << canConnect << " " << canConnect02 << std::endl;
-
-	for (int i = 0; i < 10; ++i) {
-
-		StringPacket ssh("Server says hello! " + std::to_string(i));
-		StringPacket csh("Client says hello! " + std::to_string(i));
-		StringPacket csh2("Client02 says hello! " + std::to_string(i));
-		server->SendGlobalPacket(&ssh, false);
-
-		client->SendPacket(&csh);
-		client02->SendPacket(&csh);
-
-
-		server->UpdateServer();
-		client->UpdateClient();
-		client02->UpdateClient();
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-	}
-	NetworkBase::Destroy();
-}
-
-/*
-
-The main function should look pretty familar to you!
-We make a window, and then go into a while loop that repeatedly
-runs our 'game' until we press escape. Instead of making a 'renderer'
-and updating it, we instead make a whole game, and repeatedly update that,
-instead. 
-
-This time, we've added some extra functionality to the window class - we can
-hide or show the 
-
-*/
 int main() {
-	//TestStateMachine();
-	//TestBehaviourTree();
-	//TestPathfinding();
+	Window* w = Window::CreateGameWindow("CSC8507 Game technology!", 1280, 720);
+	GameTechRenderer& renderer = GameTechRenderer::instance();
+	OGLLoadingManager loadingScreen = OGLLoadingManager(w, renderer);
 
-	Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
-	//TestPushdownAutomata(w);
-
+	std::cout << "loading\n";
+	
+	loadingScreen.Load(LoadAsset);
+	renderer.InitPipeline();
 	
 	if (!w->HasInitialised()) {
 		return -1;
 	}	
 
-	//TestNetworking();
+	StartPushdownAutomata(w);
 
-	w->ShowOSPointer(false);
-	w->LockMouseToWindow(true);
-	//TestAudio::TestAudio2();
-
-	NetworkedGame* g = new NetworkedGame();
-	g->InitWorld(NCL::CSC8503::TutorialGame::InitMode::AUDIO_TEST);
-	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
-	while (w->UpdateWindow() && !g->IsQuit()) {
-		float dt = w->GetTimer()->GetTimeDeltaSeconds();
-		if (dt > 0.1f) {
-			std::cout << "Skipping large time delta" << std::endl;
-			continue; //must have hit a breakpoint or something to have a 1 second frame time!
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::PRIOR)) {
-			w->ShowConsole(true);
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NEXT)) {
-			w->ShowConsole(false);
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::T)) {
-			w->SetWindowPosition(0, 0);
-		}
-
-		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
-
-		g->UpdateGame(dt);
-		//DisplayPathfinding();
-	}
-	delete g;
 	Window::DestroyGameWindow();
 }

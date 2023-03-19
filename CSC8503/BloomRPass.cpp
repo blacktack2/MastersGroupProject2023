@@ -7,151 +7,139 @@
  */
 #include "BloomRPass.h"
 
-#include "OGLFrameBuffer.h"
-#include "OGLMesh.h"
-#include "OGLShader.h"
-#include "OGLTexture.h"
+#include "GameTechRenderer.h"
 
+#include "AssetLibrary.h"
+#include "AssetLoader.h"
+
+#include "FrameBuffer.h"
+#include "MeshGeometry.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
+
+using namespace NCL;
 using namespace NCL::CSC8503;
+using namespace NCL::Rendering;
 
-BloomRPass::BloomRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn) :
-OGLRenderPass(renderer), sceneTexIn(sceneTexIn) {
-	filterTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
-	AddScreenTexture(filterTex);
-	blurTexA = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
-	AddScreenTexture(blurTexA);
-	blurTexB = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
-	AddScreenTexture(blurTexB);
-	colourOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
-	AddScreenTexture(colourOutTex);
+BloomRPass::BloomRPass() : OGLPostRenderPass(), renderer(GameTechRenderer::instance()) {
+	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
-	filterFrameBuffer = new OGLFrameBuffer();
-	filterFrameBuffer->Bind();
-	filterFrameBuffer->AddTexture(filterTex);
-	filterFrameBuffer->DrawBuffers();
-	filterFrameBuffer->Unbind();
+	SetBloomDepth(bloomDepth);
+	colourOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA16F, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	AddScreenTexture(*colourOutTex);
 
-	blurFrameBufferA = new OGLFrameBuffer();
-	blurFrameBufferA->Bind();
-	blurFrameBufferA->AddTexture(blurTexA);
-	blurFrameBufferA->DrawBuffers();
-	blurFrameBufferA->Unbind();
+	bloomFrameBuffer = AssetLoader::CreateFrameBuffer();
+	bloomFrameBuffer->Bind();
+	bloomFrameBuffer->DrawBuffers(1);
 
-	blurFrameBufferB = new OGLFrameBuffer();
-	blurFrameBufferB->Bind();
-	blurFrameBufferB->AddTexture(blurTexB);
-	blurFrameBufferB->DrawBuffers();
-	blurFrameBufferB->Unbind();
-
-	combineFrameBuffer = new OGLFrameBuffer();
+	combineFrameBuffer = AssetLoader::CreateFrameBuffer();
 	combineFrameBuffer->Bind();
-	combineFrameBuffer->AddTexture(colourOutTex);
+	combineFrameBuffer->AddTexture(*colourOutTex);
 	combineFrameBuffer->DrawBuffers();
 	combineFrameBuffer->Unbind();
 
-	quad = new OGLMesh();
-	quad->SetVertexPositions({
-		Vector3(-1,  1, -1),
-		Vector3(-1, -1, -1),
-		Vector3( 1, -1, -1),
-		Vector3( 1,  1, -1),
-		});
-	quad->SetVertexTextureCoords({
-		Vector2(0, 1),
-		Vector2(0, 0),
-		Vector2(1, 0),
-		Vector2(1, 1),
-		});
-	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
-	quad->UploadToGPU();
+	downsampleShader = AssetLoader::CreateShaderAndInit("downsample.vert", "downsample.frag");
+	upsampleShader   = AssetLoader::CreateShaderAndInit("upsample.vert", "upsample.frag");
+	combineShader    = AssetLoader::CreateShaderAndInit("bloomCombine.vert", "bloomCombine.frag");
 
-	filterShader  = new OGLShader("bloomFilter.vert", "bloomFilter.frag");
-	blurShader    = new OGLShader("blur.vert", "blur.frag");
-	combineShader = new OGLShader("bloomCombine.vert", "bloomCombine.frag");
+	downsampleShader->Bind();
 
-	filterShader->Bind();
+	downsampleShader->SetUniformInt("sourceTex", 0);
 
-	thresholdUniform = glGetUniformLocation(filterShader->GetProgramID(), "threshold");
+	upsampleShader->Bind();
 
-	glUniform1i(glGetUniformLocation(filterShader->GetProgramID(), "sceneTex"), 0);
-
-	filterShader->Unbind();
-
-	blurShader->Bind();
-
-	horizontalUniform = glGetUniformLocation(blurShader->GetProgramID(), "horizontal");
-
-	glUniform1i(horizontalUniform, 0);
-
-	glUniform1i(glGetUniformLocation(blurShader->GetProgramID(), "sceneTex"), 0);
-
-	blurShader->Unbind();
+	upsampleShader->SetUniformInt("sourceTex", 0);
 
 	combineShader->Bind();
 
-	glUniform1i(glGetUniformLocation(combineShader->GetProgramID(), "sceneTex"), 0);
-	glUniform1i(glGetUniformLocation(combineShader->GetProgramID(), "bloomTex"), 1);
+	combineShader->SetUniformInt("sceneTex", 0);
+	combineShader->SetUniformInt("bloomTex", 1);
 
 	combineShader->Unbind();
 }
 
-BloomRPass::~BloomRPass() {
-	delete filterTex;
-	delete blurTexA;
-	delete blurTexB;
-	delete colourOutTex;
-
-	delete filterFrameBuffer;
-	delete blurFrameBufferA;
-	delete blurFrameBufferB;
-	delete combineFrameBuffer;
-
-	delete quad;
-
-	delete filterShader;
-	delete blurShader;
-	delete combineShader;
-}
-
 void BloomRPass::Render() {
-	DrawFilter();
-	ApplyBlur();
+	bloomFrameBuffer->Bind();
+	Downsample();
+	Upsample();
+	bloomFrameBuffer->Unbind();
+
+	renderer.GetConfig().SetViewport();
 	Combine();
 }
 
-void BloomRPass::SetThreshold(float threshold) {
-	filterShader->Bind();
+void BloomRPass::SetBloomDepth(size_t depth) {
+	bloomDepth = depth;
+	mipChain.clear();
 
-	glUniform1f(thresholdUniform, threshold);
+	float mipWidth  = (float)renderer.GetWidth();
+	float mipHeight = (float)renderer.GetHeight();
+	for (size_t i = 0; i < bloomDepth; i++) {
+		mipWidth *= 0.5f;
+		mipHeight *= 0.5f;
 
-	filterShader->Unbind();
+		BloomMip mip{
+			mipWidth, mipHeight,
+			AssetLoader::CreateTexture(TextureType::ColourRGBA16F, (unsigned int)mipWidth, (unsigned int)mipHeight)
+		};
+		mip.texture->Bind();
+		mip.texture->SetEdgeWrap(EdgeWrap::ClampToEdge);
+		mip.texture->SetFilters(MinFilter::Linear, MagFilter::Linear);
+
+		mipChain.emplace_back(std::move(mip));
+	}
 }
 
-void BloomRPass::DrawFilter() {
-	filterFrameBuffer->Bind();
-	filterShader->Bind();
+void BloomRPass::SetBias(float bias) {
+	combineShader->Bind();
+
+	combineShader->SetUniformFloat("bias", bias);
+
+	combineShader->Unbind();
+}
+
+void BloomRPass::OnWindowResize(int width, int height) {
+	RenderPassBase::OnWindowResize(width, height);
+	SetBloomDepth(bloomDepth);
+}
+
+void BloomRPass::Downsample() {
+	downsampleShader->Bind();
 
 	sceneTexIn->Bind(0);
 
-	quad->Draw();
+	for (auto mip = mipChain.begin(); mip != mipChain.end(); mip++) {
+		renderer.GetConfig().SetViewport(0, 0, (unsigned int)mip->width, (unsigned int)mip->height);
+		bloomFrameBuffer->AddTexture(*mip->texture, 0);
 
-	filterShader->Unbind();
-	filterFrameBuffer->Unbind();
+		quad->Draw();
+
+		downsampleShader->SetUniformFloat("sourcePixelSize", 1.0f / mip->width, 1.0f / mip->height);
+		mip->texture->Bind(0);
+	}
+
+	downsampleShader->Unbind();
 }
 
-void BloomRPass::ApplyBlur() {
-	blurShader->Bind();
+void BloomRPass::Upsample() {
+	upsampleShader->Bind();
 
-	for (size_t i = 0; i < blurAmount; i++) {
-		bool horizontal = i & 1;
-		(horizontal ? blurFrameBufferB : blurFrameBufferA)->Bind();
-		(i == 0 ? filterTex : (horizontal ? blurTexA : blurTexB))->Bind(0);
-		glUniform1i(horizontalUniform, horizontal);
+	renderer.GetConfig().SetBlend(true, BlendFuncSrc::One, BlendFuncDst::One);
+
+	for (auto mip = mipChain.rbegin(); mip != std::prev(mipChain.rend()); mip++) {
+		auto nextMip = std::next(mip);
+
+		mip->texture->Bind(0);
+
+		renderer.GetConfig().SetViewport(0, 0, (unsigned int)nextMip->width, (unsigned int)nextMip->height);
+		bloomFrameBuffer->AddTexture(*nextMip->texture, 0);
+
 		quad->Draw();
 	}
 
-	blurFrameBufferB->Unbind();
-	blurShader->Unbind();
+	renderer.GetConfig().SetBlend();
+
+	upsampleShader->Unbind();
 }
 
 void BloomRPass::Combine() {
@@ -159,7 +147,7 @@ void BloomRPass::Combine() {
 	combineShader->Bind();
 
 	sceneTexIn->Bind(0);
-	blurTexB->Bind(1);
+	mipChain.back().texture->Bind(1);
 
 	quad->Draw();
 

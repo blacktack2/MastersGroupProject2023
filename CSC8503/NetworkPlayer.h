@@ -1,12 +1,6 @@
 #pragma once
 #include "GameObject.h"
-#include "GameClient.h"
 #include "PlayerObject.h"
-
-enum NetworkInstanceType {
-	Projectile,
-	AI
-};
 
 namespace NCL {
 	namespace CSC8503 {
@@ -19,36 +13,52 @@ namespace NCL {
 			~NetworkPlayer();
 
 			void Update(float dt);
+			void ChangeLoseState() override;
+
 			void OnCollisionBegin(GameObject* otherObject) override;
 
 			void RotateYaw(float yaw) {
 				PlayerObject::RotateYaw(yaw);
 			}
 
-			void MoveInput(unsigned int keyPress) {
-				Vector3 dir = Vector3(0, 0, 0);
-				GetInput(dir, keyPress);
-				Move(dir);
-				MoveCamera();
-			}
+			void MoveInput(unsigned int keyPress, short int axis[AxisInput::AxisInputDataMax], Vector2);
 
-			void Test() {
-				RotateToCamera();
-				Vector3 dir = Vector3(0, 0, 0);
-				lastKey = keyMap.GetButtonState();
-				keyMap.Update();
-				GetInput(dir, keyMap.GetButtonState());
-				Move(dir);
-				MoveCamera();
-			}
+			void ServerSideMovement(float dt);
+
+			void ClientUpdateCamera(float dt);
+
+			void SetAxis(short int axis[AxisInput::AxisInputDataMax]);
+
+			void GetNetworkAxis(short int axis[]);
 
 			int GetPlayerNum() const {
 				return playerID;
 			}
 
+			void Shoot();
+
+			void SetHealth(float hp) {
+				health.SetHealth(hp);
+			}
+
+			float GetYaw() {
+				return yaw;
+			}
+			void SetYaw(float yaw) {
+				this->yaw = yaw;
+			}
+
+			float GetPitch() {
+				return pitch;
+			}
+			void SetPitch(float pitch){
+				this->pitch = pitch;
+			}
+
+			bool isFrozen;
 		protected:
 			NetworkedGame* game;
-			int playerID;
+		
 		};
 	}
 }

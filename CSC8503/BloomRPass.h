@@ -6,59 +6,73 @@
  * @date   February 2023
  */
 #pragma once
-#include "OGLRenderPass.h"
+#include "OGLPostRenderPass.h"
 
-namespace NCL::Rendering {
-	class OGLFrameBuffer;
-	class OGLShader;
-	class OGLTexture;
-}
+#include <functional>
+#include <memory>
+#include <optional>
+#include <vector>
 
-namespace NCL::CSC8503 {
-	class BloomRPass : public OGLRenderPass {
-	public:
-		BloomRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn);
-		~BloomRPass();
+namespace NCL {
+	class MeshGeometry;
 
-		virtual void Render() override;
+	namespace Rendering {
+		class FrameBuffer;
+		class ShaderBase;
+		class TextureBase;
+	}
 
-		void SetThreshold(float threshold);
+	using namespace NCL::Rendering;
 
-		inline void SetBlurAmount(size_t amount) {
-			blurAmount = amount;
-		}
+	namespace CSC8503 {
+		class GameTechRenderer;
 
-		inline OGLTexture* GetOutTex() const {
-			return colourOutTex;
-		}
-	private:
-		void DrawFilter();
-		void ApplyBlur();
-		void Combine();
+		class BloomRPass : public OGLPostRenderPass {
+		public:
+			BloomRPass();
+			~BloomRPass() override = default;
 
-		OGLFrameBuffer* filterFrameBuffer;
-		OGLTexture* filterTex;
+			void OnWindowResize(int width, int height) override;
 
-		OGLFrameBuffer* blurFrameBufferA;
-		OGLTexture* blurTexA;
+			void Render() override;
 
-		OGLFrameBuffer* blurFrameBufferB;
-		OGLTexture* blurTexB;
+			TextureBase& GetOutTex() const override {
+				return *colourOutTex;
+			}
+			void SetSceneTexIn(TextureBase& sceneTex) override {
+				sceneTexIn = &sceneTex;
+			}
 
-		OGLFrameBuffer* combineFrameBuffer;
-		OGLTexture* colourOutTex;
+			void SetBloomDepth(size_t depth);
 
-		OGLTexture* sceneTexIn;
+			void SetBias(float bias);
+		private:
+			struct BloomMip {
+				float width, height;
+				std::unique_ptr<TextureBase> texture;
+			};
 
-		OGLMesh* quad;
+			void Downsample();
+			void Upsample();
+			void Combine();
 
-		OGLShader* filterShader;
-		OGLShader* blurShader;
-		OGLShader* combineShader;
+			GameTechRenderer& renderer;
 
-		GLint horizontalUniform;
-		GLint thresholdUniform;
+			std::shared_ptr<MeshGeometry> quad;
 
-		size_t blurAmount = 5;
-	};
+			std::unique_ptr<FrameBuffer> bloomFrameBuffer;
+			std::unique_ptr<FrameBuffer> combineFrameBuffer;
+
+			TextureBase* sceneTexIn = nullptr;
+
+			std::vector<BloomMip> mipChain;
+			std::unique_ptr<TextureBase> colourOutTex;
+
+			std::unique_ptr<ShaderBase> downsampleShader;
+			std::unique_ptr<ShaderBase> upsampleShader;
+			std::unique_ptr<ShaderBase> combineShader;
+
+			size_t bloomDepth = 5;
+		};
+	}
 }

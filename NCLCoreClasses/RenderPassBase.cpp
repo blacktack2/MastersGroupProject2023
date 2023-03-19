@@ -12,15 +12,13 @@ using namespace NCL::Rendering;
 RenderPassBase::RenderPassBase() {
 }
 
-void RenderPassBase::AddScreenTexture(TextureBase* tex) {
+void RenderPassBase::AddScreenTexture(TextureBase& tex) {
 	textures.push_back(tex);
-}
-
-RenderPassBase::~RenderPassBase() {
 }
 
 void RenderPassBase::OnWindowResize(int width, int height) {
 	for (auto tex : textures) {
-		tex->Resize(width, height);
+		tex.get().Bind();
+		tex.get().Resize(width, height);
 	}
 }

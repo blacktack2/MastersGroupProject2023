@@ -1,6 +1,6 @@
 /**
  * @file   OGLRenderer.h
- * @brief  
+ * @brief  Base OpenGL implementation of the main renderer.
  * 
  * @author Rich Davidson
  * @author Stuart Lewis
@@ -9,68 +9,79 @@
 #pragma once
 #include "RendererBase.h"
 
-#include "Vector3.h"
-#include "Vector4.h"
+#include "OGLRendererConfig.h"
 
 #ifdef _WIN32
-#include "windows.h"
+#include "Windows.h"
 #endif
-
-#include <string>
-#include <vector>
 
 #ifdef _DEBUG
 #define OPENGL_DEBUGGING
 #endif
 
 namespace NCL {
-	class MeshGeometry;
-}
+	class OGLLoadingManager;
 
-namespace NCL::Maths {
-	class Matrix4;
-}
+	namespace Rendering {
+		class OGLMesh;
+		class OGLRenderPass;
+		class IPostRenderPass;
+		class OGLShader;
+		class OGLTexture;
 
-namespace NCL::Rendering {
-	class OGLMesh;
-	class OGLRenderPass;
-	class OGLShader;
-	class OGLTexture;
+		class SimpleFont;
 
-	class SimpleFont;
-		
-	class OGLRenderer : public RendererBase {
-	public:
-		OGLRenderer(Window& w);
-		~OGLRenderer();
+		/**
+		 * @brief Base OpenGL implementation of the main renderer.
+		 */
+		class OGLRenderer : public RendererBase {
+		public:
+			friend class OGLLoadingManager;
+			OGLRenderer(Window& w);
+			~OGLRenderer();
 
-		void OnWindowResize(int width, int height) override;
-		bool HasInitialised() const override {
-			return initState;
-		}
+			void OnWindowResize(int width, int height) override;
+			bool HasInitialised() const override {
+				return initState;
+			}
 
-		void ForceValidDebugState(bool newState) {
-			forceValidDebugState = newState;
-		}
+			void ForceValidDebugState(bool newState) {
+				forceValidDebugState = newState;
+			}
 
-		virtual bool SetVerticalSync(VerticalSyncState s);
-	protected:
-		void BeginFrame() override;
-		void RenderFrame() override;
-		void EndFrame() override;
-		void SwapBuffers() override;
+			virtual bool SetVerticalSync(VerticalSyncState s);
+
+			RendererConfigBase& GetConfig() override {
+				return config;
+			}
+
+			void ClearBuffers(ClearBit mask) override;
+		protected:
+			void BeginFrame() override;
+			void EndFrame() override;
+
+			void SwapBuffers() override;
+			void ClearBackbuffer() override;
 
 #ifdef _WIN32
-		void InitWithWin32(Window& w);
-		void DestroyWithWin32();
+			void InitWithWin32(Window& w);
 
-		HDC deviceContext;
-		HGLRC renderContext;
+		public:
+			HGLRC CreateContext();
+			void MakeCurrent(HGLRC context) {
+				wglMakeCurrent(deviceContext, context);
+			}
+		protected:
+			void DestroyWithWin32();
+
+			HDC deviceContext   = nullptr;
+			HGLRC renderContext = nullptr;
 #endif
+		private:
+			OGLRendererConfig config;
 
-		std::vector<OGLRenderPass*> renderPasses;
-	private:
-		bool initState;
-		bool forceValidDebugState;
-	};
+			bool initState = false;
+			bool forceValidDebugState = false;
+		};
+	}
 }

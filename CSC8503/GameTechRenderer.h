@@ -1,130 +1,139 @@
 /**
  * @file   GameTechRenderer.h
- * @brief  
+ * @brief  Game specific implementation of the renderer.
  * 
  * @author Rich Davidson
  * @author Stuart Lewis
+ * @author Yifei Hu
  * @date   February 2023
  */
 #pragma once
-#include "OGLFrameBuffer.h"
-#include "OGLMesh.h"
 #include "OGLRenderer.h"
-#include "OGLShader.h"
-#include "OGLTexture.h"
 
+#include "PaintingRPass.h"
 #include "SkyboxRPass.h"
 #include "ModelRPass.h"
 #include "LightingRPass.h"
+#include "SSAORPass.h"
 #include "CombineRPass.h"
 #include "BloomRPass.h"
 #include "HDRRPass.h"
 #include "PresentRPass.h"
 #include "DebugRPass.h"
+#include "MenuRPass.h"
+#include "HudRPass.h"
 
-#include "GameWorld.h"
+#include "Vector3.h"
 
+#include <algorithm>
+#include <memory>
 #include <string>
 
-namespace NCL::Maths {
-	class Vector3;
-	class Vector4;
+namespace NCL {
+	namespace CSC8503 {
+		class GameWorld;
+
+		class RenderObject;
+
+		/**
+		 * @brief Game specific implementation of the renderer.
+		 */
+		class GameTechRenderer : public OGLRenderer {
+		public:
+			static GameTechRenderer& instance() {
+				static GameTechRenderer INSTANCE;
+				return INSTANCE;
+			}
+
+			/**
+			 * @brief Initialize render passes and set the render pipeline to
+			 * its default state (everything active).
+			 */
+			void InitPipeline();
+
+			void SetGamma(float g);
+			inline float GetGamma() {
+				return gamma;
+			}
+
+			void SetSunDir(Vector3 direction);
+			inline const Vector3& GetSunDir() {
+				return sunDirection;
+			}
+
+			void SetBloomAmount(size_t depth);
+			inline size_t GetBloomAmount() {
+				return bloomAmount;
+			}
+
+			void SetBloomBias(float bias);
+			inline float GetBloomBias() {
+				return bloomBias;
+			}
+
+			void SetHDRExposure(float exposure);
+			inline float GetHDRExposure() {
+				return hdrExposure;
+			}
+
+			void SetSSAORadius(float radius);
+			inline float GetSSAORadius() {
+				return ssaoRadius;
+			}
+
+			void SetSSAOBias(float bias);
+			inline float GetSSAOBias() {
+				return ssaoBias;
+			}
+
+			void SetGameWorldMainCamera(int cameraNum) override;
+
+			int GetGameWorldMainCamera() override;
+
+			void SetBossHP(int hp) {
+				bossHP = hp;
+			}
+
+			void SetPlayerHp(int id, int hp) {
+				playersHP[id] = hp;
+			}
+
+			void DisplayWinLoseInformation(int playerID) override;
+		protected:
+			GameTechRenderer();
+			~GameTechRenderer() override = default;
+		private:
+			void SetGameWorldDeltaTime(float dt) override;
+
+			GameWorld& gameWorld;
+
+			std::unique_ptr<PaintingRPass> paintingRPass = nullptr;
+			std::unique_ptr<SkyboxRPass>   skyboxPass    = nullptr;
+			std::unique_ptr<ModelRPass>    modelPass     = nullptr;
+			std::unique_ptr<LightingRPass> lightingPass  = nullptr;
+			std::unique_ptr<SSAORPass>     ssaoPass      = nullptr;
+			std::unique_ptr<CombineRPass>  combinePass   = nullptr;
+			std::unique_ptr<BloomRPass>    bloomPass     = nullptr;
+			std::unique_ptr<HDRRPass>      hdrPass       = nullptr;
+			std::unique_ptr<PresentRPass>  presentPass   = nullptr;
+			std::unique_ptr<DebugRPass>    debugPass     = nullptr;
+			std::unique_ptr<MenuRPass>     menuPass      = nullptr;
+			std::unique_ptr<HudRPass>      hudPass       = nullptr;
+
+			float gamma = 2.2f;
+
+			Vector3 sunDirection = Vector3(0.0f, -1.0f, 0.0f);
+
+			size_t bloomAmount = 5;
+			float bloomBias = 0.04f;
+
+			float hdrExposure = 1.0f;
+			
+			float ssaoRadius = 0.5f;
+			float ssaoBias = 0.025f;
+			
+			int bossHP = -1;
+			int playersHP[4];
+		};
+	}
 }
-namespace NCL::CSC8503 {
-	class RenderObject;
-
-	class GameTechRenderer : public OGLRenderer {
-	public:
-		GameTechRenderer(GameWorld& world);
-		~GameTechRenderer();
-
-		MeshGeometry* LoadMesh(const std::string& name);
-		TextureBase*  LoadTexture(const std::string& name);
-		ShaderBase*   LoadShader(const std::string& vertex, const std::string& fragment);
-
-		inline SkyboxRPass& GetSkyboxPass() {
-			return *skyboxPass;
-		}
-		inline ModelRPass& GetModelPass() {
-			return *modelPass;
-		}
-		inline LightingRPass& GetLightingPass() {
-			return *lightingPass;
-		}
-		inline CombineRPass& GetCombinePass() {
-			return *combinePass;
-		}
-		inline BloomRPass& GetBloomPass() {
-			return *bloomPass;
-		}
-		inline HDRRPass& GetHDRPass() {
-			return *hdrPass;
-		}
-		inline PresentRPass& GetPresentPass() {
-			return *presentPass;
-		}
-		inline DebugRPass& GetDebugRPass() {
-			return *debugPass;
-		}
-
-		virtual void Update(float dt) override;
-
-		void SetGamma(float g) {
-			gamma = g;
-			modelPass->SetGamma(gamma);
-			presentPass->SetGamma(gamma);
-		}
-		inline float GetGamma() {
-			return gamma;
-		}
-
-		void SetBloomAmount(size_t amount) {
-			bloomAmount = amount;
-			bloomPass->SetBlurAmount(bloomAmount);
-		}
-		inline size_t GetBloomAmount() {
-			return bloomAmount;
-		}
-
-		void SetBloomThreshold(float threshold) {
-			bloomThreshold = threshold;
-			bloomPass->SetThreshold(bloomThreshold);
-		}
-		inline float GetBloomThreshold() {
-			return bloomThreshold;
-		}
-
-		void SetHDRExposure(float exposure) {
-			hdrExposure = exposure;
-			hdrPass->SetExposure(hdrExposure);
-		}
-		inline float GetHDRExposure() {
-			return hdrExposure;
-		}
-	protected:
-
-		void RenderFrame() override;
-
-		GameWorld& gameWorld;
-
-		void BuildObjectList();
-		void SortObjectList();
-
-		vector<const RenderObject*> activeObjects;
-
-		SkyboxRPass* skyboxPass;
-		ModelRPass* modelPass;
-		LightingRPass* lightingPass;
-		CombineRPass* combinePass;
-		BloomRPass* bloomPass;
-		HDRRPass* hdrPass;
-		PresentRPass* presentPass;
-		DebugRPass* debugPass;
-
-		float gamma = 2.2f;
-		size_t bloomAmount = 5;
-		float bloomThreshold = 1.0f;
-		float hdrExposure = 1.0f;
-	};
-}
-

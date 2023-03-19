@@ -1,116 +1,60 @@
+/**
+ * @file   MeshGeometry.cpp
+ * @brief  See MeshGeometry.h.
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #include "MeshGeometry.h"
+
 #include "Assets.h"
+
+#include "Maths.h"
+#include "Matrix4.h"
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
-#include "Matrix4.h"
-#include "Maths.h"
 
 #include <fstream>
 #include <string>
 
 using namespace NCL;
-using namespace Maths;
-
-MeshGeometry::MeshGeometry()
-{
-	primType	= GeometryPrimitive::Triangles;
-}
+using namespace NCL::Maths;
 
 enum class GeometryChunkTypes {
-	VPositions		= 1 << 0,
-	VNormals		= 1 << 1,
-	VTangents		= 1 << 2,
-	VColors			= 1 << 3,
-	VTex0			= 1 << 4,
-	VTex1			= 1 << 5,
-	VWeightValues	= 1 << 6,
-	VWeightIndices	= 1 << 7,
-	Indices			= 1 << 8,
-	JointNames		= 1 << 9,
-	JointParents	= 1 << 10,
-	BindPose		= 1 << 11,
-	BindPoseInv		= 1 << 12,
-	Material		= 1 << 13,
-	SubMeshes		= 1 << 14,
-	SubMeshNames	= 1 << 15,
+	VPositions = 1 << 0,
+	VNormals = 1 << 1,
+	VTangents = 1 << 2,
+	VColors = 1 << 3,
+	VTex0 = 1 << 4,
+	VTex1 = 1 << 5,
+	VWeightValues = 1 << 6,
+	VWeightIndices = 1 << 7,
+	Indices = 1 << 8,
+	JointNames = 1 << 9,
+	JointParents = 1 << 10,
+	BindPose = 1 << 11,
+	BindPoseInv = 1 << 12,
+	Material = 1 << 13,
+	SubMeshes = 1 << 14,
+	SubMeshNames = 1 << 15,
 	BindPoseIndices = 1 << 16,
-	BindPoseStates	= 1 << 17,
+	BindPoseStates = 1 << 17,
 };
 
-enum class GeometryChunkData {
-	dFloat, //Just float data
-	dShort, //Translate from -32k to 32k to a float
-	dByte,	//Translate from -128 to 127 to a float
-};
-
-void* ReadVertexData(GeometryChunkData dataType, GeometryChunkTypes chunkType, int numVertices) {
-	int numElements = 3;
-
-	if (chunkType == GeometryChunkTypes::VTex0 ||
-		chunkType == GeometryChunkTypes::VTex1) {
-		numElements = 2;
-	}
-	else if (chunkType == GeometryChunkTypes::VColors) {
-		numElements = 4;
-	}
-
-	int bytesPerElement = 4;
-
-	if (dataType == GeometryChunkData::dShort) {
-		bytesPerElement = 2;
-	}
-	else if (dataType == GeometryChunkData::dByte) {
-		bytesPerElement = 1;
-	}
-
-	char* data = new char[numElements * bytesPerElement];
-
-	return data;
-}
-
-void ReadTextInts(std::ifstream& file, vector<Vector2i>& element, int numVertices) {
+void ReadTextInts(std::ifstream& file, std::vector<Vector2i>& element, int numVertices) {
 	for (int i = 0; i < numVertices; ++i) {
-		Vector2i temp;
-		file >> temp.array[0];
-		file >> temp.array[1];
-		element.emplace_back(temp);
-	}
-}
-
-void ReadTeReadTextIntsxtFloats(std::ifstream& file, vector<Vector3i>& element, int numVertices) {
-	for (int i = 0; i < numVertices; ++i) {
-		Vector3i temp;
-		file >> temp.array[0];
-		file >> temp.array[1];
-		file >> temp.array[2];
-		element.emplace_back(temp);
-	}
-}
-
-void ReadTextInts(std::ifstream& file, vector<Vector4i>& element, int numVertices) {
-	for (int i = 0; i < numVertices; ++i) {
-		Vector4i temp;
-		file >> temp.array[0];
-		file >> temp.array[1];
-		file >> temp.array[2];
-		file >> temp.array[3];
-		element.emplace_back(temp);
-	}
-}
-
-void ReadTextFloats(std::ifstream& file, vector<Vector2>& element, int numVertices) {
-	for (int i = 0; i < numVertices; ++i) {
-		Vector2 temp;
+		Vector2i temp{};
 		file >> temp.x;
 		file >> temp.y;
 		element.emplace_back(temp);
 	}
 }
 
-void ReadTextFloats(std::ifstream& file, vector<Vector3>& element, int numVertices) {
+void ReadTeReadTextIntsxtFloats(std::ifstream& file, std::vector<Vector3i>& element, int numVertices) {
 	for (int i = 0; i < numVertices; ++i) {
-		Vector3 temp;
+		Vector3i temp{};
 		file >> temp.x;
 		file >> temp.y;
 		file >> temp.z;
@@ -118,9 +62,9 @@ void ReadTextFloats(std::ifstream& file, vector<Vector3>& element, int numVertic
 	}
 }
 
-void ReadTextFloats(std::ifstream& file, vector<Vector4>& element, int numVertices) {
+void ReadTextInts(std::ifstream& file, std::vector<Vector4i>& element, int numVertices) {
 	for (int i = 0; i < numVertices; ++i) {
-		Vector4 temp;
+		Vector4i temp{};
 		file >> temp.x;
 		file >> temp.y;
 		file >> temp.z;
@@ -129,7 +73,37 @@ void ReadTextFloats(std::ifstream& file, vector<Vector4>& element, int numVertic
 	}
 }
 
-void ReadIndices(std::ifstream& file, vector<unsigned int>& elements, int numIndices) {
+void ReadTextFloats(std::ifstream& file, std::vector<Vector2>& element, int numVertices) {
+	for (int i = 0; i < numVertices; ++i) {
+		Vector2 temp{};
+		file >> temp.x;
+		file >> temp.y;
+		element.emplace_back(temp);
+	}
+}
+
+void ReadTextFloats(std::ifstream& file, std::vector<Vector3>& element, int numVertices) {
+	for (int i = 0; i < numVertices; ++i) {
+		Vector3 temp{};
+		file >> temp.x;
+		file >> temp.y;
+		file >> temp.z;
+		element.emplace_back(temp);
+	}
+}
+
+void ReadTextFloats(std::ifstream& file, std::vector<Vector4>& element, int numVertices) {
+	for (int i = 0; i < numVertices; ++i) {
+		Vector4 temp{};
+		file >> temp.x;
+		file >> temp.y;
+		file >> temp.z;
+		file >> temp.w;
+		element.emplace_back(temp);
+	}
+}
+
+void ReadIndices(std::ifstream& file, std::vector<unsigned int>& elements, int numIndices) {
 	for (int i = 0; i < numIndices; ++i) {
 		unsigned int temp;
 		file >> temp;
@@ -137,7 +111,7 @@ void ReadIndices(std::ifstream& file, vector<unsigned int>& elements, int numInd
 	}
 }
 
-void ReadIntegerArray(std::ifstream& file, vector<int>& into) {//New!
+void ReadIntegerArray(std::ifstream& file, std::vector<int>& into) {
 	int count = 0;
 	file >> count;
 	for (int i = 0; i < count; ++i) {
@@ -147,25 +121,27 @@ void ReadIntegerArray(std::ifstream& file, vector<int>& into) {//New!
 	}
 }
 
-void ReadBindposes(std::ifstream& file, vector<SubMeshPoses>& bindPoses) {//New!
+void ReadBindposes(std::ifstream& file, std::vector<SubMeshPoses>& bindPoses) {
 	int poseCount = 0;
 	file >> poseCount;
 
 	for (int i = 0; i < poseCount; ++i) {
-		SubMeshPoses m;
+		SubMeshPoses m{};
 		file >> m.start;
 		file >> m.count;
 		bindPoses.emplace_back(m);
 	}
 }
 
-MeshGeometry::MeshGeometry(const std::string&filename) {
+MeshGeometry::MeshGeometry() {
+	primType = GeometryPrimitive::Triangles;
+}
+
+MeshGeometry::MeshGeometry(const std::string& filename) {
 	primType = GeometryPrimitive::Triangles;
 	std::ifstream file(Assets::MESHDIR + filename);
 
 	std::string filetype;
-	int fileVersion;
-
 	file >> filetype;
 
 	if (filetype != "MeshGeometry") {
@@ -173,6 +149,7 @@ MeshGeometry::MeshGeometry(const std::string&filename) {
 		return;
 	}
 
+	int fileVersion;
 	file >> fileVersion;
 
 	if (fileVersion != 1) {
@@ -180,62 +157,63 @@ MeshGeometry::MeshGeometry(const std::string&filename) {
 		return;
 	}
 
-	int numMeshes	= 0; //read
-	int numVertices = 0; //read
-	int numIndices	= 0; //read
-	int numChunks   = 0; //read
+	int numMeshes   = 0;
+	int numVertices = 0;
+	int numIndices  = 0;
+	int numChunks   = 0;
 
 	file >> numMeshes;
 	file >> numVertices;
 	file >> numIndices;
 	file >> numChunks;
-	
+
 	for (int i = 0; i < numChunks; ++i) {
 		int chunkType = (int)GeometryChunkTypes::VPositions;
 
 		file >> chunkType;
 
 		switch ((GeometryChunkTypes)chunkType) {
-			case GeometryChunkTypes::VPositions:ReadTextFloats(file, positions, numVertices);	break;
-			case GeometryChunkTypes::VColors:	ReadTextFloats(file, colours, numVertices);		break;
-			case GeometryChunkTypes::VNormals:	ReadTextFloats(file, normals, numVertices);		break;
-			case GeometryChunkTypes::VTangents:	ReadTextFloats(file, tangents, numVertices);	break;
-			case GeometryChunkTypes::VTex0:		ReadTextFloats(file, texCoords, numVertices);	break;
-			case GeometryChunkTypes::Indices:	ReadIndices(file, indices, numIndices); break;			
-				
-			case GeometryChunkTypes::VWeightValues:		ReadTextFloats(file, skinWeights, numVertices);  break;
-			case GeometryChunkTypes::VWeightIndices:	ReadTextInts(file, skinIndices, numVertices);  break;
-			case GeometryChunkTypes::JointNames:		ReadJointNames(file);		break;
-			case GeometryChunkTypes::JointParents:		ReadJointParents(file);		break;
-			case GeometryChunkTypes::BindPose:			ReadRigPose(file, bindPose);  break;
-			case GeometryChunkTypes::BindPoseInv:		ReadRigPose(file, inverseBindPose);  break;
-			case GeometryChunkTypes::SubMeshes: 		ReadSubMeshes(file, numMeshes); break;
-			case GeometryChunkTypes::SubMeshNames: 		ReadSubMeshNames(file, numMeshes); break;
+			case GeometryChunkTypes::VPositions :ReadTextFloats(file, positions, numVertices) ; break;
+			case GeometryChunkTypes::VColors    : ReadTextFloats(file, colours, numVertices)  ; break;
+			case GeometryChunkTypes::VNormals   : ReadTextFloats(file, normals, numVertices)  ; break;
+			case GeometryChunkTypes::VTangents  : ReadTextFloats(file, tangents, numVertices) ; break;
+			case GeometryChunkTypes::VTex0      : ReadTextFloats(file, texCoords, numVertices); break;
+			case GeometryChunkTypes::Indices    : ReadIndices(file, indices, numIndices)      ; break;
 
-			case GeometryChunkTypes::BindPoseIndices:	ReadIntegerArray(file, bindPoseIndices); break;//New!
-			case GeometryChunkTypes::BindPoseStates:	ReadBindposes(file, bindPoseStates); break;//New!
+			case GeometryChunkTypes::VWeightValues  : ReadTextFloats(file, skinWeights, numVertices); break;
+			case GeometryChunkTypes::VWeightIndices : ReadTextInts(file, skinIndices, numVertices)  ; break;
+			case GeometryChunkTypes::JointNames     : ReadJointNames(file)                          ; break;
+			case GeometryChunkTypes::JointParents   : ReadJointParents(file)                        ; break;
+			case GeometryChunkTypes::BindPose       : ReadRigPose(file, bindPose)                   ; break;
+			case GeometryChunkTypes::BindPoseInv    : ReadRigPose(file, inverseBindPose)            ; break;
+			case GeometryChunkTypes::SubMeshes      : ReadSubMeshes(file, numMeshes)                ; break;
+			case GeometryChunkTypes::SubMeshNames   : ReadSubMeshNames(file, numMeshes)             ; break;
+
+			case GeometryChunkTypes::BindPoseIndices : ReadIntegerArray(file, bindPoseIndices); break;
+			case GeometryChunkTypes::BindPoseStates  : ReadBindposes(file, bindPoseStates)    ; break;
 
 		}
 	}
 }
 
-MeshGeometry::~MeshGeometry()
-{
-}
+enum class GeometryChunkData {
+	dFloat,
+	dShort,
+	dByte,
+};
 
 bool MeshGeometry::HasTriangle(unsigned int i) const {
 	int triCount = 0;
 	if (GetIndexCount() > 0) {
 		triCount = GetIndexCount() / 3;
-	}
-	else {
+	} else {
 		triCount = GetVertexCount() / 3;
 	}
 	return i < (unsigned int)triCount;
 }
 
 
-bool	MeshGeometry::GetVertexIndicesForTri(unsigned int i, unsigned int& a, unsigned int& b, unsigned int& c) const {
+bool MeshGeometry::GetVertexIndicesForTri(size_t i, size_t& a, size_t& b, size_t& c) const {
 	if (!HasTriangle(i)) {
 		return false;
 	}
@@ -243,8 +221,7 @@ bool	MeshGeometry::GetVertexIndicesForTri(unsigned int i, unsigned int& a, unsig
 		a = indices[(i * 3)];
 		b = indices[(i * 3) + 1];
 		c = indices[(i * 3) + 2];
-	}
-	else {
+	} else {
 		a = (i * 3);
 		b = (i * 3) + 1;
 		c = (i * 3) + 2;
@@ -253,89 +230,32 @@ bool	MeshGeometry::GetVertexIndicesForTri(unsigned int i, unsigned int& a, unsig
 }
 
 bool MeshGeometry::GetTriangle(unsigned int i, Vector3& va, Vector3& vb, Vector3& vc) const {
-	bool hasTri = false;
-	unsigned int a, b, c;
-	hasTri = GetVertexIndicesForTri(i, a, b, c);
-	if (!hasTri) {
+	size_t a, b, c;
+	if (!GetVertexIndicesForTri(i, a, b, c)) {
 		return false;
 	}
+
 	va = positions[a];
 	vb = positions[b];
 	vc = positions[c];
+
 	return true;
 }
 
 
 bool MeshGeometry::GetNormalForTri(unsigned int i, Vector3& n) const {
 	Vector3 a, b, c;
-
-	bool hasTri = GetTriangle(i, a, b, c);
-	if (!hasTri) {
+	if (!GetTriangle(i, a, b, c)) {
 		return false;
 	}
 
 	Vector3 ba = b - a;
 	Vector3 ca = c - a;
+
 	n = Vector3::Cross(ba, ca);
 	n.Normalise();
+
 	return true;
-}
-
-void	MeshGeometry::TransformVertices(const Matrix4& byMatrix) {
-
-}
-
-void	MeshGeometry::RecalculateNormals() {
-
-}
-
-void	MeshGeometry::RecalculateTangents() {
-
-}
-
-void MeshGeometry::SetVertexPositions(const vector<Vector3>& newVerts) {
-	positions = newVerts;
-}
-
-void MeshGeometry::SetVertexTextureCoords(const vector<Vector2>& newTex) {
-	texCoords = newTex;
-}
-
-void MeshGeometry::SetVertexColours(const vector<Vector4>& newColours) {
-	colours = newColours;
-}
-
-void MeshGeometry::SetVertexNormals(const vector<Vector3>& newNorms) {
-	normals = newNorms;
-}
-
-void MeshGeometry::SetVertexTangents(const vector<Vector4>& newTans) {
-	tangents = newTans;
-}
-
-void MeshGeometry::SetVertexIndices(const vector<unsigned int>& newIndices) {
-	indices = newIndices;
-}
-
-void MeshGeometry::SetVertexSkinWeights(const vector<Vector4>& newSkinWeights) {
-	skinWeights = newSkinWeights;
-}
-
-void MeshGeometry::SetVertexSkinIndices(const vector<Vector4i>& newSkinIndices) {
-	skinIndices = newSkinIndices;
-}
-
-MeshGeometry* MeshGeometry::GenerateTriangle(MeshGeometry* input) {
-	input->SetVertexPositions({Vector3(-1,-1,0), Vector3(1,-1,0), Vector3(0,1,0) });
-	input->SetVertexColours({ Vector4(1,0,0,1), Vector4(0,1,0,1), Vector4(0,0,1,1) });
-	input->SetVertexTextureCoords({ Vector2(0,0), Vector2(1,0), Vector2(0.5, 1) });
-	input->SetVertexIndices({ 0,1,2 });
-	input->debugName = "Test-Triangle";
-	return input;
-}
-
-void MeshGeometry::SetDebugName(const std::string& newName) {
-	debugName = newName;
 }
 
 int MeshGeometry::GetIndexForJoint(const std::string& name) const {
@@ -347,22 +267,6 @@ int MeshGeometry::GetIndexForJoint(const std::string& name) const {
 	return -1;
 }
 
-void MeshGeometry::SetJointNames(std::vector < std::string >& newNames) {
-	jointNames = newNames;
-}
-
-void MeshGeometry::SetJointParents(std::vector<int>& newParents) {
-	jointParents = newParents;
-}
-
-void MeshGeometry::SetBindPose(std::vector<Matrix4>& newMats) {
-	bindPose = newMats;
-}
-
-void MeshGeometry::SetInverseBindPose(std::vector<Matrix4>& newMats) {
-	inverseBindPose = newMats;
-}
-
 void MeshGeometry::CalculateInverseBindPose() {
 	inverseBindPose.resize(bindPose.size());
 
@@ -371,36 +275,34 @@ void MeshGeometry::CalculateInverseBindPose() {
 	}
 }
 
-void MeshGeometry::ReadRigPose(std::ifstream& file, vector<Matrix4>& into) {
-	int matCount = 0;
+void MeshGeometry::ReadRigPose(std::ifstream& file, std::vector<Matrix4>& into) {
+	int matCount;
 	file >> matCount;
 
 	for (int m = 0; m < matCount; ++m) {
-		Matrix4 mat;
-
+		Matrix4 mat{};
 		for (int i = 0; i < 4; ++i) {
 			for (int j = 0; j < 4; ++j) {
 				file >> mat.array[i][j];
 			}
 		}
-
 		into.emplace_back(mat);
 	}
 }
 
 void MeshGeometry::ReadJointParents(std::ifstream& file) {
-	int jointCount = 0;
+	int jointCount;
 	file >> jointCount;
 
 	for (int i = 0; i < jointCount; ++i) {
-		int id = -1;
+		int id;
 		file >> id;
 		jointParents.emplace_back(id);
 	}
 }
 
 void MeshGeometry::ReadJointNames(std::ifstream& file) {
-	int jointCount = 0;
+	int jointCount;
 	file >> jointCount;
 	std::string jointName;
 	std::getline(file, jointName);
@@ -414,7 +316,7 @@ void MeshGeometry::ReadJointNames(std::ifstream& file) {
 
 void MeshGeometry::ReadSubMeshes(std::ifstream& file, int count) {
 	for (int i = 0; i < count; ++i) {
-		SubMesh m;
+		SubMesh m{};
 		file >> m.start;
 		file >> m.count;
 		subMeshes.emplace_back(m);
@@ -458,7 +360,6 @@ bool MeshGeometry::ValidateMeshData() {
 		std::cout << __FUNCTION__ << " mesh " << debugName << " has an incorrect skin weight attribute count!\n";
 		return false;
 	}
-
 	if (!GetSkinIndexData().empty() && GetSkinIndexData().size() != GetVertexCount()) {
 		std::cout << __FUNCTION__ << " mesh " << debugName << " has an incorrect skin index attribute count!\n";
 		return false;

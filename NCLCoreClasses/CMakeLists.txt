@@ -6,10 +6,12 @@ set(PROJECT_NAME NCLCoreClasses)
 set(Asset_Handling
     "Assets.cpp"
     "Assets.h"
+    "AssetLibrary.cpp"
+    "AssetLibrary.h"
+    "AssetLoader.cpp"
+    "AssetLoader.h"
     "SimpleFont.cpp"
     "SimpleFont.h"
-    "TextureLoader.cpp"
-    "TextureLoader.h"
     "TextureWriter.cpp"
     "TextureWriter.h"
 )
@@ -17,6 +19,7 @@ source_group("Asset Handling" FILES ${Asset_Handling})
 
 set(Header_Files
     "Camera.h"
+    "LoadingManager.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -42,7 +45,19 @@ set(Maths
 )
 source_group("Maths" FILES ${Maths})
 
+set(Interfaces
+    "IRenderPass.h"
+    "IMainRenderPass.h"
+    "ICombineRenderPass.h"
+    "IPostRenderPass.h"
+    "IPresentRenderPass.h"
+    "IOverlayRenderPass.h"
+)
+source_group("Interfaces" FILES ${Interfaces})
+
 set(Rendering
+    "BufferObjectBase.cpp"
+    "BufferObjectBase.h"
     "FrameBuffer.cpp"
     "FrameBuffer.h"
     "MeshAnimation.cpp"
@@ -53,12 +68,15 @@ set(Rendering
     "MeshMaterial.h"
     "RendererBase.cpp"
     "RendererBase.h"
+    "RendererConfigBase.cpp"
+    "RendererConfigBase.h"
     "RenderPassBase.cpp"
     "RenderPassBase.h"
     "ShaderBase.cpp"
     "ShaderBase.h"
     "TextureBase.cpp"
     "TextureBase.h"
+    "HudBase.h"
 )
 source_group("Rendering" FILES ${Rendering})
 
@@ -93,6 +111,7 @@ set(ALL_FILES
     ${Asset_Handling}
     ${Header_Files}
     ${Maths}
+    ${Interfaces}
     ${Rendering}
     ${Source_Files}
     ${Windowing_and_Input}

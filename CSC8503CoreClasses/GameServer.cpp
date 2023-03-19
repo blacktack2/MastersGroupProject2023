@@ -67,7 +67,6 @@ void GameServer::UpdateServer() {
 			peerToClientID[p] = nextClientID;
 			clientIDs.push_back(nextClientID);
 			handshakeMap[nextClientID] = false;
-			//std::cout << "outID " << p->outgoingPeerID<<std::endl;
 			PlayerConnectionPacket packet = PlayerConnectionPacket();
 			packet.type = Player_Connected;
 			packet.playerID = nextClientID;
@@ -84,9 +83,7 @@ void GameServer::UpdateServer() {
 			packet.playerID = peerToClientID[p];
 			ProcessPacket(&packet, peerToClientID[p]);
 
-			std::remove(clientIDs.begin(), clientIDs.end(), peerToClientID[p]);
-			clientIDToPeer.erase(peerToClientID[p]);
-			peerToClientID.erase(p);
+			DisconnectClient(peerToClientID[p]);
 
 		}
 		else if (type == ENetEventType::ENET_EVENT_TYPE_RECEIVE) {
@@ -95,6 +92,14 @@ void GameServer::UpdateServer() {
 		}
 		enet_packet_destroy(event.packet);
 	}
+}
+
+void GameServer::DisconnectClient(int clientID)
+{
+	peerToClientID.erase(clientIDToPeer[clientID]);
+
+	clientIDs.erase(std::remove(clientIDs.begin(), clientIDs.end(), clientID), clientIDs.end());
+	clientIDToPeer.erase(clientID);
 }
 
 void GameServer::SetGameWorld(GameWorld &g) {

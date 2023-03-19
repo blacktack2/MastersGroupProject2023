@@ -5,127 +5,134 @@
 #include <functional>
 #include <string>
 
-namespace NCL::CSC8503 {
-	class GameWorld;
-	class NetworkObject;
-	class PhysicsObject;
-	class RenderObject;
+namespace NCL {
+	namespace CSC8503 {
+		class GameWorld;
+		class NetworkObject;
+		class PhysicsObject;
+		class RenderObject;
 
-	class GameObject	{
-	public:
-		typedef std::function<void(GameObject*)> overlap_func;
+		class GameObject {
+		public:
+			typedef std::function<void(GameObject*)> overlap_func;
 
-		GameObject(std::string name = "");
+			GameObject(std::string name = "");
 
-		GameObject(GameObject& other);
+			GameObject(GameObject& other);
 
-		~GameObject();
+			virtual ~GameObject();
 
-		virtual void Update(float dt) {}
+			virtual void Update(float dt) {}
 
-		void SetBoundingVolume(CollisionVolume* vol) {
-			boundingVolume = vol;
-		}
+			void SetBoundingVolume(CollisionVolume* vol) {
+				boundingVolume = vol;
+			}
 
-		const CollisionVolume* GetBoundingVolume() const {
-			return boundingVolume;
-		}
+			const CollisionVolume* GetBoundingVolume() const {
+				return boundingVolume;
+			}
 
-		bool IsActive() const {
-			return isActive;
-		}
+			bool IsActive() const {
+				return isActive;
+			}
 
-		void SetActive(bool active = true) {
-			isActive = active;
-		}
+			void SetActive(bool active = true) {
+				isActive = active;
+			}
 
-		Transform& GetTransform() {
-			return transform;
-		}
+			Transform& GetTransform() {
+				return transform;
+			}
 
-		RenderObject* GetRenderObject() const {
-			return renderObject;
-		}
+			RenderObject* GetRenderObject() const {
+				return renderObject;
+			}
 
-		PhysicsObject* GetPhysicsObject() const {
-			return physicsObject;
-		}
+			PhysicsObject* GetPhysicsObject() const {
+				return physicsObject;
+			}
 
-		NetworkObject* GetNetworkObject() const {
-			return networkObject;
-		}
+			NetworkObject* GetNetworkObject() const {
+				return networkObject;
+			}
 
-		void SetRenderObject(RenderObject* newObject) {
-			renderObject = newObject;
-		}
+			void SetRenderObject(RenderObject* newObject) {
+				renderObject = newObject;
+			}
 
-		void SetPhysicsObject(PhysicsObject* newObject) {
-			physicsObject = newObject;
-		}
+			void SetPhysicsObject(PhysicsObject* newObject) {
+				physicsObject = newObject;
+			}
 
-		void SetNetworkObject(NetworkObject* newObject) {
-			networkObject = newObject;
-		}
+			void SetNetworkObject(NetworkObject* newObject) {
+				networkObject = newObject;
+			}
 
-		const std::string& GetName() const {
-			return name;
-		}
+			const std::string& GetName() const {
+				return name;
+			}
 
-		virtual void OnCollisionBegin(GameObject* otherObject) {
-			if (OnCollisionBeginCallback) OnCollisionBeginCallback(otherObject);
-		}
+			virtual void OnCollisionBegin(GameObject* otherObject) {
+				if (OnCollisionBeginCallback) OnCollisionBeginCallback(otherObject);
+			}
 
-		virtual void OnCollisionEnd(GameObject* otherObject) {
-			if (OnCollisionEndCallback) OnCollisionEndCallback(otherObject);
-		}
+			virtual void OnCollisionEnd(GameObject* otherObject) {
+				if (OnCollisionEndCallback) OnCollisionEndCallback(otherObject);
+			}
 
-		virtual void OnTriggerBegin(GameObject* otherObject) {
-			if (OnTriggerBeginCallback) OnTriggerBeginCallback(otherObject);
-		}
+			virtual void OnCollisionStay(GameObject* otherObject) {
+				if (OnCollisionStayCallback) OnCollisionStayCallback(otherObject);
+			}
 
-		virtual void OnTriggerEnd(GameObject* otherObject) {
-			if (OnTriggerEndCallback) OnTriggerEndCallback(otherObject);
-		}
+			virtual void OnTriggerBegin(GameObject* otherObject) {
+				if (OnTriggerBeginCallback) OnTriggerBeginCallback(otherObject);
+			}
 
-		bool GetBroadphaseAABB(Vector3&outsize) const;
+			virtual void OnTriggerEnd(GameObject* otherObject) {
+				if (OnTriggerEndCallback) OnTriggerEndCallback(otherObject);
+			}
 
-		void UpdateBroadphaseAABB();
+			bool GetBroadphaseAABB(Vector3& outsize) const;
 
-		void SetWorldID(int newID) {
-			worldID = newID;
-		}
+			void UpdateBroadphaseAABB();
 
-		int GetWorldID() const {
-			return worldID;
-		}
+			void SetWorldID(int newID) {
+				worldID = newID;
+			}
 
-		void Delete() {
-			markDelete = true;
-		}
-		bool IsMarkedDelete() {
-			return markDelete;
-		}
+			int GetWorldID() const {
+				return worldID;
+			}
 
-		overlap_func OnCollisionBeginCallback = nullptr;
-		overlap_func OnCollisionEndCallback = nullptr;
-		overlap_func OnTriggerBeginCallback = nullptr;
-		overlap_func OnTriggerEndCallback = nullptr;
-	protected:
-		GameWorld& gameWorld;
+			void Delete() {
+				markDelete = true;
+			}
+			bool IsMarkedDelete() {
+				return markDelete;
+			}
 
-		Transform transform;
+			overlap_func OnCollisionBeginCallback = nullptr;
+			overlap_func OnCollisionEndCallback = nullptr;
+			overlap_func OnCollisionStayCallback = nullptr;
+			overlap_func OnTriggerBeginCallback = nullptr;
+			overlap_func OnTriggerEndCallback = nullptr;
+		protected:
+			GameWorld& gameWorld;
 
-		CollisionVolume* boundingVolume = nullptr;
-		PhysicsObject*   physicsObject = nullptr;
-		RenderObject*    renderObject = nullptr;
-		NetworkObject*   networkObject = nullptr;
+			Transform transform;
 
-		bool isActive;
-		int  worldID;
-		std::string	name;
+			CollisionVolume* boundingVolume = nullptr;
+			PhysicsObject* physicsObject = nullptr;
+			RenderObject* renderObject = nullptr;
+			NetworkObject* networkObject = nullptr;
 
-		Vector3 broadphaseAABB;
-	private:
-		bool markDelete = false;
-	};
+			bool isActive;
+			int  worldID;
+			std::string	name;
+
+			Vector3 broadphaseAABB;
+		private:
+			bool markDelete = false;
+		};
+	}
 }

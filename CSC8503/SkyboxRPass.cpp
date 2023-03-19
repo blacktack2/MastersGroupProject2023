@@ -7,89 +7,73 @@
  */
 #include "SkyboxRPass.h"
 
-#include "OGLFrameBuffer.h"
-#include "OGLMesh.h"
-#include "OGLShader.h"
-#include "OGLTexture.h"
+#include "GameTechRenderer.h"
+#include "GameWorld.h"
 
+#include "AssetLibrary.h"
+#include "AssetLoader.h"
+
+#include "FrameBuffer.h"
+#include "MeshGeometry.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
+
+#include "Vector3.h"
+
+using namespace NCL;
 using namespace NCL::CSC8503;
+using namespace NCL::Rendering;
 
-SkyboxRPass::SkyboxRPass(OGLRenderer& renderer, GameWorld& gameWorld) :
-OGLRenderPass(renderer), gameWorld(gameWorld) {
-	colourOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
-	AddScreenTexture(colourOutTex);
+SkyboxRPass::SkyboxRPass() : OGLMainRenderPass(),
+gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
+	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
-	frameBuffer = new OGLFrameBuffer();
+	colourOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	AddScreenTexture(*colourOutTex);
+
+	frameBuffer = AssetLoader::CreateFrameBuffer();
 	frameBuffer->Bind();
-	frameBuffer->AddTexture(colourOutTex);
+	frameBuffer->AddTexture(*colourOutTex);
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
-	quad = new OGLMesh();
-	quad->SetVertexPositions({
-		Vector3(-1,  1, -1),
-		Vector3(-1, -1, -1),
-		Vector3( 1, -1, -1),
-		Vector3( 1,  1, -1),
-		});
-	quad->SetVertexTextureCoords({
-		Vector2(0, 1),
-		Vector2(0, 0),
-		Vector2(1, 0),
-		Vector2(1, 1),
-		});
-	quad->SetVertexIndices({0, 1, 2, 2, 3, 0});
-	quad->UploadToGPU();
-
-	shader = new OGLShader("skybox.vert", "skybox.frag");
+	shader = AssetLoader::CreateShaderAndInit("skybox.vert", "skybox.frag");
 
 	shader->Bind();
 
-	// TODO - Replace with call to the shader class
-	viewMatrixUniform = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
-	sunDirUniform = glGetUniformLocation(shader->GetProgramID(), "sunDir");
-	timeUniform = glGetUniformLocation(shader->GetProgramID(), "time");
+	shader->SetUniformFloat("sunDir", 0.1f, 0.6f, 0.2f);
 
-	glUniform3f(sunDirUniform, 0.1f, 0.6f, 0.2f);
-	glUniform1f(glGetUniformLocation(shader->GetProgramID(), "cirrus"), 0.5f);
-	glUniform1f(glGetUniformLocation(shader->GetProgramID(), "cumulus"), 0.5f);
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix();
-	glUniformMatrix4fv(glGetUniformLocation(shader->GetProgramID(), "projMatrix"), 1, GL_FALSE, (GLfloat*)projMatrix.array);
+	shader->SetUniformFloat("cirrus", 0.5f);
+	shader->SetUniformFloat("cumulus", 0.5f);
+
+	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetAspect());
+	shader->SetUniformMatrix("projMatrix", projMatrix);
 
 	shader->Unbind();
 }
 
-SkyboxRPass::~SkyboxRPass() {
-	delete frameBuffer;
-
-	delete colourOutTex;
-
-	delete quad;
-
-	delete shader;
-}
-
 void SkyboxRPass::Render() {
 	frameBuffer->Bind();
-	glClear(GL_COLOR_BUFFER_BIT);
-	glDepthMask(GL_FALSE);
+	renderer.ClearBuffers(ClearBit::Color);
 
 	shader->Bind();
 
 	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-	glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, (GLfloat*)viewMatrix.array);
-	glUniform1f(timeUniform, gameWorld.GetRunTime());
+	shader->SetUniformMatrix("viewMatrix", viewMatrix);
+
+	shader->SetUniformFloat("time", gameWorld.GetRunTime());
 
 	quad->Draw();
 
 	shader->Unbind();
 
-	glDepthMask(GL_TRUE);
 	frameBuffer->Unbind();
 }
 
 void SkyboxRPass::SetSunDir(const Vector3& direction) {
 	shader->Bind();
-	glUniform3fv(sunDirUniform, 1, (GLfloat*)&direction);
+
+	shader->SetUniformFloat("sunDir", direction);
+
 	shader->Unbind();
 }

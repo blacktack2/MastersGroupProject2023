@@ -6,53 +6,61 @@
  * @date   February 2023
  */
 #pragma once
-#include "OGLRenderPass.h"
+#include "OGLOverlayRenderPass.h"
 
-#include "GameWorld.h"
+#include "Vector2.h"
+#include "Vector3.h"
+#include "Vector4.h"
 
-namespace NCL::Rendering {
-	class OGLShader;
-	class OGLTexture;
-}
+#include <functional>
+#include <memory>
+#include <optional>
 
-using namespace NCL::Rendering;
+namespace NCL {
+	class MeshGeometry;
 
-namespace NCL::CSC8503 {
-	class DebugRPass : public OGLRenderPass {
-	public:
-		DebugRPass(OGLRenderer& renderer, GameWorld& gameWorld);
-		~DebugRPass();
+	namespace Rendering {
+		class FrameBuffer;
+		class ShaderBase;
+		class TextureBase;
+	}
 
-		virtual void Render() override;
-	private:
-		void SetDebugStringBufferSizes(size_t newVertCount);
-		void SetDebugLineBufferSizes(size_t newVertCount);
+	using namespace NCL::Maths;
+	using namespace NCL::Rendering;
 
-		void RenderLines();
-		void RenderText();
+	namespace CSC8503 {
+		class GameTechRenderer;
+		class GameWorld;
 
-		GameWorld& gameWorld;
+		class DebugRPass : public OGLOverlayRenderPass {
+		public:
+			DebugRPass();
+			~DebugRPass() = default;
 
-		OGLShader* lineShader;
+			void Render() override;
 
-		GLuint viewProjMatrixUniform;
+			void RenderWinLoseInformation(bool win);
+		private:
+			void RenderLines();
+			void RenderText();
 
-		OGLShader* textShader;
+			GameTechRenderer& renderer;
+			GameWorld& gameWorld;
 
-		std::vector<Vector3> debugLineData;
+			std::unique_ptr<ShaderBase> lineShader;
+			std::unique_ptr<ShaderBase> textShader;
 
-		std::vector<Vector3> debugTextPos;
-		std::vector<Vector4> debugTextColours;
-		std::vector<Vector2> debugTextUVs;
+			std::vector<Vector3> debugLineData;
 
-		GLuint lineVAO;
-		GLuint lineVertVBO;
-		size_t lineCount;
+			std::vector<Vector3> debugTextPos;
+			std::vector<Vector4> debugTextColours;
+			std::vector<Vector2> debugTextUVs;
 
-		GLuint textVAO;
-		GLuint textVertVBO;
-		GLuint textColourVBO;
-		GLuint textTexVBO;
-		size_t textCount;
-	};
+			std::unique_ptr<MeshGeometry> lineMesh;
+			std::unique_ptr<MeshGeometry> textMesh;
+
+			size_t lineCount;
+			size_t textCount;
+		};
+	}
 }

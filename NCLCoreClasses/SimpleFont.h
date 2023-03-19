@@ -1,50 +1,44 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   SimpleFont.h
+ * @brief  Utility class for encapsulating font texture functionality.
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #pragma once
+#include "Vector2.h"
+#include "Vector3.h"
+#include "Vector4.h"
+
 #include <string>
 #include <vector>
 
-#include "Vector2.h"
-#include "Vector4.h"
+using namespace NCL::Maths;
 
 namespace NCL {
-	namespace Maths {
-		class Vector2;
-		class Vector3;
-		class Vector4;
-	}
 	namespace Rendering {
 		class TextureBase;
 
-		class SimpleFont	{
+		class SimpleFont {
 		public:
-
-			SimpleFont(const std::string& fontName, const std::string& texName);
+			SimpleFont(const std::string& fontName, const TextureBase& texture);
 			~SimpleFont();
 
 			struct InterleavedTextVertex {
-				NCL::Maths::Vector2 pos;
-				NCL::Maths::Vector2 texCoord;
-				NCL::Maths::Vector4 colour;
+				Vector2 pos;
+				Vector2 texCoord;
+				Vector4 colour;
 			};
 
 			int GetVertexCountForString(const std::string& text);
-			void BuildVerticesForString(const std::string& text, const Maths::Vector2& startPos, const Maths::Vector4& colour, float size, std::vector<Maths::Vector3>&positions, std::vector<Maths::Vector2>&texCoords, std::vector<Maths::Vector4>&colours);
-			void BuildInterleavedVerticesForString(const std::string& text, const Maths::Vector2& startPos, const Maths::Vector4& colour, float size, std::vector<InterleavedTextVertex>&vertices);
+			void BuildVerticesForString(const std::string& text, const Vector2& startPos, const Vector4& colour, float size, std::vector<Vector3>& positions, std::vector<Vector2>& texCoords, std::vector<Vector4>& colours);
+			void BuildInterleavedVerticesForString(const std::string& text, const Vector2& startPos, const Vector4& colour, float size, std::vector<InterleavedTextVertex>& vertices);
 
-			const TextureBase* GetTexture() const {
+			inline const TextureBase& GetTexture() const {
 				return texture;
 			}
-
-
-
-		protected:
+		private:
 			//matches stbtt_bakedchar
 			struct FontChar {
 				unsigned short x0;
@@ -56,11 +50,11 @@ namespace NCL {
 				float xAdvance;
 			};
 
-			FontChar*		allCharData;
-			TextureBase*	texture;
+			std::vector<FontChar> allCharData;
+			const TextureBase& texture;
 
-			int startChar;
-			int numChars;
+			size_t startChar;
+			size_t numChars;
 
 			float texWidth;
 			float texHeight;
@@ -69,4 +63,3 @@ namespace NCL {
 		};
 	}
 }
-

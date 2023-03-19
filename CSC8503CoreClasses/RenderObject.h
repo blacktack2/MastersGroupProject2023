@@ -1,61 +1,80 @@
+/**
+ * @file   RenderObject.h
+ * @brief  
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   February 2023
+ */
 #pragma once
-#include "TextureBase.h"
-#include "ShaderBase.h"
+#include <functional>
+#include <optional>
+#include<Vector2.h>
+#include<Vector4.h>
+namespace NCL {
+	class MeshMaterial;
+	class MeshGeometry;
+}
 
 namespace NCL {
-	using namespace NCL::Rendering;
+	namespace Rendering {
+		class TextureBase;
+		class ShaderBase;
+	}
+}
 
-	class MeshGeometry;
+using namespace NCL::Rendering;
+
+namespace NCL {
 	namespace CSC8503 {
 		class Transform;
 		using namespace Maths;
 
-		class RenderObject
-		{
+		class RenderObject {
 		public:
-			RenderObject(Transform* parentTransform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader);
-			RenderObject(RenderObject& other, Transform* parentTransform);
-			~RenderObject();
+			RenderObject(Transform& parentTransform, std::shared_ptr<MeshGeometry> mesh, std::shared_ptr<MeshMaterial> material);
+			RenderObject(RenderObject& other, Transform& parentTransform);
+			virtual ~RenderObject();
 
-			void SetDefaultTexture(TextureBase* t) {
-				texture = t;
-			}
-
-			TextureBase* GetDefaultTexture() const {
-				return texture;
-			}
-
-			MeshGeometry*	GetMesh() const {
+			std::shared_ptr<MeshGeometry> GetMesh() const {
 				return mesh;
 			}
 
-
-			void SetTransform(Transform* transform){
+			void SetTransform(Transform& transform) {
 				this->transform = transform;
 			}
 
-			Transform*		GetTransform() const {
+			Transform& GetTransform() const {
 				return transform;
-			}
-
-			ShaderBase*		GetShader() const {
-				return shader;
 			}
 
 			void SetColour(const Vector4& c) {
 				colour = c;
 			}
 
-			Vector4 GetColour() const {
+			const Vector4& GetColour() const {
 				return colour;
 			}
-
+			void SetTexScale(const Vector2& scale) {
+				texScale = scale;
+			}
+			void DrawToGBuffer();
+			void DrawToShadowMap();
 		protected:
-			Transform*		transform;
-			MeshGeometry*	mesh;
-			TextureBase*	texture;
-			ShaderBase*		shader;
-			Vector4			colour;
+			virtual void PreDraw(int sublayer);
+			virtual void PreDraw(int sublayer, ShaderBase& shader) {}
+
+			virtual void PreShadow(int sublayer);
+			virtual void PreShadow(int sublayer, ShaderBase& shader) {}
+
+			virtual ShaderBase& GetDefaultShader();
+			virtual ShaderBase& GetDefaultShadowShader();
+
+			std::reference_wrapper<Transform> transform;
+			std::shared_ptr<MeshGeometry> mesh;
+			std::shared_ptr<MeshMaterial> material;
+			Vector4 colour;
+			Vector2 texScale = Vector2(1.0f);
 		};
 	}
 }

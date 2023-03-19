@@ -30,7 +30,10 @@ public:
 		}
 		return instance;
 	}
-	static void Destroy() { delete instance; }
+	static void Destroy() { 
+		delete instance;
+		instance = nullptr;
+	}
 
 	inline static SoundSystem* GetSoundSystem() { return instance; }
 

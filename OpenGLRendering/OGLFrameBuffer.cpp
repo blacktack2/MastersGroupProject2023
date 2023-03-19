@@ -11,7 +11,6 @@
 
 using namespace NCL::Rendering;
 
-// Can be safely expanded to include additional buffers if necessary
 static const GLenum colourBuffers[]{
 	GL_COLOR_ATTACHMENT0,
 	GL_COLOR_ATTACHMENT1,
@@ -33,31 +32,45 @@ OGLFrameBuffer::~OGLFrameBuffer() {
 	glDeleteFramebuffers(1, &fboID);
 }
 
-void OGLFrameBuffer::Bind() {
+void OGLFrameBuffer::Bind() const {
 	glBindFramebuffer(GL_FRAMEBUFFER, fboID);
 }
 
-void OGLFrameBuffer::Unbind() {
+void OGLFrameBuffer::Unbind() const {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void OGLFrameBuffer::AddTexture(OGLTexture* texture) {
-	textures.emplace_back(texture);
-	GLenum attachment;
-	switch (texture->GetType()) {
-		default:
-		case TexType::Colour  : attachment = GL_COLOR_ATTACHMENT0 + numColourTexs++; break;
-		case TexType::Depth   :
-		case TexType::Shadow  : attachment = GL_DEPTH_ATTACHMENT  ; break;
-		case TexType::Stencil : attachment = GL_STENCIL_ATTACHMENT; break;
-	}
-	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture->GetObjectID(), 0);
+void OGLFrameBuffer::DrawBuffers() const {
+	DrawBuffers(numColourTexs);
 }
 
-void OGLFrameBuffer::DrawBuffers() {
-	if (numColourTexs == 0) {
+bool OGLFrameBuffer::InitSuccess() const {
+	Bind();
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	Unbind();
+	return status == GL_FRAMEBUFFER_COMPLETE;
+}
+
+std::unique_ptr<FrameBuffer> OGLFrameBuffer::CreateFrameBuffer() {
+	return std::make_unique<OGLFrameBuffer>();
+}
+
+void OGLFrameBuffer::BindToTexture(TextureBase& texture, unsigned int attachment) {
+	GLenum attach;
+	switch (texture.GetBufferType()) {
+		default:
+		case BufferType::ColourAttachment  : attach = GL_COLOR_ATTACHMENT0 + attachment; break;
+		case BufferType::DepthAttachment   : attach = GL_DEPTH_ATTACHMENT              ; break;
+		case BufferType::StencilAttachment : attach = GL_STENCIL_ATTACHMENT            ; break;
+	}
+	numColourTexs = std::max(attachment + 1, (unsigned int)numColourTexs);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, attach, GL_TEXTURE_2D, static_cast<OGLTexture&>(texture).GetObjectID(), 0);
+}
+
+void OGLFrameBuffer::DrawBuffers(unsigned int numBuffers) const {
+	if (numBuffers == 0) {
 		glDrawBuffer(GL_NONE);
 	} else {
-		glDrawBuffers(numColourTexs, colourBuffers);
+		glDrawBuffers(numBuffers, colourBuffers);
 	}
 }

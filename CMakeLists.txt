@@ -64,6 +64,7 @@ set(USE_VULKAN CACHE BOOL false)
 if(USE_VULKAN)
     add_compile_definitions("USEVULKAN") 
 endif() 
+add_compile_definitions(NOMINMAX)
 ################################################################################
 # Sub-projects
 ################################################################################

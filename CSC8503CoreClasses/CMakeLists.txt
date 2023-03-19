@@ -82,7 +82,7 @@ source_group("Networking" FILES ${Networking})
 
 set(Physics
     "constraint.h"  
-     "constraint.h"  
+    "constraint.h"  
     "PositionConstraint.cpp"
     "PositionConstraint.h"
     "OrientationConstraint.cpp"
@@ -95,25 +95,29 @@ set(Physics
 source_group("Physics" FILES ${Physics})
 
 set(Header_Files
-	"AssetLibrary.h"
     "Debug.h"
     "GameObject.h"
     "GameWorld.h"
     "InputKeyMap.h"
     "Light.h"
+    "PrefabLibrary.h"
     "RenderObject.h"
     "Transform.h"
+    "XboxController.h"
+    "XboxControllerManager.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
-	"AssetLibrary.cpp"
     "Debug.cpp"
     "GameObject.cpp"
     "GameWorld.cpp"
+    "InputKeyMap.cpp"
     "Light.cpp"
+    "PrefabLibrary.cpp"
     "RenderObject.cpp"
     "Transform.cpp"
+    "XboxController.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 
@@ -220,4 +224,5 @@ include_directories("./")
 
 if(MSVC)
     target_link_libraries(${PROJECT_NAME} PRIVATE "ws2_32.lib")
+    target_link_libraries(${PROJECT_NAME} LINK_PUBLIC  "Xinput.lib")
 endif()

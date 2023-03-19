@@ -1,137 +1,142 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   Quaternion.h
+ * @brief  Wrapper class for a 3D quaternion.
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #pragma once
 #include <iostream>
 
-namespace NCL::Maths {
-	class Matrix3;
-	class Matrix4;
-	class Vector3;
+namespace NCL {
+	namespace Maths {
+		class Matrix3;
+		class Matrix4;
+		class Vector3;
 
-	class Quaternion {
-	public:
-		union {
-			struct {
-				float x;
-				float y;
-				float z;
-				float w;
+		/**
+		 * @brief Wrapper class for a 3D quaternion.
+		 */
+		class Quaternion {
+		public:
+			union {
+				struct {
+					float x;
+					float y;
+					float z;
+					float w;
+				};
+				float array[4];
 			};
-			float array[4];
-		};
-	public:
-		Quaternion(void);
-		Quaternion(float x, float y, float z, float w);
-		Quaternion(double x, double y, double z, double w);
-		Quaternion(const Vector3& vector, float w);
+		public:
+			Quaternion();
+			Quaternion(float x, float y, float z, float w);
+			Quaternion(double x, double y, double z, double w);
+			Quaternion(const Vector3& vector, float w);
 
-		Quaternion(const Matrix3 &m);
-		Quaternion(const Matrix4 &m);
+			Quaternion(const Matrix3& m);
+			Quaternion(const Matrix4& m);
 
-		~Quaternion(void) = default;
+			~Quaternion() = default;
 
-		void		Normalise(); 
-		Quaternion	Normalised() const;
+			void Normalise();
+			Quaternion Normalised() const;
 
-			
-		static float Dot(const Quaternion &a, const Quaternion &b);
 
-		static Quaternion	Lerp(const Quaternion &from, const Quaternion &to, float by);
-		static Quaternion	Slerp(const Quaternion &from, const Quaternion &to, float by);
+			static float Dot(const Quaternion& a, const Quaternion& b);
 
-		Vector3		ToEuler() const;
-		Quaternion	Conjugate() const;
-		void		CalculateW();	//builds 4th component when loading in shortened, 3 component quaternions
+			static Quaternion Lerp(const Quaternion& from, const Quaternion& to, float by);
+			static Quaternion Slerp(const Quaternion& from, const Quaternion& to, float by);
 
-		static Quaternion EulerAnglesToQuaternion(float pitch, float yaw, float roll);
-		static Quaternion AxisAngleToQuaterion(const Vector3& vector, float degrees);
+			Vector3 ToEuler() const;
+			Quaternion Conjugate() const;
+			/**
+			 * @brief Build 4th component when loading in shortened, 3
+			 * component quaternions.
+			 */
+			void CalculateW();
 
-		inline bool  operator ==(const Quaternion &from)	const {
-			if (x != from.x || y != from.y || z != from.z || w != from.w) {
-				return false;
-			}
-			return true;
-		}
+			static Quaternion EulerAnglesToQuaternion(float pitch, float yaw, float roll);
+			static Quaternion AxisAngleToQuaterion(const Vector3& vector, float degrees);
 
-		inline bool  operator !=(const Quaternion &from)	const {
-			if (x != from.x || y != from.y || z != from.z || w != from.w) {
+			inline bool operator==(const Quaternion& from) const {
+				if (x != from.x || y != from.y || z != from.z || w != from.w) {
+					return false;
+				}
 				return true;
 			}
-			return false;
-		}
 
-		inline Quaternion  operator *(const Quaternion &b)	const {
-			return Quaternion(
-				(x * b.w) + (w * b.x) + (y * b.z) - (z * b.y),
-				(y * b.w) + (w * b.y) + (z * b.x) - (x * b.z),
-				(z * b.w) + (w * b.z) + (x * b.y) - (y * b.x),
-				(w * b.w) - (x * b.x) - (y * b.y) - (z * b.z)
-			);
-		}
+			inline bool operator!=(const Quaternion& from) const {
+				if (x != from.x || y != from.y || z != from.z || w != from.w) {
+					return true;
+				}
+				return false;
+			}
 
-		Vector3		operator *(const Vector3 &a)	const;
+			inline Quaternion operator*(const Quaternion& b) const {
+				return Quaternion(
+					(x * b.w) + (w * b.x) + (y * b.z) - (z * b.y),
+					(y * b.w) + (w * b.y) + (z * b.x) - (x * b.z),
+					(z * b.w) + (w * b.z) + (x * b.y) - (y * b.x),
+					(w * b.w) - (x * b.x) - (y * b.y) - (z * b.z)
+				);
+			}
 
-		inline Quaternion  operator *(const float &a)		const {
-			return Quaternion(x*a, y*a, z*a, w*a);
-		}
+			Vector3 operator*(const Vector3& a) const;
 
-		inline Quaternion  operator *=(const float &a) {
-			*this = *this * a;
-			return *this;
-		}
+			inline Quaternion operator*(const float& a) const {
+				return Quaternion(x * a, y * a, z * a, w * a);
+			}
 
-		inline Quaternion  operator -()	const {
-			return Quaternion(-x, -y, -z, -w);
-		}
+			inline Quaternion operator*=(const float& a) {
+				*this = *this * a;
+				return *this;
+			}
 
-		inline Quaternion  operator -(const Quaternion &a)	const {
-			return Quaternion(x - a.x, y - a.y, z - a.z, w - a.w);
-		}
+			inline Quaternion operator-() const {
+				return Quaternion(-x, -y, -z, -w);
+			}
 
-		inline Quaternion  operator -=(const Quaternion &a) {
-			*this = *this - a;
-			return *this;
-		}
+			inline Quaternion operator-(const Quaternion& a) const {
+				return Quaternion(x - a.x, y - a.y, z - a.z, w - a.w);
+			}
 
-		inline Quaternion  operator +(const Quaternion &a)	const {
-			return Quaternion(x + a.x, y + a.y, z + a.z, w + a.w);
-		}
+			inline Quaternion operator-=(const Quaternion& a) {
+				*this = *this - a;
+				return *this;
+			}
 
-		inline Quaternion  operator +=(const Quaternion &a) {
-			*this = *this + a;
-			return *this;
-		}
+			inline Quaternion operator+(const Quaternion& a) const {
+				return Quaternion(x + a.x, y + a.y, z + a.z, w + a.w);
+			}
 
-		inline float operator[](int i) const {
-			return array[i];
-		}
+			inline Quaternion operator+=(const Quaternion& a) {
+				*this = *this + a;
+				return *this;
+			}
 
-		inline float& operator[](int i) {
-			return array[i];
-		}
+			inline float operator[](int i) const {
+				return array[i];
+			}
 
-		inline friend std::ostream& operator <<(std::ostream& o, const Quaternion& q);
-		inline friend std::istream& operator >>(std::istream& i, Quaternion &v);
-	};
+			inline float& operator[](int i) {
+				return array[i];
+			}
 
-	std::ostream& operator<<(std::ostream& o, const Quaternion& q) {
-		o	<< "Quaternion("
-			<< q.x; o << ","
-			<< q.y; o << ","
-			<< q.z; o << ","
-			<< q.w;
-		return o;
-	}
-
-	std::istream& operator >> (std::istream& i, Quaternion &v) {
-		char ignore;
-		i >> std::skipws >> v.x >> ignore >> v.y >> ignore >> v.z >> ignore >> v.w >> std::noskipws;
-		return i;
+			inline friend std::ostream& operator <<(std::ostream& o, const Quaternion& q) {
+				o << "Quaternion("
+					<< q.x; o << ","
+					<< q.y; o << ","
+					<< q.z; o << ","
+					<< q.w;
+				return o;
+			}
+			inline friend std::istream& operator >>(std::istream& i, Quaternion& v) {
+				char ignore = ' ';
+				i >> std::skipws >> v.x >> ignore >> v.y >> ignore >> v.z >> ignore >> v.w >> std::noskipws;
+				return i;
+			}
+		};
 	}
 }

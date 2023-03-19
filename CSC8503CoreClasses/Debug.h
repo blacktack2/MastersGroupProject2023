@@ -4,25 +4,25 @@
 #include "Matrix4.h"
 #include "SimpleFont.h"
 
+using namespace NCL::Maths;
+using namespace NCL::Rendering;
+
 namespace NCL {
-	using namespace NCL::Maths;
-	using namespace NCL::Rendering;
-	class Debug
-	{
+	class Debug {
 	public:
 		struct DebugStringEntry {
-			std::string	data;
+			std::string data;
 			Vector2 position;
 			Vector4 colour;
-			float size;
+			float   size;
 		};
 
 		struct DebugLineEntry {
 			Vector3 start;
-			float	padding;
+			float   padding;
 			Vector4 colourA;
 			Vector3 end;
-			float	time;
+			float   time;
 			Vector4 colourB;
 		};
 
@@ -36,8 +36,8 @@ namespace NCL {
 		static SimpleFont* GetDebugFont();
 
 		static const std::vector<DebugStringEntry>& GetDebugStrings();
+		static void ClearDebugStrings();
 		static const std::vector<DebugLineEntry>& GetDebugLines();
-
 
 		static const Vector4 RED;
 		static const Vector4 GREEN;
@@ -49,13 +49,9 @@ namespace NCL {
 		static const Vector4 YELLOW;
 		static const Vector4 MAGENTA;
 		static const Vector4 CYAN;
-
 	protected:
-		Debug() {}
-		~Debug() {}
-
-		static std::vector<DebugStringEntry>	stringEntries;
-		static std::vector<DebugLineEntry>		lineEntries;
+		static std::vector<DebugStringEntry> stringEntries;
+		static std::vector<DebugLineEntry>   lineEntries;
 
 		static SimpleFont* debugFont;
 	};

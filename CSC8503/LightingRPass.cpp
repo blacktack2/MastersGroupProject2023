@@ -7,143 +7,168 @@
  */
 #include "LightingRPass.h"
 
-#include "OGLFrameBuffer.h"
-#include "OGLMesh.h"
-#include "OGLShader.h"
-#include "OGLTexture.h"
+#include "GameTechRenderer.h"
+#include "GameWorld.h"
+
+#include "AssetLibrary.h"
+#include "AssetLoader.h"
+
+#include "FrameBuffer.h"
+#include "MeshGeometry.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
+
 #include "RenderObject.h"
 
+#include "Light.h"
+
+using namespace NCL;
 using namespace NCL::CSC8503;
+using namespace NCL::Maths;
+using namespace NCL::Rendering;
 
-LightingRPass::LightingRPass(OGLRenderer& renderer, GameWorld& gameWorld, OGLTexture* depthTexIn, OGLTexture* normalTexIn) :
-OGLRenderPass(renderer), gameWorld(gameWorld), depthTexIn(depthTexIn), normalTexIn(normalTexIn) {
-	lightDiffuseOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
-	lightSpecularOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight(), GL_RGB16F);
-	AddScreenTexture(lightDiffuseOutTex);
-	AddScreenTexture(lightSpecularOutTex);
+LightingRPass::LightingRPass() : OGLMainRenderPass(),
+gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
+	sphere = AssetLibrary<MeshGeometry>::GetAsset("sphere");
+	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
-	frameBuffer = new OGLFrameBuffer();
-	frameBuffer->Bind();
-	frameBuffer->AddTexture(lightDiffuseOutTex);
-	frameBuffer->AddTexture(lightSpecularOutTex);
-	frameBuffer->DrawBuffers();
-	frameBuffer->Unbind();
+	shadowMapTex = AssetLoader::CreateTexture(TextureType::Shadow, SHADOWSIZE, SHADOWSIZE);
 
-	sphere = new OGLMesh("Sphere.msh");
-	sphere->SetPrimitiveType(GeometryPrimitive::Triangles);
-	sphere->UploadToGPU();
+	lightDiffuseOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	lightSpecularOutTex = AssetLoader::CreateTexture(TextureType::ColourRGB16F, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	AddScreenTexture(*lightDiffuseOutTex);
+	AddScreenTexture(*lightSpecularOutTex);
 
-	quad = new OGLMesh();
-	quad->SetVertexPositions({
-		Vector3(-1,  1, -1),
-		Vector3(-1, -1, -1),
-		Vector3( 1, -1, -1),
-		Vector3( 1,  1, -1),
-		});
-	quad->SetVertexTextureCoords({
-		Vector2(0, 1),
-		Vector2(0, 0),
-		Vector2(1, 0),
-		Vector2(1, 1),
-		});
-	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
-	quad->UploadToGPU();
+	shadowFrameBuffer = AssetLoader::CreateFrameBuffer();
+	shadowFrameBuffer->Bind();
+	shadowFrameBuffer->AddTexture(*shadowMapTex);
+	shadowFrameBuffer->DrawBuffers(0);
+	shadowFrameBuffer->Unbind();
 
-	shader = new OGLShader("light.vert", "light.frag");
+	lightFrameBuffer = AssetLoader::CreateFrameBuffer();
+	lightFrameBuffer->Bind();
+	lightFrameBuffer->AddTexture(*lightDiffuseOutTex);
+	lightFrameBuffer->AddTexture(*lightSpecularOutTex);
+	lightFrameBuffer->DrawBuffers();
+	lightFrameBuffer->Unbind();
 
-	shader->Bind();
+	lightShader = AssetLoader::CreateShaderAndInit("light.vert", "light.frag");
 
-	cameraPosUniform       = glGetUniformLocation(shader->GetProgramID(), "cameraPos");
-	pixelSizeUniform       = glGetUniformLocation(shader->GetProgramID(), "pixelSize");
-	inverseProjViewUniform = glGetUniformLocation(shader->GetProgramID(), "inverseProjView");
+	lightShader->Bind();
 
-	lightPositionUniform   = glGetUniformLocation(shader->GetProgramID(), "lightPosition");
-	lightColourUniform     = glGetUniformLocation(shader->GetProgramID(), "lightColour");
-	lightRadiusUniform     = glGetUniformLocation(shader->GetProgramID(), "lightRadius");
-	lightDirectionUniform  = glGetUniformLocation(shader->GetProgramID(), "lightDirection");
-	lightAngleUniform      = glGetUniformLocation(shader->GetProgramID(), "lightAngle");
+	lightShader->SetUniformFloat("pixelSize", 1.0f / (float)renderer.GetSplitWidth(), 1.0f / (float)renderer.GetSplitHeight());
 
-	modelMatrixUniform     = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
-	viewMatrixUniform      = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
-	projMatrixUniform      = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
+	lightShader->SetUniformInt("depthTex", 0);
+	lightShader->SetUniformInt("normalTex", 1);
+	lightShader->SetUniformInt("specTex", 2);
+	lightShader->SetUniformInt("shadowTex", 3);
 
-	glUniform2f(pixelSizeUniform, 1.0f / (float)renderer.GetWidth(), 1.0f / (float)renderer.GetHeight());
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "depthTex"), 0);
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "normalTex"), 1);
+	lightShader->Unbind();
 
-	shader->Unbind();
-}
-
-LightingRPass::~LightingRPass() {
-	delete frameBuffer;
-
-	delete lightDiffuseOutTex;
-	delete lightSpecularOutTex;
-
-	delete sphere;
-	delete quad;
-
-	delete shader;
+	AddShadowShader(AssetLibrary<ShaderBase>::GetAsset("shadowDefault"));
 }
 
 void LightingRPass::OnWindowResize(int width, int height) {
 	RenderPassBase::OnWindowResize(width, height);
-	glUniform2f(pixelSizeUniform, 1.0f / (float)width, 1.0f / (float)height);
+	lightShader->Bind();
+
+	lightShader->SetUniformFloat("pixelSize", 1.0f / (float)renderer.GetSplitWidth(), 1.0f / (float)renderer.GetSplitHeight());
+
+	lightShader->Unbind();
 }
 
 void LightingRPass::Render() {
-	frameBuffer->Bind();
+	lightFrameBuffer->Bind();
 
-	glClear(GL_COLOR_BUFFER_BIT);
+	renderer.ClearBuffers(ClearBit::Color);
 
-	frameBuffer->Unbind();
+	lightFrameBuffer->Unbind();
 
 	gameWorld.OperateOnLights([&](const Light& light) {
-		DrawLight(light);
+		const Matrix4& shadowMatrix = light.GetShadowMatrix();
+
+		DrawShadowMap(light, shadowMatrix);
+		DrawLight(light, shadowMatrix);
 	});
 }
 
-void LightingRPass::DrawLight(const Light& light) {
-	frameBuffer->Bind();
-	shader->Bind();
+void LightingRPass::AddShadowShader(std::shared_ptr<ShaderBase> shader) {
+	shadowShaders.push_back(shader);
+}
 
-	glBlendFunc(GL_ONE, GL_ONE);
-	glDepthFunc(GL_ALWAYS);
-	glDepthMask(GL_FALSE);
+void LightingRPass::DrawShadowMap(const Light& light, const Matrix4& shadowMatrix) {
+	for (const auto& shader : shadowShaders) {
+		shader->Bind();
+
+		shader->SetUniformMatrix("projViewMatrix", shadowMatrix);
+
+		shader->Unbind();
+	}
+
+	shadowFrameBuffer->Bind();
+
+	renderer.GetConfig().SetViewport(0, 0, SHADOWSIZE, SHADOWSIZE);
+
+	renderer.GetConfig().SetColourMask(false, false, false, false);
+	renderer.GetConfig().SetDepthMask(true);
+	renderer.GetConfig().SetDepthTest(true);
+
+	renderer.ClearBuffers(ClearBit::Depth);
+
+	gameWorld.OperateOnContents([&](GameObject* gameObject) {
+		RenderObject* renderObject = gameObject->GetRenderObject();
+		if (!renderObject) {
+			return;
+		}
+
+		renderObject->DrawToShadowMap();
+	});
+
+	renderer.GetConfig().SetDepthTest();
+	renderer.GetConfig().SetDepthMask();
+	renderer.GetConfig().SetColourMask();
+
+	renderer.GetConfig().SetViewport();
+
+	shadowFrameBuffer->Unbind();
+}
+
+void LightingRPass::DrawLight(const Light& light, const Matrix4& shadowMatrix) {
+	lightFrameBuffer->Bind();
+	lightShader->Bind();
+
+	renderer.GetConfig().SetBlend(true, BlendFuncSrc::One, BlendFuncDst::One);
+	renderer.GetConfig().SetDepthTest(true, DepthTestFunc::Always);
 
 	depthTexIn->Bind(0);
 	normalTexIn->Bind(1);
+	specTexIn->Bind(2);
+	shadowMapTex->Bind(3);
 
-	glUniform3fv(cameraPosUniform, 1, (GLfloat*)&gameWorld.GetMainCamera()->GetPosition()[0]);
-	Matrix4 modelMatrix = Matrix4();
-	modelMatrix.SetDiagonal(Vector3(1));
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix();
+	lightShader->SetUniformFloat("cameraPos", gameWorld.GetMainCamera()->GetPosition());
+
+	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetAspect());
 	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
 	Matrix4 inverseViewProj = (projMatrix * viewMatrix).Inverse();
 
-	glUniform4fv(lightPositionUniform, 1, (GLfloat*)&light.position);
-	glUniform4fv(lightColourUniform, 1, (GLfloat*)&light.colour);
-	glUniform1f(lightRadiusUniform, light.radius);
-	glUniform3fv(lightDirectionUniform, 1, (GLfloat*)&light.direction);
-	glUniform1f(lightAngleUniform, light.angle);
+	light.Upload(*lightShader);
 
-	glUniformMatrix4fv(inverseProjViewUniform, 1, GL_FALSE, (GLfloat*)&inverseViewProj);
-	glUniformMatrix4fv(modelMatrixUniform, 1, GL_FALSE, (GLfloat*)modelMatrix.array);
-	glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, (GLfloat*)viewMatrix.array);
-	glUniformMatrix4fv(projMatrixUniform, 1, GL_FALSE, (GLfloat*)projMatrix.array);
+	lightShader->SetUniformMatrix("inverseProjView", inverseViewProj);
+	lightShader->SetUniformMatrix("viewMatrix"     , viewMatrix);
+	lightShader->SetUniformMatrix("projMatrix"     , projMatrix);
+	lightShader->SetUniformMatrix("shadowMatrix"   , shadowMatrix);
 
-	if (light.position.w == 0.0f) {
+	if (dynamic_cast<const DirectionalLight*>(&light)) {
 		quad->Draw();
 	} else {
-		glCullFace(GL_FRONT);
+		renderer.GetConfig().SetCullFace(true, CullFace::Back);
 		sphere->Draw();
-		glCullFace(GL_BACK);
+		renderer.GetConfig().SetCullFace();
 	}
 
-	glDepthMask(GL_TRUE);
-	glDepthFunc(GL_LEQUAL);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	renderer.GetConfig().SetDepthTest();
+	renderer.GetConfig().SetBlend();
 
-	shader->Unbind();
-	frameBuffer->Unbind();
+	lightShader->Unbind();
+	lightFrameBuffer->Unbind();
 }

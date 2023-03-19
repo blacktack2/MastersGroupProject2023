@@ -1,12 +1,13 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   OGLMesh.cpp
+ * @brief  See OGLMesh.h.
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #include "OGLMesh.h"
+
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
@@ -16,29 +17,25 @@ using namespace NCL::Rendering;
 using namespace NCL::Maths;
 
 OGLMesh::OGLMesh() {
-	vao = 0;
-	subCount = 1;
-
 	for (int i = 0; i < VertexAttribute::MAX_ATTRIBUTES; ++i) {
 		attributeBuffers[i] = 0;
 	}
-	indexBuffer = 0;
 }
 
-OGLMesh::OGLMesh(const std::string& filename) : MeshGeometry(filename){
-	vao = 0;
-	subCount = 1;
-
+OGLMesh::OGLMesh(const std::string& filename) : MeshGeometry(filename) {
 	for (int i = 0; i < VertexAttribute::MAX_ATTRIBUTES; ++i) {
 		attributeBuffers[i] = 0;
 	}
-	indexBuffer = 0;
 }
 
 OGLMesh::~OGLMesh() {
 	glDeleteVertexArrays(1, &vao);
 	glDeleteBuffers(VertexAttribute::MAX_ATTRIBUTES, attributeBuffers);
 	glDeleteBuffers(1, &indexBuffer);
+}
+
+void OGLMesh::Initilize() {
+	UploadToGPU();
 }
 
 void OGLMesh::Draw() {
@@ -49,12 +46,10 @@ void OGLMesh::Draw() {
 }
 
 void OGLMesh::Draw(unsigned int subLayer) {
-	glBindVertexArray(GetVAO());
+	glBindVertexArray(vao);
 
-	GLuint mode = 0;
-	GLsizei count = 0;
 	int offset = 0;
-
+	GLsizei count;
 	if (GetSubMeshCount() == 0) {
 		if (GetIndexCount() > 0) {
 			count = GetIndexCount();
@@ -62,12 +57,17 @@ void OGLMesh::Draw(unsigned int subLayer) {
 			count = GetVertexCount();
 		}
 	} else {
-		const SubMesh* m = GetSubMesh(subLayer);
-		offset = m->start;
-		count = m->count;
+		const std::optional<SubMesh> submesh = GetSubMesh(subLayer);
+		if (!submesh) {
+			return;
+		}
+		offset = submesh.value().start;
+		count = submesh.value().count;
 	}
 
+	GLuint mode;
 	switch (GetPrimitiveType()) {
+		default:
 		case GeometryPrimitive::Triangles     : mode = GL_TRIANGLES     ; break;
 		case GeometryPrimitive::Points        : mode = GL_POINTS        ; break;
 		case GeometryPrimitive::Lines         : mode = GL_LINES         ; break;
@@ -86,25 +86,40 @@ void OGLMesh::Draw(unsigned int subLayer) {
 	glBindVertexArray(0);
 }
 
-void CreateVertexBuffer(GLuint& buffer, int byteCount, char* data) {
-	glGenBuffers(1, &buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ARRAY_BUFFER, byteCount, data, GL_STATIC_DRAW);
+void OGLMesh::RecalculateNormals() {
+	unsigned int indexCount = GetIndexCount();
+	if (indexCount == 0) {
+		return;
+	}
+
+	const std::vector<Vector3>& positions = GetPositionData();
+	const std::vector<unsigned int>& indices = GetIndexData();
+
+	std::vector<Vector3> normals(GetIndexCount(), Vector3(0.0f));
+	for (size_t i = 0; i < indexCount; i += 3) {
+		const Vector3& a = positions[indices[i + 0]];
+		const Vector3& b = positions[indices[i + 1]];
+		const Vector3& c = positions[indices[i + 2]];
+
+		Vector3 normal = Vector3::Cross(b - a, c - a);
+		normal.Normalise();
+
+		normals[indices[i + 0]] += normal;
+		normals[indices[i + 1]] += normal;
+		normals[indices[i + 2]] += normal;
+	}
+	for (size_t i = 0; i < normals.size(); ++i) {
+		normals[i].Normalise();
+	}
 }
 
-void OGLMesh::BindVertexAttribute(int attribSlot, int buffer, int bindingID, int elementCount, int elementSize, int elementOffset) {
-	glEnableVertexAttribArray(attribSlot);
-	glVertexAttribFormat(attribSlot, elementCount, GL_FLOAT, false, 0);
-	glVertexAttribBinding(attribSlot, bindingID);
-
-	glBindVertexBuffer(bindingID, buffer, elementOffset, elementSize);
-}
-
-void OGLMesh::UploadToGPU(Rendering::RendererBase* renderer) {
+void OGLMesh::UploadToGPU() {
 	if (!ValidateMeshData()) {
 		return;
 	}
-	glGenVertexArrays(1, &vao);
+	if (!vao) {
+		glGenVertexArrays(1, &vao);
+	}
 	glBindVertexArray(vao);
 
 	int numVertices = GetVertexCount();
@@ -181,32 +196,26 @@ void OGLMesh::UpdateGPUBuffers(unsigned int startVertex, unsigned int vertexCoun
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+std::unique_ptr<MeshGeometry> OGLMesh::LoadMesh(const std::string& filename) {
+	return std::make_unique<OGLMesh>(filename);
+}
 
-void OGLMesh::RecalculateNormals() {
-	normals.clear();
+std::unique_ptr<MeshGeometry> OGLMesh::CreateMesh() {
+	return std::make_unique<OGLMesh>();
+}
 
-	if (indices.size() > 0) {
-		for (size_t i = 0; i < positions.size(); i++) {
-			normals.emplace_back(Vector3());
-		}
-
-		for (size_t i = 0; i < indices.size(); i += 3) {
-			Vector3& a = positions[indices[i+0]];
-			Vector3& b = positions[indices[i+1]];
-			Vector3& c = positions[indices[i+2]];
-
-			Vector3 normal = Vector3::Cross(b - a, c - a);
-			normal.Normalise();
-
-			normals[indices[i + 0]] += normal;
-			normals[indices[i + 1]] += normal;
-			normals[indices[i + 2]] += normal;
-		}
-		for (size_t i = 0; i < normals.size(); ++i) {
-			normals[i].Normalise();
-		}
+void OGLMesh::CreateVertexBuffer(GLuint& buffer, int byteCount, char* data) {
+	if (!buffer) {
+		glGenBuffers(1, &buffer);
 	}
-	else {
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	glBufferData(GL_ARRAY_BUFFER, byteCount, data, GL_STATIC_DRAW);
+}
 
-	}
+void OGLMesh::BindVertexAttribute(int attribSlot, int buffer, int bindingID, int elementCount, int elementSize, int elementOffset) {
+	glEnableVertexAttribArray(attribSlot);
+	glVertexAttribFormat(attribSlot, elementCount, GL_FLOAT, false, 0);
+	glVertexAttribBinding(attribSlot, bindingID);
+
+	glBindVertexBuffer(bindingID, buffer, elementOffset, elementSize);
 }

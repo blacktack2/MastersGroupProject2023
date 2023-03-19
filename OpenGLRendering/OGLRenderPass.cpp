@@ -8,9 +8,3 @@
 #include "OGLRenderPass.h"
 
 using namespace NCL::Rendering;
-
-OGLRenderPass::OGLRenderPass(OGLRenderer& renderer) : RenderPassBase(), renderer(renderer) {
-}
-
-OGLRenderPass::~OGLRenderPass() {
-}

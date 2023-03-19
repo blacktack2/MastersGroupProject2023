@@ -7,64 +7,43 @@
  */
 #include "HDRRPass.h"
 
-#include "OGLFrameBuffer.h"
-#include "OGLMesh.h"
-#include "OGLShader.h"
-#include "OGLTexture.h"
+#include "GameTechRenderer.h"
 
+#include "AssetLibrary.h"
+#include "AssetLoader.h"
+
+#include "FrameBuffer.h"
+#include "MeshGeometry.h"
+#include "ShaderBase.h"
+#include "TextureBase.h"
+
+using namespace NCL;
 using namespace NCL::CSC8503;
+using namespace NCL::Rendering;
 
-HDRRPass::HDRRPass(OGLRenderer& renderer, OGLTexture* sceneTexIn) :
-	OGLRenderPass(renderer), sceneTexIn(sceneTexIn) {
-	sceneOutTex = new OGLTexture(renderer.GetWidth(), renderer.GetHeight());
-	AddScreenTexture(sceneOutTex);
+HDRRPass::HDRRPass() : OGLPostRenderPass(), renderer(GameTechRenderer::instance()) {
+	quad = AssetLibrary<MeshGeometry>::GetAsset("quad");
 
-	frameBuffer = new OGLFrameBuffer();
+	sceneOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA16F, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	AddScreenTexture(*sceneOutTex);
+
+	frameBuffer = AssetLoader::CreateFrameBuffer();
 	frameBuffer->Bind();
-	frameBuffer->AddTexture(sceneOutTex);
+	frameBuffer->AddTexture(*sceneOutTex);
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
-	quad = new OGLMesh();
-	quad->SetVertexPositions({
-		Vector3(-1,  1, -1),
-		Vector3(-1, -1, -1),
-		Vector3(1, -1, -1),
-		Vector3(1,  1, -1),
-		});
-	quad->SetVertexTextureCoords({
-		Vector2(0, 1),
-		Vector2(0, 0),
-		Vector2(1, 0),
-		Vector2(1, 1),
-		});
-	quad->SetVertexIndices({ 0, 1, 2, 2, 3, 0 });
-	quad->UploadToGPU();
-
-	shader = new OGLShader("hdr.vert", "hdr.frag");
-
+	shader = AssetLoader::CreateShaderAndInit("hdr.vert", "hdr.frag");
 	shader->Bind();
 
-	exposureUniform = glGetUniformLocation(shader->GetProgramID(), "exposure");
-
-	glUniform1i(glGetUniformLocation(shader->GetProgramID(), "sceneTex"), 0);
+	shader->SetUniformInt("sceneTex", 0);
 
 	shader->Unbind();
 }
 
-HDRRPass::~HDRRPass() {
-	delete sceneOutTex;
-
-	delete frameBuffer;
-
-	delete quad;
-
-	delete shader;
-}
-
 void HDRRPass::Render() {
 	frameBuffer->Bind();
-	glClear(GL_COLOR_BUFFER_BIT);
+	renderer.ClearBuffers(ClearBit::Color);
 	shader->Bind();
 
 	sceneTexIn->Bind(0);
@@ -78,7 +57,7 @@ void HDRRPass::Render() {
 void HDRRPass::SetExposure(float exposure) {
 	shader->Bind();
 
-	glUniform1f(exposureUniform, exposure);
+	shader->SetUniformFloat("exposure", exposure);
 
 	shader->Unbind();
 }

@@ -1,6 +1,6 @@
 /**
  * @file   OGLTexture.h
- * @brief  
+ * @brief  OpenGL implementation of a texture.
  * 
  * @author Rich Davidson
  * @author Stuart Lewis
@@ -8,59 +8,62 @@
  */
 #pragma once
 #include "TextureBase.h"
+
 #include "glad\gl.h"
 
+#include <memory>
 #include <string>
+#include <vector>
 
-constexpr GLsizei SHADOWSIZE = 4096;
+namespace NCL {
+	namespace Rendering {
+		/**
+		 * @brief OpenGL implementation of a texture.
+		 */
+		class OGLTexture : public TextureBase {
+		public:
+			/**
+			 * @brief Construct and upload a new texture of a pre-defined type.
+			 *
+			 * @param width  Width (in pixels) of the texture.
+			 * @param height Height (in pixels) of the texture.
+			 * @param texType Type of texture to initialize (see TexType for more
+			 * info).
+			 */
+			OGLTexture(TextureType type, unsigned int width, unsigned int height);
+			~OGLTexture() override;
 
-namespace NCL::Rendering {
-	enum class TexType {
-		Colour,
-		Depth,
-		Stencil,
-		Shadow,
-	};
-	class OGLTexture : public TextureBase {
-	public:
-		OGLTexture(GLsizei width, GLsizei height, TexType texType);
-		OGLTexture(GLsizei width, GLsizei height, GLint internalFormat = GL_RGBA8, GLenum type = GL_RGBA, GLenum format = GL_UNSIGNED_BYTE, void* data = nullptr);
-		~OGLTexture();
+			void Resize(unsigned int width, unsigned int height) override;
+			void Upload(void* data, PixelDataFormat format = PixelDataFormat::RGBA, PixelDataType type = PixelDataType::UnsignedByte) override;
+			void SoftUpload(void* data, size_t amount, PixelDataFormat format = PixelDataFormat::RGBA, PixelDataType type = PixelDataType::UnsignedByte) override;
 
-		virtual void Resize(GLsizei width, GLsizei height, void* data = nullptr) override;
-		virtual void Bind() override;
-		virtual void Bind(GLint slot) override;
-		virtual void Bind(GLint slot, GLint uniform) override;
-		virtual void Unbind() override;
+			virtual void Initialize() override;
 
-		void SetEdgeClamp();
-		void SetEdgeRepeat();
+			void Bind() const override;
+			void Bind(int slot) const override;
+			void Bind(int slot, int uniform) const override;
+			void Unbind() const override;
 
-		void SetFilters(GLfloat minParam, GLfloat magParam);
+			void SetFilters(MinFilter minFilter, MagFilter magFilter) override;
+			void SetEdgeWrap(EdgeWrap edgeWrap) override;
 
-		inline GLuint GetObjectID() const {
-			return texID;
-		}
+			inline GLuint GetObjectID() const {
+				return texID;
+			}
 
-		inline TexType GetType() const {
-			return texType;
-		}
+			static std::unique_ptr<TextureBase> LoadTexture(const std::string& filename);
+			static std::unique_ptr<TextureBase> CreateTexture(TextureType type, unsigned int width, unsigned int height);
+			static std::unique_ptr<TextureBase> CreateTextureFromData(char* data, unsigned int width, unsigned int height, int channels);
+		private:
+			GLuint texID        = 0;
+			GLint pixComponents = 0;
+			GLenum dummyFormat  = 0;
+			GLenum dummyType    = 0;
 
-		static TextureBase* RGBATextureFromData(char* data, int width, int height, int channels);
+			unsigned int width, height;
 
-		static TextureBase* RGBATextureFromFilename(const std::string& filename);
-	protected:
-		GLuint texID;
-		TexType texType;
-	private:
-		void InitColour(GLint internalFormat, GLenum type, GLenum format);
-		void InitDepth();
-		void InitStencil();
-		void InitShadow();
-
-		GLint internalFormat;
-		GLenum format;
-		GLenum type;
-	};
+			std::vector<char> data{};
+		};
+	}
 }
 

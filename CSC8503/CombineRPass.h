@@ -6,57 +6,87 @@
  * @date   February 2023
  */
 #pragma once
-#include "OGLRenderPass.h"
+#include "OGLCombineRenderPass.h"
 
-namespace NCL::Rendering {
-	class OGLFrameBuffer;
-	class OGLShader;
-	class OGLTexture;
-}
+#include <functional>
+#include <memory>
+#include <optional>
 
-using namespace NCL::Rendering;
+namespace NCL {
+	class MeshGeometry;
 
-namespace NCL::CSC8503 {
-	enum class RenderMode {
-		Default = 0,
-		Normals,
-		Depth,
-		Diffuse,
-		DiffuseLight,
-		SpecularLight,
-	};
-	class CombineRPass : public OGLRenderPass {
-	public:
-		CombineRPass(OGLRenderer& renderer,
-			OGLTexture* skyboxTexIn, OGLTexture* diffuseTexIn,
-			OGLTexture* diffuseLightTexIn, OGLTexture* specularLightTexIn,
-			OGLTexture* normalTexIn, OGLTexture* depthTexIn);
-		~CombineRPass();
+	namespace Rendering {
+		class FrameBuffer;
+		class ShaderBase;
+		class TextureBase;
+	}
 
-		virtual void Render() override;
+	using namespace NCL::Rendering;
 
-		void SetRenderMode(RenderMode mode);
+	namespace CSC8503 {
+		class GameTechRenderer;
 
-		inline OGLTexture* GetOutTex() const {
-			return sceneOutTex;
-		}
-	private:
-		OGLFrameBuffer* frameBuffer;
+		enum class RenderMode {
+			Default = 0,
+			Normals,
+			Depth,
+			Albedo,
+			Diffuse,
+			Specular,
+			AmbientOcclusion,
+		};
+		class CombineRPass : public OGLCombineRenderPass {
+		public:
+			CombineRPass();
+			~CombineRPass() = default;
 
-		OGLTexture* skyboxTexIn;
-		OGLTexture* diffuseTexIn;
-		OGLTexture* diffuseLightTexIn;
-		OGLTexture* specularLightTexIn;
-		OGLTexture* normalTexIn;
-		OGLTexture* depthTexIn;
+			void Render() override;
 
-		OGLTexture* sceneOutTex;
+			void SetRenderMode(RenderMode mode);
 
-		OGLMesh* quad;
+			inline TextureBase& GetOutTex() const override {
+				return *sceneOutTex;
+			}
 
-		OGLShader* shader;
+			inline void SetSkyboxTexIn(TextureBase& tex) {
+				skyboxTexIn = &tex;
+			}
+			inline void SetAlbedoTexIn(TextureBase& tex) {
+				albedoTexIn = &tex;
+			}
+			inline void SetDiffuseTexIn(TextureBase& tex) {
+				diffuseTexIn = &tex;
+			}
+			inline void SetSpecularTexIn(TextureBase& tex) {
+				specularTexIn = &tex;
+			}
+			inline void SetSSAOTexIn(TextureBase& tex) {
+				ssaoTexIn = &tex;
+			}
+			inline void SetNormalTexIn(TextureBase& tex) {
+				normalTexIn = &tex;
+			}
+			inline void SetDepthTexIn(TextureBase& tex) {
+				depthTexIn = &tex;
+			}
+		private:
+			GameTechRenderer& renderer;
 
-		GLint modeUniform;
-		GLint ambienceColourUniform;
-	};
+			std::shared_ptr<MeshGeometry> quad;
+
+			std::unique_ptr<FrameBuffer> frameBuffer;
+
+			TextureBase* skyboxTexIn   = nullptr;
+			TextureBase* albedoTexIn   = nullptr;
+			TextureBase* diffuseTexIn  = nullptr;
+			TextureBase* specularTexIn = nullptr;
+			TextureBase* ssaoTexIn     = nullptr;
+			TextureBase* normalTexIn   = nullptr;
+			TextureBase* depthTexIn    = nullptr;
+
+			std::unique_ptr<TextureBase> sceneOutTex;
+
+			std::unique_ptr<ShaderBase> shader;
+		};
+	}
 }

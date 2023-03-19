@@ -6,39 +6,54 @@
  * @date   February 2023
  */
 #pragma once
-#include "OGLRenderPass.h"
+#include "OGLPostRenderPass.h"
 
-namespace NCL::Rendering {
-	class OGLFrameBuffer;
-	class OGLShader;
-	class OGLTexture;
-}
+#include <functional>
+#include <memory>
+#include <optional>
 
-using namespace NCL::Rendering;
+namespace NCL {
+	class MeshGeometry;
 
-namespace NCL::CSC8503 {
-	class HDRRPass : public OGLRenderPass {
-	public:
-		HDRRPass(OGLRenderer& renderer, OGLTexture* sceneIn);
-		~HDRRPass();
+	namespace Rendering {
+		class FrameBuffer;
+		class ShaderBase;
+		class TextureBase;
+	}
 
-		virtual void Render() override;
+	using namespace NCL::Rendering;
 
-		void SetExposure(float exposure);
+	namespace CSC8503 {
+		class GameTechRenderer;
 
-		inline OGLTexture* GetOutTex() const {
-			return sceneOutTex;
-		}
-	private:
-		OGLFrameBuffer* frameBuffer;
-		OGLTexture* sceneOutTex;
+		class HDRRPass : public OGLPostRenderPass {
+		public:
+			HDRRPass();
+			~HDRRPass() = default;
 
-		OGLTexture* sceneTexIn;
+			void Render() override;
 
-		OGLMesh* quad;
+			void SetExposure(float exposure);
 
-		OGLShader* shader;
+			TextureBase& GetOutTex() const override {
+				return *sceneOutTex;
+			}
 
-		GLint exposureUniform;
-	};
+			void SetSceneTexIn(TextureBase& sceneTex) override {
+				sceneTexIn = &sceneTex;
+			}
+		private:
+			GameTechRenderer& renderer;
+
+			std::shared_ptr<MeshGeometry> quad;
+
+			std::unique_ptr<FrameBuffer> frameBuffer;
+
+			TextureBase* sceneTexIn = nullptr;
+
+			std::unique_ptr<TextureBase> sceneOutTex;
+
+			std::unique_ptr<ShaderBase> shader;
+		};
+	}
 }

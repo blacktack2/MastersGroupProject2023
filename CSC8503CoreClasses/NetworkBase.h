@@ -16,8 +16,10 @@ enum BasicNetworkMessages {
 	Player_Connected,
 	Player_Disconnected,
 	Shutdown,
-	Handshake_Message,
-	Handshake_Ack,
+	PlayerSync_Message,
+	BossAction_Message,
+	GameState_Message,
+	Lobby_Message
 };
 
 struct GamePacket {
@@ -59,7 +61,14 @@ struct PlayerConnectionPacket : public GamePacket {
 		size = sizeof(PlayerConnectionPacket) - sizeof(GamePacket);
 	}
 };
+struct BossActionPacket : public GamePacket {
+	short int bossAction = 0;
 
+	BossActionPacket() {
+		type = BossAction_Message;
+		size = sizeof(BossActionPacket) - sizeof(GamePacket);
+	}
+};
 
 class PacketReceiver {
 public:

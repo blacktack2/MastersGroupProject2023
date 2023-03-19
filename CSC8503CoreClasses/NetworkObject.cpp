@@ -2,6 +2,8 @@
 #include "RenderObject.h"
 #include "Debug.h"
 #include "./enet/enet.h"
+#include "../CSC8503/PlayerBullet.h"
+#include "Maths.h"
 using namespace NCL;
 using namespace CSC8503;
 
@@ -14,7 +16,7 @@ NetworkObject::NetworkObject(GameObject& o, int id) : object(o), renderTransform
 		networkID = o.GetWorldID();
 	object.SetNetworkObject(this);
 	renderTransform = o.GetTransform();
-	(object.GetRenderObject())->SetTransform(&renderTransform);
+	(object.GetRenderObject())->SetTransform(renderTransform);
 	lastDeltaState.position = object.GetTransform().GetGlobalPosition();
 	lastDeltaState.orientation = object.GetTransform().GetGlobalOrientation();
 }
@@ -34,6 +36,11 @@ bool NetworkObject::ReadPacket(GamePacket& p, float dt) {
 			return false;
 		return ReadFullPacket((FullPacket&)p, dt);
 	}
+	if (p.type == Item_Init_Message) {
+		if (networkID != ((ItemInitPacket*)&p)->objectID)
+			return false;
+		return ReadItemInitPacket((ItemInitPacket&)p, dt);
+	}
 	return false; //this isn't a packet we care about!
 }
 
@@ -51,6 +58,7 @@ bool NetworkObject::WritePacket(GamePacket** p, bool deltaFrame, int stateID) {
 void moveObject(float dt, Vector3 newPos, Vector3 oldPos, GameObject* object) {
 	object->GetTransform().SetPosition(oldPos + (newPos - oldPos)*1.02);
 }
+
 bool NetworkObject::ReadDeltaPacket(DeltaPacket &p, float dt) {
 	if (p.fullID != lastFullState.stateID) {
 		return false;
@@ -69,10 +77,11 @@ bool NetworkObject::ReadDeltaPacket(DeltaPacket &p, float dt) {
 	fullOrientation.z += ((float)p.orientation[2]) * deltaOrientationDivisorInverse;
 	fullOrientation.w += ((float)p.orientation[3]) * deltaOrientationDivisorInverse;
 
-	lastDeltaState = NetworkState();
 	lastDeltaState.position = fullPos;
 	lastDeltaState.orientation = fullOrientation;
+
 	//Debug::DrawLine(lastDeltaState.position, lastDeltaState.position + Vector3(0, 0.1, 0), Debug::YELLOW, 2.0f);
+
 	object.GetTransform().SetPosition(fullPos);
 	object.GetTransform().SetOrientation(fullOrientation);
 
@@ -94,6 +103,22 @@ bool NetworkObject::ReadFullPacket(FullPacket &p, float dt) {
 	object.GetTransform().SetPosition(p.fullState.position);
 	object.GetTransform().SetOrientation(p.fullState.orientation);
 	return true; 
+}
+
+bool NetworkObject::ReadItemInitPacket(ItemInitPacket& p, float dt) {
+	static_cast<Bullet*>(&object)->SetLifespan(5.0f);
+	object.GetTransform().SetPosition(p.position);
+	object.GetTransform().SetOrientation(p.orientation);
+	object.GetTransform().SetScale(p.scale);
+	object.GetPhysicsObject()->SetLinearVelocity(p.velocity);
+
+	lastDeltaState.position = object.GetTransform().GetGlobalPosition();
+	lastDeltaState.orientation = object.GetTransform().GetGlobalOrientation();
+
+	this->SnapRenderToSelf();
+	object.SetActive(true);
+
+	return true;
 }
 
 bool NetworkObject::WriteDeltaPacket(GamePacket**p, int stateID) {
@@ -136,7 +161,6 @@ bool NetworkObject::WriteFullPacket(GamePacket**p) {
 	fp->fullState.angularVelocity = object.GetPhysicsObject()->GetAngularVelocity();
 
 	*p = fp;
-
 	stateHistory.emplace_back(fp->fullState);
 
 	return true;
@@ -170,7 +194,9 @@ void NetworkObject::UpdateStateHistory(int minID) {
 }
 
 void NetworkObject::UpdateDelta(float dt) {
-	float posT = std::clamp(dt * 10, 0.1f, 1.0f);
+
+	//float posT = Maths::Clamp(dt * 15, 0.1f, 1.0f);
+	float posT = Maths::Clamp(dt * 30, 0.1f, 1.0f);
 	
 	//Debug::DrawLine(object.GetTransform().GetGlobalPosition(), object.GetTransform().GetGlobalPosition() + Vector3(0, 0.5, 0), Debug::RED, 0.01f);
 

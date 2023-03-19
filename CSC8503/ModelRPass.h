@@ -6,58 +6,65 @@
  * @date   February 2023
  */
 #pragma once
-#include "OGLRenderPass.h"
+#include "OGLMainRenderPass.h"
 
-#include "GameWorld.h"
-
+#include <functional>
+#include <memory>
+#include <optional>
 #include <vector>
 
-namespace NCL::Rendering {
-	class OGLFrameBuffer;
-	class OGLShader;
-	class OGLTexture;
-}
+namespace NCL {
+	namespace Rendering {
+		class FrameBuffer;
+		class ShaderBase;
+		class TextureBase;
+	}
 
-using namespace NCL::Rendering;
+	using namespace NCL::Rendering;
 
-namespace NCL::CSC8503 {
-	class ModelRPass : public OGLRenderPass {
-	public:
-		ModelRPass(OGLRenderer& renderer, GameWorld& gameWorld);
-		~ModelRPass();
+	namespace CSC8503 {
+		class GameTechRenderer;
+		class GameWorld;
 
-		virtual void Render() override;
+		class ModelRPass : public OGLMainRenderPass {
+		public:
+			ModelRPass();
+			~ModelRPass() = default;
 
-		void AddModelShader(OGLShader* shader);
+			void Render() override;
 
-		inline void SetGamma(float g) {
-			gamma = g;
-		}
+			void AddModelShader(std::shared_ptr<ShaderBase> shader);
 
-		inline OGLTexture* GetDiffuseOutTex() const {
-			return diffuseOutTex;
-		}
-		inline OGLTexture* GetNormalOutTex() const {
-			return normalOutTex;
-		}
-		inline OGLTexture* GetDepthOutTex() const {
-			return depthOutTex;
-		}
-	private:
-		GameWorld& gameWorld;
+			inline void SetGamma(float g) {
+				gamma = g;
+			}
 
-		OGLFrameBuffer* frameBuffer;
-		OGLTexture* diffuseOutTex;
-		OGLTexture* normalOutTex;
-		OGLTexture* depthOutTex;
+			inline TextureBase& GetAlbedoOutTex() const {
+				return *albedoOutTex;
+			}
+			inline TextureBase& GetNormalOutTex() const {
+				return *normalOutTex;
+			}
+			inline TextureBase& GetSpecOutTex() const {
+				return *specOutTex;
+			}
+			inline TextureBase& GetDepthOutTex() const {
+				return *depthOutTex;
+			}
+		private:
+			GameTechRenderer& renderer;
+			GameWorld& gameWorld;
 
-		OGLTexture* defaultDiffuse;
-		OGLTexture* defaultBump;
+			std::unique_ptr<FrameBuffer> frameBuffer;
 
-		OGLShader* defaultShader;
+			std::unique_ptr<TextureBase> albedoOutTex;
+			std::unique_ptr<TextureBase> normalOutTex;
+			std::unique_ptr<TextureBase> specOutTex;
+			std::unique_ptr<TextureBase> depthOutTex;
 
-		float gamma = 2.2f;
+			std::vector<std::shared_ptr<ShaderBase>> modelShaders{};
 
-		std::vector<OGLShader*> modelShaders{};
-	};
+			float gamma = 2.2f;
+		};
+	}
 }

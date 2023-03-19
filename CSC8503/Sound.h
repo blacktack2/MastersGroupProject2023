@@ -10,8 +10,6 @@
 #include <vector>
 #include <dr_lib/dr_wav.h>
 
-using namespace std;
-
 struct ReadWavData {
 	unsigned int channels = 0;
 	unsigned int sampleRate = 0;
@@ -32,7 +30,12 @@ public:
 
 	ReadWavData getWavData()const { return mWavData; }
 
-	void			LoadFromWAV(string filename);
+	static ALuint	AddSound(std::string n);
+	static Sound* GetSound(std::string name);
+
+	static void		DeleteSounds();
+
+	void			LoadFromWAV(std::string filename);
 
 
 protected:
@@ -47,8 +50,7 @@ protected:
 	ReadWavData mWavData;
 
 	bool  mStreaming;			//Part 2
-	float length;
+	float length = 0;
 
-
-
+	static std::map<std::string, Sound*> sSounds;
 };

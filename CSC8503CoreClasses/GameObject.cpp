@@ -21,7 +21,7 @@ GameObject::GameObject(GameObject& other) : gameWorld(GameWorld::instance()), tr
 	transform = other.transform;
 	boundingVolume = other.boundingVolume == nullptr ? nullptr : CollisionVolume::Clone(*other.boundingVolume);
 	physicsObject  = other.physicsObject  == nullptr ? nullptr : new PhysicsObject(*other.physicsObject, &transform);
-	renderObject   = other.renderObject   == nullptr ? nullptr : new RenderObject(*other.renderObject, &transform);
+	renderObject   = other.renderObject   == nullptr ? nullptr : new RenderObject(*other.renderObject, transform);
 	networkObject  = other.networkObject  == nullptr ? nullptr : new NetworkObject(*other.networkObject);
 
 	isActive = other.isActive;
@@ -32,12 +32,14 @@ GameObject::GameObject(GameObject& other) : gameWorld(GameWorld::instance()), tr
 }
 
 GameObject::~GameObject()	{
-	if(networkObject != nullptr)
+	if (networkObject != nullptr) {
 		gameWorld.RemoveNetworkObject(networkObject);
+		delete networkObject;
+	}
+		
 	delete boundingVolume;
 	delete physicsObject;
 	delete renderObject;
-	delete networkObject;
 }
 
 bool GameObject::GetBroadphaseAABB(Vector3&outSize) const {

@@ -4,24 +4,40 @@ set(PROJECT_NAME OpenGLRendering)
 # Source groups
 ################################################################################
 set(Header_Files
+    "OGLBufferObject.h"
     "OGLComputeShader.h"
     "OGLFrameBuffer.h"
     "OGLMesh.h"
+    "OGLMainRenderPass.h"
+    "OGLCombineRenderPass.h"
+    "OGLPostRenderPass.h"
+    "OGLPresentRenderPass.h"
+    "OGLOverlayRenderPass.h"
     "OGLRenderer.h"
+    "OGLRendererConfig.h"
     "OGLRenderPass.h"
     "OGLShader.h"
     "OGLTexture.h"
+    "OGLLoadingManager.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
+    "OGLBufferObject.cpp"
     "OGLComputeShader.cpp"
     "OGLFrameBuffer.cpp"
     "OGLMesh.cpp"
+    "OGLMainRenderPass.cpp"
+    "OGLCombineRenderPass.cpp"
+    "OGLPostRenderPass.cpp"
+    "OGLPresentRenderPass.cpp"
+    "OGLOverlayRenderPass.cpp"
     "OGLRenderer.cpp"
+    "OGLRendererConfig.cpp"
     "OGLRenderPass.cpp"
     "OGLShader.cpp"
     "OGLTexture.cpp"
+    "OGLLoadingManager.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 

@@ -1,151 +1,99 @@
+/**
+ * @file   TutorialGame.h
+ * @brief
+ *
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #pragma once
-#include "EnemyObject.h"
-#include "GameTechRenderer.h"
-#ifdef USEVULKAN
-#include "GameTechVulkanRenderer.h"
-#endif
-#include "NPCObject.h"
-#include "PhysicsSystem.h"
-#include "PlayerObject.h"
-#include "StateGameObject.h"
-#include "DebugViewPoint.h"
+#include "Vector3.h"
+#include <memory>
 
-#include "GameGrid.h"	/////////
-#include "Boss.h"		/////////
+namespace NCL {
+	class DebugViewPoint;
+	class InputKeyMap;
+}
+
+using namespace NCL::Maths;
+
+
 
 namespace NCL {
 	namespace CSC8503 {
-		class Bullet;
-		class Maze;
+		class GameGridManager;
+		class GameStateManager;
+		class GameTechRenderer;
+		class GameWorld;
+		class MenuManager;
+		class OptionManager;
+		class GameLevel;
+		class PhysicsSystem;
+
+		class GameObject;
+
+		class GameGrid;
+		class Boss;
+		class BossBehaviorTree;
+		class PlayerObject;
+
+		struct DirectionalLight;
 
 		class TutorialGame {
 		public:
-			enum class InitMode {
-				MAZE,
-				MIXED_GRID,
-				CUBE_GRID,
-				OBB_GRID,
-				SPHERE_GRID,
-				BRIDGE_TEST,
-				BRIDGE_TEST_ANG,
-				PERFORMANCE_TEST,
-				AUDIO_TEST//added for audio testing
-			};
-
 			TutorialGame();
 			~TutorialGame();
 
-			void InitWorld(InitMode mode = InitMode::MAZE);
+			virtual void Clear();
+			virtual void StartLevel();
+
+			void InitWorld();
 
 			virtual void UpdateGame(float dt);
 
-			bool IsQuit() {
-				return gameState == GameState::Quit;
-			}
+			bool IsQuit();
 		protected:
-			enum class GameState {
-				OnGoing,
-				Paused,
-				Win,
-				Lose,
-				Quit,
-			};
+			void UpdateGameCore(float dt);
 
-			void InitialiseAssets();
-			void InitialisePrefabs();
+			virtual void BossTarget();
+
+			virtual void ProcessState();
+
+			void SetCameraFollow(PlayerObject* p);
 
 			void InitCamera();
-			void UpdateKeys();
-
 			void InitGameExamples();
-
-			void InitMazeWorld(int numRows, int numCols, float size);
-			void InitMixedGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing);
-			void InitCubeGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, const Vector3& cubeDims, bool axisAligned = true);
-			void InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius);
-			void InitBridgeConstraintTestWorld(int numLinks, float cubeDistance, float maxDistance, bool isOrientation);
 
 			void InitDefaultFloor();
 
 			GameObject* AddFloorToWorld(const Vector3& position);
-			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
-			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass = 10.0f, bool axisAligned = true);
-			GameObject* AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius, float inverseMass = 10.0f);
-			StateGameObject* AddStateObjectToWorld(const Vector3& position);
 
-			PlayerObject* AddPlayerToWorld(const Vector3& position, bool cameraFollow = true);
-			EnemyObject* AddEnemyToWorld(const Vector3& position, NavigationMap& navMap);
-			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);		/////////
-			void RenderBombsReleasedByBoss();															/////////
-			HealingKit* UpdateHealingKit();																/////////
-			NPCObject* AddNPCToWorld(const Vector3& position);
-			GameObject* AddBonusToWorld(const Vector3& position);
-			GameObject* AddTriggerToWorld(const Vector3& position, float size);
+			PlayerObject* AddPlayerToWorld(int playerID, const Vector3& position);
 
-			bool SelectObject();
-			void MoveSelectedObject();
-			void DebugObjectMovement();
-			void LockedObjectMovement();
+			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
+			void BuildLevel();
+			void UpdateLevel();
 
-#ifdef USEVULKAN
-			GameTechVulkanRenderer*	renderer;
-#else
-			GameTechRenderer* renderer;
-#endif
-			PhysicsSystem*		physics;
-			GameWorld*			world;
+			DebugViewPoint& debugViewPoint;
+			GameGridManager& gridManager;
+			GameStateManager& gameStateManager;
+			GameTechRenderer& renderer;
+			GameWorld& gameWorld;
+			InputKeyMap& keyMap;
+			MenuManager& menuManager;
+			OptionManager& optionManager;
 
-			paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();
+			std::unique_ptr<PhysicsSystem> physics;
 
-			Light* sunLight;
-			GameState gameState;
-			bool inSelectionMode;
+			PlayerObject* players[4];
 
-			float		forceMagnitude;
+			DirectionalLight* sunLight = nullptr;
 
-			Maze* mazes = nullptr;
+			GameLevel* gameLevel = nullptr;
+			Boss* boss = nullptr;
 
-			GameObject* selectionObject = nullptr;
-
-			MeshGeometry*	capsuleMesh = nullptr;
-			MeshGeometry*	cubeMesh    = nullptr;
-			MeshGeometry*	sphereMesh  = nullptr;
-
-			TextureBase*	basicTex    = nullptr;
-			TextureBase* healingKitTex = nullptr;		/////////
-			TextureBase* inkableTex = nullptr;		/////////
-			TextureBase* noiseTex = nullptr;		/////////
-			//ShaderBase* inkableShader = nullptr;		/////////
-			//ShaderBase* basicShader = nullptr;
-
-			//Coursework Meshes
-			MeshGeometry*	charMesh = nullptr;
-			MeshGeometry*	enemyMesh = nullptr;
-			MeshGeometry*	npcMesh	  = nullptr;
-			MeshGeometry*	bonusMesh = nullptr;
-
-			Bullet* bulletPrefab = nullptr;
-
-			//Coursework Additional functionality	
-			GameObject* lockedObject	= nullptr;
-			Vector3 lockedOffset		= Vector3(0, 14, 20);
-			void LockCameraToObject(GameObject* o) {
-				lockedObject = o;
-			}
-
-			GameObject* objClosest = nullptr;
-
-			PlayerObject* player = nullptr;
-
-			int score;
-
-			paintHell::debug::DebugViewPoint* debugViewPoint;
-
-			GameGrid* gameGrid = nullptr;	/////////
-			GameObject* floor = nullptr;	/////////
-			Boss* testingBoss = nullptr;   /////////
-			BossBehaviorTree* testingBossBehaviorTree = nullptr;   /////////
+			int playerNum = 0;
+			float interval = 0.0f;
 		};
 	}
 }
-

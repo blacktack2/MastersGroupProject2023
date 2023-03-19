@@ -6,42 +6,55 @@
  * @date   February 2023
  */
 #pragma once
-#include "OGLRenderPass.h"
+#include "OGLMainRenderPass.h"
 
-#include "GameWorld.h"
+#include <functional>
+#include <memory>
+#include <optional>
 
-namespace NCL::Rendering {
-	class OGLFrameBuffer;
-	class OGLShader;
-	class OGLTexture;
-}
+namespace NCL {
+	class MeshGeometry;
 
-using namespace NCL::Rendering;
+	namespace Maths {
+		class Vector3;
+	}
 
-namespace NCL::CSC8503 {
-	class SkyboxRPass : public OGLRenderPass {
-	public:
-		SkyboxRPass(OGLRenderer& renderer, GameWorld& gameWorld);
-		~SkyboxRPass();
+	namespace Rendering {
+		class FrameBuffer;
+		class ShaderBase;
+		class TextureBase;
+	}
 
-		virtual void Render() override;
+	using namespace NCL::Maths;
+	using namespace NCL::Rendering;
 
-		void SetSunDir(const Vector3& direction);
+	namespace CSC8503 {
+		class GameTechRenderer;
+		class GameWorld;
 
-		inline OGLTexture* GetOutTex() const {
-			return colourOutTex;
-		}
-	private:
-		GameWorld& gameWorld;
+		class SkyboxRPass : public OGLMainRenderPass {
+		public:
+			SkyboxRPass();
+			~SkyboxRPass() = default;
 
-		OGLFrameBuffer* frameBuffer;
-		OGLTexture* colourOutTex;
+			void Render() override;
 
-		OGLMesh* quad;
-		OGLShader* shader;
+			void SetSunDir(const Vector3& direction);
 
-		GLint viewMatrixUniform;
-		GLint sunDirUniform;
-		GLint timeUniform;
-	};
+			inline TextureBase& GetOutTex() const {
+				return *colourOutTex;
+			}
+		private:
+			GameTechRenderer& renderer;
+			GameWorld& gameWorld;
+
+			std::shared_ptr<MeshGeometry> quad;
+
+			std::unique_ptr<FrameBuffer> frameBuffer;
+
+			std::unique_ptr<TextureBase> colourOutTex;
+
+			std::unique_ptr<ShaderBase> shader;
+		};
+	}
 }

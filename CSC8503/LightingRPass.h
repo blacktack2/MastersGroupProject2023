@@ -6,64 +6,86 @@
  * @date   February 2023
  */
 #pragma once
-#include "OGLRenderPass.h"
+#include "OGLMainRenderPass.h"
 
-#include "GameWorld.h"
-#include "Light.h"
+#include <functional>
+#include <memory>
+#include <optional>
 
-namespace NCL::Rendering {
-	class OGLFrameBuffer;
-	class OGLShader;
-	class OGLTexture;
-}
+namespace NCL {
+	class MeshGeometry;
 
-using namespace NCL::Rendering;
+	namespace Maths {
+		class Matrix4;
+	}
 
-namespace NCL::CSC8503 {
-	class LightingRPass : public OGLRenderPass {
-	public:
-		LightingRPass(OGLRenderer& renderer, GameWorld& gameWorld, OGLTexture* depthTexIn, OGLTexture* normalTexIn);
-		~LightingRPass();
+	namespace Rendering {
+		class FrameBuffer;
+		class ShaderBase;
+		class TextureBase;
+	}
 
-		virtual void OnWindowResize(int width, int height) override;
+	using namespace NCL::Maths;
+	using namespace NCL::Rendering;
 
-		virtual void Render() override;
+	namespace CSC8503 {
+		class GameWorld;
+		class GameTechRenderer;
 
-		inline OGLTexture* GetDiffuseOutTex() const {
-			return lightDiffuseOutTex;
-		}
-		inline OGLTexture* GetSpecularOutTex() const {
-			return lightSpecularOutTex;
-		}
-	private:
-		void DrawLight(const Light& light);
+		class Light;
 
-		GameWorld& gameWorld;
+		class LightingRPass : public OGLMainRenderPass {
+		public:
+			LightingRPass();
+			~LightingRPass() = default;
 
-		OGLFrameBuffer* frameBuffer;
-		OGLTexture* lightDiffuseOutTex;
-		OGLTexture* lightSpecularOutTex;
+			void OnWindowResize(int width, int height) override;
 
-		OGLTexture* depthTexIn;
-		OGLTexture* normalTexIn;
+			void Render() override;
 
-		OGLMesh* sphere;
-		OGLMesh* quad;
+			void AddShadowShader(std::shared_ptr<ShaderBase> shader);
 
-		OGLShader* shader;
+			inline TextureBase& GetDiffuseOutTex() const {
+				return *lightDiffuseOutTex;
+			}
+			inline TextureBase& GetSpecularOutTex() const {
+				return *lightSpecularOutTex;
+			}
 
-		GLint cameraPosUniform;
-		GLint pixelSizeUniform;
-		GLint inverseProjViewUniform;
+			inline void SetDepthTexIn(TextureBase& tex) {
+				depthTexIn = &tex;
+			}
+			inline void SetNormalTexIn(TextureBase& tex) {
+				normalTexIn = &tex;
+			}
+			inline void SetSpecTexIn(TextureBase& tex) {
+				specTexIn = &tex;
+			}
+		private:
+			void DrawShadowMap(const Light& light, const Matrix4& shadowMatrix);
+			void DrawLight(const Light& light, const Matrix4& shadowMatrix);
 
-		GLint lightPositionUniform;
-		GLint lightColourUniform;
-		GLint lightRadiusUniform;
-		GLint lightDirectionUniform;
-		GLint lightAngleUniform;
+			GameTechRenderer& renderer;
+			GameWorld& gameWorld;
 
-		GLint modelMatrixUniform;
-		GLint viewMatrixUniform;
-		GLint projMatrixUniform;
-	};
+			std::shared_ptr<MeshGeometry> sphere;
+			std::shared_ptr<MeshGeometry> quad;
+
+			std::unique_ptr<FrameBuffer> shadowFrameBuffer;
+			std::unique_ptr<FrameBuffer> lightFrameBuffer;
+
+			TextureBase* depthTexIn  = nullptr;
+			TextureBase* normalTexIn = nullptr;
+			TextureBase* specTexIn   = nullptr;
+
+			std::unique_ptr<TextureBase> shadowMapTex;
+
+			std::unique_ptr<TextureBase> lightDiffuseOutTex;
+			std::unique_ptr<TextureBase> lightSpecularOutTex;
+
+			std::unique_ptr<ShaderBase> lightShader;
+
+			std::vector<std::shared_ptr<ShaderBase>> shadowShaders{};
+		};
+	}
 }
