@@ -165,7 +165,7 @@ void RendererBase::RenderFrame() {
 			cameraID++;
 		}
 		//if (i > 1) { SetGameWorldDeltaTime(0.0f); }
-		RenderViewPort(i, cameraID, viewports, temp1);
+		RenderViewPort(static_cast<int>(i), cameraID, viewports, temp1);
 		cameraID++;
 	}
 	

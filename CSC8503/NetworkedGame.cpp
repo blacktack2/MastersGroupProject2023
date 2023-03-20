@@ -729,6 +729,7 @@ void NetworkedGame::ProcessState() {
 	}
 	
 	if (keyMap.GetButton(InputType::Return)) {
+		std::cout << "quit" << std::endl;
 		gameStateManager.SetGameState(GameState::Quit);
 	}
 }

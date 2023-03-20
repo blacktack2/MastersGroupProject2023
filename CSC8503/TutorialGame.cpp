@@ -229,7 +229,7 @@ void TutorialGame::BossTarget() {
 
 void TutorialGame::ProcessState() {
 	if (gameStateManager.GetGameState() == GameState::OnGoing) {
-		int totalHealth = 0;
+		float totalHealth = 0;
 		for (int i = 0; i < playerNum; i++) {
 			totalHealth += players[i]->GetHealth()->GetHealth();
 		}

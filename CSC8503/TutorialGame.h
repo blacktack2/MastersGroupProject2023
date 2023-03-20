@@ -37,7 +37,7 @@ namespace NCL {
 		class BossBehaviorTree;
 		class PlayerObject;
 
-		struct DirectionalLight;
+		class DirectionalLight;
 
 		class TutorialGame {
 		public:
