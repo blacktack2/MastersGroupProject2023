@@ -89,10 +89,10 @@ void PlayerObject::ChangeLoseState()
 	gameStateManager->SetGameState(GameState::Lose);
 }
 
-void PlayerObject::SetBoundingVolume(SphereVolume* vol)
+void PlayerObject::SetBoundingVolume(CapsuleVolume* vol)
 {
-	radius = vol->GetRadius();
-	jumpTriggerDist += vol->GetRadius();
+	radius = vol->GetRadius() + vol->GetHalfHeight();
+	jumpTriggerDist += vol->GetRadius() + vol->GetHalfHeight();
 	GameObject::SetBoundingVolume((CollisionVolume*)vol);
 }
 
