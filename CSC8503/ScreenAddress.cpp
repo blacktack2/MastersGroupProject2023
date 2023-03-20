@@ -24,7 +24,7 @@ ScreenAddress::~ScreenAddress() {
 PushdownState::PushdownResult ScreenAddress::OnUpdate(float dt, PushdownState** newState) {
 	std::string address;
 	for (int i = 0; i < 4; i++) {
-		address += optionManager.GetIpAddress().GetAddress(i) == -1 ? " " : std::to_string(optionManager.GetIpAddress().GetAddress(i));
+		address += optionManager.GetIpAddress().GetAddress(i);
 		if (i != 3) {
 			address += ".";
 		}

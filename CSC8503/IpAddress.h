@@ -29,7 +29,7 @@ namespace NCL {
 					return 0;
 				}
 				if (address[index].size() == 0) {
-					return -1;
+					return 0;
 				}
 				return stoi(address[index]);
 			}

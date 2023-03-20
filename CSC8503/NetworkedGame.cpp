@@ -20,6 +20,7 @@
 #include "AssetLibrary.h"
 #include "PrefabLibrary.h"
 #include "BulletInstanceManager.h"
+#include "OptionManager.h"
 
 #include <bitset>
 #include <Maths.h>
@@ -52,7 +53,12 @@ NetworkedGame::NetworkedGame(bool isServer)	{
 		StartAsServer();
 	}
 	else {
-		StartAsClient(127, 0, 0, 1);
+		StartAsClient(
+			OptionManager::instance().GetIpAddress().GetAddress(0), 
+			OptionManager::instance().GetIpAddress().GetAddress(1),
+			OptionManager::instance().GetIpAddress().GetAddress(2),
+			OptionManager::instance().GetIpAddress().GetAddress(3)
+		);
 	}
 }
 
