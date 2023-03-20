@@ -78,8 +78,12 @@ void PlayerObject::Update(float dt) {
 	//If on ink
 	if (onGround) {
 		GameNode* node = GameGridManager::instance().NearestNode(this->GetTransform().GetGlobalPosition());
-		if(node)
+		if (node) {
 			InkEffectManager::instance().ApplyInkEffect(node->inkType, &health, 0);
+			if (node->inkType == NCL::InkType::BossDamage) {
+				hurtSource->Play(Sound::AddSound("yell.wav"));
+			}
+		}
 	}
 	MoveCamera(dt);
 }
@@ -359,6 +363,14 @@ void NCL::CSC8503::PlayerObject::SetupAudio()
 	attackSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
 	attackSource->SetGain(1.0f);
 	attackSource->SetPitch(1.0f);
+
+	hurtSource = new SoundSource();
+	hurtSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+	hurtSource->SetGain(0.0f);
+	hurtSource->SetSoundBuffer(Sound::AddSound("yell.wav"));
+	hurtSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+	hurtSource->SetGain(1.0f);
+	hurtSource->SetPitch(1.0f);
 
 	SoundSystem::GetSoundSystem()->SetListener(this);
 
