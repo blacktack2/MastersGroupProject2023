@@ -137,11 +137,11 @@ void OctTreeNode::DebugDraw() {
 	}
 }
 
-NodeStack::NodeStack(int maxNodes) : nodes(maxNodes, *this) {
+/*NodeStack::NodeStack(int maxNodes) : nodes(maxNodes, *this) {
 	for (auto& node : nodes) {
 		Push(&node);
 	}
-}
+}*/
 
 void NodeStack::Push(OctTreeNode* node) {
 	stack.push(node);
