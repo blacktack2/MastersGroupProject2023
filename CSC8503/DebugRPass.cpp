@@ -132,7 +132,7 @@ void DebugRPass::RenderWinLoseInformation(bool win) {
 	debugTextUVs.clear();
 
 	constexpr float size = 20.0f;
-	Debug::GetDebugFont()->BuildVerticesForString(win ? "You Win!" : "You got Inked!", Vector2(5.0f, 80.0f), Vector4(0.0f, 1.0f, 0.0f, 1.0f), size, debugTextPos, debugTextUVs, debugTextColours);
+	Debug::GetDebugFont()->BuildVerticesForString(win ? "You Win!" : "You got Inked!", Vector2(36, 50), win ? Debug::GREEN : Debug::RED, size, debugTextPos, debugTextUVs, debugTextColours);
 
 	textMesh->SetVertexPositions(debugTextPos);
 	textMesh->SetVertexColours(debugTextColours);

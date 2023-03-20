@@ -53,7 +53,7 @@ namespace NCL {
 			Matrix4		globalMatrix;
 			Matrix4		localMatrix;
 			Quaternion	orientation;
-			Quaternion globalOrientation;
+			Quaternion  globalOrientation;
 			Vector3		position;
 
 			Vector3		scale;

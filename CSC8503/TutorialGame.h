@@ -18,7 +18,7 @@ namespace NCL {
 using namespace NCL::Maths;
 
 
-
+enum ControllerType;
 namespace NCL {
 	namespace CSC8503 {
 		class GameGridManager;
@@ -67,7 +67,11 @@ namespace NCL {
 			void InitDefaultFloor();
 
 			GameObject* AddFloorToWorld(const Vector3& position);
+			GameObject* AddBackGroundToWorld(const Vector3& position);
+			GameObject* AddWallXToWorld(const Vector3& position);
+			GameObject* AddWallYToWorld(const Vector3& position);
 
+			void AddPlayer(int index, ControllerType type);
 			PlayerObject* AddPlayerToWorld(int playerID, const Vector3& position);
 
 			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);
@@ -90,6 +94,7 @@ namespace NCL {
 
 			std::unique_ptr<PhysicsSystem> physics;
 
+			int numOfPlayers;
 			PlayerObject* players[4];
 
 			DirectionalLight* sunLight = nullptr;

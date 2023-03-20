@@ -32,87 +32,8 @@ pitch(pitch), yaw(yaw), position(position) {
 }
 
 void Camera::UpdateCamera(float dt) {
-	if (follow == nullptr) {
-#ifdef x64
-		pitch -= (Window::GetMouse()->GetRelativePosition().y);
-		yaw -= (Window::GetMouse()->GetRelativePosition().x);
-
-		pitch = Maths::Clamp(pitch, -90.0f, 90.0f);
-		yaw += (yaw < 0) ? 360.0f : ((yaw > 360.0f) ? -360.0f : 0.0f);
-
-		float frameSpeed = (Window::GetKeyboard()->KeyDown(KeyboardKeys::CONTROL) ? 200 : 25) * dt;
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W)) {
-			position += Matrix4::Rotation(yaw, Vector3(0.0f, 1.0f, 0.0f)) * Vector3(0.0f, 0.0f, -1.0f) * frameSpeed;
-		}
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S)) {
-			position -= Matrix4::Rotation(yaw, Vector3(0.0f, 1.0f, 0.0f)) * Vector3(0.0f, 0.0f, -1.0f) * frameSpeed;
-		}
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A)) {
-			position += Matrix4::Rotation(yaw, Vector3(0.0f, 1.0f, 0.0f)) * Vector3(-1.0f, 0.0f, 0.0f) * frameSpeed;
-		}
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D)) {
-			position -= Matrix4::Rotation(yaw, Vector3(0.0f, 1.0f, 0.0f)) * Vector3(-1.0f, 0.0f, 0.0f) * frameSpeed;
-		}
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SHIFT)) {
-			position.y -= frameSpeed;
-		}
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SPACE)) {
-			position.y += frameSpeed;
-		}
-#endif // x64
-#ifdef _ORBIS
-		Maths::Vector2 leftAnalog = PS4::PS4InputManager::GetAxis(PS4::Player1, PS4::LEFTSTICK);
-		Maths::Vector2 rightAnalog = PS4::PS4InputManager::GetAxis(PS4::Player1, PS4::RIGHTSTICK);
-		Maths::Vector2 directionKeys = PS4::PS4InputManager::GetAxis(PS4::Player1, PS4::KEYPAD);
-		//Update based on right analog stick
-		pitch -= (rightAnalog.y);
-		yaw -= (rightAnalog.x);
-
-		pitch = NCL::Maths::Clamp(pitch, -90.0f, 90.0f);
-		yaw += (yaw < 0) ? 360.0f : ((yaw > 360.0f) ? -360.0f : 0.0f);
-
-		float frameSpeed = 32 * dt;
-
-		//left analog stick
-		float right = leftAnalog.x;
-		float forward = leftAnalog.y;
-
-		//right = std::min(right, 1.0f);
-		//right = std::max(right, -1.0f);
-
-		//forward = std::min(forward, 1.0f);
-		//forward = std::max(forward, -1.0f);
-
-		//std::cout << "Forward: " << forward << std::endl;
-		//std::cout << "Right: " << right<< std::endl;
-
-		if (directionKeys.y > 0 || forward < 0) {
-			position += Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
-		}
-		if (directionKeys.x > 0 || right > 0) {
-			position += Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(1, 0, 0) * frameSpeed;
-		}
-
-		if (directionKeys.y < 0 || forward>0) {
-			position -= Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
-		}
-		if (directionKeys.x < 0 || right < 0) {
-			position -= Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(1, 0, 0) * frameSpeed;
-		}
-
-		if (PS4::PS4InputManager::GetButtons(PS4::Player1, PS4::CROSS)) {
-			position.y += frameSpeed;
-		}
-		if (PS4::PS4InputManager::GetButtons(PS4::Player1, PS4::SQUARE)) {
-			position.y -= frameSpeed;
-		}
-#endif // _ORBIS
-
-		
-	} else {
+	if (follow != nullptr) {
+		Vector3 followPos = follow->GetGlobalPosition();
 
 
 		Vector3 followPos = follow->GetGlobalPosition();
@@ -124,8 +45,9 @@ void Camera::UpdateCamera(float dt) {
 			std::sin( Maths::DegreesToRadians(pitch)),
 			std::sin(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch))
 		) * followDistance;
-		newPos.y += 1.0f;
-		position = Vector3::Lerp(position, newPos + follow->GetGlobalOrientation() * Vector3(1.0f, 0.0f, 0.0f) * 1.5f, std::min(smoothFactor * dt, 1.0f));
+		newPos.y += 0.5f;
+		float zOffset = -1.5f;
+		position = Vector3::Lerp(position, newPos + follow->GetGlobalOrientation() * Vector3(1.0f, 0.0f, 0.0f) * zOffset, std::min(smoothFactor * dt, 1.0f));
 		position.y = std::max(position.y, 0.1f);
 	}
 }

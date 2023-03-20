@@ -148,7 +148,7 @@ namespace NCL {
 			int worldIDCounter;
 			int worldStateCounter;
 
-			float runTime;
+			float runTime = 0.0f;
 			float deltaTime = 0.0f;		// Used by Animation
 
 			int screenNum = 1;

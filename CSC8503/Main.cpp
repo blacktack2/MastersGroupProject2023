@@ -85,11 +85,14 @@ void LoadGlobalAssets() {
 	AssetLibrary<MeshGeometry>::AddAsset("goat", AssetLoader::LoadMesh("Goat.msh"));
 	AssetLibrary<MeshGeometry>::AddAsset("capsule", AssetLoader::LoadMesh("capsule.msh"));
 
-	AssetLibrary<MeshGeometry>::AddAsset("fenceX", AssetLoader::LoadMesh("fenceXCube.msh"));
-	AssetLibrary<MeshGeometry>::AddAsset("fenceY", AssetLoader::LoadMesh("fenceYCube.msh"));
-	AssetLibrary<MeshGeometry>::AddAsset("wall", AssetLoader::LoadMesh("cube.msh"));
-	AssetLibrary<MeshGeometry>::AddAsset("shelter", AssetLoader::LoadMesh("shelterCube.msh"));
-	AssetLibrary<MeshGeometry>::AddAsset("pillar", AssetLoader::LoadMesh("pillarMsh.msh"));
+	AssetLibrary<MeshGeometry>::AddAsset("fenceX", AssetLoader::LoadMesh("Building/newFence.msh"));
+	AssetLibrary<MeshMaterial>::AddAsset("fenceX", std::make_shared<MeshMaterial>("Building/newFence.mat"));
+	AssetLibrary<MeshGeometry>::AddAsset("fenceY", AssetLoader::LoadMesh("Building/newFenceY.msh"));
+	AssetLibrary<MeshMaterial>::AddAsset("fenceY", std::make_shared<MeshMaterial>("Building/newFence.mat"));
+	//AssetLibrary<MeshGeometry>::AddAsset("wall", AssetLoader::LoadMesh("cube.msh"));
+	AssetLibrary<MeshGeometry>::AddAsset("shelter", AssetLoader::LoadMesh("Building/shelter.msh"));
+	AssetLibrary<MeshMaterial>::AddAsset("shelter", std::make_shared<MeshMaterial>("Building/shelter.mat"));
+	AssetLibrary<MeshGeometry>::AddAsset("pillar", AssetLoader::LoadMesh("Building/Column_04_Old.msh"));
 
 	AssetLibrary<TextureBase>::AddAsset("defaultAlbedo", std::move(AssetLoader::LoadTexture("DefaultAlbedo.png")));
 	AssetLibrary<TextureBase>::AddAsset("defaultBump", std::move(AssetLoader::LoadTexture("DefaultBump.png")));
@@ -98,8 +101,14 @@ void LoadGlobalAssets() {
 	AssetLibrary<TextureBase>::AddAsset("pillarTex", std::move(AssetLoader::LoadTexture("pillarTex.jpg")));
 
 	AssetLibrary<MeshMaterial>::AddAsset("default", std::make_shared<MeshMaterial>("Default.mat"));
-	AssetLibrary<MeshMaterial>::AddAsset("pillar", std::make_shared<MeshMaterial>("pillar.mat"));
+	AssetLibrary<MeshMaterial>::AddAsset("pillar", std::make_shared<MeshMaterial>("Building/Column_04_Old.mat"));
 	AssetLibrary<MeshMaterial>::AddAsset("floor", std::make_shared<MeshMaterial>("Floor.mat"));
+	AssetLibrary<MeshGeometry>::AddAsset("mountMesh", AssetLoader::LoadMesh("BackGround/background.msh"));
+	AssetLibrary<MeshMaterial>::AddAsset("mountMat", std::make_shared<MeshMaterial>("BackGround/background.mat"));
+	AssetLibrary<MeshGeometry>::AddAsset("wallX", AssetLoader::LoadMesh("Building/wallX.msh"));
+	AssetLibrary<MeshMaterial>::AddAsset("wall", std::make_shared<MeshMaterial>("Building/wall.mat"));
+	AssetLibrary<MeshGeometry>::AddAsset("wallY", AssetLoader::LoadMesh("Building/wallY.msh"));
+
 
 	AssetLibrary<ShaderBase>::AddAsset("modelDefault", std::move(AssetLoader::CreateShader("modelDefault.vert", "modelDefault.frag")));
 	AssetLibrary<ShaderBase>::AddAsset("paintDefault", std::move(AssetLoader::CreateShader("modelDefault.vert", "modelPaintTexture.frag")));
@@ -165,7 +174,7 @@ void LoadMenuAsset() {
 }
 
 void LoadAnimationAsset() {
-	std::cout << "Loading animation assets";
+	std::cout << "Loading animation assets\n";
 	AssetLibrary<MeshGeometry>::AddAsset("boss", AssetLoader::LoadMesh("Boss/Boss.msh"));
 
 	AssetLibrary<MeshMaterial>::AddAsset("boss", std::make_shared<MeshMaterial>("Boss/Boss.mat"));
@@ -175,20 +184,25 @@ void LoadAnimationAsset() {
 	AssetLibrary<MeshAnimation>::AddAsset("Attack1", std::make_shared<MeshAnimation>("Boss/SillyDancing.anm"));
 	AssetLibrary<MeshAnimation>::AddAsset("Attack2", std::make_shared<MeshAnimation>("Boss/HipHopDancing.anm"));
 	AssetLibrary<MeshAnimation>::AddAsset("Attack3", std::make_shared<MeshAnimation>("Boss/JoyfulJump.anm"));
-	AssetLibrary<MeshAnimation>::AddAsset("Attack4", std::make_shared<MeshAnimation>("Boss/RumbaDancing.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("Attack4", std::make_shared<MeshAnimation>("Boss/RambaDancing.anm"));
 	AssetLibrary<MeshAnimation>::AddAsset("Attack5", std::make_shared<MeshAnimation>("Boss/NorthernSoulSpin.anm"));
-	AssetLibrary<MeshAnimation>::AddAsset("Attack6", std::make_shared<MeshAnimation>("Boss/SambaDancing.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("Attack6", std::make_shared<MeshAnimation>("Boss/newSambaDancing.anm"));
 
 	AssetLibrary<MeshGeometry>::AddAsset("player", AssetLoader::LoadMesh("Player/Player.msh"));
 
 	AssetLibrary<MeshMaterial>::AddAsset("player", std::make_shared<MeshMaterial>("Player/Player.mat"));
 
-	AssetLibrary<MeshAnimation>::AddAsset("PlayerJump", std::make_shared<MeshAnimation>("Player/Jump.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerJump", std::make_shared<MeshAnimation>("Player/PlayerJump.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerJumpUp", std::make_shared<MeshAnimation>("Player/PlayerJumpUp.anm"));
 	AssetLibrary<MeshAnimation>::AddAsset("PlayerIdle", std::make_shared<MeshAnimation>("Player/PlayerIdle.anm"));
-	AssetLibrary<MeshAnimation>::AddAsset("PlayerForward", std::make_shared<MeshAnimation>("Player/PlayerForward.anm"));
-	AssetLibrary<MeshAnimation>::AddAsset("PlayerBackward", std::make_shared<MeshAnimation>("Player/PlayerBackward.anm"));
-	AssetLibrary<MeshAnimation>::AddAsset("PlayerLeft", std::make_shared<MeshAnimation>("Player/PlayerLeft.anm"));
 	AssetLibrary<MeshAnimation>::AddAsset("PlayerRight", std::make_shared<MeshAnimation>("Player/PlayerRight.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerLeft", std::make_shared<MeshAnimation>("Player/PlayerLeft.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerForwardRight", std::make_shared<MeshAnimation>("Player/PlayerForwardRight.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerForwardLeft", std::make_shared<MeshAnimation>("Player/PlayerForwardLeft.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerForward", std::make_shared<MeshAnimation>("Player/PlayerForward.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerBackwardRight", std::make_shared<MeshAnimation>("Player/PlayerBackwardRight.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerBackwardLeft", std::make_shared<MeshAnimation>("Player/PlayerBackwardLeft.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerBackward", std::make_shared<MeshAnimation>("Player/PlayerBackward.anm"));
 }
 
 void LoadPrefabs() {

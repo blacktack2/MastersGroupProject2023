@@ -8,8 +8,22 @@
 #include"AnimatedRenderObject.h"
 namespace NCL {
 	class Camera;
+	class CapsuleVolume;
 	namespace CSC8503 {
 		class Bullet;
+
+		enum PlayerMovingDirection {
+			Idle,
+
+			MoveForward,
+			MoveBackward,
+			MoveToLeft,
+			MoveToRight,
+			MoveForwardLeft,
+			MoveForwardRight,
+			MoveBackwardLeft,
+			MoveBackwardRight,
+		};
 
 		class PlayerObject : public GameObject {
 		public:
@@ -17,6 +31,8 @@ namespace NCL {
 			~PlayerObject();
 
 			void Update(float dt);
+
+			void ClearCamera();
 
 			virtual void ChangeLoseState();
 
@@ -44,10 +60,11 @@ namespace NCL {
 				return playerID;
 			}
 
+			void SetBoundingVolume(CapsuleVolume* vol);
+
 		protected:
 			void Movement(float dt);
 
-			void MoveTo(Vector3 position);
 			void Move(Vector3 dir);
 			void MoveByPosition(float dt, Vector3 dir);
 			void GetButtonInput(unsigned int keyPress);
@@ -83,7 +100,7 @@ namespace NCL {
 
 			//shooting related
 			float projectileForce = 15;
-			const Vector3 projectileSpawnPoint = Vector3(0.0f, 0.9f, -1.0f);
+			const Vector3 projectileSpawnPoint = Vector3(0.0f, 0.0f, -1.0f);
 			float projectileLifespan = 5.0f;
 			float projectileFireRate = 0.1f;
 			float projectileFireRateTimer = 0;
@@ -94,21 +111,23 @@ namespace NCL {
 			//camera related
 			Vector3 lookingAt = Vector3(0);
 
-			void MoveAnimation(Vector3 dir);
+			void MoveAnimation();
 		private:
 
 			void SetupAudio();
 
 			//jump related 
 			bool onGround = false;
-			float jumpTriggerDist = 1.1f;
+			float jumpTriggerDist = 0.01f;
 			float jumpTimer = 0.0f;
-			const float jumpCooldown = 0.005f;
+			const float jumpCooldown = 0.5f;
 			float jumpSpeed = 10.0f;
+			float radius = 0;
 
 			//movement related
 			float moveSpeed = 0.4f;
 			Vector3 lastDir = Vector3(0,0,0);
+			PlayerMovingDirection playerMovingDirection = PlayerMovingDirection::Idle;
 			
 			//camera related
 			Camera* camera;

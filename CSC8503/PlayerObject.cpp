@@ -40,17 +40,25 @@ PlayerObject::PlayerObject(int playerID) : GameObject(), playerID(playerID), key
 }
 
 PlayerObject::~PlayerObject() {
-	alDeleteSources(1, &(*playerSource->GetSource()).source);
-	alDeleteSources(1, &(*attackSource->GetSource()).source);
 	SoundSystem::GetSoundSystem()->SetListener(nullptr);
 	delete playerSource;
 	delete attackSource;
-
+	ClearCamera();
 
 }
 
+void PlayerObject::ClearCamera() {
+	camera->GetHud().ClearAndErase();
+	camera->SetFollow(nullptr);
+}
+
 void PlayerObject::Update(float dt) {
-	//Change game state
+	Vector3 t = transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition();
+	Debug::DrawLine(t, t + Vector3(0, 0.5f, 0), Debug::BLUE);
+	Debug::DrawLine(t, t + Vector3(0, -0.5f, 0), Debug::GREEN);
+
+	Debug::DrawLine(transform.GetGlobalPosition() - Vector3(0, radius, 0), transform.GetGlobalPosition() - Vector3(0, jumpTriggerDist,0), Debug::RED);
+	//Change game 
 	if (health.GetHealth() <= 0) {
 		MoveCamera(dt);
 		//ChangeLoseState();
@@ -81,6 +89,13 @@ void PlayerObject::ChangeLoseState()
 	gameStateManager->SetGameState(GameState::Lose);
 }
 
+void PlayerObject::SetBoundingVolume(CapsuleVolume* vol)
+{
+	radius = vol->GetRadius() + vol->GetHalfHeight();
+	jumpTriggerDist += vol->GetRadius() + vol->GetHalfHeight();
+	GameObject::SetBoundingVolume((CollisionVolume*)vol);
+}
+
 void NCL::CSC8503::PlayerObject::Movement(float dt)
 {
 	isFreeLook = false;
@@ -95,16 +110,8 @@ void NCL::CSC8503::PlayerObject::Movement(float dt)
 	Move(dir);
 
 	RotatePlayer();
-}
 
-void PlayerObject::MoveTo(Vector3 position) {
-	Vector3 diff = position - this->GetTransform().GetGlobalPosition();
-
-	if (diff.Length() > 0.1f) {
-		Vector3 dir = (position - this->GetTransform().GetGlobalPosition()).Normalised();
-		this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
-	}
-
+	MoveAnimation();
 }
 
 void PlayerObject::MoveByPosition(float dt, Vector3 dir)
@@ -118,13 +125,6 @@ This is a temporary member function. Feel free to merge this into PlayerObject::
 void PlayerObject::Move(Vector3 dir) {
 	this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
 
-	if (lastDir != Vector3(0, 0, 0)) {
-		//Vector3 stopDir = dir - lastDir;
-		if (NCL::InputKeyMap::instance().GetButtonState() != lastKey) {
-			this->GetPhysicsObject()->ApplyLinearImpulse(-lastDir * moveSpeed);
-		}
-
-	}
 	if(dir != Vector3(0)){
 		playerSource->Play(Sound::AddSound("footstep06.wav"));
 	}
@@ -179,7 +179,40 @@ void NCL::CSC8503::PlayerObject::GetDir(Vector3& movingDir3D)
 		movingDir2D.x = cameraForwardDirection.x * cos(angle) - (-cameraForwardDirection.z) * sin(angle);
 		movingDir2D.y = (-cameraForwardDirection.z) * cos(angle) + cameraForwardDirection.x * sin(angle);
 		movingDir3D = -(Vector3{ movingDir2D.x,0,-movingDir2D.y }).Normalised();
+
+		const float PI = 3.1415926f;
+		float thetaRad = std::acos((Vector2::Dot(unitForwardDir, movementData)) / (movementData.Length()));		// theta in [0, PI]
+		float thetaDegree = (thetaRad * 180.0f) / PI;
+		if (thetaDegree <= 15.0f) {
+			playerMovingDirection = PlayerMovingDirection::MoveForward;
+		}
+		else if (thetaDegree >= 165.0f) {
+			playerMovingDirection = PlayerMovingDirection::MoveForward;
+		}
+		else if (thetaDegree >= 75.0f && thetaDegree <= 105.0f && Vector2::Dot(Vector2{ 1,0 }, movementData) > 0.0f) {
+			playerMovingDirection = PlayerMovingDirection::MoveToRight;
+		}
+		else if (thetaDegree >= 75.0f && thetaDegree <= 105.0f && Vector2::Dot(Vector2{ -1,0 }, movementData) > 0.0f) {
+			playerMovingDirection = PlayerMovingDirection::MoveToLeft;
+		}
+		else if (Vector2::Dot(Vector2{ 0,1 }, movementData) > 0.0f && Vector2::Dot(Vector2{ 1,0 }, movementData) > 0.0f) {
+			playerMovingDirection = PlayerMovingDirection::MoveForwardRight;
+		}
+		else if (Vector2::Dot(Vector2{ 0,1 }, movementData) > 0.0f && Vector2::Dot(Vector2{ -1,0 }, movementData) > 0.0f) {
+			playerMovingDirection = PlayerMovingDirection::MoveForwardLeft;
+		}
+		else if (Vector2::Dot(Vector2{ 0,-1 }, movementData) > 0.0f && Vector2::Dot(Vector2{ 1,0 }, movementData) > 0.0f) {
+			playerMovingDirection = PlayerMovingDirection::MoveBackwardRight;
+		}
+		else if (Vector2::Dot(Vector2{ 0,-1 }, movementData) > 0.0f && Vector2::Dot(Vector2{ -1,0 }, movementData) > 0.0f) {
+			playerMovingDirection = PlayerMovingDirection::MoveBackwardLeft;
+		}
 	}
+	else {
+		playerMovingDirection = PlayerMovingDirection::Idle;
+	}
+
+
 	if (rightTriggerDepth > 0.5f)
 	{
 		Shoot();
@@ -188,9 +221,9 @@ void NCL::CSC8503::PlayerObject::GetDir(Vector3& movingDir3D)
 	if (leftTriggerDepth > 0.5f)
 	{
 		Jump();
+		
 	}
 }
-
 
 void PlayerObject::GetButtonInput(unsigned int keyPress) {
 	isFreeLook = false;
@@ -209,6 +242,7 @@ void PlayerObject::GetButtonInput(unsigned int keyPress) {
 }
 
 void PlayerObject::CheckGround() {
+	
 	Ray r = Ray(this->GetTransform().GetGlobalPosition(), Vector3(0, -1, 0));
 	RayCollision closestCollision;
 	GameObject* objClosest;
@@ -217,7 +251,6 @@ void PlayerObject::CheckGround() {
 	{
 		objClosest = (GameObject*)closestCollision.node;
 		float groundDist = (closestCollision.collidedAt - this->GetTransform().GetGlobalPosition()).Length();
-		//std::cout << "ground dist " << groundDist << std::endl;
 		if (groundDist < jumpTriggerDist)
 		{
 			onGround = true;
@@ -271,7 +304,6 @@ void PlayerObject::CollisionWith(GameObject* other) {
 	//gameWorld.RemoveGameObject(this);
 }
 
-
 PlayerBullet* PlayerObject::PrepareBullet()
 {
 	Vector3 dir = lookingAt - transform.GetGlobalPosition();
@@ -303,12 +335,12 @@ void PlayerObject::Shoot() {
 void NCL::CSC8503::PlayerObject::Jump()
 {
 	if (onGround && jumpTimer <= 0.0f) {
-		Vector3 upDir = this->GetTransform().GetGlobalOrientation() * Vector3(0, 1, 0);
+		std::cout << "jump" << std::endl;
+		Vector3 upDir = Vector3(0, 1, 0);
 		jumpTimer = jumpCooldown;
 		this->GetPhysicsObject()->ApplyLinearImpulse(upDir * jumpSpeed);
 	}
 }
-
 
 void NCL::CSC8503::PlayerObject::SetupAudio()
 {
@@ -331,46 +363,66 @@ void NCL::CSC8503::PlayerObject::SetupAudio()
 	SoundSystem::GetSoundSystem()->SetListener(this);
 
 }
-void  NCL::CSC8503::PlayerObject::MoveAnimation(Vector3 dir) {
-	if (this->GetPhysicsObject()->GetLinearVelocity().y > 0.01) {
-		//jump
+
+void  NCL::CSC8503::PlayerObject::MoveAnimation() {
+	if (this->GetPhysicsObject()->GetLinearVelocity().y > 0.01f) {		// Jumping	
 		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
 		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerJump").get()) {
 			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerJump"));
 		}
 	}
-	else if (this->GetPhysicsObject()->GetLinearVelocity().x<0.2 && this->GetPhysicsObject()->GetLinearVelocity().x>-0.2 && this->GetPhysicsObject()->GetLinearVelocity().z<0.2 && this->GetPhysicsObject()->GetLinearVelocity().z>-0.2) {
+	else if (playerMovingDirection == PlayerMovingDirection::Idle) {
 		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
 		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle").get()) {
 			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle"));
 		}
 	}
-	else if ((dir.z < 0) && (dir.x * dir.x < dir.z * dir.z)) {
+	else if (playerMovingDirection == PlayerMovingDirection::MoveForward) {
 		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
 		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerForward").get()) {
 			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerForward"));
 		}
-		//forward
 	}
-	else if ((dir.z > 0) && (dir.x * dir.x < dir.z * dir.z)) {
+	else if (playerMovingDirection == PlayerMovingDirection::MoveBackward) {
 		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
 		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerBackward").get()) {
 			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerBackward"));
 		}
-		//backward
 	}
-	else if ((dir.x > 0) && (dir.x * dir.x > dir.z * dir.z)) {
+	else if (playerMovingDirection == PlayerMovingDirection::MoveToRight) {
 		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
 		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerRight").get()) {
 			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerRight"));
 		}
-		//right
 	}
-	else if ((dir.x < 0) && (dir.x * dir.x > dir.z * dir.z)) {
-		//left
+	else if (playerMovingDirection == PlayerMovingDirection::MoveToLeft) {
 		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
 		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerLeft").get()) {
 			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerLeft"));
+		}
+	}
+	else if (playerMovingDirection == PlayerMovingDirection::MoveBackwardLeft) {
+		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerBackwardLeft").get()) {
+			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerBackwardLeft"));
+		}
+	}
+	else if (playerMovingDirection == PlayerMovingDirection::MoveBackwardRight) {
+		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerBackwardRight").get()) {
+			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerBackwardRight"));
+		}
+	}
+	else if (playerMovingDirection == PlayerMovingDirection::MoveForwardLeft) {
+		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerForwardLeft").get()) {
+			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerForwardLeft"));
+		}
+	}
+	else if (playerMovingDirection == PlayerMovingDirection::MoveForwardRight) {
+		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerForwardRight").get()) {
+			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerForwardRight"));
 		}
 	}
 }
