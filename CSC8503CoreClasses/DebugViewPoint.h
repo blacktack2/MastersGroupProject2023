@@ -14,7 +14,7 @@ namespace NCL {
 	class DebugViewPoint
 	{
 	public:
-		bool enabled = true;
+		bool enabled = false;
 
 		static DebugViewPoint& Instance() {
 			static DebugViewPoint INSTANCE;
@@ -40,7 +40,6 @@ namespace NCL {
 		void FinishTime(std::string name);
 
 		
-
 	private:
 		DebugViewPoint();
 		~DebugViewPoint() {}
@@ -49,8 +48,6 @@ namespace NCL {
 		bool state = true;
 		std::map<std::string, std::chrono::steady_clock::time_point> startingPoints;
 		int itemsPrinted;
-
-		OptionManager& optionManager;
 	};
 }
 

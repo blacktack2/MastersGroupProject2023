@@ -6,6 +6,7 @@
  * @date   February 2023
  */
 #pragma once
+#include "DebugViewPoint.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -36,7 +37,10 @@ namespace NCL {
 			void SetSunMove(bool flag) { isSunMove = flag; };
 			bool GetSunMove() { return isSunMove; };
 
-			void SetDebugMode(bool flag) { isDebugMode = flag; };
+			void SetDebugMode(bool flag) {
+				isDebugMode = flag;
+				DebugViewPoint::Instance().enabled = flag;
+			};
 			bool GetDebugMode() { return isDebugMode; };
 
 			void SetSound(bool flag) { isSound = flag; };

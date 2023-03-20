@@ -86,6 +86,8 @@ void PhysicsSystem::Update(float dt) {
 
 	UpdateObjectAABBs();
 	int iteratorCount = 0;
+
+	
 	while(dTOffset > realDT) {
 		IntegrateAccel(realDT); //Update accelerations from external forces
 
