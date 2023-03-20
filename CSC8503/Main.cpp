@@ -130,6 +130,8 @@ void LoadMenuAsset() {
 	AssetLibrary<TextureBase>::AddAsset("button5", AssetLoader::LoadTexture("Menu/button5.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("button6", AssetLoader::LoadTexture("Menu/button6.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("button7", AssetLoader::LoadTexture("Menu/button7.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button8", AssetLoader::LoadTexture("Menu/button8.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button9", AssetLoader::LoadTexture("Menu/button9.jpg"));
 
 	AssetLibrary<TextureBase>::AddAsset("buttonSlide0", AssetLoader::LoadTexture("Menu/buttonSlide0.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("buttonSlide1", AssetLoader::LoadTexture("Menu/buttonSlide1.jpg"));
@@ -139,6 +141,8 @@ void LoadMenuAsset() {
 	AssetLibrary<TextureBase>::AddAsset("buttonSlide5", AssetLoader::LoadTexture("Menu/buttonSlide5.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("buttonSlide6", AssetLoader::LoadTexture("Menu/buttonSlide6.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("buttonSlide7", AssetLoader::LoadTexture("Menu/buttonSlide7.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide8", AssetLoader::LoadTexture("Menu/buttonSlide8.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide9", AssetLoader::LoadTexture("Menu/buttonSlide9.jpg"));
 
 	AssetLibrary<TextureBase>::AddAsset("checkbox0", AssetLoader::LoadTexture("Menu/checkbox.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("checkbox1", AssetLoader::LoadTexture("Menu/checkboxmark.jpg"));
@@ -161,6 +165,8 @@ void LoadMenuAsset() {
 	AssetLibrary<TextureBase>::AddAsset("num7", AssetLoader::LoadTexture("Menu/num7.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("num8", AssetLoader::LoadTexture("Menu/num8.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("num9", AssetLoader::LoadTexture("Menu/num9.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("dot", AssetLoader::LoadTexture("Menu/dot.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("backspace", AssetLoader::LoadTexture("Menu/delete.jpg"));
 	
 	AssetLibrary<TextureBase>::AddAsset("fontAtlas", std::move(AssetLoader::LoadTexture("PressStart2P.png")));
 	AssetLibrary<TextureBase>::AddAsset("BossHealthBarBorder", std::move(AssetLoader::LoadTexture("HP/Borders/Border_Style_3.png")));
