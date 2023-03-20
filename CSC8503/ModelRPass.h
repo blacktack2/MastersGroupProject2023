@@ -45,6 +45,9 @@ namespace NCL {
 			inline TextureBase& GetNormalOutTex() const {
 				return *normalOutTex;
 			}
+			inline TextureBase& GetSpecOutTex() const {
+				return *specOutTex;
+			}
 			inline TextureBase& GetDepthOutTex() const {
 				return *depthOutTex;
 			}
@@ -56,6 +59,7 @@ namespace NCL {
 
 			std::unique_ptr<TextureBase> albedoOutTex;
 			std::unique_ptr<TextureBase> normalOutTex;
+			std::unique_ptr<TextureBase> specOutTex;
 			std::unique_ptr<TextureBase> depthOutTex;
 
 			std::vector<std::shared_ptr<ShaderBase>> modelShaders{};

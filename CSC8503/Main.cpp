@@ -174,7 +174,7 @@ void LoadMenuAsset() {
 }
 
 void LoadAnimationAsset() {
-	std::cout << "Loading animation assets";
+	std::cout << "Loading animation assets\n";
 	AssetLibrary<MeshGeometry>::AddAsset("boss", AssetLoader::LoadMesh("Boss/Boss.msh"));
 
 	AssetLibrary<MeshMaterial>::AddAsset("boss", std::make_shared<MeshMaterial>("Boss/Boss.mat"));

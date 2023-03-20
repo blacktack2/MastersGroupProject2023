@@ -9,6 +9,7 @@
 
 uniform sampler2D diffuseTex;
 uniform sampler2D bumpTex;
+uniform sampler2D specTex;
 
 uniform vec4 modelColour;
 
@@ -27,6 +28,7 @@ in Vertex {
 
 out vec4 diffuseOut;
 out vec4 normalOut;
+out vec4 specOut;
 
 void main() {
 	mat3 TBN = mat3(normalize(IN.tangent),
@@ -40,4 +42,6 @@ void main() {
 	diffuseOut.rgb = pow(diffuseOut.rgb, vec3(gamma));
 
 	normalOut = vec4(normal * 0.5 + 0.5, 1.0);
+
+	specOut = texture(specTex, IN.texCoord * texScale);
 }

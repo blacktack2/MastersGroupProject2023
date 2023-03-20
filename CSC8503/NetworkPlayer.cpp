@@ -46,6 +46,7 @@ void NCL::CSC8503::NetworkPlayer::MoveInput(unsigned int keyPress, short int axi
 		this->pitch = rotationAxis.y;
 		RotateYaw(yaw);
 		MoveCamera(0.05f);
+		MoveAnimation();
 	}
 }
 
@@ -64,6 +65,7 @@ void NCL::CSC8503::NetworkPlayer::ServerSideMovement(float dt)
 
 		GetButtonInput(keyMap.GetButtonState());
 		Move(dir);
+		MoveAnimation();
 	}
 }
 

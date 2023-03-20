@@ -40,17 +40,25 @@ PlayerObject::PlayerObject(int playerID) : GameObject(), playerID(playerID), key
 }
 
 PlayerObject::~PlayerObject() {
-	alDeleteSources(1, &(*playerSource->GetSource()).source);
-	alDeleteSources(1, &(*attackSource->GetSource()).source);
 	SoundSystem::GetSoundSystem()->SetListener(nullptr);
 	delete playerSource;
 	delete attackSource;
-
+	ClearCamera();
 
 }
 
+void PlayerObject::ClearCamera() {
+	camera->GetHud().ClearAndErase();
+	camera->SetFollow(nullptr);
+}
+
 void PlayerObject::Update(float dt) {
-	//Change game state
+	Vector3 t = transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition();
+	Debug::DrawLine(t, t + Vector3(0, 0.5f, 0), Debug::BLUE);
+	Debug::DrawLine(t, t + Vector3(0, -0.5f, 0), Debug::GREEN);
+
+	Debug::DrawLine(transform.GetGlobalPosition() - Vector3(0, radius, 0), transform.GetGlobalPosition() - Vector3(0, jumpTriggerDist,0), Debug::RED);
+	//Change game 
 	if (health.GetHealth() <= 0) {
 		MoveCamera(dt);
 		//ChangeLoseState();
@@ -81,6 +89,13 @@ void PlayerObject::ChangeLoseState()
 	gameStateManager->SetGameState(GameState::Lose);
 }
 
+void PlayerObject::SetBoundingVolume(SphereVolume* vol)
+{
+	radius = vol->GetRadius();
+	jumpTriggerDist += vol->GetRadius();
+	GameObject::SetBoundingVolume((CollisionVolume*)vol);
+}
+
 void NCL::CSC8503::PlayerObject::Movement(float dt)
 {
 	isFreeLook = false;
@@ -99,16 +114,6 @@ void NCL::CSC8503::PlayerObject::Movement(float dt)
 	MoveAnimation();
 }
 
-void PlayerObject::MoveTo(Vector3 position) {
-	Vector3 diff = position - this->GetTransform().GetGlobalPosition();
-
-	if (diff.Length() > 0.1f) {
-		Vector3 dir = (position - this->GetTransform().GetGlobalPosition()).Normalised();
-		this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
-	}
-
-}
-
 void PlayerObject::MoveByPosition(float dt, Vector3 dir)
 /*
 This is a temporary member function. Feel free to merge this into PlayerObject::Move when necessary.
@@ -120,13 +125,6 @@ This is a temporary member function. Feel free to merge this into PlayerObject::
 void PlayerObject::Move(Vector3 dir) {
 	this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
 
-	if (lastDir != Vector3(0, 0, 0)) {
-		//Vector3 stopDir = dir - lastDir;
-		if (NCL::InputKeyMap::instance().GetButtonState() != lastKey) {
-			this->GetPhysicsObject()->ApplyLinearImpulse(-lastDir * moveSpeed);
-		}
-
-	}
 	if(dir != Vector3(0)){
 		playerSource->Play(Sound::AddSound("footstep06.wav"));
 	}
@@ -227,7 +225,6 @@ void NCL::CSC8503::PlayerObject::GetDir(Vector3& movingDir3D)
 	}
 }
 
-
 void PlayerObject::GetButtonInput(unsigned int keyPress) {
 	isFreeLook = false;
 	if (keyMap.CheckButtonPressed(keyPress, InputType::Jump, playerID))
@@ -245,6 +242,7 @@ void PlayerObject::GetButtonInput(unsigned int keyPress) {
 }
 
 void PlayerObject::CheckGround() {
+	
 	Ray r = Ray(this->GetTransform().GetGlobalPosition(), Vector3(0, -1, 0));
 	RayCollision closestCollision;
 	GameObject* objClosest;
@@ -253,7 +251,6 @@ void PlayerObject::CheckGround() {
 	{
 		objClosest = (GameObject*)closestCollision.node;
 		float groundDist = (closestCollision.collidedAt - this->GetTransform().GetGlobalPosition()).Length();
-		std::cout << "ground dist " << groundDist << std::endl;
 		if (groundDist < jumpTriggerDist)
 		{
 			onGround = true;
@@ -307,7 +304,6 @@ void PlayerObject::CollisionWith(GameObject* other) {
 	//gameWorld.RemoveGameObject(this);
 }
 
-
 PlayerBullet* PlayerObject::PrepareBullet()
 {
 	Vector3 dir = lookingAt - transform.GetGlobalPosition();
@@ -339,12 +335,12 @@ void PlayerObject::Shoot() {
 void NCL::CSC8503::PlayerObject::Jump()
 {
 	if (onGround && jumpTimer <= 0.0f) {
-		Vector3 upDir = this->GetTransform().GetGlobalOrientation() * Vector3(0, 1, 0);
+		std::cout << "jump" << std::endl;
+		Vector3 upDir = Vector3(0, 1, 0);
 		jumpTimer = jumpCooldown;
 		this->GetPhysicsObject()->ApplyLinearImpulse(upDir * jumpSpeed);
 	}
 }
-
 
 void NCL::CSC8503::PlayerObject::SetupAudio()
 {
@@ -367,6 +363,7 @@ void NCL::CSC8503::PlayerObject::SetupAudio()
 	SoundSystem::GetSoundSystem()->SetListener(this);
 
 }
+
 void  NCL::CSC8503::PlayerObject::MoveAnimation() {
 	if (this->GetPhysicsObject()->GetLinearVelocity().y > 0.01f) {		// Jumping	
 		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());

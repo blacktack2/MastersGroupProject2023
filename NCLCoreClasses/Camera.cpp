@@ -28,36 +28,7 @@ pitch(pitch), yaw(yaw), position(position) {
 }
 
 void Camera::UpdateCamera(float dt) {
-	if (follow == nullptr) {
-		pitch -= (Window::GetMouse()->GetRelativePosition().y);
-		yaw -= (Window::GetMouse()->GetRelativePosition().x);
-
-		pitch = std::clamp(pitch, -90.0f, 90.0f);
-		yaw += (yaw < 0.0f) ? 360.0f : ((yaw > 360.0f) ? -360.0f : 0.0f);
-
-		float frameSpeed = (Window::GetKeyboard()->KeyDown(KeyboardKeys::CONTROL) ? 200 : 25) * dt;
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W)) {
-			position += Matrix4::Rotation(yaw, Vector3(0.0f, 1.0f, 0.0f)) * Vector3(0.0f, 0.0f, -1.0f) * frameSpeed;
-		}
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S)) {
-			position -= Matrix4::Rotation(yaw, Vector3(0.0f, 1.0f, 0.0f)) * Vector3(0.0f, 0.0f, -1.0f) * frameSpeed;
-		}
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A)) {
-			position += Matrix4::Rotation(yaw, Vector3(0.0f, 1.0f, 0.0f)) * Vector3(-1.0f, 0.0f, 0.0f) * frameSpeed;
-		}
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D)) {
-			position -= Matrix4::Rotation(yaw, Vector3(0.0f, 1.0f, 0.0f)) * Vector3(-1.0f, 0.0f, 0.0f) * frameSpeed;
-		}
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SHIFT)) {
-			position.y -= frameSpeed;
-		}
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SPACE)) {
-			position.y += frameSpeed;
-		}
-	} else {
+	if (follow != nullptr) {
 		Vector3 followPos = follow->GetGlobalPosition();
 
 		followDistance = std::clamp(followDistance - (float)Window::GetMouse()->GetWheelMovement(), 5.0f, 40.0f);
@@ -67,8 +38,9 @@ void Camera::UpdateCamera(float dt) {
 			std::sin( Maths::DegreesToRadians(pitch)),
 			std::sin(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch))
 		) * followDistance;
-		newPos.y += 1.0f;
-		position = Vector3::Lerp(position, newPos + follow->GetGlobalOrientation() * Vector3(1.0f, 0.0f, 0.0f) * 1.5f, std::min(smoothFactor * dt, 1.0f));
+		newPos.y += 0.5f;
+		float zOffset = -1.5f;
+		position = Vector3::Lerp(position, newPos + follow->GetGlobalOrientation() * Vector3(1.0f, 0.0f, 0.0f) * zOffset, std::min(smoothFactor * dt, 1.0f));
 		position.y = std::max(position.y, 0.1f);
 	}
 }
