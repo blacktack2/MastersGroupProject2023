@@ -144,6 +144,7 @@ namespace NCL {
 			//sound
 			SoundSource* playerSource;
 			SoundSource* attackSource;
+			SoundSource* hurtSource;
 
 			//game state
 			GameStateManager* gameStateManager = &GameStateManager::instance();
