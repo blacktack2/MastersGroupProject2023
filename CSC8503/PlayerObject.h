@@ -142,8 +142,11 @@ namespace NCL {
 			std::set<int> collidedWith;
 
 			//sound
-			SoundSource* playerSource;
+			SoundSource* foot1;
+			SoundSource* foot2;
+			SoundSource* foot3;
 			SoundSource* attackSource;
+			SoundSource* jumpSource;
 
 			//game state
 			GameStateManager* gameStateManager = &GameStateManager::instance();

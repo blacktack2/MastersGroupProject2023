@@ -41,7 +41,7 @@ PlayerObject::PlayerObject(int playerID) : GameObject(), playerID(playerID), key
 
 PlayerObject::~PlayerObject() {
 	SoundSystem::GetSoundSystem()->SetListener(nullptr);
-	delete playerSource;
+	//delete playerSource;
 	delete attackSource;
 	ClearCamera();
 
@@ -125,8 +125,17 @@ This is a temporary member function. Feel free to merge this into PlayerObject::
 void PlayerObject::Move(Vector3 dir) {
 	this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
 
-	if(dir != Vector3(0)){
-		playerSource->Play(Sound::AddSound("footstep06.wav"));
+	if ((dir != Vector3(0)) && this->GetPhysicsObject()->GetLinearVelocity().y < 0.01f) {
+		srand((unsigned int) time);
+		int randomFootstep = rand() % 3 + 1;
+		switch (randomFootstep) {
+		case 1:foot1->Play(Sound::AddSound("fs01.wav"));
+			break;
+		case 2:foot2->Play(Sound::AddSound("fs02.wav"));
+			break;
+		case 3:foot3->Play(Sound::AddSound("fs03.wav"));
+			break;
+		}
 	}
 	lastDir = dir;
 }
@@ -325,7 +334,7 @@ PlayerBullet* PlayerObject::PrepareBullet()
 }
 
 void PlayerObject::Shoot() {
-	attackSource->Play(Sound::AddSound("magic1.wav"));
+	attackSource->Play(Sound::AddSound("playerShoot.wav"));
 	if (projectileFireRateTimer > 0)
 		return;
 	projectileFireRateTimer = projectileFireRate;
@@ -335,6 +344,8 @@ void PlayerObject::Shoot() {
 void NCL::CSC8503::PlayerObject::Jump()
 {
 	if (onGround && jumpTimer <= 0.0f) {
+		//jumpSource->SetPosition
+		jumpSource->Play(Sound::AddSound("playerJump.wav"));
 		std::cout << "jump" << std::endl;
 		Vector3 upDir = Vector3(0, 1, 0);
 		jumpTimer = jumpCooldown;
@@ -344,22 +355,41 @@ void NCL::CSC8503::PlayerObject::Jump()
 
 void NCL::CSC8503::PlayerObject::SetupAudio()
 {
-	playerSource = new SoundSource();
-	playerSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
-	playerSource->SetGain(0.0f);
-	playerSource->SetSoundBuffer(Sound::AddSound("footstep06.wav"));
-	playerSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
-	playerSource->SetGain(1.0f);
-	playerSource->SetPitch(1.0f);
-
+	foot1 = new SoundSource();
+	foot1->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+	foot1->SetGain(0.0f);
+	foot1->SetSoundBuffer(Sound::AddSound("fs01.wav"));
+	foot1->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+	foot1->SetGain(1.0f);
+	foot1->SetPitch(1.0f);
+	foot2 = new SoundSource();
+	foot2->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+	foot2->SetGain(0.0f);
+	foot2->SetSoundBuffer(Sound::AddSound("fs02.wav"));
+	foot2->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+	foot2->SetGain(1.0f);
+	foot2->SetPitch(1.0f);
+	foot3 = new SoundSource();
+	foot3->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+	foot3->SetGain(0.0f);
+	foot3->SetSoundBuffer(Sound::AddSound("fs03.wav"));
+	foot3->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+	foot3->SetGain(1.0f);
+	foot3->SetPitch(1.0f);
 	attackSource = new SoundSource();
 	attackSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
 	attackSource->SetGain(0.0f);
-	attackSource->SetSoundBuffer(Sound::AddSound("magic1.wav"));
+	attackSource->SetSoundBuffer(Sound::AddSound("playerShoot.wav"));
 	attackSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
 	attackSource->SetGain(1.0f);
 	attackSource->SetPitch(1.0f);
-
+	jumpSource = new SoundSource();
+	jumpSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+	jumpSource->SetGain(0.0f);
+	jumpSource->SetSoundBuffer(Sound::AddSound("playerJump.wav"));
+	jumpSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+	jumpSource->SetGain(1.0f);
+	jumpSource->SetPitch(1.0f);
 	SoundSystem::GetSoundSystem()->SetListener(this);
 
 }
