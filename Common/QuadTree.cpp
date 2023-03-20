@@ -98,6 +98,7 @@ void QuadTreeNode::Split() {
 void QuadTreeNode::Clear() {
 	if (isSplit) {
 		for (int i = 0; i < 4; i++) {
+			children[i]->Clear();
 			children[i]->PushToStack();
 		}
 		isSplit = false;

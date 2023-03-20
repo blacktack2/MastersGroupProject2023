@@ -11,14 +11,14 @@
 
 using namespace NCL;
 
-std::map<std::string, GameObject*> PrefabLibrary::prefabs{};
+std::unordered_map<std::string, std::unique_ptr<GameObject>> PrefabLibrary::prefabs{};
 
-void PrefabLibrary::AddPrefab(std::string name, GameObject* prefab) {
-	prefabs.emplace(name, prefab);
+void PrefabLibrary::AddPrefab(std::string name, std::unique_ptr<GameObject> prefab) {
+	prefabs.emplace(name, std::move(prefab));
 }
 
-GameObject* PrefabLibrary::GetPrefab(std::string name) {
-	return prefabs.find(name)->second;
+GameObject& PrefabLibrary::GetPrefab(std::string name) {
+	return *prefabs.find(name)->second;
 }
 
 bool PrefabLibrary::HasPrefab(std::string name) {

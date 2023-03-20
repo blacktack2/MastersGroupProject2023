@@ -94,7 +94,7 @@ void NCL::PS4::PS4InputManager::Update()
 
 Maths::Vector2 NCL::PS4::PS4InputManager::GetAxis(unsigned int playerId, unsigned int reqAxis)
 {
-	if (playerId < SCE_USER_SERVICE_MAX_LOGIN_USERS && reqAxis < 3 && devices[playerId].IsInitialized())
+	if (playerId < SCE_USER_SERVICE_MAX_LOGIN_USERS && reqAxis < 3 && devices[playerId].IsInitialized() && !(devices[playerId].GetAxis(reqAxis).x==0.0f && devices[playerId].GetAxis(reqAxis).y==0))
 		return Maths::Vector2(devices[playerId].GetAxis(reqAxis).x, devices[playerId].GetAxis(reqAxis).y);
 	else return Maths::Vector2(Axis_Negative);
 }

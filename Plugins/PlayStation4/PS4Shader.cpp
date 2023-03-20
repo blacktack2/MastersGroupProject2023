@@ -18,7 +18,7 @@ PS4Shader::PS4Shader()
 	pixelShader		= NULL;
 }
 
-PS4Shader* PS4Shader::GenerateShader(const string& vertex,const string& pixel) {
+PS4Shader* PS4Shader::GenerateShader(const std::string& vertex,const std::string& pixel) {
 	PS4Shader* shader = new PS4Shader();
 
 	shader->GenerateVertexShader(vertex, true);
@@ -31,7 +31,7 @@ PS4Shader::~PS4Shader()
 {
 }
 
-void PS4Shader::GenerateVertexShader(const string&name, bool makeFetch) {
+void PS4Shader::GenerateVertexShader(const std::string&name, bool makeFetch) {
 	char*	binData = NULL;	//resulting compiled shader bytes
 	int		binSize = 0;
 	Gnmx::ShaderInfo shaderInfo;
@@ -59,7 +59,7 @@ void PS4Shader::GenerateVertexShader(const string&name, bool makeFetch) {
 		}
 	}
 	else {
-		string shaderString;
+		std::string shaderString;
 		if (LoadShaderText(name, shaderString)) {
 			//shaderString now contains the pssl shader data
 			//MAGIC GOES HERE
@@ -90,7 +90,7 @@ void PS4Shader::GenerateFetchShader(char* binData) {
 	vertexShader->applyFetchShaderModifier(shaderModifier);
 }
 
-void PS4Shader::GeneratePixelShader(const string&name) {
+void PS4Shader::GeneratePixelShader(const std::string&name) {
 	char*	binData = NULL;	//resulting compiled shader bytes
 	int		binSize = 0;
 	Gnmx::ShaderInfo shaderInfo;
@@ -124,12 +124,12 @@ void PS4Shader::GeneratePixelShader(const string&name) {
 
 
 
-bool PS4Shader::LoadShaderText(const string &name, string&into) {
+bool PS4Shader::LoadShaderText(const std::string &name, std::string&into) {
 
 	return false;
 }
 
-bool PS4Shader::LoadShaderBinary(const string &name, char*& into, int& dataSize) {
+bool PS4Shader::LoadShaderBinary(const std::string &name, char*& into, int& dataSize) {
 	std::ifstream binFile(name, std::ios::binary);
 
 	if (!binFile) {
@@ -148,7 +148,7 @@ bool PS4Shader::LoadShaderBinary(const string &name, char*& into, int& dataSize)
 	return true;
 }
 
-bool PS4Shader::ShaderIsBinary(const string& name) {
+bool PS4Shader::ShaderIsBinary(const std::string& name) {
 	if (name.length() >= 3 && 
 		name[name.length() - 3] == '.' &&
 		name[name.length() - 2] == 's' &&
@@ -165,7 +165,7 @@ void	PS4Shader::SubmitShaderSwitch(Gnmx::GnmxGfxContext& cmdList) {
 	cmdList.setPsShader(pixelShader, &pixelCache);
 }
 
-int		PS4Shader::GetConstantBufferIndex(const string &name) {
+int		PS4Shader::GetConstantBufferIndex(const std::string &name) {
 	sce::Shader::Binary::Buffer* constantBuffer = vertexBinary.getBufferResourceByName(name.c_str());
 	if (!constantBuffer) {
 		return -1;
@@ -173,4 +173,87 @@ int		PS4Shader::GetConstantBufferIndex(const string &name) {
 	return constantBuffer->m_resourceIndex;
 }
 
+void PS4Shader::SetUniformFloat(const std::string& uniform, float v1) {
+	
+}
+
+void PS4Shader::SetUniformFloat(const std::string& uniform, float v1, float v2) {
+	
+}
+
+void PS4Shader::SetUniformFloat(const std::string& uniform, float v1, float v2, float v3) {
+	
+}
+
+void PS4Shader::SetUniformFloat(const std::string& uniform, float v1, float v2, float v3, float v4) {
+	
+}
+
+void PS4Shader::SetUniformFloat(const std::string& uniform, const Vector2& v) {
+	
+}
+
+void PS4Shader::SetUniformFloat(const std::string& uniform, const Vector3& v) {
+	
+}
+
+void PS4Shader::SetUniformFloat(const std::string& uniform, const Vector4& v) {
+	
+}
+
+void PS4Shader::SetUniformFloat(const std::string& uniform, const std::vector<Vector2>& v) {
+	
+}
+
+void PS4Shader::SetUniformFloat(const std::string& uniform, const std::vector<Vector3>& v) {
+	
+}
+
+void PS4Shader::SetUniformFloat(const std::string& uniform, const std::vector<Vector4>& v) {
+	
+}
+
+void PS4Shader::SetUniformInt(const std::string& uniform, int v1) {
+	
+}
+
+void PS4Shader::SetUniformInt(const std::string& uniform, int v1, int v2) {
+	
+}
+
+void PS4Shader::SetUniformInt(const std::string& uniform, int v1, int v2, int v3) {
+	
+}
+
+void PS4Shader::SetUniformInt(const std::string& uniform, int v1, int v2, int v3, int v4) {
+	
+}
+
+void PS4Shader::SetUniformMatrix(const std::string& uniform, const Matrix2& m) {
+	
+}
+
+void PS4Shader::SetUniformMatrix(const std::string& uniform, const Matrix3& m) {
+	
+}
+
+void PS4Shader::SetUniformMatrix(const std::string& uniform, const Matrix4& m) {
+	
+}
+
+void PS4Shader::SetUniformMatrix(const std::string& uniform, const std::vector<Matrix2>& m) {
+	
+}
+
+void PS4Shader::SetUniformMatrix(const std::string& uniform, const std::vector<Matrix3>& m) {
+	
+}
+
+void PS4Shader::SetUniformMatrix(const std::string& uniform, const std::vector<Matrix4>& m) {
+	
+}
+
+int PS4Shader::GetUniformLocation(const std::string& uniform) {
+	return -1;
+}
 #endif

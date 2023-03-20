@@ -75,9 +75,13 @@ namespace NCL::CSC8503 {
 			if (OnCollisionBeginCallback) OnCollisionBeginCallback(otherObject);
 		}
 
-		virtual void OnCollisionEnd(GameObject* otherObject) {
-			if (OnCollisionEndCallback) OnCollisionEndCallback(otherObject);
-		}
+			virtual void OnCollisionEnd(GameObject* otherObject) {
+				if (OnCollisionEndCallback) OnCollisionEndCallback(otherObject);
+			}
+
+			virtual void OnCollisionStay(GameObject* otherObject) {
+				if (OnCollisionStayCallback) OnCollisionStayCallback(otherObject);
+			}
 
 		virtual void OnTriggerBegin(GameObject* otherObject) {
 			if (OnTriggerBeginCallback) OnTriggerBeginCallback(otherObject);
@@ -106,12 +110,13 @@ namespace NCL::CSC8503 {
 			return markDelete;
 		}
 
-		overlap_func OnCollisionBeginCallback = nullptr;
-		overlap_func OnCollisionEndCallback = nullptr;
-		overlap_func OnTriggerBeginCallback = nullptr;
-		overlap_func OnTriggerEndCallback = nullptr;
-	protected:
-		GameWorld& gameWorld;
+			overlap_func OnCollisionBeginCallback = nullptr;
+			overlap_func OnCollisionEndCallback = nullptr;
+			overlap_func OnCollisionStayCallback = nullptr;
+			overlap_func OnTriggerBeginCallback = nullptr;
+			overlap_func OnTriggerEndCallback = nullptr;
+		protected:
+			GameWorld& gameWorld;
 
 		Transform transform;
 

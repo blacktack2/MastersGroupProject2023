@@ -27,14 +27,20 @@
 #endif // _ORBIS
 
 #include "../Common/TextureBase.h"
+#include "InputKeyMap.h"
 
 namespace NCL {
+
 	namespace CSC8503 {
 		class Bullet;
 		class Maze;
 		class PhysicsSystem;
 		class GameObject;
+		class GameGridManager;
+		class GameStateManager;
 		class MeshGeometry;
+		class PlayerObject;
+		class Boss;
 		class TutorialGame {
 		public:
 			enum class InitMode {
@@ -70,13 +76,6 @@ namespace NCL {
 			void InitCamera();
 			//void UpdateKeys();
 			//void InitGameExamples();
-
-		/*	void InitMazeWorld(int numRows, int numCols, float size);
-			void InitMixedGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing);
-			void InitCubeGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, const Vector3& cubeDims, bool axisAligned = true);
-			void InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius);
-			void InitBridgeConstraintTestWorld(int numLinks, float cubeDistance, float maxDistance, bool isOrientation);*/
-
 			void InitDefaultFloor();
 
 			GameObject* AddFloorToWorld(const Vector3& position);
@@ -85,10 +84,15 @@ namespace NCL {
 			GameObject* AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius, float inverseMass = 10.0f);
 			//StateGameObject* AddStateObjectToWorld(const Vector3& position);
 
-			//PlayerObject* AddPlayerToWorld(const Vector3& position, bool cameraFollow = true);
+			PlayerObject* AddPlayerToWorld(const Vector3& position, bool cameraFollow = true);
+
+			GameGridManager& gridManager;
+			GameStateManager& gameStateManager;
+
+			void SetCameraFollow(PlayerObject* p);
 			//EnemyObject* AddEnemyToWorld(const Vector3& position, NavigationMap& navMap);
 
-			//Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);		/////////
+			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);		/////////
 			//HealingKit* UpdateHealingKit();																/////////
 			//void BuildLevel();																			/////////
 			//void UpdateLevel();																			/////////
@@ -112,7 +116,7 @@ namespace NCL {
 			GameWorld* world;
 
 
-			/*paintHell::InputKeyMap& keyMap = paintHell::InputKeyMap::instance();*/
+			InputKeyMap& keyMap = InputKeyMap::instance();
 
 			Light* sunLight;
 
@@ -154,7 +158,7 @@ namespace NCL {
 
 			GameObject* objClosest = nullptr;
 
-		/*	PlayerObject* player = nullptr;*/
+			PlayerObject* player = nullptr;
 
 			int score;
 
@@ -162,9 +166,8 @@ namespace NCL {
 
 			//GameLevel* gameLevel = nullptr;	/////////
 			//float interval = 0.0f;			/////////
-			//GameGrid* gameGrid = nullptr;	/////////
 			GameObject* floor = nullptr;	/////////
-			//Boss* testingBoss = nullptr;   /////////
+			Boss* boss = nullptr;   /////////
 			//BossBehaviorTree* testingBossBehaviorTree = nullptr;   /////////
 
 			////GameGrid stuff

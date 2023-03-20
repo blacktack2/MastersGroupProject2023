@@ -1,11 +1,18 @@
 #pragma once
 #ifdef x64
-#include "../Common/Window.h"
-#endif //- x64
+#include "Window.h"
+#include "XboxControllerManager.h"
 
-#include"../Common/Vector2.h"
+#endif // x64
 
-enum InputType :unsigned int {
+#ifdef _ORBIS
+#include <limits>
+#include <map>
+#include "../Common/Vector2.h"
+#endif // _ORBIS
+
+
+enum InputType : unsigned int {
 	Empty = 0,
 	Foward = (1u << 0),
 	Backward = (1u << 1),
@@ -39,9 +46,16 @@ enum AxisInput
 
 	AxisInputDataMax
 };
-using namespace NCL;
 
-namespace paintHell {
+enum ControllerType {
+	KeyboardMouse,
+	Xbox,
+	PS4
+};
+
+
+
+namespace NCL {
 	class InputKeyMap {
 	public:
 		static InputKeyMap& instance() {
@@ -61,19 +75,17 @@ namespace paintHell {
 			return state & key;
 		}
 
-		bool GetAxisData(unsigned int controllerNum, AxisInput axis, float& data)		// controllerNum == 1,2,3,4
+		bool GetAxisData(unsigned int playerNum, AxisInput axis, float& data)		// controllerNum == 1,2,3,4,5
 		{
-			if ((controllerNum == 0) || (controllerNum > 4))
+			if ((playerNum > 4))
 			{
 				return false;
 			}
-			controllerNum--;
-			data = AxisDataArray[controllerNum][axis];
+			data = AxisDataArray[playerNum][axis];
 			return true;
 		}
-
 #ifdef x64
-		Maths::Vector2 GetMousePosition() {
+		Vector2 GetMousePosition() {
 			return mousePosition;
 	}
 		bool HasMouse() {
@@ -81,25 +93,48 @@ namespace paintHell {
 		}
 #endif // x64
 
+		
 		void Update();
+
+		void ChangePlayerControlTypeMap(int playerID, ControllerType type);
 
 	private:
 		InputKeyMap() {
 			buttonstates = InputType::Empty;
-			movementAxis = Maths::Vector2(0);
-			cameraAxis = Maths::Vector2(0);
-			mousePosition = Maths::Vector2(0);
+			movementAxis = NCL::Maths::Vector2(0);
+			cameraAxis = NCL::Maths::Vector2(0);
+			mousePosition = NCL::Maths::Vector2(0);
+#ifdef x64
+			ChangePlayerControlTypeMap(0, ControllerType::KeyboardMouse);
+#endif // x64
+#ifdef _ORBIS
+			ChangePlayerControlTypeMap(0, ControllerType::PS4);
+#endif // _ORBIS
+
+			
 		}
 		~InputKeyMap() {}
 
 		void UpdateGameStateDependant();
 
+		void UpdatePlayer(int playerID);
+#ifdef x64
+		void UpdateWindows(int playerID);
+
+		void UpdateXbox(int playerID);
+#endif // x64
+
+#ifdef _ORBIS
+		void UpdatePS4(int playerID);
+#endif // _ORBIS
+
+
 		unsigned int buttonstates;
-		float AxisDataArray[4][AxisInput::AxisInputDataMax] = { 0 };
-		Maths::Vector2 movementAxis;
-		Maths::Vector2 cameraAxis;
-		Maths::Vector2 mousePosition;
+		float AxisDataArray[5][AxisInput::AxisInputDataMax] = { 0 };
+		NCL::Maths::Vector2 movementAxis;
+		NCL::Maths::Vector2 cameraAxis;
+		NCL::Maths::Vector2 mousePosition;
 
-
+		std::map<int, ControllerType> playerControlTypeMap;
 	};
 }

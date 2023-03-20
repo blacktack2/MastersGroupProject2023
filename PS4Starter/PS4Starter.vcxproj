@@ -57,6 +57,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CppLanguageStd>Cpp17</CppLanguageStd>
+      <AdditionalOptions>-frtti %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>
@@ -94,6 +95,7 @@
     <ClCompile Include="InputKeyMap.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PlayerBullet.cpp" />
+    <ClCompile Include="PlayerObject.cpp" />
     <ClCompile Include="PS4Renderer.cpp" />
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="TutorialGame.cpp" />

@@ -10,8 +10,10 @@
 
 #ifdef _ORBIS
 
+#include "Bullet.h"
 #include "BossBullet.h"
 #include "PlayerBullet.h"
+#include "../Common/PhysicsObject.h"
 #include "../Common/GameWorld.h"
 #include "../Common/PrefabLibrary.h"
 #include "../Common/CollisionVolume.h"
@@ -34,7 +36,11 @@ Bullet* BulletInstanceManager::GetBullet(int firstIndex) {
 	int index = indexs[firstIndex];
 	//std::cout << index << std::endl;
 	indexs[firstIndex] = (index + 1) % BULLETCOUNT;
-	return bullets[firstIndex][index];
+	Bullet* bullet = bullets[firstIndex][index];
+	bullet->GetPhysicsObject()->ClearForces();
+	bullet->GetPhysicsObject()->SetLinearVelocity(Vector3(0.0f));
+	bullet->GetPhysicsObject()->SetAngularVelocity(Vector3(0.0f));
+	return bullet;
 }
 
 void BulletInstanceManager::ObjectIntiation() {
@@ -42,11 +48,11 @@ void BulletInstanceManager::ObjectIntiation() {
 	GameWorld& world = GameWorld::instance();
 	for (size_t i = 0; i < BULLETCOUNT; i++)
 	{
-		newBullet = new PlayerBullet(*(PlayerBullet*)PrefabLibrary::GetPrefab("bullet"));
+		newBullet = new PlayerBullet(*(PlayerBullet*)&PrefabLibrary::GetPrefab("bullet"));
 		newBullet->SetActive(false);
 		world.AddGameObject(newBullet);
 		bullets[0][i] = newBullet;
-		newBullet = new BossBullet(*(BossBullet*)PrefabLibrary::GetPrefab("bossBullet"));
+		newBullet = new BossBullet(*(BossBullet*)&PrefabLibrary::GetPrefab("bossBullet"));
 		newBullet->SetActive(false);
 		world.AddGameObject(newBullet);
 		bullets[1][i] = newBullet;

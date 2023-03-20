@@ -80,6 +80,9 @@
     <ClCompile Include="BulletInstanceManager.cpp">
       <Filter>Bullet Files</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerObject.cpp">
+      <Filter>Player Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ExampleRenderer.h">

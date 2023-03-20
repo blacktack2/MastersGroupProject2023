@@ -1,6 +1,10 @@
 #pragma once
-//#include "GameObject.h"
-//#include "SoundSource.h"
+#ifdef x64
+#include "GameObject.h"
+#include "SoundSource.h"
+#endif // x64
+
+
 #include "InputKeyMap.h"
 #include "GameStateManager.h"
 #include "Health.h"
@@ -9,12 +13,11 @@
 
 namespace NCL {
 	namespace CSC8503 {
-		class GameObject;
 		class Bullet;
 
 		class PlayerObject : public GameObject {
 		public:
-			PlayerObject(int id);
+			PlayerObject(int playerID);
 			~PlayerObject();
 
 			void Update(float dt);
@@ -23,8 +26,8 @@ namespace NCL {
 
 			void CollisionWith(GameObject* other);
 
-			void AttachedCamera() {
-				hasCamera = true;
+			void AttachCamera(int b) {
+				hasCamera = b;
 				//camera = cam;
 			};
 
@@ -36,15 +39,21 @@ namespace NCL {
 				return &health;
 			}
 
+			int GetPlayerID()
+			{
+				return playerID;
+			}
+
 		protected:
 			void MoveTo(Vector3 position);
 			void Move(Vector3 dir);
 			void MoveByPosition(float dt, Vector3 dir);
 			void GetInput(Vector3& dir, unsigned int keyPress = InputType::Empty);
-			void GetControllerInput(unsigned int controllerNum, Vector3& movingDir3D);
+			void GetControllerInput(Vector3& movingDir3D);
 
 			void RotateYaw(float yaw);
 			void RotateToCamera();
+			void RotateByAxis();
 
 			void MoveCamera();
 
@@ -54,13 +63,13 @@ namespace NCL {
 			virtual void Shoot();
 			void BulletModification(PlayerBullet* bullet) {};
 
-			int id;
+			int playerID = -1;
 
 			//network
 			bool isNetwork = false;
 
 			//keymap
-			paintHell::InputKeyMap& keyMap;
+			NCL::InputKeyMap& keyMap;
 			unsigned int lastKey;
 
 			//gameplay
@@ -74,9 +83,9 @@ namespace NCL {
 			float projectileFireRateTimer = 0;
 
 		private:
-
+#ifdef x64
 			void SetupAudio();
-
+#endif // x64
 			//jump related 
 			bool onGround = false;
 			float jumpTriggerDist = 1.1f;
@@ -90,7 +99,7 @@ namespace NCL {
 
 			//camera related
 			//Camera& camera;
-			bool hasCamera = false;
+			int hasCamera = 0;		// 0 means no camera; 1,2,3,4 indicates which playerCamera it is attached to.
 			bool isFreeLook = false;
 			float camTurnSpeed = 0.5f;
 			Vector3 cameraOffset = Vector3(0.5f, 5.0f, 2.0f);
@@ -101,10 +110,14 @@ namespace NCL {
 			// legacy variables
 			std::set<int> collidedWith;
 
-			////sound
-			//SoundSource* playerSource;
-			//SoundSource* attackSource;
+#ifdef x64
+			//sound
+			SoundSource* playerSource;
+			SoundSource* attackSource;
 
+#endif // x64
+
+			
 			//game state
 			GameStateManager* gameStateManager = &GameStateManager::instance();
 		};

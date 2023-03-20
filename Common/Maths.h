@@ -14,6 +14,60 @@ namespace NCL {
 		class Vector2;
 		class Vector3;
 
+		class Vector2i {
+		public:
+			int array[2];
+
+			Vector2i() {
+				array[0] = 0;
+				array[1] = 0;
+			}
+			inline int operator[](int i) const {
+				return array[i];
+			}
+
+			inline int& operator[](int i) {
+				return array[i];
+			}
+		};
+
+		class Vector3i {
+		public:
+			int array[3];
+
+			Vector3i() {
+				array[0] = 0;
+				array[1] = 0;
+				array[2] = 0;
+			}
+			inline int operator[](int i) const {
+				return array[i];
+			}
+
+			inline int& operator[](int i) {
+				return array[i];
+			}
+		};
+
+		class Vector4i {
+		public:
+			int array[4];
+
+			Vector4i() {
+				array[0] = 0;
+				array[1] = 0;
+				array[2] = 0;
+				array[3] = 0;
+			}
+			inline int operator[](int i) const {
+				return array[i];
+			}
+
+			inline int& operator[](int i) {
+				return array[i];
+			}
+		};
+
 		//It's pi(ish)...
 		static const float		PI = 3.14159265358979323846f;
 
@@ -42,6 +96,7 @@ namespace NCL {
 		}
 
 		Vector3 Clamp(const Vector3& a, const Vector3&mins, const Vector3& maxs);
+		Vector3 Abs(const Vector3& v);
 
 		template<class T>
 		inline T Lerp(const T& a, const T&b, float by) {

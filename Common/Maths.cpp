@@ -45,5 +45,13 @@ namespace NCL {
 				Clamp(a.z, mins.z, maxs.z)
 			);
 		}
+
+		Vector3 Abs(const Vector3& v) {
+			return Vector3(
+				std::abs(v.x),
+				std::abs(v.y),
+				std::abs(v.z)
+			);
+		}
 	}
 }

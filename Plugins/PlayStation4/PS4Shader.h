@@ -23,30 +23,66 @@ namespace NCL::PS4 {
 	public:
 		~PS4Shader();
 
-		static PS4Shader* GenerateShader(const string& vertex, const string& pixel);
+		/*void Bind() override;
+		void Unbind() override;
+		void ReloadShader() override;*/
 
-		int		GetConstantBufferIndex(const string& name);
+		void SetUniformFloat(const std::string& uniform, float v1) override;
+		void SetUniformFloat(const std::string& uniform, float v1, float v2) override;
+		void SetUniformFloat(const std::string& uniform, float v1, float v2, float v3) override;
+		void SetUniformFloat(const std::string& uniform, float v1, float v2, float v3, float v4) override;
+		void SetUniformFloat(const std::string& uniform, const Vector2& v) override;
+		void SetUniformFloat(const std::string& uniform, const Vector3& v) override;
+		void SetUniformFloat(const std::string& uniform, const Vector4& v) override;
+		void SetUniformFloat(const std::string& uniform, const std::vector<Vector2>& v) override;
+		void SetUniformFloat(const std::string& uniform, const std::vector<Vector3>& v) override;
+		void SetUniformFloat(const std::string& uniform, const std::vector<Vector4>& v) override;
+			
+		static PS4Shader* GenerateShader(const std::string& vertex, const std::string& pixel);
+
+		int		GetConstantBufferIndex(const std::string& name);
+
+		void SetUniformInt(const std::string& uniform, int v1) override;
+		void SetUniformInt(const std::string& uniform, int v1, int v2) override;
+		void SetUniformInt(const std::string& uniform, int v1, int v2, int v3) override;
+		void SetUniformInt(const std::string& uniform, int v1, int v2, int v3, int v4) override;
 		void	SubmitShaderSwitch(Gnmx::GnmxGfxContext& cmdList);
+		void SetUniformMatrix(const std::string& uniform, const Matrix2& m) override;
+			void SetUniformMatrix(const std::string& uniform, const Matrix3& m) override;
+			void SetUniformMatrix(const std::string& uniform, const Matrix4& m) override;
+			void SetUniformMatrix(const std::string& uniform, const std::vector<Matrix2>& m) override;
+			void SetUniformMatrix(const std::string& uniform, const std::vector<Matrix3>& m) override;
+			void SetUniformMatrix(const std::string& uniform, const std::vector<Matrix4>& m) override;
+
+			int GetUniformLocation(const std::string& uniform) override;
 
 	protected:
 		PS4Shader();
 
-		void ReloadShader() override {
-			//we load binaries in directly...
-		}
+		void GenerateVertexShader(const std::string& name, bool makeFetch);
 
-		void GenerateVertexShader(const string& name, bool makeFetch);
-
-		void GeneratePixelShader(const string& name);
+		void GeneratePixelShader(const std::string& name);
 
 		void GenerateFetchShader(char* binData);
 
-		bool LoadShaderText(const string& name, string& into);
+		bool LoadShaderText(const std::string& name, std::string& into);
 
-		bool LoadShaderBinary(const string& name, char*& into, int& dataSize);
+		bool LoadShaderBinary(const std::string& name, char*& into, int& dataSize);
 
-		bool ShaderIsBinary(const string& name);
+		bool ShaderIsBinary(const std::string& name);
+bool LoadSuccess() const {
+				return false;
+			}
 
+			int GetProgramID() const {
+				//return programID;
+				return -1;
+			}
+
+			/*static std::unique_ptr<ShaderBase> CreateShader(const std::string& vertex, const std::string& fragment);
+			static std::unique_ptr<ShaderBase> CreateShaderAndInit(const std::string& vertex, const std::string& fragment);*/
+
+			//void Initialize() override;
 	protected:
 		void* fetchShader;
 

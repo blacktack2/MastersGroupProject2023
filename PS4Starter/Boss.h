@@ -37,7 +37,10 @@
 #include "../Common/SphereVolume.h"
 
 #include "GameGridManager.h"
+#include "GameStateManager.h"
 #include "InkEffectManager.h"
+#include "BossBullet.h"
+
 
 #endif // _ORBIS
 
@@ -46,7 +49,7 @@
 class BehaviourNodeWithChildren;
 
 namespace NCL::CSC8503 {
-
+    class PlayerObject;
     class Boss : public GameObject {
     public:
 
@@ -90,8 +93,12 @@ namespace NCL::CSC8503 {
         PlayerObject* GetTarget() {
             return target;
         }
-        void SetTarget(PlayerObject* player) {
-            target = player;
+        void SetTarget(PlayerObject* player) { if(player!=nullptr) target = player; }// created
+        void SetNextTarget(PlayerObject* player) {
+            if (target == nullptr) {
+                target = player;
+            }
+            nextTarget = player;
         }
 
         bool RandomWalk();
@@ -153,7 +160,8 @@ namespace NCL::CSC8503 {
         std::vector<BossBullet*> rain;
         std::vector<Vector3> rainBombPositions;
 
-        PlayerObject* target;
+        PlayerObject* target = nullptr;
+        PlayerObject* nextTarget=nullptr;
 
         BehaviourNodeWithChildren* behaviourTree;
         BossAction bossAction = NoAction;

@@ -2,7 +2,7 @@
 using namespace NCL;
 using namespace Rendering;
 
-ShaderBase::ShaderBase(const string& vertex, const string& fragment, const string& geometry, const string& domain, const string& hull)
+ShaderBase::ShaderBase(const std::string& vertex, const std::string& fragment, const std::string& geometry, const std::string& domain, const std::string& hull)
 {
 	shaderFiles[(int)ShaderStages::SHADER_VERTEX]	= vertex;
 	shaderFiles[(int)ShaderStages::SHADER_FRAGMENT]	= fragment;

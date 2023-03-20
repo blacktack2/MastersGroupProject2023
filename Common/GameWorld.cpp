@@ -18,7 +18,12 @@ using namespace NCL::CSC8503;
 GameWorld::GameWorld() : staticQuadTree(Vector2(1024, 1024), 7, 6), dynamicQuadTree(Vector2(1024, 1024), 7, 6) {
 
 #ifdef _ORBIS
-	mainCamera = new PS4::PS4Camera();
+	playerCamera1 = new PS4::PS4Camera();
+	playerCamera2 = new PS4::PS4Camera();
+	playerCamera3 = new PS4::PS4Camera();
+	playerCamera4 = new PS4::PS4Camera();
+
+	mainCamera = playerCamera1;
 #else
 	mainCamera = new Camera();
 #endif // _ORBIS
@@ -97,7 +102,10 @@ void GameWorld::GetLightIterators(LightIterator& first, LightIterator& last) con
 
 void GameWorld::OperateOnContents(GameObjectFunc f) {
 	for (GameObject* g : gameObjects) {
-		f(g);
+		if (g->IsActive())
+		{
+			f(g);
+		}
 	}
 }
 
@@ -108,25 +116,26 @@ void GameWorld::OperateOnConstraints(ConstraintFunc f) {
 }
 
 void GameWorld::OperateOnLights(LightFunc f) {
-	for (const Light* l : lights) {
+	for (const auto& l : lights) {
 		f(*l);
 	}
 }
 
 void GameWorld::PreUpdateWorld() {
 	std::vector<GameObject*> delObjs;
-	std::copy_if(gameObjects.begin(), gameObjects.end(), std::back_inserter(delObjs), [&](GameObject* obj) {
-		if (obj->IsMarkedDelete()) {
-			return obj;
+
+	gameObjects.erase(std::remove_if(gameObjects.begin(), gameObjects.end(), [](GameObject* g) {
+		if (g->IsMarkedDelete()) {
+			delete g;
+			return true;
 		}
-		});
-	for (auto delObj : delObjs) {
-		RemoveGameObject(delObj, true);
-	}
+		return false;
+	}), gameObjects.end());
 	UpdateDynamicTree();
 }
 
 void GameWorld::UpdateWorld(float dt) {
+	deltaTime = dt;
 	runTime += dt;
 
 	auto rng = std::default_random_engine{};
@@ -143,7 +152,10 @@ void GameWorld::UpdateWorld(float dt) {
 	}
 
 	for (int i = 0; i < gameObjects.size(); i++) {
-		gameObjects[i]->Update(dt);
+		if (gameObjects[i]->IsActive())
+		{
+			gameObjects[i]->Update(dt);
+		}
 	}
 
 	//dynamicQuadTree.DebugDraw();
@@ -177,7 +189,7 @@ void GameWorld::UpdateDynamicTree() {
 	dynamicQuadTree.Clear();
 
 	for (auto i = gameObjects.begin(); i != gameObjects.end(); i++) {
-		if ((*i)->GetPhysicsObject() && !(*i)->GetPhysicsObject()->IsStatic()) {
+		if ((*i)->GetPhysicsObject() && !(*i)->GetPhysicsObject()->IsStatic() && (*i)->IsActive()) {
 			Vector3 halfSizes;
 			if (!(*i)->GetBroadphaseAABB(halfSizes)) {
 				continue;
@@ -292,11 +304,66 @@ void GameWorld::RemoveConstraint(std::vector<Constraint*>::const_iterator c, boo
 	}
 }
 
-Light* GameWorld::AddLight(Light* l) {
-	lights.push_back(l);
-	return l;
+PointLight& GameWorld::AddPointLight(const Vector3& position, const Vector4& colour, float radius) {
+	lights.push_back(std::make_unique<PointLight>(position, colour, radius));
+	return static_cast<PointLight&>(*lights.back());
+}
+
+SpotLight& GameWorld::AddSpotLight(const Vector3& position, const Vector4& direction, const Vector4& colour, float radius, float angle) {
+	lights.push_back(std::make_unique<SpotLight>(position, direction, colour, radius, angle));
+	return static_cast<SpotLight&>(*lights.back());
+}
+
+DirectionalLight& GameWorld::AddDirectionalLight(const Vector3& direction, const Vector4& colour) {
+	lights.push_back(std::make_unique<DirectionalLight>(direction, colour));
+	return static_cast<DirectionalLight&>(*lights.back());
 }
 
 void GameWorld::RemoveLight(LightIterator l) {
 	lights.erase(l);
 }
+
+void GameWorld::ClearLight() {
+	lights.clear();
+}
+
+//Camera* GameWorld::GetMainCamera() const {
+//	return mainCamera;
+//}
+//void GameWorld::InitCameras() const {
+//	for (int i = 0; i < CAM_COUNT; i++) {
+//		InitCamera(cameras[i]);
+//	}
+//
+//}
+//void GameWorld::InitCamera(Camera* cam) const {
+//	if (!cam)
+//		return;
+//	cam->SetNearPlane(0.1f);
+//	cam->SetFarPlane(1000.0f);
+//	cam->SetPitch(-15.0f);
+//	cam->SetYaw(315.0f);
+//	cam->SetPosition(Vector3(-60, 40, 60));
+//	cam->SetFollow(nullptr);
+//}
+//
+//Camera* GameWorld::GetCamera(int n) const {
+//	if (n >= CAM_COUNT || n < 0)
+//		return nullptr;
+//	return cameras[n] ;
+//}
+//
+//void GameWorld::UpdateCamera(float dt) {
+//	for (Camera* i : cameras) {
+//		i->UpdateCamera(dt);
+//	}
+//}
+//
+//Camera* GameWorld::SetMainCamera(int n)
+//{
+//	if (n >= CAM_COUNT || n < 0)
+//		return nullptr;
+//	mainCamera = cameras[n];
+//	return mainCamera;
+//}
+

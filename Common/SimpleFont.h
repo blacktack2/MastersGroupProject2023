@@ -9,11 +9,12 @@ https://research.ncl.ac.uk/game/
 #pragma once
 #include <string>
 #include <vector>
+#include "Vector2.h"
+#include "Vector4.h"
 #include "TextureBase.h"
 
 namespace NCL {
 	namespace Maths {
-		class Vector2;
 		class Vector3;
 		class Vector4;
 	}
@@ -21,10 +22,18 @@ namespace NCL {
 		class SimpleFont
 		{
 		public:
-			SimpleFont(const std::string&fontName, const std::string&texName);
+			SimpleFont(const std::string&filename, const std::string&texName);
 			~SimpleFont();
 
+			struct InterleavedTextVertex {
+				Maths::Vector2 pos;
+				Maths::Vector2 texCoord;
+				Maths::Vector4 colour;
+			};
+
+			int GetVertexCountForString(const std::string& text);
 			int BuildVerticesForString(std::string &text, Maths::Vector2&startPos, Maths::Vector4&colour, float size, std::vector<Maths::Vector3>&positions, std::vector<Maths::Vector2>&texCoords, std::vector<Maths::Vector4>&colours);
+			void BuildInterleavedVerticesForString(const std::string& text, const Maths::Vector2& startPos, const Maths::Vector4& colour, float size, std::vector<InterleavedTextVertex>& vertices);
 
 			const TextureBase* GetTexture() const {
 				return texture;
@@ -42,7 +51,7 @@ namespace NCL {
 				float xAdvance;
 			};
 
-			FontChar*		allCharData;
+			std::vector<FontChar> allCharData;
 			TextureBase*	texture;
 
 			int startChar;

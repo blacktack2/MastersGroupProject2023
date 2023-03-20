@@ -10,6 +10,7 @@ https://research.ncl.ac.uk/game/
 #include <cmath>
 #include <iostream>
 #include <algorithm>
+#include "Maths.h"
 
 namespace NCL {
 	namespace Maths {
@@ -183,6 +184,10 @@ namespace NCL {
 			inline friend std::ostream& operator<<(std::ostream& o, const Vector3& v) {
 				o << "Vector3(" << v.x << "," << v.y << "," << v.z << ")" << std::endl;
 				return o;
+			}
+
+			static inline Vector3 Lerp(const Vector3& a, const Vector3& b, const float t) {
+				return Vector3(NCL::Maths::Lerp(a.x, b.x, t), Maths::Lerp(a.y, b.y, t), Maths::Lerp(a.z, b.z, t));
 			}
 		};
 	}
