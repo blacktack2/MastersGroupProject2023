@@ -68,6 +68,8 @@ namespace NCL {
 
 			GameObject* AddFloorToWorld(const Vector3& position);
 			GameObject* AddBackGroundToWorld(const Vector3& position);
+			GameObject* AddWallXToWorld(const Vector3& position);
+			GameObject* AddWallYToWorld(const Vector3& position);
 
 			PlayerObject* AddPlayerToWorld(int playerID, const Vector3& position);
 

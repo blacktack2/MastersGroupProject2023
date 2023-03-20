@@ -273,6 +273,14 @@ void TutorialGame::InitGameExamples() {
 void TutorialGame::InitDefaultFloor() {
 	AddBackGroundToWorld(Vector3(0,-2, 0));
 	AddFloorToWorld(Vector3(0, -2, 0));
+	AddWallXToWorld(Vector3(-100, 0, -200));
+	AddWallXToWorld(Vector3(100, 0, -200));
+	AddWallXToWorld(Vector3(-100, 0, 200));
+	AddWallXToWorld(Vector3(100, 0, 200));
+	AddWallYToWorld(Vector3(-200, 0, -100));
+	AddWallYToWorld(Vector3(200, 0, -100));
+	AddWallYToWorld(Vector3(-200, 0, 100));
+	AddWallYToWorld(Vector3(200, 0, 100));
 }
 GameObject* TutorialGame::AddBackGroundToWorld(const Vector3& position) {
 	GameObject* backGround = new GameObject("BackGround");
@@ -282,6 +290,36 @@ GameObject* TutorialGame::AddBackGroundToWorld(const Vector3& position) {
 	backGround->SetRenderObject(new PaintRenderObject(backGround->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("mountMesh"), AssetLibrary<MeshMaterial>::GetAsset("mountMat")));
 	gameWorld.AddGameObject(backGround);
 	return backGround;
+}
+GameObject* TutorialGame::AddWallXToWorld(const Vector3& position) {
+	GameObject* wall = new GameObject("wallX");
+	Vector3 wallSize = Vector3(1, 1, 1);
+	wall->GetTransform()
+		.SetScale(Vector3(1.7f, 1.7f, 2))
+		.SetPosition(position);
+	wall->SetRenderObject(new PaintRenderObject(wall->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("wallX"), AssetLibrary<MeshMaterial>::GetAsset("wall")));
+	AABBVolume* volume = new AABBVolume(Vector3{ 100.0f, 50.0f, 1.0f }, CollisionLayer::PaintAble);
+	wall->SetBoundingVolume((CollisionVolume*)volume);
+	wall->SetPhysicsObject(new PhysicsObject(&wall->GetTransform(), wall->GetBoundingVolume()));
+	wall->GetPhysicsObject()->SetInverseMass(0);
+	wall->GetPhysicsObject()->InitCubeInertia();
+	gameWorld.AddGameObject(wall);
+	return wall;
+}
+GameObject* TutorialGame::AddWallYToWorld(const Vector3& position) {
+	GameObject* wall = new GameObject("wallY");
+	Vector3 wallSize = Vector3(1, 1, 1);
+	wall->GetTransform()
+		.SetScale(Vector3(1.7f, 1.7f, 2))
+		.SetPosition(position);
+	wall->SetRenderObject(new PaintRenderObject(wall->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("wallY"), AssetLibrary<MeshMaterial>::GetAsset("wall")));
+	AABBVolume* volume = new AABBVolume(Vector3{ 100.0f, 50.0f, 1.0f }, CollisionLayer::PaintAble);
+	wall->SetBoundingVolume((CollisionVolume*)volume);
+	wall->SetPhysicsObject(new PhysicsObject(&wall->GetTransform(), wall->GetBoundingVolume()));
+	wall->GetPhysicsObject()->SetInverseMass(0);
+	wall->GetPhysicsObject()->InitCubeInertia();
+	gameWorld.AddGameObject(wall);
+	return wall;
 }
 GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 	GameObject* floor = new GameObject("Floor");
