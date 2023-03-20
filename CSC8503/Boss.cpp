@@ -336,6 +336,18 @@ void Boss::ChangeTarget(){
     }
 }
 
+void Boss::SetBossOrientation(Vector3* facingDir) {
+    Vector3 dir;
+    if (!facingDir) {
+        dir = target->GetTransform().GetGlobalPosition() - this->GetTransform().GetGlobalPosition();
+    }
+    else {
+        dir = *facingDir;
+    }
+    Quaternion orientation = Quaternion(Matrix4::BuildViewMatrix(this->GetTransform().GetGlobalPosition() + dir * 10, this->GetTransform().GetGlobalPosition(), Vector3(0, 1, 0)).Inverse());
+    this->GetTransform().SetOrientation(orientation);
+}
+
 bool Boss::RandomWalk() {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("WalkForward").get()) {
@@ -350,8 +362,9 @@ bool Boss::RandomWalk() {
         float z = (float)((std::rand() % 11) - 5);
         randomWalkDirection = Vector3{ x,0,z };
         randomWalkDirection = randomWalkDirection.Normalised();
-        Quaternion orientation = Quaternion(Matrix4::BuildViewMatrix(this->GetTransform().GetGlobalPosition() + randomWalkDirection * 10, this->GetTransform().GetGlobalPosition(), Vector3(0, 1, 0)).Inverse());
-        this->GetTransform().SetOrientation(orientation);
+        SetBossOrientation(&randomWalkDirection);
+        //Quaternion orientation = Quaternion(Matrix4::BuildViewMatrix(this->GetTransform().GetGlobalPosition() + randomWalkDirection * 10, this->GetTransform().GetGlobalPosition(), Vector3(0, 1, 0)).Inverse());
+        //this->GetTransform().SetOrientation(orientation);
         return true;
     }
     //Debug::DrawLine(GetTransform().GetGlobalPosition(), GetTransform().GetGlobalPosition() + randomWalkDirection * 15, Vector4{ 0,1,0,1 }, 0.0f);
@@ -360,6 +373,7 @@ bool Boss::RandomWalk() {
 }
 
 bool Boss::StabPlayer(PlayerObject* player) {
+    SetBossOrientation(nullptr);
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack1").get()) {
         anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack1"));
@@ -390,6 +404,7 @@ bool Boss::StabPlayer(PlayerObject* player) {
 }
 
 bool Boss::Spin(PlayerObject* player) {
+    SetBossOrientation(nullptr);
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack2").get()) {
         anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack2"));
@@ -429,6 +444,7 @@ bool Boss::Spin(PlayerObject* player) {
 }
 
 bool Boss::UseLaserOnPlayer(PlayerObject* player) {
+    SetBossOrientation(nullptr);
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack3").get()) {
         anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack3"));
@@ -545,6 +561,7 @@ bool Boss::SeekHeal(bool& hasHeal) {
 }
 
 bool Boss::InkRain(PlayerObject* player) {
+    SetBossOrientation(nullptr);
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack6").get()) {
         anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack6"));
@@ -600,6 +617,7 @@ bool Boss::InkRain(PlayerObject* player) {
 }
 
 bool Boss::BulletsStorm() {
+    SetBossOrientation(nullptr);
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack5").get()) {
         anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack5"));
