@@ -643,7 +643,7 @@ void NetworkedGame::OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b) {
 PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, int playerID) {
 	static int id = 0;
 	NetworkPlayer* character = new NetworkPlayer( this, playerID);
-	SphereVolume* volume = new SphereVolume(1.2f, CollisionLayer::Player);
+	CapsuleVolume* volume = new CapsuleVolume(1.2f, 0.2f, CollisionLayer::Player);
 
 	character->SetBoundingVolume(volume);
 
