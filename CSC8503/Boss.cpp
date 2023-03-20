@@ -17,6 +17,9 @@
 #include "BehaviourAction.h"
 #include "DebugViewPoint.h"
 #include <limits>
+#include "SoundSource.h"
+#include "Sound.h"
+#include "SoundSystem.h"
 
 const float offensiveHealthLowerBound = 50;
 const float bossVision = 80;
@@ -24,6 +27,7 @@ const float distanceToHaveCloseCombat = 40;
 
 Boss::Boss() {
     BuildTree();
+    SetupAudio();
 }
 
 Boss::~Boss() {
@@ -215,6 +219,20 @@ void Boss::BuildTree() {
     }));
 }
 
+void Boss::SetupAudio()
+{
+    hurtSource = new SoundSource();
+    hurtSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+    hurtSource->SetGain(0.0f);
+    hurtSource->SetSoundBuffer(Sound::AddSound("tom.wav"));
+    hurtSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+    hurtSource->SetGain(1.0f);
+    hurtSource->SetPitch(1.0f);
+
+    SoundSystem::GetSoundSystem()->SetListener(this);
+
+}
+
 void Boss::Update(float dt) {
     NCL::DebugViewPoint::Instance().MarkTime("Boss Update");
     GetTarget();
@@ -223,8 +241,12 @@ void Boss::Update(float dt) {
     deltaTime = dt;
     // check if inked
     GameNode* node = GameGridManager::instance().NearestNode(this->GetTransform().GetGlobalPosition());
-    if(node)
+    if (node) {
         InkEffectManager::instance().ApplyInkEffect(node->inkType, GetHealth(), 1);
+        if (node->inkType == NCL::InkType::PlayerDamage) {
+            hurtSource->Play(Sound::AddSound("tom.wav"));
+        }
+    }
     //check boss health
     if (gameStateManager->GetGameState() == GameState::OnGoing) {
         if (GetHealth()->GetHealth() <= 0) {
