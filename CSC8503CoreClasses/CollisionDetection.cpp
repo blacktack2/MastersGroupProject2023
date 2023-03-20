@@ -339,51 +339,44 @@ bool CollisionDetection::AASquareRayTest(const Vector2& squarePos, const Vector2
 	return true;
 }
 
-bool CollisionDetection::AACubeTest(const Vector3& posA, const Vector3& posB, float halfSizeA, float halfSizeB) {
-	Vector3 delta = posB - posA;
-	float totalSize = halfSizeA + halfSizeB;
-
-	return (std::abs(delta.x) < totalSize && std::abs(delta.y) < totalSize && std::abs(delta.z) < totalSize);
-}
-
-bool CollisionDetection::AACubeRayTest(const Vector3& cubePos, float cubeHalfSize, const Vector3& rayPos, const Vector3& rayDir) {
-	Vector3 cubeMax = cubePos + Vector3(cubeHalfSize, cubeHalfSize, cubeHalfSize);
-	Vector3 cubeMin = cubePos - Vector3(cubeHalfSize, cubeHalfSize, cubeHalfSize);
-
-	float tMin = -std::numeric_limits<float>::infinity();
-	float tMax = std::numeric_limits<float>::infinity();
-
-	for (int i = 0; i < 3; i++) {
-		if (std::abs(rayDir[i]) < 0.0001f) {
-			if (rayPos[i] < cubeMin[i] || rayPos[i] > cubeMax[i]) {
-				return false;
-			}
-		}
-		else {
-			float t1 = (cubeMin[i] - rayPos[i]) / rayDir[i];
-			float t2 = (cubeMax[i] - rayPos[i]) / rayDir[i];
-
-			if (t1 > t2) {
-				std::swap(t1, t2);
-			}
-
-			tMin = std::max(tMin, t1);
-			tMax = std::min(tMax, t2);
-
-			if (tMin > tMax) {
-				return false;
-			}
-		}
-	}
-
-	return true;
-}
-
 bool CollisionDetection::AABBTest(const Vector3& posA, const Vector3& posB, const Vector3& halfSizeA, const Vector3& halfSizeB) {
 	Vector3 delta = posB - posA;
 	Vector3 totalSize = halfSizeA + halfSizeB;
 
 	return (std::abs(delta.x) < totalSize.x && std::abs(delta.y) < totalSize.y && std::abs(delta.z) < totalSize.z);
+}
+
+bool CollisionDetection::AABBRayTest(const Vector3& boxPos, const Vector3& boxSize, const Ray& r) {
+	Vector3 boxMin = boxPos - boxSize;
+	Vector3 boxMax = boxPos + boxSize;
+
+	Vector3 rayPos = r.GetPosition();
+	Vector3 rayDir = r.GetDirection();
+
+	Vector3 tVals = Vector3(-1, -1, -1);
+
+	for (int i = 0; i < 3; i++) {
+		if (rayDir[i] > 0) {
+			tVals[i] = (boxMin[i] - rayPos[i]) / rayDir[i];
+		}
+		else if (rayDir[i] < 0) {
+			tVals[i] = (boxMax[i] - rayPos[i]) / rayDir[i];
+		}
+	}
+
+	float bestT = tVals.GetMaxElement();
+	if (bestT < 0.0f) {
+		return false;
+	}
+
+	Vector3 intersection = rayPos + (rayDir * bestT);
+	const float epsilon = 0.0001f;
+	for (int i = 0; i < 3; i++) {
+		if (intersection[i] + epsilon < boxMin[i] || intersection[i] - epsilon > boxMax[i]) {
+			return false;
+		}
+	}
+	return true;
 }
 
 bool CollisionDetection::AABBIntersection(const AABBVolume& volumeA, const Transform& worldTransformA,

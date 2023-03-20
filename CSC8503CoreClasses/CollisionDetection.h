@@ -94,13 +94,11 @@ namespace NCL {
 
 		static bool AASquareTest(const Vector2& posA, const Vector2& posB, const Vector2& halfSizeA, const Vector2& halfSizeB);
 		static bool AASquareRayTest(const Vector2& squarePos, const Vector2& squareHalfSize, const Vector2& rayPos, const Vector2& rayDir);
-		static bool AACubeTest(const Vector3& posA, const Vector3& posB, float halfSizeA, float halfSizeB);
-		static bool AACubeRayTest(const Vector3& cubePos, float cubeHalfSize, const Vector3& rayPos, const Vector3& rayDir);
 
 		static bool	AABBTest(const Vector3& posA, const Vector3& posB, const Vector3& halfSizeA, const Vector3& halfSizeB);
+		static bool AABBRayTest(const Vector3& boxPos, const Vector3& boxSize, const Ray& r);
 
 		static bool SeparatingPlane(const Vector3& delta, const Vector3& plane, const Vector3* axes0, const Vector3& halfSize0, const Vector3* axes1, const Vector3& halfSize1);
-		static Vector3 OBBSupport(const Transform& worldTransform, Vector3 worldDir);
 
 		static bool AABBIntersection(	const AABBVolume& volumeA, const Transform& worldTransformA,
 										const AABBVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo);
