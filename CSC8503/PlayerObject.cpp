@@ -336,7 +336,7 @@ void NCL::CSC8503::PlayerObject::Jump()
 {
 	if (onGround && jumpTimer <= 0.0f) {
 		std::cout << "jump" << std::endl;
-		Vector3 upDir = this->GetTransform().GetGlobalOrientation() * Vector3(0, 1, 0);
+		Vector3 upDir = Vector3(0, 1, 0);
 		jumpTimer = jumpCooldown;
 		this->GetPhysicsObject()->ApplyLinearImpulse(upDir * jumpSpeed);
 	}

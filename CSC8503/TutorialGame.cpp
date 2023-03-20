@@ -245,7 +245,8 @@ void TutorialGame::ProcessState() {
 		break;
 	case GameState::Win:
 		Debug::Print("You Win!", Vector2(5.0f, 70.0f), Debug::GREEN);
-		[[fallthrough]];
+		Debug::Print("Press [R] or [Start] to play again", Vector2(5, 80), Debug::WHITE);
+		break;
 	case GameState::Lose:
 		Debug::Print("You Lose!", Vector2(5.0f, 70.0f), Debug::RED);
 		Debug::Print("Press [R] or [Start] to play again", Vector2(5, 80), Debug::WHITE);
