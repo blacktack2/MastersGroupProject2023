@@ -38,8 +38,9 @@ void Camera::UpdateCamera(float dt) {
 			std::sin( Maths::DegreesToRadians(pitch)),
 			std::sin(-Maths::DegreesToRadians(90.0f + yaw)) * std::cos(Maths::DegreesToRadians(pitch))
 		) * followDistance;
-		newPos.y += 1.0f;
-		position = Vector3::Lerp(position, newPos + follow->GetGlobalOrientation() * Vector3(1.0f, 0.0f, 0.0f) * 1.5f, std::min(smoothFactor * dt, 1.0f));
+		newPos.y += 0.5f;
+		float zOffset = -1.5f;
+		position = Vector3::Lerp(position, newPos + follow->GetGlobalOrientation() * Vector3(1.0f, 0.0f, 0.0f) * zOffset, std::min(smoothFactor * dt, 1.0f));
 		position.y = std::max(position.y, 0.1f);
 	}
 }

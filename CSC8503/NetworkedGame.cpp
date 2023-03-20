@@ -32,6 +32,8 @@ constexpr auto COLLISION_MSG = 30;
 constexpr auto OBJECTID_START = 10; //reserve 0-4 for playerID;
 constexpr auto BOSSID = 5; //reserve 0-4 for playerID;
 
+constexpr auto MAXCLIENTCONNECT = MAXPLAYER - 1;
+
 NetworkedGame::NetworkedGame(bool isServer)	{
 	thisServer = nullptr;
 	thisClient = nullptr;
@@ -65,7 +67,7 @@ NetworkedGame::~NetworkedGame()	{
 
 void NetworkedGame::StartAsServer() {
 	SetName("server");
-	thisServer = new GameServer(NetworkBase::GetDefaultPort(), 4);
+	thisServer = new GameServer(NetworkBase::GetDefaultPort(), MAXCLIENTCONNECT);
 	thisServer->RegisterPacketHandler(Received_State, this);
 	thisServer->RegisterPacketHandler(Player_Connected, this);
 	thisServer->RegisterPacketHandler(Player_Disconnected, this);
@@ -82,6 +84,7 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(Player_Connected, this);
 	thisClient->RegisterPacketHandler(Player_Disconnected, this);
 	thisClient->RegisterPacketHandler(PlayerSync_Message, this);
+	thisClient->RegisterPacketHandler(ClientID_Message, this);
 	thisClient->RegisterPacketHandler(Item_Init_Message, this);
 	thisClient->RegisterPacketHandler(BossAction_Message, this);
 	thisClient->RegisterPacketHandler(GameState_Message, this);
@@ -140,10 +143,12 @@ void NetworkedGame::SpawnPlayers() {
 	if (thisServer) {
 		localPlayer = SpawnPlayer(0, true);
 		localPlayer->GetCamera()->GetHud().AddHealthBar(localPlayer->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
+		localPlayer->GetCamera()->GetHud().SetPlayerHealth(localPlayer->GetHealth());
 	}
 	if (thisClient && selfID != NULL) {
 		localPlayer = SpawnPlayer(selfID, true);
 		localPlayer->GetCamera()->GetHud().AddHealthBar(localPlayer->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
+		localPlayer->GetCamera()->GetHud().SetPlayerHealth(localPlayer->GetHealth());
 	}
 	int count = 1;
 	for (int id : connectedPlayerIDs) {
@@ -225,6 +230,7 @@ void NetworkedGame::BossTarget()
 }
 
 void NetworkedGame::UpdateAsServer(float dt) {
+	Debug::DrawAxisLines(localPlayer->GetTransform().GetGlobalMatrix());
 	//update Game state
 	float health = 0;
 	health += static_cast<NetworkPlayer*>(localPlayer)->GetHealth()->GetHealth();
@@ -444,6 +450,12 @@ void NetworkedGame::HandlePlayerConnectedPacket(GamePacket* payload, int source)
 		thisServer->SendPacket(&newPacket, source, true);
 		return;
 	}
+	if (connectedPlayerIDs.size() > MAXCLIENTCONNECT) {
+		LobbyPacket newPacket;
+		newPacket.status = LobbyState::Started;
+		thisServer->SendPacket(&newPacket, source, true);
+		return;
+	}
 
 	int playerID = ((PlayerConnectionPacket*)payload)->playerID;
 	connectedPlayerIDs.push_back(playerID);
@@ -461,7 +473,7 @@ void NetworkedGame::HandlePlayerConnectedPacket(GamePacket* payload, int source)
 		for (auto i : connectedClients) {
 			if (i == playerID) {
 				//send the id to the new player
-				PlayerSyncPacket payload;
+				ClientIDPacket payload;
 				payload.objectID = playerID;
 				thisServer->SendPacket(&payload, i, true);
 			}
@@ -493,12 +505,16 @@ void NetworkedGame::HandlePlayerDisconnectedPacket(GamePacket* payload, int sour
 	}
 }
 
-void NetworkedGame::HandlePlayerSyncPacket(GamePacket* payload, int source) {
-	selfID = ((PlayerSyncPacket*)payload)->objectID;
+void NetworkedGame::HandleClientIDPacket(GamePacket* payload, int source) {
+	selfID = ((ClientIDPacket*)payload)->objectID;
 	if (thisClient && localPlayer == nullptr) {
 		localPlayer = SpawnPlayer(selfID, true);
 		localPlayer->GetCamera()->GetHud().AddHealthBar(localPlayer->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
 	}
+}
+
+void NetworkedGame::HandlePlayerSyncPacket(GamePacket* payload, int source) {
+	
 }
 
 void NetworkedGame::HandleItemInitPacket(GamePacket* payload, int source) {
@@ -570,6 +586,9 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	case Player_Disconnected:
 		HandlePlayerDisconnectedPacket(payload, source);
 		break;
+	case ClientID_Message:
+		HandleClientIDPacket(payload, source);
+		break;
 	case PlayerSync_Message:
 		HandlePlayerSyncPacket(payload, source);
 		break;
@@ -622,16 +641,18 @@ void NetworkedGame::OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b) {
 }
 
 PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, int playerID) {
+	static int id = 0;
 	NetworkPlayer* character = new NetworkPlayer( this, playerID);
-	SphereVolume* volume = new SphereVolume(1.0f, CollisionLayer::Player);
+	SphereVolume* volume = new SphereVolume(1.2f, CollisionLayer::Player);
 
-	character->SetBoundingVolume((CollisionVolume*)volume);
+	character->SetBoundingVolume(volume);
 
+	float scale = 2.0f;
 	character->GetTransform()
-		.SetScale(Vector3(1, 1, 1))
+		.SetScale(Vector3(scale))
 		.SetPosition(position);
 
-	character->SetRenderObject(new RenderObject(character->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("goat"), nullptr));
+	character->SetRenderObject(new AnimatedRenderObject(character->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("player"), AssetLibrary<MeshMaterial>::GetAsset("player"), AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle")));
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 
 	character->GetRenderObject()->SetColour(Vector4(1, 0.9f, 0.8f, 1));
@@ -676,18 +697,21 @@ void NetworkedGame::ProcessState() {
 	case GameState::Win:
 	case GameState::Lose:
 		if(thisServer){
-			Debug::Print("Press [R] or [Start] to return to lobby", Vector2(5, 80), Vector4(1, 1, 1, 1));
+			Debug::Print("Press [R] or [Start] to return to lobby", Vector2(5, 80), Debug::WHITE);
 		}
 		if (thisClient) {
-			Debug::Print("Please Wait for server to return to lobby", Vector2(5, 80), Vector4(1, 1, 1, 1));
+			Debug::Print("Please Wait for server to return to lobby", Vector2(5, 80), Debug::WHITE);
 		}
 		break;
 	case GameState::Lobby:
+		std::string s = "Connected Player: ";
+		s += std::to_string(connectedPlayerIDs.size() + 1 ) + "/" + std::to_string(MAXPLAYER);
+		Debug::Print(s.c_str(), Vector2(55, 06), Debug::WHITE);
 		if (thisServer) {
-			Debug::Print("Press [R] or [Start] to Start the Game", Vector2(5, 80), Vector4(1, 1, 1, 1));
+			Debug::Print("Press [R] or [Start] to Start the Game", Vector2(5, 80), Debug::WHITE);
 		}
 		if (thisClient) {
-			Debug::Print("Please Wait for server to Start the Game", Vector2(5, 80), Vector4(1, 1, 1, 1));
+			Debug::Print("Please Wait for server to Start the Game", Vector2(5, 80), Debug::WHITE);
 		}
 		break;
 	}

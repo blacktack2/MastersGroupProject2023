@@ -8,6 +8,7 @@
 #include"AnimatedRenderObject.h"
 namespace NCL {
 	class Camera;
+	class SphereVolume;
 	namespace CSC8503 {
 		class Bullet;
 
@@ -59,10 +60,11 @@ namespace NCL {
 				return playerID;
 			}
 
+			void SetBoundingVolume(SphereVolume* vol);
+
 		protected:
 			void Movement(float dt);
 
-			void MoveTo(Vector3 position);
 			void Move(Vector3 dir);
 			void MoveByPosition(float dt, Vector3 dir);
 			void GetButtonInput(unsigned int keyPress);
@@ -98,7 +100,7 @@ namespace NCL {
 
 			//shooting related
 			float projectileForce = 15;
-			const Vector3 projectileSpawnPoint = Vector3(0.0f, 0.9f, -1.0f);
+			const Vector3 projectileSpawnPoint = Vector3(0.0f, 0.0f, -1.0f);
 			float projectileLifespan = 5.0f;
 			float projectileFireRate = 0.1f;
 			float projectileFireRateTimer = 0;
@@ -116,10 +118,11 @@ namespace NCL {
 
 			//jump related 
 			bool onGround = false;
-			float jumpTriggerDist = 1.85f;
+			float jumpTriggerDist = 0.01f;
 			float jumpTimer = 0.0f;
-			const float jumpCooldown = 0.005f;
+			const float jumpCooldown = 0.5f;
 			float jumpSpeed = 10.0f;
+			float radius = 0;
 
 			//movement related
 			float moveSpeed = 0.4f;

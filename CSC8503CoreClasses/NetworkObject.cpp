@@ -2,8 +2,8 @@
 #include "RenderObject.h"
 #include "Debug.h"
 #include "./enet/enet.h"
-#include "../CSC8503/PlayerBullet.h"
 #include "Maths.h"
+#include "../CSC8503/Bullet.h"
 using namespace NCL;
 using namespace CSC8503;
 
@@ -95,7 +95,13 @@ bool NetworkObject::ReadFullPacket(FullPacket &p, float dt) {
 	lastFullState = p.fullState;
 
 	lastDeltaState = p.fullState;
-
+	/*
+	if (p.health != -1) {
+		if (PlayerObject* player = dynamic_cast<PlayerObject*>(&object)) {
+			std::cout << "sync client health" << std::endl;;
+			player->GetHealth()->SetHealth(p.health);
+		}
+	}*/
 	//Debug::DrawLine(p.fullState.position, p.fullState.position + Vector3(0,0.1,0), Debug::BLUE, 2.0f);
 
 	stateHistory.emplace_back(lastFullState);
@@ -159,6 +165,11 @@ bool NetworkObject::WriteFullPacket(GamePacket**p) {
 	fp->fullState.stateID = lastFullState.stateID++;
 	fp->fullState.linearVelocity = object.GetPhysicsObject()->GetLinearVelocity();
 	fp->fullState.angularVelocity = object.GetPhysicsObject()->GetAngularVelocity();
+	/*
+	if (PlayerObject* player = dynamic_cast<PlayerObject*>(&object)) {
+		fp->health = player->GetHealth()->GetHealth();
+	}
+	*/
 
 	*p = fp;
 	stateHistory.emplace_back(fp->fullState);
