@@ -32,6 +32,9 @@ Boss::Boss() {
 
 Boss::~Boss() {
     delete behaviourTree;
+    delete hurtSource;
+    delete inkRainSource;
+    delete fatherSource;
 }
 
 void Boss::BuildTree() {
@@ -229,6 +232,62 @@ void Boss::SetupAudio()
     hurtSource->SetGain(1.0f);
     hurtSource->SetPitch(1.0f);
 
+    inkRainSource = new SoundSource();
+    inkRainSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+    inkRainSource->SetGain(0.0f);
+    inkRainSource->SetSoundBuffer(Sound::AddSound("inkRain.wav"));
+    inkRainSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+    inkRainSource->SetGain(1.0f);
+    inkRainSource->SetPitch(1.0f);
+
+    fatherSource = new SoundSource();
+    fatherSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+    fatherSource->SetGain(0.0f);
+    fatherSource->SetSoundBuffer(Sound::AddSound("father.wav"));
+    fatherSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+    fatherSource->SetGain(1.0f);
+    fatherSource->SetPitch(1.0f);
+
+    wowSource = new SoundSource();
+    wowSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+    wowSource->SetGain(0.0f);
+    wowSource->SetSoundBuffer(Sound::AddSound("wow.wav"));
+    wowSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+    wowSource->SetGain(1.0f);
+    wowSource->SetPitch(1.0f);
+
+    tuturuSource = new SoundSource();
+    tuturuSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+    tuturuSource->SetGain(0.0f);
+    tuturuSource->SetSoundBuffer(Sound::AddSound("tuturu.wav"));
+    tuturuSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+    tuturuSource->SetGain(1.0f);
+    tuturuSource->SetPitch(1.0f);
+
+    senpaiSource = new SoundSource();
+    senpaiSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+    senpaiSource->SetGain(0.0f);
+    senpaiSource->SetSoundBuffer(Sound::AddSound("senpai.wav"));
+    senpaiSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+    senpaiSource->SetGain(1.0f);
+    senpaiSource->SetPitch(1.0f);
+
+    nyaSource = new SoundSource();
+    nyaSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+    nyaSource->SetGain(0.0f);
+    nyaSource->SetSoundBuffer(Sound::AddSound("nya.wav"));
+    nyaSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+    nyaSource->SetGain(1.0f);
+    nyaSource->SetPitch(1.0f);
+
+    waitSource = new SoundSource();
+    waitSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+    waitSource->SetGain(0.0f);
+    waitSource->SetSoundBuffer(Sound::AddSound("wait.wav"));
+    waitSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+    waitSource->SetGain(1.0f);
+    waitSource->SetPitch(1.0f);
+
     SoundSystem::GetSoundSystem()->SetListener(this);
 
 }
@@ -396,6 +455,7 @@ bool Boss::RandomWalk() {
 
 bool Boss::StabPlayer(PlayerObject* player) {
     SetBossOrientation(nullptr);
+    nyaSource->Play(Sound::AddSound("nya.wav"));
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack1").get()) {
         anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack1"));
@@ -427,6 +487,7 @@ bool Boss::StabPlayer(PlayerObject* player) {
 
 bool Boss::Spin(PlayerObject* player) {
     SetBossOrientation(nullptr);
+    tuturuSource->Play(Sound::AddSound("tuturu.wav"));
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack2").get()) {
         anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack2"));
@@ -467,6 +528,7 @@ bool Boss::Spin(PlayerObject* player) {
 
 bool Boss::UseLaserOnPlayer(PlayerObject* player) {
     SetBossOrientation(nullptr);
+    wowSource->Play(Sound::AddSound("wow.wav"));
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack3").get()) {
         anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack3"));
@@ -506,6 +568,7 @@ bool Boss::UseLaserOnPlayer(PlayerObject* player) {
 }
 
 bool Boss::JumpTo(PlayerObject* player) {
+    senpaiSource->Play(Sound::AddSound("senpai.wav"));
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Jump").get()) {
         anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Jump"));
@@ -532,6 +595,7 @@ bool Boss::JumpTo(PlayerObject* player) {
 
 bool Boss::JumpAway(PlayerObject* player) {
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+    waitSource->Play(Sound::AddSound("wait.wav"));
     if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Jump").get()) {
         anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Jump"));
     }
@@ -584,6 +648,7 @@ bool Boss::SeekHeal(bool& hasHeal) {
 
 bool Boss::InkRain(PlayerObject* player) {
     SetBossOrientation(nullptr);
+    inkRainSource->Play(Sound::AddSound("inkRain.wav"));
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack6").get()) {
         anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack6"));
@@ -640,6 +705,7 @@ bool Boss::InkRain(PlayerObject* player) {
 
 bool Boss::BulletsStorm() {
     SetBossOrientation(nullptr);
+    fatherSource->Play(Sound::AddSound("father.wav"));
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack5").get()) {
         anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack5"));
