@@ -43,6 +43,7 @@ PlayerObject::~PlayerObject() {
 	SoundSystem::GetSoundSystem()->SetListener(nullptr);
 	delete playerSource;
 	delete attackSource;
+	delete hurtSource;
 	ClearCamera();
 
 }

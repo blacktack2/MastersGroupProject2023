@@ -155,6 +155,13 @@ namespace NCL {
             BossAction bossAction = NoAction;
 
             SoundSource* hurtSource;
+            SoundSource* inkRainSource;
+            SoundSource* fatherSource;
+            SoundSource* wowSource;
+            SoundSource* tuturuSource;
+            SoundSource* senpaiSource;
+            SoundSource* nyaSource;
+            SoundSource* waitSource;
         };
     }
 }

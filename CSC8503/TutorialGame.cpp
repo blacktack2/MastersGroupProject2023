@@ -392,7 +392,7 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 	Boss* boss = new Boss();
 
 	//boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
-	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(Vector3{ dimensions.x,dimensions.y*2.2f,dimensions.z}));
+	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(Vector3{ dimensions.x,dimensions.y*2.2f,dimensions.z}, NCL::CollisionLayer::Enemy));
 
 	boss->GetTransform()
 		.SetPosition(position)
