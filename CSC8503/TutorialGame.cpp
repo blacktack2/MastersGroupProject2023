@@ -84,7 +84,6 @@ void TutorialGame::StartLevel() {
 	if (numOfPlayers > 4)
 		numOfPlayers = 4;
 	boss = AddBossToWorld({ 0, 5, -20 }, Vector3(4), 2);
-
 	// A messy way of spawning multiple player and 
 	AddPlayer(0, ControllerType::KeyboardMouse);
 	for (int i = 1; i <= numOfPlayers; i++) {
@@ -296,7 +295,7 @@ GameObject* TutorialGame::AddWallXToWorld(const Vector3& position) {
 	GameObject* wall = new GameObject("wallX");
 	Vector3 wallSize = Vector3(1, 1, 1);
 	wall->GetTransform()
-		.SetScale(Vector3(1.7f, 1.7f, 2))
+		.SetScale(Vector3(1.566f, 1.7f, 2))
 		.SetPosition(position);
 	wall->SetRenderObject(new PaintRenderObject(wall->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("wallX"), AssetLibrary<MeshMaterial>::GetAsset("wall")));
 	AABBVolume* volume = new AABBVolume(Vector3{ 100.0f, 50.0f, 1.0f }, CollisionLayer::PaintAble);
@@ -311,10 +310,10 @@ GameObject* TutorialGame::AddWallYToWorld(const Vector3& position) {
 	GameObject* wall = new GameObject("wallY");
 	Vector3 wallSize = Vector3(1, 1, 1);
 	wall->GetTransform()
-		.SetScale(Vector3(1.7f, 1.7f, 2))
+		.SetScale(Vector3(2.0f, 1.7f, 1.566f))
 		.SetPosition(position);
 	wall->SetRenderObject(new PaintRenderObject(wall->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("wallY"), AssetLibrary<MeshMaterial>::GetAsset("wall")));
-	AABBVolume* volume = new AABBVolume(Vector3{ 100.0f, 50.0f, 1.0f }, CollisionLayer::PaintAble);
+	AABBVolume* volume = new AABBVolume(Vector3{ 1.0f, 50.0f, 100.0f }, CollisionLayer::PaintAble);
 	wall->SetBoundingVolume((CollisionVolume*)volume);
 	wall->SetPhysicsObject(new PhysicsObject(&wall->GetTransform(), wall->GetBoundingVolume()));
 	wall->GetPhysicsObject()->SetInverseMass(0);

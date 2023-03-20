@@ -24,6 +24,8 @@
 
 #include "AnimatedRenderObject.h"
 
+#include "Vector3.h"
+
 
 class BehaviourNodeWithChildren;
 
@@ -110,6 +112,8 @@ namespace NCL {
             void BuildTree();
             float SqrDistToTarget();
             float DistToTarget();
+
+            void SetBossOrientation(Vector3* facingDir);
 
             float deltaTime = 0.0f;
             bool isClient = false;
