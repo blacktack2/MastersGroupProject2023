@@ -78,6 +78,7 @@ PlayerObject::~PlayerObject() {
 
 void PlayerObject::Update(float dt) {
 	//Change game state
+	keyMap.Update();
 	if (health.GetHealth() <= 0) {
 		ChangeLoseState();
 		return;
@@ -189,7 +190,7 @@ This is a temporary member function used for testing controller's input. Feel fr
 			movingDir2D.x = cameraForwardDirection.x * cos(angle) - (-cameraForwardDirection.z) * sin(angle);
 			movingDir2D.y = (-cameraForwardDirection.z) * cos(angle) + cameraForwardDirection.x * sin(angle);
 			movingDir3D = -(Vector3{ movingDir2D.x,0,-movingDir2D.y }).Normalised();
-			std::cout << movingDir3D << std::endl;
+			//std::cout << movingDir3D << std::endl;
 		}
 	}
 	if (keyMap.GetAxisData(playerID, AxisInput::Axis5, rightTriggerDepth))

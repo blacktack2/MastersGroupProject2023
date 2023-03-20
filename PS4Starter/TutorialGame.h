@@ -27,6 +27,7 @@
 #endif // _ORBIS
 
 #include "../Common/TextureBase.h"
+#include "GameLevel.h"
 #include "InputKeyMap.h"
 
 namespace NCL {
@@ -94,8 +95,12 @@ namespace NCL {
 
 			Boss* AddBossToWorld(const Vector3& position, Vector3 dimensions, float inverseMass);		/////////
 			//HealingKit* UpdateHealingKit();																/////////
-			//void BuildLevel();																			/////////
-			//void UpdateLevel();																			/////////
+			void BuildLevel();																			/////////
+			void UpdateLevel();																			/////////
+			
+			//void BossTarget();
+			void ProcessState();
+
 			/*NPCObject* AddNPCToWorld(const Vector3& position);*/
 			/*GameObject* AddBonusToWorld(const Vector3& position);
 			GameObject* AddTriggerToWorld(const Vector3& position, float size);
@@ -146,6 +151,8 @@ namespace NCL {
 			MeshGeometry* enemyMesh = nullptr;
 			MeshGeometry* npcMesh = nullptr;
 			MeshGeometry* bonusMesh = nullptr;
+			MeshGeometry* fenceMesh = nullptr;
+			MeshGeometry* pillarMesh = nullptr;
 
 			Bullet* bulletPrefab = nullptr;
 
@@ -164,7 +171,7 @@ namespace NCL {
 
 			/*paintHell::debug::DebugViewPoint* debugViewPoint;*/
 
-			//GameLevel* gameLevel = nullptr;	/////////
+			GameLevel* gameLevel = nullptr;	/////////
 			//float interval = 0.0f;			/////////
 			GameObject* floor = nullptr;	/////////
 			Boss* boss = nullptr;   /////////
@@ -172,7 +179,10 @@ namespace NCL {
 
 			////GameGrid stuff
 			//GameGridManager* gridManager;
-			//float wallTimer = 0.0f;
+			
+			float interval = 0.0f;
+
+			
 		};
 	}
 }

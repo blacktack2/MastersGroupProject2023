@@ -10,7 +10,8 @@
 #include "../Common/PrefabLibrary.h"
 #include "GameGridManager.h"
 #include "GameStateManager.h"
-
+#include "../Common/Debug.h"
+#include "Obstacle.h"
 using namespace NCL;
 
 using namespace CSC8503;
@@ -83,6 +84,8 @@ NCL::CSC8503::TutorialGame::~TutorialGame()
 	delete capsuleMesh;
 	delete enemyMesh;
 	delete bonusMesh;
+	delete pillarMesh;
+	delete fenceMesh;
 
 	delete basicTex;
 }
@@ -92,39 +95,50 @@ void NCL::CSC8503::TutorialGame::InitWorld(InitMode mode)
 	world->ClearAndErase();
 	physics->Clear();
 	gridManager.AddGameGrid(new GameGrid(Vector3(0.0f), 400, 400, 1));
+	BuildLevel();
+
 	BulletInstanceManager::instance().ObjectIntiation();
 	player = AddPlayerToWorld(Vector3(0,10,10));
-	AddCubeToWorld(Vector3(0, 10, 0), Vector3(1, 1, 1));
-	AddSphereToWorld(Vector3(5, 20, 0), 5);
+	
+	//AddSphereToWorld(Vector3(5, 20, 0), 5);
 	InitDefaultFloor();
 	
 	world->UpdateStaticTree();
 
 	InitCamera();
 	SetCameraFollow(player);
-	
-	boss = AddBossToWorld({ 0, 5, -20 }, Vector3( 4 ), 2);
+	boss = AddBossToWorld({ 0, 200, 0 }, Vector3( 4 ), 2);
 	boss->SetTarget(player);
 	boss->SetNextTarget(player);
 }
 
 void NCL::CSC8503::TutorialGame::UpdateGame(float dt)
 {
-	GameState gameState = gameStateManager.GetGameState();
 	gridManager.Update(dt);
 	world->PreUpdateWorld();
 	world->UpdateWorld(dt);
 	
-
+	Debug::Print("Health:"+std::to_string(player->GetHealth()->GetHealth()), Vector2(5, 10));
+	Debug::Print("Boss Health:"+std::to_string(boss->GetHealth()->GetHealth()), Vector2(50, 10));
+	
 	/*player->Update(dt);
 	if(timePassed>30.0f)
 		boss->Update(dt);*/
 	timePassed += dt;
 	
 	physics->Update(dt);
+
+	//if (gameLevel->GetShelterTimer() > 20.0f) {
+	//	gameLevel->SetShelterTimer(0.0f);
+	//	UpdateLevel();
+	//}
+
 	world->GetMainCamera()->UpdateCamera(dt);
 	gameStateManager.Update(dt);
+	ProcessState();
+
 	renderer->UpdateViewProjectionMatrix((PS4::PS4Camera*)world->GetMainCamera());
+	Debug::UpdateRenderables(dt);
 	renderer->BuildObjectList();
 	renderer->Render();
 	//gameStateManager.Update(dt);
@@ -140,6 +154,8 @@ void NCL::CSC8503::TutorialGame::InitialiseAssets()
 	npcMesh = renderer->LoadMesh("Keeper.msh");
 	bonusMesh = renderer->LoadMesh("Sphere.msh");
 	capsuleMesh = renderer->LoadMesh("capsule.msh");
+	fenceMesh = renderer->LoadMesh("Building/newFence.msh");
+	pillarMesh= renderer->LoadMesh("pillarCube.msh");
 
 	basicTex = PS4::PS4Texture::LoadTextureFromFile("doge.gnf");
 
@@ -268,6 +284,126 @@ Boss* TutorialGame::AddBossToWorld(const Maths::Vector3& position, Maths::Vector
 
 	return boss;
 }
+
+void NCL::CSC8503::TutorialGame::BuildLevel()
+{
+	interval = 5.0f;
+
+	gameLevel = new GameLevel();
+	gameLevel->AddRectanglarLevel("BasicLevel.txt", { -200, 0, -200 }, interval);
+	world->AddGameObject(gameLevel);
+
+	UpdateLevel();
+}
+
+void NCL::CSC8503::TutorialGame::UpdateLevel()
+{
+	for (auto& object : gameLevel->GetGameStuffs()) {
+		if (object->HasDestroyed()) {
+			object->Destroy(false);
+			if (object->objectType == ObjectType::Pillar) {
+				Vector3 dimensions{ interval / 2.0f, 15, interval / 2.0f };
+				Obstacle* pillar = new Obstacle{ object, true };
+
+				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3f, 2.0f, 1.3f }, CollisionLayer::PaintAble));
+
+				pillar->GetTransform()
+					.SetPosition(object->worldPos + Vector3{ 0,15,0 })
+					.SetScale(dimensions * 2);
+				//pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("pillar"), healingKitTex, nullptr));
+
+				RenderObject* render = new RenderObject(&pillar->GetTransform(),pillarMesh, basicTex);
+				pillar->SetRenderObject(render);
+
+				pillar->SetPhysicsObject(new PhysicsObject(&pillar->GetTransform(), pillar->GetBoundingVolume()));
+				pillar->GetPhysicsObject()->SetInverseMass(0);
+				pillar->GetPhysicsObject()->InitCubeInertia();
+				world->AddGameObject(pillar);
+			}
+			if (object->objectType == ObjectType::FenceX) {
+				Vector3 dimensions{ interval / 2.0f, 3.0f, interval / 5.0f };
+				Obstacle* fenceX = new Obstacle{ object, true };
+				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * 2, CollisionLayer::PaintAble));
+				fenceX->GetTransform()
+					.SetPosition(object->worldPos + Vector3{ 0,3,0 })
+					.SetScale(dimensions * 2);
+				//fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), basicTex, nullptr));		// TODO: change to the right Mesh
+
+				RenderObject* render = new RenderObject(&fenceX->GetTransform(), fenceMesh, basicTex);
+				fenceX->SetRenderObject(render);
+
+				fenceX->SetPhysicsObject(new PhysicsObject(&fenceX->GetTransform(), fenceX->GetBoundingVolume()));
+				fenceX->GetPhysicsObject()->SetInverseMass(0);
+				fenceX->GetPhysicsObject()->InitCubeInertia();
+				world->AddGameObject(fenceX);
+			}
+			if (object->objectType == ObjectType::FenceY) {
+				Vector3 dimensions{ interval / 5.0f, 3.0f, interval / 2.0f };
+				Obstacle* fenceY = new Obstacle{ object, true };
+				fenceY->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * 2, CollisionLayer::PaintAble));
+				fenceY->GetTransform()
+					.SetPosition(object->worldPos + Vector3{ 0,3,0 })
+					.SetScale(dimensions * 2);
+				//fenceY->SetRenderObject(new RenderObject(&fenceY->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceY"), basicTex, nullptr));		// TODO: change to the right Mesh
+
+				RenderObject* render = new RenderObject(&fenceY->GetTransform(), fenceMesh, basicTex);
+				fenceY->SetRenderObject(render);
+
+				fenceY->SetPhysicsObject(new PhysicsObject(&fenceY->GetTransform(), fenceY->GetBoundingVolume()));
+				fenceY->GetPhysicsObject()->SetInverseMass(0);
+				fenceY->GetPhysicsObject()->InitCubeInertia();
+				world->AddGameObject(fenceY);
+			}
+			if (object->objectType == ObjectType::Shelter) {
+				Vector3 dimensions{ interval / 1.0f, 5.0f, interval / 1.0f };
+				Obstacle* shelter = new Obstacle{ object, false };
+				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 0.5f,0.8f,1.0f }, CollisionLayer::PaintAble));
+				shelter->GetTransform()
+					.SetPosition(object->worldPos + Vector3{ 0.0f,2.7f, 0.0f })
+					.SetScale(dimensions);
+				//shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("shelter"), basicTex, nullptr));
+
+				RenderObject* render = new RenderObject(&shelter->GetTransform(),cubeMesh, basicTex);
+				shelter->SetRenderObject(render);
+
+				shelter->SetPhysicsObject(new PhysicsObject(&shelter->GetTransform(), shelter->GetBoundingVolume()));
+				shelter->GetPhysicsObject()->SetInverseMass(0);
+				shelter->GetPhysicsObject()->InitCubeInertia();
+				world->AddGameObject(shelter);
+			}
+		}
+	}
+}
+
+void NCL::CSC8503::TutorialGame::ProcessState()
+{
+	if (player->GetHealth()->GetHealth() <= 0) {
+		gameStateManager.SetGameState(GameState::Lose);
+	}
+	switch (gameStateManager.GetGameState()) {
+	case GameState::OnGoing:
+		// TODO - makeshift crosshair
+		Debug::Print("+", Vector2(49.5f, 49.5f), Vector4(1, 1, 1, 1));
+		break;
+	case GameState::Win:
+		Debug::Print("You Win!", Vector2(5.0f, 70.0f), Debug::GREEN);
+		Debug::Print("Press [R] or [Start] to play again", Vector2(5, 80), Debug::WHITE);
+		break;
+	case GameState::Lose:
+		Debug::Print("You Lose!", Vector2(5.0f, 70.0f), Debug::RED);
+		Debug::Print("Press [R] or [Start] to play again", Vector2(5, 80), Debug::WHITE);
+		break;
+	}
+
+	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
+	if (keyMap.GetButton(InputType::Restart)) {
+		this->InitWorld();
+	}
+	if (keyMap.GetButton(InputType::Return)) {
+		gameStateManager.SetGameState(GameState::Quit);
+	}
+}
+
 
 GameObject* NCL::CSC8503::TutorialGame::AddCapsuleToWorld(const Maths::Vector3& position, float halfHeight, float radius, float inverseMass)
 {

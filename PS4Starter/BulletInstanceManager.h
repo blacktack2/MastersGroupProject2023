@@ -1,7 +1,7 @@
 #include "BossBullet.h"
 #include "PlayerBullet.h"
 
-#define BULLETCOUNT 50 // change later
+#define BULLETCOUNT 100 // change later
 #define BULLETTYPECOUNT 2 // change later
 namespace NCL::CSC8503 {
 	class Bullet;

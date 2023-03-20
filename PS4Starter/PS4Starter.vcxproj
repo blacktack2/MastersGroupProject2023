@@ -108,6 +108,7 @@
     <ClInclude Include="ExampleRenderer.h" />
     <ClInclude Include="GameGrid.h" />
     <ClInclude Include="GameGridManager.h" />
+    <ClInclude Include="GameLevel.h" />
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="Health.h" />
     <ClInclude Include="InkEffectManager.h" />

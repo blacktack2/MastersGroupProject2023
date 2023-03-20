@@ -84,14 +84,23 @@ void InputKeyMap::UpdateGameStateDependant() {
 				buttonstates |= InputType::Restart;
 				break;
 			}
+			if (PS4::PS4InputManager::GetButtons(i, PS4::TRIANGLE)) {
+				buttonstates |= InputType::Restart;
+				break;
+			}
 		}
 		break;
 	case GameState::Lose:
 		for (int i = 0; i < SCE_USER_SERVICE_MAX_LOGIN_USERS; i++) {
+			if (PS4::PS4InputManager::GetButtons(i, PS4::TRIANGLE)) {
+				buttonstates |= InputType::Restart;
+				break;
+			}
 			if (PS4::PS4InputManager::GetButtons(i, PS4::START)) {
 				buttonstates |= InputType::Restart;
 				break;
 			}
+			
 		}
 		break;
 	}

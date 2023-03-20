@@ -136,6 +136,9 @@
     <ClInclude Include="BulletInstanceManager.h">
       <Filter>Bullet Files</Filter>
     </ClInclude>
+    <ClInclude Include="GameLevel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <WavePsslc Include="..\Assets\Shaders\PS4\PixelShader.pssl">
