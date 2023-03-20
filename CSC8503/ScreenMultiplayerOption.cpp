@@ -9,6 +9,7 @@
  */
 #pragma once
 #include "ScreenMultiplayerOption.h"
+#include "ScreenAddress.h"
 
 #include "AssetLibrary.h"
 
@@ -28,6 +29,9 @@ PushdownState::PushdownResult ScreenMultiplayerOption::OnUpdate(float dt, Pushdo
 	keyMap.Update();
 	renderer.Render();
 	switch (menuState) {
+	case ChangeState::IpAddress:
+		*newState = new ScreenAddress();
+		return PushdownResult::Push;
 	case ChangeState::StartServer:
 		*newState = new ScreenMultiplayer(true);
 		return PushdownResult::Push;
@@ -60,12 +64,31 @@ void ScreenMultiplayerOption::OnAwake() {
 void ScreenMultiplayerOption::InitMenu() {
 	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(1.0f), AssetLibrary<TextureBase>::GetAsset("menuMain"));
 
+	menu.AddButton(0.5f, 0.3f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button1"), [&](Button& button) {
+		std::cout << "address button clicked\n";
+		menuState = ChangeState::IpAddress;
+		}, [&](Button& button) {
+			AddressPointer = false;
+			if (optionManager.GetCounter() % 4 == 1) {
+				std::cout << "address selected\n";
+				AddressPointer = true;
+			}
+			AddressPointer ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("buttonSlide1")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("button1"));
+		}, [&](Button& button) {
+			if (AddressPointer) {
+				std::cout << "address pressed\n";
+				menuState = ChangeState::IpAddress;
+			}
+			AddressPointer = false;
+			button.SetTexture(AssetLibrary<TextureBase>::GetAsset("button1"));
+		});
+
 	menu.AddButton(0.5f, 0.0f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button0"), [&](Button& button) {
 		std::cout << "Start server button clicked\n";
 		menuState = ChangeState::StartServer;
 		}, [&](Button& button) {
 			StartPointer = false;
-			if (optionManager.GetCounter() % 3 == 1) {
+			if (optionManager.GetCounter() % 4 == 2) {
 				std::cout << "Start button selected\n";
 				StartPointer = true;
 			}
@@ -84,7 +107,7 @@ void ScreenMultiplayerOption::InitMenu() {
 		menuState = ChangeState::StartClient;
 		}, [&](Button& button) {
 			MultiPointer = false;
-			if (optionManager.GetCounter() % 3 == 2) {
+			if (optionManager.GetCounter() % 4 == 3) {
 				std::cout << "Start button selected\n";
 				MultiPointer = true;
 			}
@@ -103,7 +126,7 @@ void ScreenMultiplayerOption::InitMenu() {
 		menuState = ChangeState::Quit;
 		}, [&](Button& button) {
 			QuitPointer = false;
-			if (optionManager.GetCounter() % 3 == 0) {
+			if (optionManager.GetCounter() % 4 == 0) {
 				std::cout << "Quit button selected\n";
 				QuitPointer = true;
 			}

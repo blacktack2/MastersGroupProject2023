@@ -6,7 +6,7 @@
  * @date   February 2023
  */
 #pragma once
-
+#include "IpAddress.h"
 namespace NCL {
 	namespace CSC8503 {
 		class OptionManager {
@@ -26,6 +26,8 @@ namespace NCL {
 			int downTimes;
 
 			int counter;
+
+			IpAddress address;
 		public:
 			static OptionManager& instance() {
 				static OptionManager INSTANCE;
@@ -56,6 +58,8 @@ namespace NCL {
 
 			void SetCounter(int num) { counter = num; };
 			int GetCounter() { return counter; };
+
+			IpAddress& GetIpAddress();
 		};
 	}
 }
