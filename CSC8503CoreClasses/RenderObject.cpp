@@ -78,8 +78,10 @@ void RenderObject::PreDraw(int sublayer) {
 	const MeshMaterialEntry* entry = mat.GetMaterialForLayer(sublayer);
 	entry = entry ? entry : mat.GetMaterialForLayer(0);
 
+	TextureBase* height = entry->GetTexture("Displace");
+
 	ShaderBase* shader = entry->GetShader();
-	shader = shader ? shader : &GetDefaultShader();
+	shader = shader ? shader : (height ? &GetDefaultDisplaceShader() : &GetDefaultShader());
 
 	shader->Bind();
 
@@ -104,6 +106,10 @@ void RenderObject::PreDraw(int sublayer) {
 	TextureBase* paint = paintTexture ? paintTexture.get() : AssetLibrary<TextureBase>::GetAsset("defaultPaint").get();
 	paint->Bind(3);
 
+	if (height) {
+		height->Bind(4);
+	}
+
 	PreDraw(sublayer, *shader);
 }
 
@@ -126,6 +132,10 @@ void RenderObject::PreShadow(int sublayer) {
 
 ShaderBase& RenderObject::GetDefaultShader() {
 	return *AssetLibrary<ShaderBase>::GetAsset("modelDefault");
+}
+
+ShaderBase& RenderObject::GetDefaultDisplaceShader() {
+	return *AssetLibrary<ShaderBase>::GetAsset("modelDisplace");
 }
 
 ShaderBase& RenderObject::GetDefaultShadowShader() {

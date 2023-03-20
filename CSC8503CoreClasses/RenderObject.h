@@ -94,6 +94,7 @@ namespace NCL {
 			virtual void PreShadow(int sublayer, ShaderBase& shader) {}
 
 			virtual ShaderBase& GetDefaultShader();
+			virtual ShaderBase& GetDefaultDisplaceShader();
 			virtual ShaderBase& GetDefaultShadowShader();
 		private:
 			std::reference_wrapper<Transform> transform;
