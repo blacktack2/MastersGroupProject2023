@@ -359,7 +359,7 @@ PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& positi
 	static int id = 0;
 
 	PlayerObject* character = new PlayerObject(playerID);
-	SphereVolume* volume = new SphereVolume(1.2f, CollisionLayer::Player);
+	CapsuleVolume* volume = new CapsuleVolume(1.2f, 0.2f, CollisionLayer::Player);
 
 	character->SetBoundingVolume(volume);
 
@@ -481,7 +481,7 @@ void TutorialGame::UpdateLevel() {
 			if (object->objectType == ObjectType::Shelter) {
 				Vector3 dimensions{ interval / 1.0f, 5.0f, interval / 1.0f };
 				Obstacle* shelter = new Obstacle{ object, false };
-				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions*Vector3{0.5f,1.0f,1.0f}, CollisionLayer::PaintAble));
+				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions*Vector3{0.5f,0.8f,1.0f}, CollisionLayer::PaintAble));
 				shelter->GetTransform()
 					.SetPosition(object->worldPos + Vector3{ 0.0f,2.7f, 0.0f })
 					.SetScale(dimensions);

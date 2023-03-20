@@ -8,7 +8,7 @@
 #include"AnimatedRenderObject.h"
 namespace NCL {
 	class Camera;
-	class SphereVolume;
+	class CapsuleVolume;
 	namespace CSC8503 {
 		class Bullet;
 
@@ -60,7 +60,7 @@ namespace NCL {
 				return playerID;
 			}
 
-			void SetBoundingVolume(SphereVolume* vol);
+			void SetBoundingVolume(CapsuleVolume* vol);
 
 		protected:
 			void Movement(float dt);
