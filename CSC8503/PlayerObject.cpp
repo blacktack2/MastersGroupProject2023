@@ -78,6 +78,9 @@ void PlayerObject::Update(float dt) {
 	if (!isNetwork) {
 		Movement(dt);
 	}
+	else {
+		MoveAnimation();
+	}
 
 	//If on ink
 	if (onGround) {

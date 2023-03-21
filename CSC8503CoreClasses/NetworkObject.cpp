@@ -115,6 +115,7 @@ bool NetworkObject::ReadItemInitPacket(ItemInitPacket& p, float dt) {
 	static_cast<Bullet*>(&object)->SetLifespan(5.0f);
 	object.GetTransform().SetPosition(p.position);
 	object.GetTransform().SetOrientation(p.orientation);
+	std::cout << p.scale << std::endl;
 	object.GetTransform().SetScale(p.scale);
 	object.GetPhysicsObject()->SetLinearVelocity(p.velocity);
 
