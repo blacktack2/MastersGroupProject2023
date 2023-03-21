@@ -39,6 +39,7 @@ namespace NCL {
 		*/
 		void FinishTime(std::string name, float size = 15.0f);
 
+		void SetCollisions(int value) { totalCollisions = value; }
 		
 	private:
 		DebugViewPoint();
@@ -48,6 +49,7 @@ namespace NCL {
 		bool state = true;
 		std::map<std::string, std::chrono::steady_clock::time_point> startingPoints;
 		int itemsPrinted;
+		int totalCollisions = 0;
 	};
 }
 

@@ -90,6 +90,7 @@ void PhysicsSystem::Update(float dt) {
 	int iteratorCount = 0;
 
 	DebugViewPoint& debugView = DebugViewPoint::Instance();
+	debugView.SetCollisions(allCollisions.size() + allTriggers.size());
 	
 	while(dTOffset > realDT) {
 
