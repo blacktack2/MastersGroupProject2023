@@ -230,7 +230,6 @@ void NetworkedGame::BossTarget()
 }
 
 void NetworkedGame::UpdateAsServer(float dt) {
-	Debug::DrawAxisLines(localPlayer->GetTransform().GetGlobalMatrix());
 	//update Game state
 	float health = 0;
 	health += static_cast<NetworkPlayer*>(localPlayer)->GetHealth()->GetHealth();

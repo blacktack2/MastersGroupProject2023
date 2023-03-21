@@ -58,10 +58,8 @@ void PlayerObject::ClearCamera() {
 
 void PlayerObject::Update(float dt) {
 	Vector3 t = transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition();
-	Debug::DrawLine(t, t + Vector3(0, 0.5f, 0), Debug::BLUE);
-	Debug::DrawLine(t, t + Vector3(0, -0.5f, 0), Debug::GREEN);
 
-	Debug::DrawLine(transform.GetGlobalPosition() - Vector3(0, radius, 0), transform.GetGlobalPosition() - Vector3(0, jumpTriggerDist,0), Debug::RED);
+	//Debug::DrawLine(transform.GetGlobalPosition() - Vector3(0, radius, 0), transform.GetGlobalPosition() - Vector3(0, jumpTriggerDist,0), Debug::RED);
 	//Change game 
 	if (health.GetHealth() <= 0) {
 		keyMap.Update();
