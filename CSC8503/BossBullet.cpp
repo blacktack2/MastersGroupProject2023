@@ -17,6 +17,7 @@ using namespace CSC8503;
 BossBullet::BossBullet() : Bullet() {
 	inkType = NCL::InkType::BossDamage;
 	UpdateColour();
+	
 }
 
 BossBullet::BossBullet(BossBullet& other) : Bullet(other) {

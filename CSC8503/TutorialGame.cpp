@@ -123,6 +123,8 @@ void TutorialGame::InitWorld() {
 }
 
 void TutorialGame::UpdateGame(float dt) {
+	debugViewPoint.BeginFrame();
+
 	GameState gameState = gameStateManager.GetGameState();
 	keyMap.Update();
 
@@ -143,21 +145,19 @@ void TutorialGame::UpdateGame(float dt) {
 		renderer.SetNumPlayers(4);
 		gameWorld.SetScreenNum(4);
 	}
-
-	debugViewPoint.BeginFrame();
-	debugViewPoint.MarkTime("Update");
 	
 	if (optionManager.GetSunMove()) {
 		float runtime = gameWorld.GetRunTime();
 		sunLight->SetDirection(Vector3(std::sin(runtime), std::cos(runtime), 0.0f));
 		renderer.SetSunDir(sunLight->GetDirection());
 	}
+	debugViewPoint.MarkTime("Update Sound");
 
 	if (!optionManager.GetSound()) {
 		SoundSystem::GetSoundSystem()->SetMasterVolume(0.0);
 	}
 	if (optionManager.GetSound()) {
-		SoundSystem::GetSoundSystem()->SetMasterVolume(0.5);
+		//SoundSystem::GetSoundSystem()->SetMasterVolume(0.5);
 		SoundSystem::GetSoundSystem()->Update(dt);
 	}
 	if (optionManager.GetVolumeUp()) {
@@ -168,18 +168,20 @@ void TutorialGame::UpdateGame(float dt) {
 		int i = optionManager.GetDownTimes();
 		SoundSystem::GetSoundSystem()->SetMasterVolume(0.5 - i * 0.1);
 	}
+	debugViewPoint.FinishTime("Update Sound");
 
+	
 	UpdateGameCore(dt);
 
 	gameStateManager.Update(dt);
 	ProcessState();
 
-	debugViewPoint.FinishTime("Update");
-	debugViewPoint.MarkTime("Render");
+	
+	//debugViewPoint.MarkTime("Render");
 	renderer.Render();
 	
 	Debug::UpdateRenderables(dt);
-	debugViewPoint.FinishTime("Render");
+	//debugViewPoint.FinishTime("Render");
 }
 
 bool TutorialGame::IsQuit() {
@@ -193,9 +195,12 @@ void TutorialGame::UpdateGameCore(float dt) {
 	}
 
 	gameWorld.PreUpdateWorld();
-
+	debugViewPoint.MarkTime("Game Update");
 	gameWorld.UpdateWorld(dt);
+	debugViewPoint.FinishTime("Game Update");
+	debugViewPoint.MarkTime("Physics Update");
 	physics->Update(dt);
+	debugViewPoint.FinishTime("Physics Update");
 
 	gameWorld.PostUpdateWorld();
 	

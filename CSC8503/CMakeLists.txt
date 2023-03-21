@@ -5,7 +5,7 @@ set(PROJECT_NAME CSC8503)
 ################################################################################
 
 set(Header_Files
-    "DebugViewPoint.h"
+    
     "GameLevel.h"
     "GameGrid.h"
     "GameGridManager.h"
@@ -18,7 +18,7 @@ set(Header_Files
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
-    "DebugViewPoint.cpp"
+    
     "GameLevel.cpp"
     "GameGrid.cpp"
     "GameGridManager.cpp"

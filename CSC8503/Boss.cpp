@@ -60,7 +60,7 @@ void Boss::BuildTree() {
     BehaviourSelector* offensinveMoves = new BehaviourSelector("Offensive Moves");
     offensiveMode->AddChild(offensinveMoves);
 
-    offensinveMoves->AddChild(new BehaviourAction("Walk if player to far awway", [&](float dt, BehaviourState state)->BehaviourState {
+    offensinveMoves->AddChild(new BehaviourAction("Walk if player to far away", [&](float dt, BehaviourState state)->BehaviourState {
         switch (state)
         {
         case Failure:
@@ -324,6 +324,9 @@ void Boss::Update(float dt) {
             behaviourTree->Reset();
         }
     }
+
+    //std::cout << "Boss doing " << bossAction << std::endl;
+
     if (bossAction != prevState) {
         ChangeTarget();
     }

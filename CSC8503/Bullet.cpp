@@ -16,20 +16,21 @@ Bullet::Bullet() : GameObject() {
 Bullet::Bullet(Bullet& other) : GameObject(other) {
 	lifespan = other.lifespan;
 	inkType = NCL::InkType::NoInk;
+	paintRadius = other.paintRadius;
 }
 
 Bullet::~Bullet() {
 }
 
 void Bullet::Update(float dt) {
-	lifespan -= dt;
-	if (lifespan <= 0) {
+	if (lifespan < 0) {
 		isActive = false;
 		GetPhysicsObject()->ClearForces();
 		GetPhysicsObject()->SetLinearVelocity(Vector3(0.0f));
 		GetPhysicsObject()->SetAngularVelocity(Vector3(0.0f));
 		return;
 	}
+	lifespan -= dt;
 
 	//Debug::DrawLine(transform.GetGlobalPosition(), transform.GetGlobalPosition() + Vector3(0, 0.01f , 0), Vector4(0, 1, 1, 1));
 }
@@ -40,7 +41,7 @@ void Bullet::OnCollisionBegin(GameObject* other) {
 	}
 	PaintCollision(*other);
 	SetBoundingVolume((CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer));
-	lifespan = -1;
+	lifespan = 0;
 }
 
 void Bullet::OnTriggerBegin(GameObject* other) {
@@ -49,7 +50,7 @@ void Bullet::OnTriggerBegin(GameObject* other) {
 	}
 	PaintCollision(*other);
 	SetBoundingVolume((CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer));
-	lifespan = -1;
+	lifespan = 0;
 }
 
 void Bullet::UpdateColour() {
