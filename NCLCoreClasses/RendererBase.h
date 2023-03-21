@@ -211,9 +211,9 @@ namespace NCL {
 			 * 
 			 * @param name Unique name identifier for this render pass.
 			 */
-			inline void AddOverlayPass(IOverlayRenderPass& pass, const std::string& name) {
+			inline void AddOverlayPass(IOverlayRenderPass& pass, const std::string& name, bool split) {
 				overlayRenderPasses.push_back({ pass, true });
-				overlayMap.insert({ name, overlayRenderPasses.size() - 1 });
+				overlayMap.insert({ name, overlayRenderPasses.size() - 1, split });
 			}
 
 			virtual void OnWindowResize(int width, int height);
@@ -242,6 +242,7 @@ namespace NCL {
 			struct OverPass {
 				IOverlayRenderPass& pass;
 				bool enabled;
+				bool split;
 			};
 
 			void ResizeViewport();
@@ -270,7 +271,8 @@ namespace NCL {
 			std::unordered_map<std::string, size_t> overlayMap{};
 
 			std::vector<std::reference_wrapper<IRenderPass>> renderPipeline{};
-			std::vector<std::reference_wrapper<IRenderPass>> overlayPipeline{};
+			std::vector<std::reference_wrapper<IRenderPass>> overlaySplitPipeline{};
+			std::vector<std::reference_wrapper<IRenderPass>> overlayFullPipeline{};
 
 			Vector4 player1Viewport = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
 			Vector4 player2Viewport = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
