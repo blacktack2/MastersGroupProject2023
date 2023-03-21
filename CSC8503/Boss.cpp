@@ -388,7 +388,7 @@ BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p) {
         return nullptr;
     }
     BossBullet* ink = BulletInstanceManager::instance().GetBossBullet();
-
+    ink->GetPhysicsObject()->SetAngularVelocity(Vector3{20,20,20});
     ink->SetLifespan(5.0f);
     Vector3 position = this->GetTransform().GetGlobalPosition();
     if (p != Vector3{ 99999, 99999, 99999 }) {
@@ -569,6 +569,7 @@ bool Boss::UseLaserOnPlayer(PlayerObject* player) {
 }
 
 bool Boss::JumpTo(PlayerObject* player) {
+    SetBossOrientation(nullptr);
     senpaiSource->Play(Sound::AddSound("senpai.wav"));
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Jump").get()) {
@@ -595,6 +596,7 @@ bool Boss::JumpTo(PlayerObject* player) {
 }
 
 bool Boss::JumpAway(PlayerObject* player) {
+    SetBossOrientation(nullptr);
     AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     waitSource->Play(Sound::AddSound("wait.wav"));
     if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Jump").get()) {
