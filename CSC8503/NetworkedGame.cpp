@@ -394,7 +394,7 @@ PlayerObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 	else if (playerID == 3) {
 		colour = Vector4(0, 1, 1, 1);
 	}
-	PlayerObject* newPlayer = AddNetworkPlayerToWorld(Vector3(0, 5, 90), playerID);
+	PlayerObject* newPlayer = AddNetworkPlayerToWorld(Vector3(0 + playerID * 5, 5, 90), playerID);
 	if (isSelf) {
 		keyMap.ChangePlayerControlTypeMap(selfID, ControllerType::KeyboardMouse);
 		SetCameraFollow(newPlayer);
