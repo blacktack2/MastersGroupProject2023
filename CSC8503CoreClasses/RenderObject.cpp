@@ -8,6 +8,8 @@
  */
 #include "RenderObject.h"
 
+#include "GameWorld.h"
+
 #include "AssetLibrary.h"
 #include "AssetLoader.h"
 
@@ -79,9 +81,10 @@ void RenderObject::PreDraw(int sublayer) {
 	entry = entry ? entry : mat.GetMaterialForLayer(0);
 
 	TextureBase* height = entry->GetTexture("Displace");
+	TextureBase* parallax = entry->GetTexture("Parallax");
 
 	ShaderBase* shader = entry->GetShader();
-	shader = shader ? shader : (height ? &GetDefaultDisplaceShader() : &GetDefaultShader());
+	shader = shader ? shader : (parallax ? &GetDefaultParallaxShader() : (height ? &GetDefaultDisplaceShader() : &GetDefaultShader()));
 
 	shader->Bind();
 
@@ -106,7 +109,9 @@ void RenderObject::PreDraw(int sublayer) {
 	TextureBase* paint = paintTexture ? paintTexture.get() : AssetLibrary<TextureBase>::GetAsset("defaultPaint").get();
 	paint->Bind(3);
 
-	if (height) {
+	if (parallax) {
+		parallax->Bind(4);
+	} else if (height) {
 		height->Bind(4);
 	}
 
@@ -136,6 +141,10 @@ ShaderBase& RenderObject::GetDefaultShader() {
 
 ShaderBase& RenderObject::GetDefaultDisplaceShader() {
 	return *AssetLibrary<ShaderBase>::GetAsset("modelDisplace");
+}
+
+ShaderBase& RenderObject::GetDefaultParallaxShader() {
+	return *AssetLibrary<ShaderBase>::GetAsset("modelParallax");
 }
 
 ShaderBase& RenderObject::GetDefaultShadowShader() {

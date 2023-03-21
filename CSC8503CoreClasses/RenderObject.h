@@ -95,6 +95,7 @@ namespace NCL {
 
 			virtual ShaderBase& GetDefaultShader();
 			virtual ShaderBase& GetDefaultDisplaceShader();
+			virtual ShaderBase& GetDefaultParallaxShader();
 			virtual ShaderBase& GetDefaultShadowShader();
 		private:
 			std::reference_wrapper<Transform> transform;
