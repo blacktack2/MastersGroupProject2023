@@ -64,6 +64,9 @@ void PlayerObject::Update(float dt) {
 	Debug::DrawLine(transform.GetGlobalPosition() - Vector3(0, radius, 0), transform.GetGlobalPosition() - Vector3(0, jumpTriggerDist,0), Debug::RED);
 	//Change game 
 	if (health.GetHealth() <= 0) {
+		keyMap.Update();
+		GetAxisInput();
+		SetPitchYaw();
 		MoveCamera(dt);
 		//ChangeLoseState();
 		return;
@@ -299,13 +302,18 @@ void PlayerObject::RotateByAxis() {
 
 }
 
-void NCL::CSC8503::PlayerObject::RotatePlayer()
+void NCL::CSC8503::PlayerObject::SetPitchYaw()
 {
 	float sensitivity = 1.5f;
 	pitch += axis[Axis4] * sensitivity;
 	yaw -= axis[Axis3] * sensitivity;
 	pitch = std::clamp(pitch, -90.0f, 90.0f);
 	yaw += (yaw < 0) ? 360.0f : ((yaw > 360.0f) ? -360.0f : 0.0f);
+}
+
+void NCL::CSC8503::PlayerObject::RotatePlayer()
+{
+	SetPitchYaw();
 
 	RotateYaw(yaw);
 }

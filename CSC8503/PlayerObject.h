@@ -74,6 +74,7 @@ namespace NCL {
 			void RotateYaw(float yaw);
 			void RotateToCamera();
 			void RotateByAxis();
+			void SetPitchYaw();
 			void RotatePlayer();
 		public:
 			void MoveCamera(float dt);
