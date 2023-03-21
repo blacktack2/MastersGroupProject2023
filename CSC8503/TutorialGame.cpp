@@ -93,7 +93,7 @@ void TutorialGame::StartLevel() {
 	renderer.SetNumPlayers(playerNum);
 	gameWorld.SetScreenNum(playerNum);
 	SetCameraFollow(players[0]);		// Currently set to player[0] is crucial for split screen
-
+	
 	boss -> SetNextTarget(players[0]);
 }
 
@@ -361,7 +361,7 @@ PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& positi
 	static int id = 0;
 
 	PlayerObject* character = new PlayerObject(playerID);
-	CapsuleVolume* volume = new CapsuleVolume(1.2f, 0.2f, CollisionLayer::Player);
+	CapsuleVolume* volume = new CapsuleVolume(2.2f, 1.2f, CollisionLayer::Player);
 
 	character->SetBoundingVolume(volume);
 

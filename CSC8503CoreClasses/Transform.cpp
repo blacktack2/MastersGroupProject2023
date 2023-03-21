@@ -1,5 +1,6 @@
 #include "Transform.h"
 #include <vector>
+#include <cmath>
 
 using namespace NCL;
 using namespace CSC8503;
