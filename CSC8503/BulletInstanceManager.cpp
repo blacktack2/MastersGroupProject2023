@@ -26,11 +26,6 @@ Bullet* BulletInstanceManager::GetBullet(int firstIndex) {
 	bullet->SetLifespan(5.0f);
 	CollisionLayer layer = bullet->GetBoundingVolume()->layer;
 	bullet->SetBoundingVolume((CollisionVolume*)new SphereVolume(bullet->GetTransform().GetScale().x, layer));
-
-	if (firstIndex == 0) {
-		std::cout << index << std::endl;
-		std::cout << bullet->GetPhysicsObject()->GetLinearVelocity() << std::endl;
-	}
 	return bullet;
 }
 
