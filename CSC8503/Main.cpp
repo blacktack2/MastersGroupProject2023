@@ -227,7 +227,7 @@ void LoadPrefabs() {
 
 	bulletPrefab->SetRenderObject(new RenderObject(bulletPrefab->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("sphere"), AssetLibrary<MeshMaterial>::GetAsset("bulletWater")));
 	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume(), true));
-	bulletPrefab->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.8f, 1.0f));
+//	bulletPrefab->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.8f, 1.0f));
 
 	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
 	bulletPrefab->GetPhysicsObject()->SetGravWeight(1.0f);
@@ -245,7 +245,7 @@ void LoadPrefabs() {
 	bulletPrefab->SetRenderObject(new RenderObject(bulletPrefab->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("sphere"), AssetLibrary<MeshMaterial>::GetAsset("bulletLava")));
 	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume(), true));
 
-	bulletPrefab->GetRenderObject()->SetColour(Vector4(0.2f, 1.0f, 0.5f, 1.0f));
+//	bulletPrefab->GetRenderObject()->SetColour(Vector4(0.2f, 1.0f, 0.5f, 1.0f));
 
 	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
 	bulletPrefab->GetPhysicsObject()->SetGravWeight(1.0f);
