@@ -40,6 +40,8 @@ PushdownState::PushdownResult ScreenPause::OnUpdate(float dt, PushdownState** ne
 		game->UpdateGame(dt);
 	}
 
+	Debug::UpdateRenderables(dt);
+
 	switch (menuState)
 	{
 	case ChangeState::Resume:
