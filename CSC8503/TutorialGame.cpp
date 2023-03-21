@@ -84,7 +84,7 @@ void TutorialGame::StartLevel() {
 	if (numOfPlayers > 4)
 		numOfPlayers = 4;
 	boss = AddBossToWorld({ 0, 5, -20 }, Vector3(4), 2);
-	numOfPlayers = 1;
+	//numOfPlayers = 1;
 	// A messy way of spawning multiple player and 
 	AddPlayer(0, ControllerType::KeyboardMouse);
 	for (int i = 1; i <= numOfPlayers; i++) {

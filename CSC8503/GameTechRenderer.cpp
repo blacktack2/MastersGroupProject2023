@@ -70,14 +70,14 @@ void GameTechRenderer::InitPipeline() {
 	SetGamma(gamma);
 	SetPresentPass(*presentPass);
 
+	hudPass = std::make_unique<HudRPass>();
+	AddOverlayPass(*hudPass, "Hud");
+
 	menuPass = std::make_unique<MenuRPass>();
 	AddOverlayPass(*menuPass, "Menu");
 
 	debugPass = std::make_unique<DebugRPass>();
 	AddOverlayPass(*debugPass, "Debug");
-
-	hudPass = std::make_unique<HudRPass>();
-	AddOverlayPass(*hudPass, "Hud");
 
 	UpdatePipeline();
 }

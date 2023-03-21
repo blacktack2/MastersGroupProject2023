@@ -80,11 +80,11 @@ void RendererBase::UpdatePipeline() {
 			presentPass->SetSceneTexIn(combinePass->GetOutTex());
 		}
 	}
-	overlayPipeline.clear();
+	overlayFullPipeline.clear();
 	if (doRenderOver) {
 		for (auto& pass : overlayRenderPasses) {
 			if (pass.enabled) {
-				overlayPipeline.push_back(pass.pass);
+				overlayFullPipeline.push_back(pass.pass);
 			}
 		}
 	}
@@ -189,7 +189,7 @@ void RendererBase::RenderPresent() {
 }
 
 void RendererBase::RenderOverlay() {
-	for (auto& pass : overlayPipeline) {
+	for (auto& pass : overlayFullPipeline) {
 		pass.get().Render();
 	}
 }

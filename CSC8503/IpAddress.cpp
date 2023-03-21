@@ -15,6 +15,9 @@ void NCL::CSC8503::IpAddress::AddDigit(int num)
 {
 	if (index < 4) {
 		if (address[index].size() >= 3) {
+			if (std::stoi(address[index]) > 255) {
+				address[index] = "255";
+			}
 			NextIndex();
 		}
 	}
@@ -30,8 +33,9 @@ void NCL::CSC8503::IpAddress::RemoveDigit()
 	}
 	if (address[index].size() == 0) {
 		PrevIndex();
+		//RemoveDigit();
 	}
-	else {
+	if (index >= 0) {
 		address[index].pop_back();
 	}
 	

@@ -54,15 +54,18 @@ void PlayerObject::ClearCamera() {
 
 void PlayerObject::Update(float dt) {
 	Vector3 t = transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition();
-	Debug::DrawLine(t, t + Vector3(0, 0.5f, 0), Debug::BLUE);
-	Debug::DrawLine(t, t + Vector3(0, -0.5f, 0), Debug::GREEN);
+	//Debug::DrawLine(t, t + Vector3(0, 0.5f, 0), Debug::BLUE);
+	//Debug::DrawLine(t, t + Vector3(0, -0.5f, 0), Debug::GREEN);
 
-	Debug::DrawLine(transform.GetGlobalPosition() - Vector3(0, radius, 0), transform.GetGlobalPosition() - Vector3(0, jumpTriggerDist,0), Debug::RED);
+	//Debug::DrawLine(transform.GetGlobalPosition() - Vector3(0, radius, 0), transform.GetGlobalPosition() - Vector3(0, jumpTriggerDist,0), Debug::RED);
 	//Change game 
 	if (health.GetHealth() <= 0) {
 		MoveCamera(dt);
 		//ChangeLoseState();
 		return;
+	}
+	if (this->transform.GetGlobalPosition().y < -10) {
+		health.SetHealth(0);
 	}
 		
 	health.Update(dt);
@@ -143,7 +146,7 @@ void PlayerObject::MoveCamera(float dt) {
 			lookingAt = closestCollision.collidedAt;
 		}
 		else {
-			std::cout << "dist " << closestCollision.rayDistance << std::endl;
+			//std::cout << "dist " << closestCollision.rayDistance << std::endl;
 		}
 	}
 	//camera->UpdateCamera(dt);
