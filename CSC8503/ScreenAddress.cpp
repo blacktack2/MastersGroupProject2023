@@ -24,7 +24,7 @@ ScreenAddress::~ScreenAddress() {
 PushdownState::PushdownResult ScreenAddress::OnUpdate(float dt, PushdownState** newState) {
 	std::string address;
 	for (int i = 0; i < 4; i++) {
-		address += optionManager.GetIpAddress().GetAddress(i);
+		address += std::to_string(optionManager.GetIpAddress().GetAddress(i));
 		if (i != 3) {
 			address += ".";
 		}
@@ -32,7 +32,7 @@ PushdownState::PushdownResult ScreenAddress::OnUpdate(float dt, PushdownState** 
 	renderer.EnableOverlayPass("Debug", true);
 	renderer.UpdatePipeline();
 	Debug::Print("address", Vector2(20.0f, 40.0f), Debug::BLUE);
-
+	std::cout << address << std::endl;
 	menuManager.Update(dt);
 	keyMap.Update();
 	renderer.Render();

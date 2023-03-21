@@ -31,12 +31,13 @@ void NCL::CSC8503::IpAddress::RemoveDigit()
 	if (index == 4) {
 		PrevIndex();
 	}
-	if (address[index].size() == 0) {
-		PrevIndex();
-		//RemoveDigit();
-	}
 	if (index >= 0) {
-		address[index].pop_back();
+		if (address[index].size() == 0) {
+			PrevIndex();
+		}
+		else {
+			address[index].pop_back();
+		}
 	}
 	
 }
