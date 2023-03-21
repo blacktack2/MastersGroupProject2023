@@ -21,8 +21,12 @@ namespace NCL {
 			}
 
 			void Resize(Vector3 scale);
+
+			void SetPaintRadius(float scale);
 		protected:
-			float paintRadius = 1.5f;
+			void PaintCollision(GameObject& other);
+
+			float paintRadius = 2.0f;
 			float lifespan = 0;
 			Vector3 colour = Vector3(1, 0, 1);
 			NCL::InkType inkType;

@@ -87,12 +87,12 @@ namespace NCL {
 			 * @brief Create a new shader from the given asset files.
 			 * @brief See OGLShader::OGLShader().
 			 */
-			static std::unique_ptr<ShaderBase> CreateShader(const std::string& vertex, const std::string& fragment);
+			static std::unique_ptr<ShaderBase> CreateShader(const std::string& vertex, const std::string& fragment, const std::string& tessCont, const std::string& tessEval, const std::string& geometry);
 			/**
 			 * @brief Create a new shader from the given asset files and call Initialize.
 			 * @brief See OGLShader::CreateShader().
 			 */
-			static std::unique_ptr<ShaderBase> CreateShaderAndInit(const std::string& vertex, const std::string& fragment);
+			static std::unique_ptr<ShaderBase> CreateShaderAndInit(const std::string& vertex, const std::string& fragment, const std::string& tessCont, const std::string& tessEval, const std::string& geometry);
 
 			static void PrintCompileLog(GLuint object);
 			static void PrintLinkLog(GLuint program);

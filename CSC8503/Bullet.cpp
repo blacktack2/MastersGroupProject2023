@@ -1,13 +1,14 @@
 #include "Bullet.h"
-#include "PaintRenderObject.h"
-#include "InkEffectManager.h"
+
 #include "Debug.h"
 #include "GameGridManager.h"
-#include "SphereVolume.h"
+#include "InkEffectManager.h"
 #include "PhysicsObject.h"
+#include "RenderObject.h"
+#include "SphereVolume.h"
 
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
 
 Bullet::Bullet() : GameObject() {
 }
@@ -24,6 +25,9 @@ void Bullet::Update(float dt) {
 	lifespan -= dt;
 	if (lifespan <= 0) {
 		isActive = false;
+		GetPhysicsObject()->ClearForces();
+		GetPhysicsObject()->SetLinearVelocity(Vector3(0.0f));
+		GetPhysicsObject()->SetAngularVelocity(Vector3(0.0f));
 		return;
 	}
 
@@ -31,24 +35,20 @@ void Bullet::Update(float dt) {
 }
 
 void Bullet::OnCollisionBegin(GameObject* other) {
-	if (other->GetBoundingVolume()->layer == CollisionLayer::PaintAble)
-	{
-		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
-		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), paintRadius, colour));
-		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), paintRadius, inkType);
+	if (!other) {
+		return;
 	}
-	boundingVolume = (CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer);
+	PaintCollision(*other);
+	SetBoundingVolume((CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer));
 	lifespan = -1;
 }
 
 void Bullet::OnTriggerBegin(GameObject* other) {
-	if (other->GetBoundingVolume()->layer == CollisionLayer::PaintAble)
-	{
-		PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
-		renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), paintRadius, colour));
-		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), paintRadius, inkType);
+	if (!other) {
+		return;
 	}
-	boundingVolume = (CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer);
+	PaintCollision(*other);
+	SetBoundingVolume((CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer));
 	lifespan = -1;
 }
 
@@ -62,7 +62,22 @@ void Bullet::UpdateColour() {
 
 void Bullet::Resize(Vector3 scale) {
 	CollisionLayer layer = boundingVolume->GetCollisionLayer();
-	delete boundingVolume;
-	boundingVolume = (CollisionVolume*) new SphereVolume(scale.x, layer);
+	SetBoundingVolume( (CollisionVolume*) new SphereVolume(scale.x, layer));
 	transform.SetScale(scale);
+}
+
+void Bullet::SetPaintRadius(float scale) {
+	paintRadius = scale;
+}
+
+void Bullet::PaintCollision(GameObject& other) {
+	if (other.GetBoundingVolume()->layer != CollisionLayer::PaintAble) {
+		return;
+	}
+	RenderObject* renderObj = other.GetRenderObject();
+	if (!(renderObj && renderObj->GetPaintTex())) {
+		return;
+	}
+	renderObj->AddPaintCollision(transform.GetGlobalPosition(), paintRadius, colour);
+	GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), paintRadius, inkType);
 }

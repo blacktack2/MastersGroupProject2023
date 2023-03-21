@@ -397,6 +397,7 @@ BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p) {
     ink->GetTransform()
         .SetPosition(position);
     ink->Resize(s);
+    ink->SetPaintRadius(s.x * 1.8);
     ink->GetPhysicsObject()->SetInverseMass(1.0f);
     ink->GetPhysicsObject()->SetGravWeight(0);
     ink->GetPhysicsObject()->SetDampingWeight(0);
