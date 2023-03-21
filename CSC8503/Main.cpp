@@ -84,6 +84,8 @@ void LoadGlobalAssets() {
 	AssetLibrary<MeshGeometry>::AddAsset("sphere", AssetLoader::LoadMesh("sphere.msh"));
 	AssetLibrary<MeshGeometry>::AddAsset("goat", AssetLoader::LoadMesh("Goat.msh"));
 	AssetLibrary<MeshGeometry>::AddAsset("capsule", AssetLoader::LoadMesh("capsule.msh"));
+	AssetLibrary<MeshGeometry>::AddAsset("patchCube", AssetLoader::LoadMesh("cube.msh"));
+	AssetLibrary<MeshGeometry>::GetAsset("patchCube")->SetPrimitiveType(GeometryPrimitive::Patches);
 
 	AssetLibrary<MeshGeometry>::AddAsset("fenceX", AssetLoader::LoadMesh("Building/newFence.msh"));
 	AssetLibrary<MeshMaterial>::AddAsset("fenceX", std::make_shared<MeshMaterial>("Building/newFence.mat"));
@@ -97,6 +99,7 @@ void LoadGlobalAssets() {
 	AssetLibrary<TextureBase>::AddAsset("defaultAlbedo", std::move(AssetLoader::LoadTexture("DefaultAlbedo.png")));
 	AssetLibrary<TextureBase>::AddAsset("defaultBump", std::move(AssetLoader::LoadTexture("DefaultBump.png")));
 	AssetLibrary<TextureBase>::AddAsset("defaultSpec", std::move(AssetLoader::LoadTexture("DefaultSpec.png")));
+	AssetLibrary<TextureBase>::AddAsset("defaultPaint", std::move(AssetLoader::LoadTexture("DefaultPaint.png")));
 	AssetLibrary<TextureBase>::AddAsset("basic", std::move(AssetLoader::LoadTexture("checkerboard.png")));
 	AssetLibrary<TextureBase>::AddAsset("pillarTex", std::move(AssetLoader::LoadTexture("pillarTex.jpg")));
 
@@ -111,6 +114,8 @@ void LoadGlobalAssets() {
 
 
 	AssetLibrary<ShaderBase>::AddAsset("modelDefault", std::move(AssetLoader::CreateShader("modelDefault.vert", "modelDefault.frag")));
+	AssetLibrary<ShaderBase>::AddAsset("modelDisplace", std::move(AssetLoader::CreateShader("modelDisplace.vert", "modelDefault.frag", "modelDisplace.tesc", "modelDisplace.tese")));
+	AssetLibrary<ShaderBase>::AddAsset("modelParallax", std::move(AssetLoader::CreateShader("modelDefault.vert", "modelParallax.frag")));
 	AssetLibrary<ShaderBase>::AddAsset("paintDefault", std::move(AssetLoader::CreateShader("modelDefault.vert", "modelPaintTexture.frag")));
 	AssetLibrary<ShaderBase>::AddAsset("animationDefault", std::move(AssetLoader::CreateShader("modelAnimated.vert", "modelAnimated.frag")));
 	AssetLibrary<ShaderBase>::AddAsset("shadowDefault", std::move(AssetLoader::CreateShader("shadowDefault.vert", "shadowDefault.frag")));
@@ -212,7 +217,7 @@ void LoadAnimationAsset() {
 }
 
 void LoadPrefabs() {
-	float bulletRadius = 0.2f;
+	float bulletRadius = 0.25f;
 	std::unique_ptr<GameObject> bulletPrefab = std::make_unique<PlayerBullet>();
 
 	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::PlayerProj));

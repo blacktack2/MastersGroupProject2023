@@ -3,8 +3,9 @@ MeshMat
 1
 1
 defaultModel
-3
+4
 Albedo:Floor/Floor_basecolor.tga
 Bump:Floor/Floor_normal.tga
 Spec:Floor/Floor_roughness.tga
+Parallax:Floor/Floor_height.tga
 0

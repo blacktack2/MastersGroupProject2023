@@ -55,8 +55,6 @@ set(Render_Files
     "DebugRPass.cpp"
     "PresentRPass.h"
     "PresentRPass.cpp"
-    "PaintRenderObject.h"
-    "PaintRenderObject.cpp"
     "PaintingRPass.cpp"
     "PaintingRPass.h"
     "ModelRPass.h"
