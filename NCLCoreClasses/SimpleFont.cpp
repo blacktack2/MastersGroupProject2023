@@ -55,7 +55,6 @@ int SimpleFont::GetVertexCountForString(const std::string& text) {
 
 void SimpleFont::BuildVerticesForString(const std::string& text, const Vector2& startPos, const Vector4& colour, float size, std::vector<Vector3>&positions, std::vector<Vector2>&texCoords, std::vector<Vector4>&colours) {
 	int endChar = startChar + numChars;
-
 	float currentX = 0.0f;
 
 	positions.reserve(positions.size() + (text.length() * 6));
