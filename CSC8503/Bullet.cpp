@@ -55,10 +55,10 @@ void Bullet::OnTriggerBegin(GameObject* other) {
 
 void Bullet::UpdateColour() {
 	colour = InkEffectManager::instance().GetColour(inkType);
-	if (this->GetRenderObject()) {
-		this->GetRenderObject()->SetColour(Vector4(colour, 1));
-	}
-	
+	//if (this->GetRenderObject()) {
+	//	this->GetRenderObject()->SetColour(Vector4(colour, 1));
+	//}
+	//
 }
 
 void Bullet::Resize(Vector3 scale) {
