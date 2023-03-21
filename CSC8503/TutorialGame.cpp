@@ -439,7 +439,7 @@ void TutorialGame::UpdateLevel() {
 				//pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("pillar"), healingKitTex, nullptr));
 				
 				RenderObject* renderObject = new RenderObject(pillar->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("pillar"), AssetLibrary<MeshMaterial>::GetAsset("pillar"));
-				renderObject->SetPaintTex(32, 128);
+				renderObject->SetPaintTex(128, 256);
 				pillar->SetRenderObject(renderObject);
 				
 				pillar->SetPhysicsObject(new PhysicsObject(&pillar->GetTransform(), pillar->GetBoundingVolume()));
@@ -457,7 +457,7 @@ void TutorialGame::UpdateLevel() {
 				//fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), basicTex, nullptr));		// TODO: change to the right Mesh
 				
 				RenderObject* renderObject = new RenderObject(fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), AssetLibrary<MeshMaterial>::GetAsset("fenceX"));
-				renderObject->SetPaintTex(16, 16);
+				renderObject->SetPaintTex(128, 128);
 				fenceX->SetRenderObject(renderObject);
 
 				fenceX->SetPhysicsObject(new PhysicsObject(&fenceX->GetTransform(), fenceX->GetBoundingVolume()));
@@ -475,7 +475,7 @@ void TutorialGame::UpdateLevel() {
 				//fenceY->SetRenderObject(new RenderObject(&fenceY->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceY"), basicTex, nullptr));		// TODO: change to the right Mesh
 				
 				RenderObject* renderObject = new RenderObject(fenceY->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceY"), AssetLibrary<MeshMaterial>::GetAsset("fenceY"));
-				renderObject->SetPaintTex(16, 16);
+				renderObject->SetPaintTex(128, 128);
 				fenceY->SetRenderObject(renderObject);
 				
 				fenceY->SetPhysicsObject(new PhysicsObject(&fenceY->GetTransform(), fenceY->GetBoundingVolume()));
@@ -493,7 +493,7 @@ void TutorialGame::UpdateLevel() {
 				//shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("shelter"), basicTex, nullptr));
 
 				RenderObject* renderObject = new RenderObject(shelter->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("shelter"), AssetLibrary<MeshMaterial>::GetAsset("shelter"));
-				renderObject->SetPaintTex(16, 16);
+				renderObject->SetPaintTex(128, 128);
 				shelter->SetRenderObject(renderObject);
 
 				shelter->SetPhysicsObject(new PhysicsObject(&shelter->GetTransform(), shelter->GetBoundingVolume()));
