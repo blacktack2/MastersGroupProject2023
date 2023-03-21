@@ -429,6 +429,7 @@ void Boss::SetBossOrientation(Vector3* facingDir) {
     else {
         dir = *facingDir;
     }
+    dir.y = 0;
     Quaternion orientation = Quaternion(Matrix4::BuildViewMatrix(this->GetTransform().GetGlobalPosition() + dir * 10, this->GetTransform().GetGlobalPosition(), Vector3(0, 1, 0)).Inverse());
     this->GetTransform().SetOrientation(orientation);
 }
