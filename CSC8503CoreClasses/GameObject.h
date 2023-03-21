@@ -25,6 +25,10 @@ namespace NCL {
 			virtual void Update(float dt) {}
 
 			void SetBoundingVolume(CollisionVolume* vol) {
+				if (boundingVolume)
+				{
+					delete boundingVolume;
+				}
 				boundingVolume = vol;
 			}
 

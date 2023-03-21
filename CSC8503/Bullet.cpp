@@ -25,6 +25,9 @@ void Bullet::Update(float dt) {
 	lifespan -= dt;
 	if (lifespan <= 0) {
 		isActive = false;
+		GetPhysicsObject()->ClearForces();
+		GetPhysicsObject()->SetLinearVelocity(Vector3(0.0f));
+		GetPhysicsObject()->SetAngularVelocity(Vector3(0.0f));
 		return;
 	}
 
@@ -36,7 +39,7 @@ void Bullet::OnCollisionBegin(GameObject* other) {
 		return;
 	}
 	PaintCollision(*other);
-	boundingVolume = (CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer);
+	SetBoundingVolume((CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer));
 	lifespan = -1;
 }
 
@@ -45,7 +48,7 @@ void Bullet::OnTriggerBegin(GameObject* other) {
 		return;
 	}
 	PaintCollision(*other);
-	boundingVolume = (CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer);
+	SetBoundingVolume((CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer));
 	lifespan = -1;
 }
 
@@ -59,9 +62,12 @@ void Bullet::UpdateColour() {
 
 void Bullet::Resize(Vector3 scale) {
 	CollisionLayer layer = boundingVolume->GetCollisionLayer();
-	delete boundingVolume;
-	boundingVolume = (CollisionVolume*) new SphereVolume(scale.x, layer);
+	SetBoundingVolume( (CollisionVolume*) new SphereVolume(scale.x, layer));
 	transform.SetScale(scale);
+}
+
+void Bullet::SetPaintRadius(float scale) {
+	paintRadius = scale;
 }
 
 void Bullet::PaintCollision(GameObject& other) {

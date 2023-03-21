@@ -217,7 +217,7 @@ void LoadAnimationAsset() {
 }
 
 void LoadPrefabs() {
-	float bulletRadius = 0.2f;
+	float bulletRadius = 0.25f;
 	std::unique_ptr<GameObject> bulletPrefab = std::make_unique<PlayerBullet>();
 
 	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::PlayerProj));

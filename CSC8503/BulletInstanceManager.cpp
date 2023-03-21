@@ -18,12 +18,19 @@ BulletInstanceManager::~BulletInstanceManager() {
 
 Bullet* BulletInstanceManager::GetBullet(int firstIndex) {
 	int index = indexs[firstIndex];
-	//std::cout << index << std::endl;
 	indexs[firstIndex] = (index + 1)% BULLETCOUNT;
 	Bullet* bullet = bullets[firstIndex][index];
 	bullet->GetPhysicsObject()->ClearForces();
 	bullet->GetPhysicsObject()->SetLinearVelocity(Vector3(0.0f));
 	bullet->GetPhysicsObject()->SetAngularVelocity(Vector3(0.0f));
+	bullet->SetLifespan(5.0f);
+	CollisionLayer layer = bullet->GetBoundingVolume()->layer;
+	bullet->SetBoundingVolume((CollisionVolume*)new SphereVolume(bullet->GetTransform().GetScale().x, layer));
+
+	if (firstIndex == 0) {
+		std::cout << index << std::endl;
+		std::cout << bullet->GetPhysicsObject()->GetLinearVelocity() << std::endl;
+	}
 	return bullet;
 }
 
