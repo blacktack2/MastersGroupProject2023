@@ -36,13 +36,13 @@ void DebugViewPoint::MarkTime(std::string name) {
 	}
 }
 
-void DebugViewPoint::FinishTime(std::string name) {
+void DebugViewPoint::FinishTime(std::string name, float size) {
 	if (state)
 	{
 		if (startingPoints.contains(name))
 		{
 			auto finishTime = std::chrono::high_resolution_clock::now();
-			NCL::Debug::Print(std::format("{} : {:2}ms", name, std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startingPoints[name]).count() / 1000.0f), Vector2(2, 14 + 2 * (++itemsPrinted)), NCL::Debug::WHITE, 12.0f);
+			NCL::Debug::Print(std::format("{} : {:2}ms", name, std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startingPoints[name]).count() / 1000.0f), Vector2(2, 14 + 2 * (++itemsPrinted)), NCL::Debug::WHITE, size);
 		}
 	}
 }

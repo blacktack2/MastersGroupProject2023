@@ -37,7 +37,7 @@ namespace NCL {
 		* @breif used to finish and display a timmer
 		* @param name the name of the timer to finish
 		*/
-		void FinishTime(std::string name);
+		void FinishTime(std::string name, float size = 15.0f);
 
 		
 	private:

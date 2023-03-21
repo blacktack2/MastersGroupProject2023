@@ -178,11 +178,11 @@ void TutorialGame::UpdateGame(float dt) {
 	ProcessState();
 
 	
-	debugViewPoint.MarkTime("Render");
+	//debugViewPoint.MarkTime("Render");
 	renderer.Render();
 	
 	Debug::UpdateRenderables(dt);
-	debugViewPoint.FinishTime("Render");
+	//debugViewPoint.FinishTime("Render");
 }
 
 bool TutorialGame::IsQuit() {

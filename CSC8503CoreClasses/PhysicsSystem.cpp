@@ -9,6 +9,8 @@
 #include "Window.h"
 #include "Maths.h"
 
+#include "DebugViewPoint.h"
+
 #include <functional>
 using namespace NCL;
 using namespace CSC8503;
@@ -87,12 +89,34 @@ void PhysicsSystem::Update(float dt) {
 	UpdateObjectAABBs();
 	int iteratorCount = 0;
 
+	DebugViewPoint& debugView = DebugViewPoint::Instance();
 	
 	while(dTOffset > realDT) {
+
+		if (iteratorCount == 0)
+		{
+			debugView.MarkTime("Physics-Accel Intergrat");
+		}
 		IntegrateAccel(realDT); //Update accelerations from external forces
 
+		if (iteratorCount == 0)
+		{
+			debugView.FinishTime("Physics-Accel Intergrate", 12.0f);
+			debugView.MarkTime("Physics-Broad Phase");
+		}
 		BroadPhase();
+		if (iteratorCount == 0)
+		{
+			debugView.FinishTime("Physics-Broad Phase", 12.0f);
+			debugView.MarkTime("Physics-Narrow Phase");
+		}
 		NarrowPhase();
+		if (iteratorCount == 0)
+		{
+			debugView.FinishTime("Physics-Narrow Phase", 12.0f);
+			debugView.MarkTime("Physics-Constraints");
+		}
+		
 
 		//This is our simple iterative solver - 
 		//we just run things multiple times, slowly moving things forward
@@ -101,11 +125,35 @@ void PhysicsSystem::Update(float dt) {
 		for (int i = 0; i < constraintIterationCount; ++i) {
 			UpdateConstraints(constraintDt);	
 		}
+		if (iteratorCount == 0)
+		{
+			debugView.FinishTime("Physics-Constraints", 12.0f);
+			debugView.MarkTime("Physics-Vel Intergrate");
+		}
+	
 		IntegrateVelocity(realDT); //update positions from new velocity changes
+		if (iteratorCount == 0)
+		{
+			debugView.FinishTime("Physics-Vel Intergrate", 12.0f);
+		}
 
 		dTOffset -= realDT;
 		iteratorCount++;
 	}
+	if (iteratorCount == 0)
+	{
+		debugView.MarkTime("Physics-Accel Intergrat");
+		debugView.FinishTime("Physics-Accel Intergrat", 12.0f);
+		debugView.MarkTime("Physics-Broad Phase");
+		debugView.FinishTime("Physics-Broad Phase", 12.0f);
+		debugView.MarkTime("Physics-Narrow Phase");
+		debugView.FinishTime("Physics-Narrow Phase", 12.0f);
+		debugView.MarkTime("Physics-Constraints");
+		debugView.FinishTime("Physics-Constraints", 12.0f);
+		debugView.MarkTime("Physics-Vel Intergrate");
+		debugView.FinishTime("Physics-Vel Intergrate", 12.0f);
+	}
+
 
 	ClearForces();	//Once we've finished with the forces, reset them to zero
 
