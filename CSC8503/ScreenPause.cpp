@@ -58,6 +58,7 @@ PushdownState::PushdownResult ScreenPause::OnUpdate(float dt, PushdownState** ne
 			NetworkedGame* netGame = dynamic_cast<NetworkedGame*>(game);
 			if (netGame) {
 				netGame->FreezeSelf();
+				gameStateManager.SetGameState(GameState::Quit);
 			}
 		}
 		return PushdownResult::Pop;

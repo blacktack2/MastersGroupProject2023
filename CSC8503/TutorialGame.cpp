@@ -78,23 +78,15 @@ TutorialGame::~TutorialGame() {
 
 void TutorialGame::StartLevel() {
 	InitWorld();
-	std::cout << "tutorial " << std::endl;
 	XboxControllerManager::GetXboxController().CheckPorts();
-	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
-	if (numOfPlayers >= 4)
+	numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
+	if (numOfPlayers > 4)
 		numOfPlayers = 4;
-
 	boss = AddBossToWorld({ 0, 5, -20 }, Vector3(4), 2);
-
-	players[0] = AddPlayerToWorld(0, Vector3(0, 5, 90));
-	keyMap.ChangePlayerControlTypeMap(0, ControllerType::KeyboardMouse);
-	players[0]->GetCamera()->GetHud().AddHealthBar(players[0]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
-	players[0]->GetCamera()->GetHud().AddHealthBar(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
+	// A messy way of spawning multiple player and 
+	AddPlayer(0, ControllerType::KeyboardMouse);
 	for (int i = 1; i <= numOfPlayers; i++) {
-		players[i] = AddPlayerToWorld(i, Vector3(0, 5, 90));		// TODO: currently this will result in access violation if 4 controllers are connected
-		keyMap.ChangePlayerControlTypeMap(i, ControllerType::Xbox);
-		players[i]->GetCamera()->GetHud().AddHealthBar(players[i]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
-		players[i]->GetCamera()->GetHud().AddHealthBar(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
+		AddPlayer(i, ControllerType::Xbox);
 	}
 	numOfPlayers++;		// +1 accounts for players[0] who uses Keyboard & Mouse
 	playerNum = numOfPlayers;
@@ -107,8 +99,6 @@ void TutorialGame::StartLevel() {
 
 void TutorialGame::Clear() {
 	for (int i = 0; i < playerNum; i++) {
-		//if (players[i] != nullptr)
-		players[i]->GetCamera()->GetHud().ClearAndErase();
 		players[i] = nullptr;
 	}
 	playerNum = 0;
@@ -236,18 +226,28 @@ void TutorialGame::BossTarget() {
 }
 
 void TutorialGame::ProcessState() {
-	int totalHealth = 0;
-	for (int i = 0; i < playerNum; i++) {
-		totalHealth += players[i]->GetHealth()->GetHealth();
-	}
-	if (totalHealth <= 0) {
-		gameStateManager.SetGameState(GameState::Lose);
+	if (gameStateManager.GetGameState() == GameState::OnGoing) {
+		float totalHealth = 0;
+		for (int i = 0; i < playerNum; i++) {
+			totalHealth += players[i]->GetHealth()->GetHealth();
+		}
+		if (totalHealth <= 0) {
+			gameStateManager.SetGameState(GameState::Lose);
+		}
 	}
 
 	switch (gameStateManager.GetGameState()) {
+	case GameState::OnGoing:
+		// TODO - makeshift crosshair
+		Debug::Print("+", Vector2(49.5f, 49.5f), Vector4(1, 1, 1, 1));
+		break;
 	case GameState::Win:
+		Debug::Print("You Win!", Vector2(5.0f, 70.0f), Debug::GREEN);
+		Debug::Print("Press [R] or [Start] to play again", Vector2(5, 80), Debug::WHITE);
+		break;
 	case GameState::Lose:
-		Debug::Print("Press [R] or [Start] to play again", Vector2(5, 80), Vector4(1, 1, 1, 1));
+		Debug::Print("You Lose!", Vector2(5.0f, 70.0f), Debug::RED);
+		Debug::Print("Press [R] or [Start] to play again", Vector2(5, 80), Debug::WHITE);
 		break;
 	}
 
@@ -270,9 +270,59 @@ void TutorialGame::InitGameExamples() {
 }
 
 void TutorialGame::InitDefaultFloor() {
+	AddBackGroundToWorld(Vector3(0,-2, 0));
 	AddFloorToWorld(Vector3(0, -2, 0));
+	AddWallXToWorld(Vector3(-100, 0, -200));
+	AddWallXToWorld(Vector3(100, 0, -200));
+	AddWallXToWorld(Vector3(-100, 0, 200));
+	AddWallXToWorld(Vector3(100, 0, 200));
+	AddWallYToWorld(Vector3(-200, 0, -100));
+	AddWallYToWorld(Vector3(200, 0, -100));
+	AddWallYToWorld(Vector3(-200, 0, 100));
+	AddWallYToWorld(Vector3(200, 0, 100));
 }
-
+GameObject* TutorialGame::AddBackGroundToWorld(const Vector3& position) {
+	GameObject* backGround = new GameObject("BackGround");
+	backGround->GetTransform()
+		.SetScale(Vector3(10, 10, 10))
+		.SetPosition(position);
+	RenderObject* renderObject = new RenderObject(backGround->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("mountMesh"), AssetLibrary<MeshMaterial>::GetAsset("mountMat"));
+	backGround->SetRenderObject(renderObject);
+	gameWorld.AddGameObject(backGround);
+	return backGround;
+}
+GameObject* TutorialGame::AddWallXToWorld(const Vector3& position) {
+	GameObject* wall = new GameObject("wallX");
+	Vector3 wallSize = Vector3(1, 1, 1);
+	wall->GetTransform()
+		.SetScale(Vector3(1.566f, 1.7f, 2))
+		.SetPosition(position);
+	RenderObject* renderObject = new RenderObject(wall->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("wallX"), AssetLibrary<MeshMaterial>::GetAsset("wall"));
+	wall->SetRenderObject(renderObject);
+	AABBVolume* volume = new AABBVolume(Vector3{ 100.0f, 50.0f, 1.0f }, CollisionLayer::PaintAble);
+	wall->SetBoundingVolume((CollisionVolume*)volume);
+	wall->SetPhysicsObject(new PhysicsObject(&wall->GetTransform(), wall->GetBoundingVolume()));
+	wall->GetPhysicsObject()->SetInverseMass(0);
+	wall->GetPhysicsObject()->InitCubeInertia();
+	gameWorld.AddGameObject(wall);
+	return wall;
+}
+GameObject* TutorialGame::AddWallYToWorld(const Vector3& position) {
+	GameObject* wall = new GameObject("wallY");
+	Vector3 wallSize = Vector3(1, 1, 1);
+	wall->GetTransform()
+		.SetScale(Vector3(2.0f, 1.7f, 1.566f))
+		.SetPosition(position);
+	RenderObject* renderObject = new RenderObject(wall->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("wallY"), AssetLibrary<MeshMaterial>::GetAsset("wall"));
+	wall->SetRenderObject(renderObject);
+	AABBVolume* volume = new AABBVolume(Vector3{ 1.0f, 50.0f, 100.0f }, CollisionLayer::PaintAble);
+	wall->SetBoundingVolume((CollisionVolume*)volume);
+	wall->SetPhysicsObject(new PhysicsObject(&wall->GetTransform(), wall->GetBoundingVolume()));
+	wall->GetPhysicsObject()->SetInverseMass(0);
+	wall->GetPhysicsObject()->InitCubeInertia();
+	gameWorld.AddGameObject(wall);
+	return wall;
+}
 GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 	GameObject* floor = new GameObject("Floor");
 
@@ -299,19 +349,28 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 	return floor;
 }
 
+void TutorialGame::AddPlayer(int index, ControllerType type) {
+	players[index] = AddPlayerToWorld(index, Vector3(0, 5, 90));
+	keyMap.ChangePlayerControlTypeMap(index, type);
+	players[index]->GetCamera()->GetHud().AddHealthBar(players[index]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
+	players[index]->GetCamera()->GetHud().SetPlayerHealth(players[index]->GetHealth());
+	players[index]->GetCamera()->GetHud().AddHealthBar(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
+}
+
 PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& position) {
 	static int id = 0;
 
 	PlayerObject* character = new PlayerObject(playerID);
-	SphereVolume* volume = new SphereVolume(1.0f, CollisionLayer::Player);
+	CapsuleVolume* volume = new CapsuleVolume(1.2f, 0.2f, CollisionLayer::Player);
 
-	character->SetBoundingVolume((CollisionVolume*)volume);
+	character->SetBoundingVolume(volume);
 
+	float scale = 2.0f;
 	character->GetTransform()
-		.SetScale(Vector3(1, 1, 1))
+		.SetScale(Vector3(scale))
 		.SetPosition(position);
 
-	character->SetRenderObject(new RenderObject(character->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("goat"), nullptr));
+	character->SetRenderObject(new AnimatedRenderObject(character->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("player"), AssetLibrary<MeshMaterial>::GetAsset("player"), AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle")));
 	
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 
@@ -336,7 +395,7 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 	Boss* boss = new Boss();
 
 	//boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
-	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(Vector3{ dimensions.x,dimensions.y*2.2f,dimensions.z}));
+	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(Vector3{ dimensions.x,dimensions.y*2.2f,dimensions.z}, NCL::CollisionLayer::Enemy));
 
 	boss->GetTransform()
 		.SetPosition(position)
@@ -364,24 +423,23 @@ void TutorialGame::BuildLevel() {
 
 	UpdateLevel();
 }
-
 void TutorialGame::UpdateLevel() {
 	for (auto& object : gameLevel->GetGameStuffs()){
 		if (object->HasDestroyed()){
 			object->Destroy(false);
 			if (object->objectType == ObjectType::Pillar){
-				Vector3 dimensions{ interval / 2.0f, 10, interval / 2.0f };
+				Vector3 dimensions{ interval / 2.0f, 15, interval / 2.0f };
 				Obstacle* pillar = new Obstacle{ object, true };
 
 				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3f, 2.0f, 1.3f }, CollisionLayer::PaintAble));
 
 				pillar->GetTransform()
-					.SetPosition(object->worldPos + Vector3{ 0,20,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,15,0 })
 					.SetScale(dimensions * 2);
 				//pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("pillar"), healingKitTex, nullptr));
 				
 				RenderObject* renderObject = new RenderObject(pillar->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("pillar"), AssetLibrary<MeshMaterial>::GetAsset("pillar"));
-				renderObject->SetPaintTex();
+				renderObject->SetPaintTex(32, 128);
 				pillar->SetRenderObject(renderObject);
 				
 				pillar->SetPhysicsObject(new PhysicsObject(&pillar->GetTransform(), pillar->GetBoundingVolume()));
@@ -390,16 +448,16 @@ void TutorialGame::UpdateLevel() {
 				gameWorld.AddGameObject(pillar);
 			}
 			if (object->objectType == ObjectType::FenceX){
-				Vector3 dimensions{ interval / 6.0f, 1.0f, interval / 5.0f };
+				Vector3 dimensions{ interval / 2.0f, 3.0f, interval / 5.0f };
 				Obstacle* fenceX = new Obstacle{ object, true };
-				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * 2, CollisionLayer::PaintAble));
+				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions*2, CollisionLayer::PaintAble));
 				fenceX->GetTransform()
-					.SetPosition(object->worldPos + Vector3{ 0,2,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,3,0 })
 					.SetScale(dimensions * 2);
 				//fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), basicTex, nullptr));		// TODO: change to the right Mesh
 				
-				RenderObject* renderObject = new RenderObject(fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), nullptr);
-				renderObject->SetPaintTex();
+				RenderObject* renderObject = new RenderObject(fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), AssetLibrary<MeshMaterial>::GetAsset("fenceX"));
+				renderObject->SetPaintTex(16, 16);
 				fenceX->SetRenderObject(renderObject);
 
 				fenceX->SetPhysicsObject(new PhysicsObject(&fenceX->GetTransform(), fenceX->GetBoundingVolume()));
@@ -408,16 +466,16 @@ void TutorialGame::UpdateLevel() {
 				gameWorld.AddGameObject(fenceX);
 			}
 			if (object->objectType == ObjectType::FenceY) {
-				Vector3 dimensions{ interval / 5.0f, 0.5f, interval / 4.0f };
+				Vector3 dimensions{ interval / 5.0f, 3.0f, interval / 2.0f };
 				Obstacle* fenceY = new Obstacle{ object, true };
 				fenceY->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * 2, CollisionLayer::PaintAble));
 				fenceY->GetTransform()
-					.SetPosition(object->worldPos + Vector3{ 0,2,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,3,0 })
 					.SetScale(dimensions * 2);
 				//fenceY->SetRenderObject(new RenderObject(&fenceY->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceY"), basicTex, nullptr));		// TODO: change to the right Mesh
 				
-				RenderObject* renderObject = new RenderObject(fenceY->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceY"), nullptr);
-				renderObject->SetPaintTex();
+				RenderObject* renderObject = new RenderObject(fenceY->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceY"), AssetLibrary<MeshMaterial>::GetAsset("fenceY"));
+				renderObject->SetPaintTex(16, 16);
 				fenceY->SetRenderObject(renderObject);
 				
 				fenceY->SetPhysicsObject(new PhysicsObject(&fenceY->GetTransform(), fenceY->GetBoundingVolume()));
@@ -426,16 +484,16 @@ void TutorialGame::UpdateLevel() {
 				gameWorld.AddGameObject(fenceY);
 			}
 			if (object->objectType == ObjectType::Shelter) {
-				Vector3 dimensions{ interval / 5.0f, 2.0f, interval / 2.0f };
+				Vector3 dimensions{ interval / 1.0f, 5.0f, interval / 1.0f };
 				Obstacle* shelter = new Obstacle{ object, false };
-				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
+				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions*Vector3{0.5f,0.8f,1.0f}, CollisionLayer::PaintAble));
 				shelter->GetTransform()
-					.SetPosition(object->worldPos + Vector3{ 0.0f, 2.2f, 0.0f })
+					.SetPosition(object->worldPos + Vector3{ 0.0f,2.7f, 0.0f })
 					.SetScale(dimensions);
 				//shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("shelter"), basicTex, nullptr));
 
-				RenderObject* renderObject = new RenderObject(shelter->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("shelter"), nullptr);
-				renderObject->SetPaintTex();
+				RenderObject* renderObject = new RenderObject(shelter->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("shelter"), AssetLibrary<MeshMaterial>::GetAsset("shelter"));
+				renderObject->SetPaintTex(16, 16);
 				shelter->SetRenderObject(renderObject);
 
 				shelter->SetPhysicsObject(new PhysicsObject(&shelter->GetTransform(), shelter->GetBoundingVolume()));

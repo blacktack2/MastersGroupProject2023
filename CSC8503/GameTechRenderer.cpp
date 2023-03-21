@@ -128,10 +128,9 @@ int GameTechRenderer::GetGameWorldMainCamera() {
 }
 
 void GameTechRenderer::DisplayWinLoseInformation(int playerID) {
-	gameWorld.GetCamera(playerID);
-	if (bossHP <= 0) {
-		debugPass->RenderWinLoseInformation(true);
-	} else if (playersHP[playerID] <= 0) {
-		debugPass->RenderWinLoseInformation(false);
+	gameWorld.GetCamera(playerID)->GetHud();
+	if (gameWorld.GetCamera(playerID)->GetHud().GetPlayerHealth() != nullptr) {
+		if(gameWorld.GetCamera(playerID)->GetHud().GetPlayerHealth()->GetHealth() <= 0)
+			debugPass->RenderWinLoseInformation(false);
 	}
 }

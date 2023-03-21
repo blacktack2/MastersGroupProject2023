@@ -60,7 +60,7 @@ void ScreenMultiplayerOption::OnAwake() {
 void ScreenMultiplayerOption::InitMenu() {
 	Menu& menu = menuManager.AddMenu(NAME, Vector2(0.0f), Vector2(1.0f), AssetLibrary<TextureBase>::GetAsset("menuMain"));
 
-	menu.AddButton(0.5f, 0.0f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button0"), [&](Button& button) {
+	menu.AddButton(0.5f, 0.0f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button8"), [&](Button& button) {
 		std::cout << "Start server button clicked\n";
 		menuState = ChangeState::StartServer;
 		}, [&](Button& button) {
@@ -69,7 +69,7 @@ void ScreenMultiplayerOption::InitMenu() {
 				std::cout << "Start button selected\n";
 				StartPointer = true;
 			}
-			StartPointer ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("buttonSlide0")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("button0"));
+			StartPointer ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("buttonSlide8")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("button0"));
 		}, [&](Button& button) {
 			if (StartPointer) {
 				std::cout << "Start button pressed\n";
@@ -79,7 +79,7 @@ void ScreenMultiplayerOption::InitMenu() {
 			button.SetTexture(AssetLibrary<TextureBase>::GetAsset("button0"));
 		});
 
-	menu.AddButton(0.5f, -0.3f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button1"), [&](Button& button) {
+	menu.AddButton(0.5f, -0.3f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button9"), [&](Button& button) {
 		std::cout << "Start client button clicked\n";
 		menuState = ChangeState::StartClient;
 		}, [&](Button& button) {
@@ -88,7 +88,7 @@ void ScreenMultiplayerOption::InitMenu() {
 				std::cout << "Start button selected\n";
 				MultiPointer = true;
 			}
-			MultiPointer ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("buttonSlide1")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("button1"));
+			MultiPointer ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("buttonSlide9")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("button1"));
 		}, [&](Button& button) {
 			if (MultiPointer) {
 				std::cout << "Start button pressed\n";

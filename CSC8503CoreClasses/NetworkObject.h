@@ -26,7 +26,7 @@ namespace NCL {
 		struct FullPacket : public GamePacket {
 			int		objectID = -1;
 			NetworkState fullState;
-			int health = 0;
+			int health = -1;
 
 			FullPacket() {
 				type = Full_State;

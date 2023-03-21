@@ -10,7 +10,6 @@ set(Header_Files
     "GameGrid.h"
     "GameGridManager.h"
     "GameStateManager.h"
-	"Maze.h"
     "MenuRenderObject.h"
     "Obstacle.h"
     "StateGameObject.h"
@@ -25,7 +24,6 @@ set(Source_Files
     "GameGridManager.cpp"
     "GameStateManager.cpp"
     "Main.cpp"
-	"Maze.cpp"
     "MenuRenderObject.cpp"
 
     "StateGameObject.cpp"
