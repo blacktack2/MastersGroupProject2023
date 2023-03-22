@@ -27,6 +27,7 @@ enum InputType : unsigned int {
 	Action2_4 = (1u << 14),
 	FreeLook_4 = (1u << 15),
 
+	Confirm_K = (1u << 24),
 	DOWN = (1u << 25),
 	UP = (1u << 26),
 
