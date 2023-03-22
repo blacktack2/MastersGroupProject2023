@@ -66,7 +66,7 @@ void ScreenMultiplayerOption::InitMenu() {
 
 	menu.AddButton(0.5f, 0.3f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button10"), [&](Button& button) {
 		std::cout << "IP button clicked\n";
-		//menuState = ChangeState::Start;
+		menuState = ChangeState::IpAddress;
 		}, [&](Button& button) {
 			IPPointer = false;
 			if (optionManager.GetCounter() > 0) {

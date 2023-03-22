@@ -179,6 +179,19 @@ void LoadMenuAsset() {
 	AssetLibrary<TextureBase>::AddAsset("dot", AssetLoader::LoadTexture("Menu/dot.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("backspace", AssetLoader::LoadTexture("Menu/delete.jpg"));
 
+	AssetLibrary<TextureBase>::AddAsset("num0s", AssetLoader::LoadTexture("Menu/num0s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num1s", AssetLoader::LoadTexture("Menu/num1s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num2s", AssetLoader::LoadTexture("Menu/num2s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num3s", AssetLoader::LoadTexture("Menu/num3s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num4s", AssetLoader::LoadTexture("Menu/num4s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num5s", AssetLoader::LoadTexture("Menu/num5s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num6s", AssetLoader::LoadTexture("Menu/num6s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num7s", AssetLoader::LoadTexture("Menu/num7s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num8s", AssetLoader::LoadTexture("Menu/num8s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num9s", AssetLoader::LoadTexture("Menu/num9s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("dots", AssetLoader::LoadTexture("Menu/dots.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("backspaces", AssetLoader::LoadTexture("Menu/deletes.jpg"));
+
 	AssetLibrary<TextureBase>::AddAsset("numSlide0", AssetLoader::LoadTexture("Menu/num0s.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("numSlide1", AssetLoader::LoadTexture("Menu/num1s.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("numSlide2", AssetLoader::LoadTexture("Menu/num2s.jpg"));

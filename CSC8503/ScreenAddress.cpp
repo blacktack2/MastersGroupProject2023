@@ -70,10 +70,11 @@ void ScreenAddress::InitMenu() {
 				std::cout << asset << " selected\n";
 				num[i] = true;
 			}
-			num[i] ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("plus")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset(asset));
+			num[i] ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset(asset+"s")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset(asset));
 		}, [&, i, asset](Button& button) {
 			if (num[i]) {
 				std::cout << asset << " pressed\n";
+				optionManager.GetIpAddress().AddDigit(i);
 			}
 			num[i] = false;
 			button.SetTexture(AssetLibrary<TextureBase>::GetAsset(asset));
@@ -89,10 +90,11 @@ void ScreenAddress::InitMenu() {
 			std::cout << "dot selected\n";
 			num[i] = true;
 		}
-		num[i] ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("plus")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("dot"));
+		num[i] ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("dots")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("dot"));
 	}, [&, i](Button& button) {
 		if (num[i]) {
 			std::cout << "dot pressed\n";
+			optionManager.GetIpAddress().NextIndex();
 		}
 		num[i] = false;
 		button.SetTexture(AssetLibrary<TextureBase>::GetAsset("dot"));
@@ -107,10 +109,11 @@ void ScreenAddress::InitMenu() {
 			std::cout << "backspace selected\n";
 			num[i] = true;
 		}
-		num[i] ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("plus")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("backspace"));
+		num[i] ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("backspaces")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("backspace"));
 	}, [&, i](Button& button) {
 		if (num[i]) {
 			std::cout << "backspace pressed\n";
+			optionManager.GetIpAddress().RemoveDigit();
 		}
 		num[i] = false;
 		button.SetTexture(AssetLibrary<TextureBase>::GetAsset("backspace"));
