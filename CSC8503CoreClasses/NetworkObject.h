@@ -102,6 +102,7 @@ namespace NCL {
 			virtual bool ReadDeltaPacket(DeltaPacket& p, float dt);
 			virtual bool ReadFullPacket(FullPacket& p, float dt);
 			virtual bool ReadItemInitPacket(ItemInitPacket& p, float dt);
+			virtual bool ReadItemDestroyPacket(ItemInitPacket& p, float dt);
 
 			virtual bool WriteDeltaPacket(GamePacket** p, int stateID);
 			virtual bool WriteFullPacket(GamePacket** p);

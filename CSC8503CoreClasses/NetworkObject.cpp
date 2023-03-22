@@ -128,6 +128,15 @@ bool NetworkObject::ReadItemInitPacket(ItemInitPacket& p, float dt) {
 	return true;
 }
 
+bool NetworkObject::ReadItemDestroyPacket(ItemInitPacket& p, float dt) {
+	if (object.IsActive()) {
+		//static_cast<Bullet*>(&object)->
+		object.GetTransform().SetPosition(p.position);
+		object.GetTransform().SetOrientation(p.orientation);
+	}
+	return true;
+}
+
 bool NetworkObject::WriteDeltaPacket(GamePacket**p, int stateID) {
 	DeltaPacket* dp = new DeltaPacket();
 	NetworkState state;
