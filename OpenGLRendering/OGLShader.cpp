@@ -198,12 +198,12 @@ void OGLShader::DeleteIDs() {
 	Clear();
 }
 
-std::unique_ptr<ShaderBase> OGLShader::CreateShader(const std::string& vertex, const std::string& fragment) {
-	return std::make_unique<OGLShader>(vertex, fragment);
+std::unique_ptr<ShaderBase> OGLShader::CreateShader(const std::string& vertex, const std::string& fragment, const std::string& tessCont, const std::string& tessEval, const std::string& geometry) {
+	return std::make_unique<OGLShader>(vertex, fragment, tessCont, tessEval, geometry);
 }
 
-std::unique_ptr<ShaderBase> OGLShader::CreateShaderAndInit(const std::string& vertex, const std::string& fragment) {
-	std::unique_ptr<ShaderBase> shader = std::make_unique<OGLShader>(vertex, fragment);
+std::unique_ptr<ShaderBase> OGLShader::CreateShaderAndInit(const std::string& vertex, const std::string& fragment, const std::string& tessCont, const std::string& tessEval, const std::string& geometry) {
+	std::unique_ptr<ShaderBase> shader = std::make_unique<OGLShader>(vertex, fragment, tessCont, tessEval, geometry);
 	(static_cast<OGLShader*>(shader.get()))->Initialize();
 	return shader;
 }

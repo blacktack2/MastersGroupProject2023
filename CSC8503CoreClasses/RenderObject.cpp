@@ -8,7 +8,14 @@
  */
 #include "RenderObject.h"
 
+#include "GameWorld.h"
+
 #include "AssetLibrary.h"
+#include "AssetLoader.h"
+
+#include "RendererBase.h"
+
+#include "FrameBuffer.h"
 #include "MeshGeometry.h"
 #include "MeshMaterial.h"
 #include "ShaderBase.h"
@@ -20,7 +27,7 @@ using namespace CSC8503;
 using namespace Rendering;
 
 RenderObject::RenderObject(Transform& parentTransform, std::shared_ptr<MeshGeometry> mesh, std::shared_ptr<MeshMaterial> material) :
-transform(parentTransform), mesh(mesh), material(material), colour(1.0f, 1.0f, 1.0f, 1.0f) {
+transform(parentTransform), mesh(mesh), material(material) {
 }
 
 RenderObject::RenderObject(RenderObject& other, Transform& parentTransform) :
@@ -28,6 +35,21 @@ transform(parentTransform), mesh(other.mesh), material(other.material), colour(o
 }
 
 RenderObject::~RenderObject() {
+}
+
+void RenderObject::SetPaintTex(int width, int height) {
+	paintTexWidth  = width;
+	paintTexHeight = height;
+	paintTexture = AssetLoader::CreateTexture(TextureType::ColourRGBA8, paintTexWidth, paintTexHeight);
+	paintTexture->Bind();
+	paintTexture->SetFilters(MinFilter::Linear, MagFilter::Linear);
+	paintTexture->Unbind();
+
+	std::unique_ptr<FrameBuffer> tempFramebuffer = AssetLoader::CreateFrameBuffer();
+	tempFramebuffer->Bind();
+	tempFramebuffer->AddTexture(*paintTexture, 0);
+	RendererBase::instance().ClearBuffers(ClearBit::Color);
+	tempFramebuffer->Unbind();
 }
 
 void RenderObject::DrawToGBuffer() {
@@ -58,8 +80,11 @@ void RenderObject::PreDraw(int sublayer) {
 	const MeshMaterialEntry* entry = mat.GetMaterialForLayer(sublayer);
 	entry = entry ? entry : mat.GetMaterialForLayer(0);
 
+	TextureBase* height = entry->GetTexture("Displace");
+	TextureBase* parallax = entry->GetTexture("Parallax");
+
 	ShaderBase* shader = entry->GetShader();
-	shader = shader ? shader : &GetDefaultShader();
+	shader = shader ? shader : (parallax ? &GetDefaultParallaxShader() : (height ? &GetDefaultDisplaceShader() : &GetDefaultShader()));
 
 	shader->Bind();
 
@@ -80,6 +105,15 @@ void RenderObject::PreDraw(int sublayer) {
 	TextureBase* spec = entry->GetTexture("Spec");
 	spec = spec ? spec : AssetLibrary<TextureBase>::GetAsset("defaultSpec").get();
 	spec->Bind(2);
+
+	TextureBase* paint = paintTexture ? paintTexture.get() : AssetLibrary<TextureBase>::GetAsset("defaultPaint").get();
+	paint->Bind(3);
+
+	if (parallax) {
+		parallax->Bind(4);
+	} else if (height) {
+		height->Bind(4);
+	}
 
 	PreDraw(sublayer, *shader);
 }
@@ -103,6 +137,14 @@ void RenderObject::PreShadow(int sublayer) {
 
 ShaderBase& RenderObject::GetDefaultShader() {
 	return *AssetLibrary<ShaderBase>::GetAsset("modelDefault");
+}
+
+ShaderBase& RenderObject::GetDefaultDisplaceShader() {
+	return *AssetLibrary<ShaderBase>::GetAsset("modelDisplace");
+}
+
+ShaderBase& RenderObject::GetDefaultParallaxShader() {
+	return *AssetLibrary<ShaderBase>::GetAsset("modelParallax");
 }
 
 ShaderBase& RenderObject::GetDefaultShadowShader() {

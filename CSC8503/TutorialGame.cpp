@@ -31,7 +31,6 @@
 #include "PhysicsSystem.h"
 
 #include "AnimatedRenderObject.h"
-#include "PaintRenderObject.h"
 #include "PhysicsObject.h"
 #include "PlayerObject.h"
 #include "RenderObject.h"
@@ -63,7 +62,6 @@ renderer(GameTechRenderer::instance()), gameWorld(GameWorld::instance()), keyMap
 
 	physics = std::make_unique<PhysicsSystem>(gameWorld);
 	
-	SoundSystem::Initialize();
 	StartLevel();
 	gameStateManager.SetIsNetworked(false);
 }
@@ -78,6 +76,8 @@ TutorialGame::~TutorialGame() {
 }
 
 void TutorialGame::StartLevel() {
+	SoundSystem::Initialize();
+
 	InitWorld();
 	XboxControllerManager::GetXboxController().CheckPorts();
 	numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
@@ -124,6 +124,8 @@ void TutorialGame::InitWorld() {
 }
 
 void TutorialGame::UpdateGame(float dt) {
+	debugViewPoint.BeginFrame();
+
 	GameState gameState = gameStateManager.GetGameState();
 	keyMap.Update();
 
@@ -144,21 +146,19 @@ void TutorialGame::UpdateGame(float dt) {
 		renderer.SetNumPlayers(4);
 		gameWorld.SetScreenNum(4);
 	}
-
-	debugViewPoint.BeginFrame();
-	debugViewPoint.MarkTime("Update");
 	
 	if (optionManager.GetSunMove()) {
 		float runtime = gameWorld.GetRunTime();
 		sunLight->SetDirection(Vector3(std::sin(runtime), std::cos(runtime), 0.0f));
 		renderer.SetSunDir(sunLight->GetDirection());
 	}
+	debugViewPoint.MarkTime("Update Sound");
 
 	if (!optionManager.GetSound()) {
 		SoundSystem::GetSoundSystem()->SetMasterVolume(0.0);
 	}
 	if (optionManager.GetSound()) {
-		SoundSystem::GetSoundSystem()->SetMasterVolume(0.5);
+		//SoundSystem::GetSoundSystem()->SetMasterVolume(0.5);
 		SoundSystem::GetSoundSystem()->Update(dt);
 	}
 	if (optionManager.GetVolumeUp()) {
@@ -169,18 +169,20 @@ void TutorialGame::UpdateGame(float dt) {
 		int i = optionManager.GetDownTimes();
 		SoundSystem::GetSoundSystem()->SetMasterVolume(0.5 - i * 0.1);
 	}
+	debugViewPoint.FinishTime("Update Sound");
 
+	
 	UpdateGameCore(dt);
 
 	gameStateManager.Update(dt);
 	ProcessState();
 
-	debugViewPoint.FinishTime("Update");
-	debugViewPoint.MarkTime("Render");
+	
+	//debugViewPoint.MarkTime("Render");
 	renderer.Render();
 	
 	Debug::UpdateRenderables(dt);
-	debugViewPoint.FinishTime("Render");
+	//debugViewPoint.FinishTime("Render");
 }
 
 bool TutorialGame::IsQuit() {
@@ -194,9 +196,12 @@ void TutorialGame::UpdateGameCore(float dt) {
 	}
 
 	gameWorld.PreUpdateWorld();
-
+	debugViewPoint.MarkTime("Game Update");
 	gameWorld.UpdateWorld(dt);
+	debugViewPoint.FinishTime("Game Update");
+	debugViewPoint.MarkTime("Physics Update");
 	physics->Update(dt);
+	debugViewPoint.FinishTime("Physics Update");
 
 	gameWorld.PostUpdateWorld();
 	
@@ -254,6 +259,8 @@ void TutorialGame::ProcessState() {
 
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	if (keyMap.GetButton(InputType::Restart)) {
+		//std::cout << "restarting level\n";
+		SoundSystem::Destroy();
 		this->StartLevel();
 	}
 	if (keyMap.GetButton(InputType::Return)) {
@@ -287,7 +294,8 @@ GameObject* TutorialGame::AddBackGroundToWorld(const Vector3& position) {
 	backGround->GetTransform()
 		.SetScale(Vector3(10, 10, 10))
 		.SetPosition(position);
-	backGround->SetRenderObject(new PaintRenderObject(backGround->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("mountMesh"), AssetLibrary<MeshMaterial>::GetAsset("mountMat")));
+	RenderObject* renderObject = new RenderObject(backGround->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("mountMesh"), AssetLibrary<MeshMaterial>::GetAsset("mountMat"));
+	backGround->SetRenderObject(renderObject);
 	gameWorld.AddGameObject(backGround);
 	return backGround;
 }
@@ -297,7 +305,8 @@ GameObject* TutorialGame::AddWallXToWorld(const Vector3& position) {
 	wall->GetTransform()
 		.SetScale(Vector3(1.566f, 1.7f, 2))
 		.SetPosition(position);
-	wall->SetRenderObject(new PaintRenderObject(wall->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("wallX"), AssetLibrary<MeshMaterial>::GetAsset("wall")));
+	RenderObject* renderObject = new RenderObject(wall->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("wallX"), AssetLibrary<MeshMaterial>::GetAsset("wall"));
+	wall->SetRenderObject(renderObject);
 	AABBVolume* volume = new AABBVolume(Vector3{ 100.0f, 50.0f, 1.0f }, CollisionLayer::PaintAble);
 	wall->SetBoundingVolume((CollisionVolume*)volume);
 	wall->SetPhysicsObject(new PhysicsObject(&wall->GetTransform(), wall->GetBoundingVolume()));
@@ -312,7 +321,8 @@ GameObject* TutorialGame::AddWallYToWorld(const Vector3& position) {
 	wall->GetTransform()
 		.SetScale(Vector3(2.0f, 1.7f, 1.566f))
 		.SetPosition(position);
-	wall->SetRenderObject(new PaintRenderObject(wall->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("wallY"), AssetLibrary<MeshMaterial>::GetAsset("wall")));
+	RenderObject* renderObject = new RenderObject(wall->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("wallY"), AssetLibrary<MeshMaterial>::GetAsset("wall"));
+	wall->SetRenderObject(renderObject);
 	AABBVolume* volume = new AABBVolume(Vector3{ 1.0f, 50.0f, 100.0f }, CollisionLayer::PaintAble);
 	wall->SetBoundingVolume((CollisionVolume*)volume);
 	wall->SetPhysicsObject(new PhysicsObject(&wall->GetTransform(), wall->GetBoundingVolume()));
@@ -331,9 +341,10 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 		.SetScale(floorSize * 2)
 		.SetPosition(position);
 	
-	PaintRenderObject* render = new PaintRenderObject(floor->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("cube"), AssetLibrary<MeshMaterial>::GetAsset("floor"));
-	render->SetTexScale(Vector2(10.0f));
-	floor->SetRenderObject(render);
+	RenderObject* renderObject = new RenderObject(floor->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("cube"), AssetLibrary<MeshMaterial>::GetAsset("floor"));
+	renderObject->SetPaintTex();
+	renderObject->SetTexScale(Vector2(10.0f));
+	floor->SetRenderObject(renderObject);
 
 	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));
 
@@ -347,7 +358,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 }
 
 void TutorialGame::AddPlayer(int index, ControllerType type) {
-	players[index] = AddPlayerToWorld(index, Vector3(0, 5, 90));
+	players[index] = AddPlayerToWorld(index, Vector3(0 + index * 5, 5, 90));
 	keyMap.ChangePlayerControlTypeMap(index, type);
 	players[index]->GetCamera()->GetHud().AddHealthBar(players[index]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
 	players[index]->GetCamera()->GetHud().SetPlayerHealth(players[index]->GetHealth());
@@ -392,7 +403,7 @@ Boss* TutorialGame::AddBossToWorld(const Vector3& position, Vector3 dimensions, 
 	Boss* boss = new Boss();
 
 	//boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
-	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(Vector3{ dimensions.x,dimensions.y*2.2f,dimensions.z}));
+	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(Vector3{ dimensions.x,dimensions.y*2.2f,dimensions.z}, NCL::CollisionLayer::Enemy));
 
 	boss->GetTransform()
 		.SetPosition(position)
@@ -435,8 +446,9 @@ void TutorialGame::UpdateLevel() {
 					.SetScale(dimensions * 2);
 				//pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("pillar"), healingKitTex, nullptr));
 				
-				PaintRenderObject* render = new PaintRenderObject(pillar->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("pillar"), AssetLibrary<MeshMaterial>::GetAsset("pillar"));
-				pillar->SetRenderObject(render);
+				RenderObject* renderObject = new RenderObject(pillar->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("pillar"), AssetLibrary<MeshMaterial>::GetAsset("pillar"));
+				renderObject->SetPaintTex(128, 256);
+				pillar->SetRenderObject(renderObject);
 				
 				pillar->SetPhysicsObject(new PhysicsObject(&pillar->GetTransform(), pillar->GetBoundingVolume()));
 				pillar->GetPhysicsObject()->SetInverseMass(0);
@@ -452,8 +464,9 @@ void TutorialGame::UpdateLevel() {
 					.SetScale(dimensions * 2);
 				//fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), basicTex, nullptr));		// TODO: change to the right Mesh
 				
-				PaintRenderObject* render = new PaintRenderObject(fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), AssetLibrary<MeshMaterial>::GetAsset("fenceX"));
-				fenceX->SetRenderObject(render);
+				RenderObject* renderObject = new RenderObject(fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), AssetLibrary<MeshMaterial>::GetAsset("fenceX"));
+				renderObject->SetPaintTex(128, 128);
+				fenceX->SetRenderObject(renderObject);
 
 				fenceX->SetPhysicsObject(new PhysicsObject(&fenceX->GetTransform(), fenceX->GetBoundingVolume()));
 				fenceX->GetPhysicsObject()->SetInverseMass(0);
@@ -469,8 +482,9 @@ void TutorialGame::UpdateLevel() {
 					.SetScale(dimensions * 2);
 				//fenceY->SetRenderObject(new RenderObject(&fenceY->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceY"), basicTex, nullptr));		// TODO: change to the right Mesh
 				
-				PaintRenderObject* render = new PaintRenderObject(fenceY->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceY"), AssetLibrary<MeshMaterial>::GetAsset("fenceY"));
-				fenceY->SetRenderObject(render);
+				RenderObject* renderObject = new RenderObject(fenceY->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceY"), AssetLibrary<MeshMaterial>::GetAsset("fenceY"));
+				renderObject->SetPaintTex(128, 128);
+				fenceY->SetRenderObject(renderObject);
 				
 				fenceY->SetPhysicsObject(new PhysicsObject(&fenceY->GetTransform(), fenceY->GetBoundingVolume()));
 				fenceY->GetPhysicsObject()->SetInverseMass(0);
@@ -486,8 +500,9 @@ void TutorialGame::UpdateLevel() {
 					.SetScale(dimensions);
 				//shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("shelter"), basicTex, nullptr));
 
-				PaintRenderObject* render = new PaintRenderObject(shelter->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("shelter"), AssetLibrary<MeshMaterial>::GetAsset("shelter"));
-				shelter->SetRenderObject(render);
+				RenderObject* renderObject = new RenderObject(shelter->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("shelter"), AssetLibrary<MeshMaterial>::GetAsset("shelter"));
+				renderObject->SetPaintTex(128, 128);
+				shelter->SetRenderObject(renderObject);
 
 				shelter->SetPhysicsObject(new PhysicsObject(&shelter->GetTransform(), shelter->GetBoundingVolume()));
 				shelter->GetPhysicsObject()->SetInverseMass(0);

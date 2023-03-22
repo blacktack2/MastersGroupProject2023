@@ -166,6 +166,14 @@ namespace NCL {
 			 * @brief Enable or disable writing to the depth buffer.
 			 */
 			virtual void SetDepthMask(bool enabled = false) = 0;
+
+			/**
+			 * @brief Set the number of vertices used to make a patch primitive
+			 * during tesselation (if present).
+			 * 
+			 * @param numVertices Number of patch vertices.
+			 */
+			virtual void SetPatchVertices(int numVertices = 3) = 0;
 		protected:
 			RendererConfigBase(const RendererBase& renderer);
 

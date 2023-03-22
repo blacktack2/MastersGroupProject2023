@@ -13,8 +13,8 @@ namespace NCL {
 
 
 		InteractionDefault_    = 1 << (int)Default | 1 << (int)Player | 1 << (int)Enemy                                              | 1 << (int)PlayerTrig | 1 << (int)PaintAble,
-		InteractionPlayer_     = 1 << (int)Default | 1 << (int)Player | 1 << (int)Enemy                        | 1 << (int)EnemyProj						| 1 << (int)PaintAble,
-		InteractionEnemy_      = 1 << (int)Default | 1 << (int)Player | 1 << (int)Enemy 																	| 1 << (int)PaintAble,
+		InteractionPlayer_     = 1 << (int)Default					  | 1 << (int)Enemy                        | 1 << (int)EnemyProj						| 1 << (int)PaintAble,
+		InteractionEnemy_      = 1 << (int)Default | 1 << (int)Player | 1 << (int)Enemy | 1 << (int)PlayerProj												| 1 << (int)PaintAble,
 		InteractionPlayerProj_ =									    1 << (int)Enemy																	    | 1 << (int)PaintAble,
 		InteractionEnemyProj_  =					 1 << (int)Player                                                                                       | 1 << (int)PaintAble,
 		InteractionPlayerTrig_ = 1 << (int)Default                                                                                                                               ,

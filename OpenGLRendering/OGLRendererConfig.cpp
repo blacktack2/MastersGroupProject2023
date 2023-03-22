@@ -132,3 +132,7 @@ void OGLRendererConfig::SetDepthTest(bool enabled, DepthTestFunc func, float nea
 void OGLRendererConfig::SetDepthMask(bool enabled) {
 	glDepthMask(enabled);
 }
+
+void OGLRendererConfig::SetPatchVertices(int numVertices) {
+	glPatchParameteri(GL_PATCH_VERTICES, numVertices);
+}

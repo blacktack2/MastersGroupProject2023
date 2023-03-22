@@ -15,10 +15,13 @@ RendererConfigBase::RendererConfigBase(const RendererBase& renderer) : renderer(
 void RendererConfigBase::ResetAll() {
 	SetDefaultViewport();
 	SetClearColour();
+
 	SetAlphaTest();
 	SetBlend();
 	SetColourMask();
 	SetCullFace();
 	SetDepthTest();
 	SetDepthMask();
+
+	SetPatchVertices();
 }

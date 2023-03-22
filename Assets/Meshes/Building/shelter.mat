@@ -3,8 +3,9 @@ MeshMat
 1
 2
 dumpster
-2
+3
 Albedo:/dumpster/dumpster_Albedo.png
 Bump:/dumpster/dumpster_Normal.png
+Spec:/dumpster/dumpster_Metalness.png
 0
 0
