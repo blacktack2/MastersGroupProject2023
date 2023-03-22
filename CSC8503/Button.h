@@ -70,7 +70,7 @@ namespace NCL {
 
             OptionManager& optionManager = OptionManager::instance();
 
-            int counter = 12000;
+            int counter = 0;
             int t = 0;
         };
     }

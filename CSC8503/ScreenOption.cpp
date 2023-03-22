@@ -54,9 +54,17 @@ void ScreenOption::InitMenu() {
 		menuState = ChangeState::Resume;
 		}, [&](Button& button) {
 			ReturnPointer = false;
-			if (optionManager.GetCounter() % 6 == 0) {
-				std::cout << "return button selected\n";
-				ReturnPointer = true;
+			if (optionManager.GetCounter() > 0) {
+				if (optionManager.GetCounter() % 6 == 0) {
+					std::cout << "Return button selected\n";
+					ReturnPointer = true;
+				}
+			}
+			else if (optionManager.GetCounter() < 0) {
+				if (optionManager.GetCounter() % 6 == -1) {
+					std::cout << "Return button selected\n";
+					ReturnPointer = true;
+				}
 			}
 			ReturnPointer ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("returnSlide")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("return"));
 		}, [&](Button& button) {
@@ -78,9 +86,17 @@ void ScreenOption::InitMenu() {
 		);
 		}, [&](Button& button) {
 			SunMovePointer = false;
-			if (optionManager.GetCounter() % 6 == 1) {
-				std::cout << "sun move button selected\n";
-				SunMovePointer = true;
+			if (optionManager.GetCounter() > 0) {
+				if (optionManager.GetCounter() % 6 == 1) {
+					std::cout << "sun move button selected\n";
+					SunMovePointer = true;
+				}
+			}
+			else if (optionManager.GetCounter() <= 0) {
+				if (optionManager.GetCounter() % 6 == 0) {
+					std::cout << "sun move button selected\n";
+					SunMovePointer = true;
+				}
 			}
 			if (!optionManager.GetSunMove()) {
 				SunMovePointer ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("checkboxSlide0")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("checkbox0"));
@@ -108,9 +124,17 @@ void ScreenOption::InitMenu() {
 		);
 		}, [&](Button& button) {
 			DebugModePointer = false;
-			if (optionManager.GetCounter() % 6 == 2) {
-				std::cout << "debug mode button selected\n";
-				DebugModePointer = true;
+			if (optionManager.GetCounter() > 0) {
+				if (optionManager.GetCounter() % 6 == 2) {
+					std::cout << "debug button selected\n";
+					DebugModePointer = true;
+				}
+			}
+			else if (optionManager.GetCounter() < 0) {
+				if (optionManager.GetCounter() % 6 == -5) {
+					std::cout << "debug button selected\n";
+					DebugModePointer = true;
+				}
 			}
 			if (!optionManager.GetDebugMode()) {
 				DebugModePointer ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("checkboxSlide0")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("checkbox0"));
@@ -138,9 +162,17 @@ void ScreenOption::InitMenu() {
 		);
 		}, [&](Button& button) {
 			SoundPointer = false;
-			if (optionManager.GetCounter() % 6 == 3) {
-				std::cout << "sound button selected\n";
-				SoundPointer = true;
+			if (optionManager.GetCounter() > 0) {
+				if (optionManager.GetCounter() % 6 == 3) {
+					std::cout << "sound button selected\n";
+					SoundPointer = true;
+				}
+			}
+			else if (optionManager.GetCounter() < 0) {
+				if (optionManager.GetCounter() % 6 == -4) {
+					std::cout << "sound button selected\n";
+					SoundPointer = true;
+				}
 			}
 			if (!optionManager.GetSound()) {
 				SoundPointer ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("checkboxSlide0")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("checkbox0"));
@@ -166,9 +198,17 @@ void ScreenOption::InitMenu() {
 		optionManager.SetUpTimes(up);
 		}, [&](Button& button) {
 			VolumeUpPointer = false;
-			if (optionManager.GetCounter() % 6 == 4) {
-				std::cout << "plus button selected\n";
-				VolumeUpPointer = true;
+			if (optionManager.GetCounter() > 0) {
+				if (optionManager.GetCounter() % 6 == 4) {
+					std::cout << "plus button selected\n";
+					VolumeUpPointer = true;
+				}
+			}
+			else if (optionManager.GetCounter() < 0) {
+				if (optionManager.GetCounter() % 6 == -3) {
+					std::cout << "plus button selected\n";
+					VolumeUpPointer = true;
+				}
 			}
 			VolumeUpPointer ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("plusslide")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("plus"));
 		}, [&](Button& button) {
@@ -190,9 +230,17 @@ void ScreenOption::InitMenu() {
 		optionManager.SetDownTimes(down);
 		}, [&](Button& button) {
 			VolumeDownPointer = false;
-			if (optionManager.GetCounter() % 6 == 5) {
-				std::cout << "minus button selected\n";
-				VolumeDownPointer = true;
+			if (optionManager.GetCounter() > 0) {
+				if (optionManager.GetCounter() % 6 == 5) {
+					std::cout << "minus button selected\n";
+					VolumeDownPointer = true;
+				}
+			}
+			else if (optionManager.GetCounter() < 0) {
+				if (optionManager.GetCounter() % 6 == -2) {
+					std::cout << "minus button selected\n";
+					VolumeDownPointer = true;
+				}
 			}
 			VolumeDownPointer ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("minusslide")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("minus"));
 		}, [&](Button& button) {
