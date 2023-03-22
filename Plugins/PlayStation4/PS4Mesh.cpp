@@ -1,5 +1,6 @@
 #ifdef _ORBIS
 #include "PS4Mesh.h"
+#include "PS4Renderer.h"
 #include "Vector2.h"
 #include "Vector3.h"
 
@@ -7,11 +8,11 @@
 #include <..\samples\sample_code\graphics\api_gnm\toolkit\stack_allocator.h>
 
 using namespace NCL::Maths;
-using namespace NCL::PS4;
+using namespace NCL::Rendering;
 
 using namespace sce;
 
-PS4Mesh::PS4Mesh()	{
+PS4Mesh::PS4Mesh(PS4Renderer& renderer): renderer(renderer) {
 	indexBuffer		= 0;
 	vertexBuffer	= 0;
 	attributeCount	= 0;
@@ -21,7 +22,7 @@ PS4Mesh::~PS4Mesh()	{
 	delete[] attributeBuffers;
 }
 
-PS4Mesh::PS4Mesh(const std::string& filename) : MeshGeometry(filename) {
+PS4Mesh::PS4Mesh(PS4Renderer& renderer, const std::string& filename) : MeshGeometry(filename), renderer(renderer) {
 	indexType = sce::Gnm::IndexSize::kIndexSize32;
 	primitiveType = sce::Gnm::PrimitiveType::kPrimitiveTypeTriList;
 }
@@ -66,6 +67,27 @@ PS4Mesh* PS4Mesh::GenerateSinglePoint() {
 	return mesh;
 }
 
+void NCL::Rendering::PS4Mesh::Initilize(){
+	UploadToGPU();
+}
+
+void NCL::Rendering::PS4Mesh::Draw(){
+	Gnmx::GnmxGfxContext& cmdList = renderer.GetCurrentGFXContext();
+	cmdList.setVertexBuffers(sce::Gnm::ShaderStage::kShaderStageVs, 0, attributeCount, attributeBuffers);
+	cmdList.setPrimitiveType(primitiveType);
+	cmdList.setIndexSize(indexType);
+	cmdList.drawIndex(GetIndexCount(), indexBuffer);
+
+}
+
+void NCL::Rendering::PS4Mesh::Draw(unsigned int subLayer){
+	Gnmx::GnmxGfxContext& cmdList = renderer.GetCurrentGFXContext();
+	cmdList.setVertexBuffers(sce::Gnm::ShaderStage::kShaderStageVs, 0, attributeCount, attributeBuffers);
+	cmdList.setPrimitiveType(primitiveType);
+	cmdList.setIndexSize(indexType);
+	cmdList.drawIndex(GetIndexCount(), indexBuffer);
+}
+
 PS4Mesh* PS4Mesh::GenerateTriangle() {
 	PS4Mesh* mesh = new PS4Mesh();
 
@@ -81,7 +103,7 @@ PS4Mesh* PS4Mesh::GenerateTriangle() {
 	return mesh;
 }
 
-void	PS4Mesh::UploadToGPU() {
+void PS4Mesh::UploadToGPU() {
 	vertexDataSize = GetVertexCount() * sizeof(MeshVertex);
 	indexDataSize  = GetIndexCount() * sizeof(int);
 
@@ -115,11 +137,4 @@ void	PS4Mesh::InitAttributeBuffer(sce::Gnm::Buffer &buffer, Gnm::DataFormat form
 	buffer.initAsVertexBuffer(offset, format, sizeof(MeshVertex), GetVertexCount());
 	buffer.setResourceMemoryType(Gnm::kResourceMemoryTypeRO);
 }
-
-void PS4Mesh::SubmitDraw(Gnmx::GnmxGfxContext& cmdList, Gnm::ShaderStage stage) {
-	cmdList.setVertexBuffers(stage, 0, attributeCount, attributeBuffers);
-	cmdList.setPrimitiveType(primitiveType);
-	cmdList.setIndexSize(indexType);
-	cmdList.drawIndex(GetIndexCount(), indexBuffer);
-} 
 #endif

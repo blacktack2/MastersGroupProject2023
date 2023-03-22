@@ -23,10 +23,12 @@ RenderObject::RenderObject(Transform& parentTransform, std::shared_ptr<MeshGeome
 transform(parentTransform), mesh(mesh), material(material), colour(1.0f, 1.0f, 1.0f, 1.0f) {
 }
 
-RenderObject::RenderObject(Transform* parentTransform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader): 
-	//transform(parentTransform), mesh(mesh),texture(tex),shader(shader), colour(1.0f, 1.0f, 1.0f, 1.0f) {
-{
-}
+#ifdef _ORBIS
+//RenderObject::RenderObject(Transform* parentTransform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader): 
+//	//transform(parentTransform), mesh(mesh),texture(tex),shader(shader), colour(1.0f, 1.0f, 1.0f, 1.0f) {
+//{
+//}
+#endif
 
 RenderObject::RenderObject(RenderObject& other, Transform& parentTransform) :
 transform(parentTransform), mesh(other.mesh), material(other.material), colour(other.colour) {

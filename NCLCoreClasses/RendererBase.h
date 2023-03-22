@@ -34,13 +34,13 @@ namespace NCL {
 		};
 
 		enum class ClearBit {
-			Color,
-			Depth,
-			Stencil,
-			ColorDepth,
-			ColorStencil,
-			DepthStencil,
-			ColorDepthStencil,
+			Color = 1 << 0,
+			Depth = 1 << 1,
+			Stencil = 1 << 2,
+			ColorDepth = Color | Depth,
+			ColorStencil = Color | Stencil,
+			DepthStencil = Depth | Stencil,
+			ColorDepthStencil = Color | Depth | Stencil,
 		};
 
 		class RendererConfigBase;

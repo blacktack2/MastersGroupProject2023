@@ -84,8 +84,8 @@ if(USE_ORBIS)
    file(GLOB_RECURSE Textures ${ASSET_ROOT}/Textures/*.*)
    source_group("Textures" FILES ${Textures})
    
-   list(APPEND Header_Files "PS4Renderer.h" "PS4TutorialGame.h")
-   list(APPEND Source_Files "PS4Renderer.cpp" "PS4TutorialGame.cpp")
+   list(APPEND Header_Files "PS4TutorialGame.h")
+   list(APPEND Source_Files "PS4TutorialGame.cpp")
 endif()
 
 

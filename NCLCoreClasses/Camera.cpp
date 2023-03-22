@@ -35,8 +35,6 @@ void Camera::UpdateCamera(float dt) {
 	if (follow != nullptr) {
 		Vector3 followPos = follow->GetGlobalPosition();
 
-
-		Vector3 followPos = follow->GetGlobalPosition();
 #ifdef x64
 		followDistance = Maths::Clamp(followDistance - (float)Window::GetMouse()->GetWheelMovement(), 5.0f, 40.0f);
 #endif // x64

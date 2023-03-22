@@ -315,7 +315,7 @@ int main() {
 
 	/*renderer.CreateCamera(&input);*/
 
-	TutorialGame* game = new TutorialGame();
+	NCL::CSC8503::PS4TutorialGame* game = new NCL::CSC8503::PS4TutorialGame();
 
 	Ps4AudioSystem* audioSystem = new Ps4AudioSystem(8);
 

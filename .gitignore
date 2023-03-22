@@ -66,6 +66,7 @@ dkms.conf
 *.o
 *.obj
 *.sb
+*.sdb
 *.gnf
 
 # Precompiled Headers

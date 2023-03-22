@@ -14,7 +14,7 @@ using namespace NCL;
 
 using namespace CSC8503;
 
-TutorialGame::TutorialGame() {
+PS4TutorialGame::PS4TutorialGame() {
 
 	world = &GameWorld::instance();
 	/*sunLight = world->AddLight(new Light({ 0, 0, 0, 0 }, { 1, 1, 1, 1 }, 0, { 0.9f, 0.4f, 0.1f }));
@@ -71,7 +71,7 @@ TutorialGame::TutorialGame() {
 
 }
 
-NCL::CSC8503::TutorialGame::~TutorialGame()
+NCL::CSC8503::PS4TutorialGame::~PS4TutorialGame()
 {
 	delete cubeMesh;
 	delete sphereMesh;
@@ -84,7 +84,7 @@ NCL::CSC8503::TutorialGame::~TutorialGame()
 	delete basicTex;
 }
 
-void NCL::CSC8503::TutorialGame::InitWorld(InitMode mode)
+void NCL::CSC8503::PS4TutorialGame::InitWorld(InitMode mode)
 {
 	world->ClearAndErase();
 	physics->Clear();
@@ -104,7 +104,7 @@ void NCL::CSC8503::TutorialGame::InitWorld(InitMode mode)
 	boss->SetNextTarget(player);
 }
 
-void NCL::CSC8503::TutorialGame::UpdateGame(float dt)
+void NCL::CSC8503::PS4TutorialGame::UpdateGame(float dt)
 {
 	world->GetMainCamera()->UpdateCamera(dt);
 	player->Update(dt);
@@ -120,7 +120,7 @@ void NCL::CSC8503::TutorialGame::UpdateGame(float dt)
 
 }
 
-void NCL::CSC8503::TutorialGame::InitialiseAssets()
+void NCL::CSC8503::PS4TutorialGame::InitialiseAssets()
 {
 	cubeMesh = renderer->LoadMesh("cube.msh");
 	sphereMesh = renderer->LoadMesh("sphere.msh");
@@ -139,7 +139,7 @@ void NCL::CSC8503::TutorialGame::InitialiseAssets()
 #endif
 }
 
-void NCL::CSC8503::TutorialGame::InitCamera()
+void NCL::CSC8503::PS4TutorialGame::InitCamera()
 {
 	world->GetMainCamera()->SetNearPlane(0.1f);
 	world->GetMainCamera()->SetFarPlane(1000.0f);
@@ -150,12 +150,12 @@ void NCL::CSC8503::TutorialGame::InitCamera()
 	lockedObject = nullptr;
 }
 
-void NCL::CSC8503::TutorialGame::InitDefaultFloor()
+void NCL::CSC8503::PS4TutorialGame::InitDefaultFloor()
 {
 	floor = AddFloorToWorld(Vector3(0, -2, 0));
 }
 
-GameObject* NCL::CSC8503::TutorialGame::AddFloorToWorld(const NCL::Maths::Vector3& position)
+GameObject* NCL::CSC8503::PS4TutorialGame::AddFloorToWorld(const NCL::Maths::Vector3& position)
 {
 	GameObject* floor = new GameObject("Floor");
 
@@ -180,7 +180,7 @@ GameObject* NCL::CSC8503::TutorialGame::AddFloorToWorld(const NCL::Maths::Vector
 	return floor;
 }
 
-GameObject* NCL::CSC8503::TutorialGame::AddSphereToWorld(const Maths::Vector3& position, float radius, float inverseMass)
+GameObject* NCL::CSC8503::PS4TutorialGame::AddSphereToWorld(const Maths::Vector3& position, float radius, float inverseMass)
 {
 	static int id = 0;
 	GameObject* sphere = new GameObject(std::string("Sphere").append(std::to_string(id++)));
@@ -204,7 +204,7 @@ GameObject* NCL::CSC8503::TutorialGame::AddSphereToWorld(const Maths::Vector3& p
 	return sphere;
 }
 
-GameObject* NCL::CSC8503::TutorialGame::AddCubeToWorld(const Maths::Vector3& position, Maths::Vector3 dimensions, float inverseMass, bool axisAligned)
+GameObject* NCL::CSC8503::PS4TutorialGame::AddCubeToWorld(const Maths::Vector3& position, Maths::Vector3 dimensions, float inverseMass, bool axisAligned)
 {
 	static int id = 0;
 	GameObject* cube = new GameObject(std::string("Cube").append(std::to_string(id++)));
@@ -236,7 +236,7 @@ GameObject* NCL::CSC8503::TutorialGame::AddCubeToWorld(const Maths::Vector3& pos
 	return cube;
 }
 
-Boss* TutorialGame::AddBossToWorld(const Maths::Vector3& position, Maths::Vector3 dimensions, float inverseMass) {
+Boss* PS4TutorialGame::AddBossToWorld(const Maths::Vector3& position, Maths::Vector3 dimensions, float inverseMass) {
 	Boss* boss = new Boss();
 
 	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
@@ -258,7 +258,7 @@ Boss* TutorialGame::AddBossToWorld(const Maths::Vector3& position, Maths::Vector
 	return boss;
 }
 
-GameObject* NCL::CSC8503::TutorialGame::AddCapsuleToWorld(const Maths::Vector3& position, float halfHeight, float radius, float inverseMass)
+GameObject* NCL::CSC8503::PS4TutorialGame::AddCapsuleToWorld(const Maths::Vector3& position, float halfHeight, float radius, float inverseMass)
 {
 	static int id = 0;
 	GameObject* capsule = new GameObject(std::string("Capsule").append(std::to_string(id++)));
@@ -282,7 +282,7 @@ GameObject* NCL::CSC8503::TutorialGame::AddCapsuleToWorld(const Maths::Vector3& 
 	return capsule;
 }
 
-PlayerObject* NCL::CSC8503::TutorialGame::AddPlayerToWorld(const Maths::Vector3& position, bool cameraFollow)
+PlayerObject* NCL::CSC8503::PS4TutorialGame::AddPlayerToWorld(const Maths::Vector3& position, bool cameraFollow)
 {
 	static int id = 0;
 
@@ -309,7 +309,7 @@ PlayerObject* NCL::CSC8503::TutorialGame::AddPlayerToWorld(const Maths::Vector3&
 	return character;
 }
 
-void TutorialGame::SetCameraFollow(PlayerObject* p)
+void PS4TutorialGame::SetCameraFollow(PlayerObject* p)
 {
 	int id = p->GetPlayerID();
 	world->SetMainCamera(id);

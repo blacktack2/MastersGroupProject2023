@@ -13,26 +13,26 @@
 
 
 namespace NCL {
-	namespace PS4 {
+	namespace Rendering { 
+		class PS4Renderer;
 		//using namespace sce;
 		class PS4Mesh :
-			public NCL::MeshGeometry, public PS4MemoryAware
+			public NCL::MeshGeometry, public PS4::PS4MemoryAware
 		{
 			friend class PS4RendererBase;
 		public:
-			PS4Mesh();
-			PS4Mesh(const std::string& filename);
+			PS4Mesh(PS4Renderer& renderer);
+			PS4Mesh(PS4Renderer& renderer, const std::string& filename);
 			~PS4Mesh();
 
 			static PS4Mesh* GenerateTriangle();
 			static PS4Mesh* GenerateQuad();
 			static PS4Mesh* GenerateSinglePoint();
 
-			void Initilize() override {};
-			void Draw() override {};
-			void Draw(unsigned int subLayer) override{};
+			void Initilize() override ;
+			void Draw() override;
+			void Draw(unsigned int subLayer) override;
 			void	UploadToGPU() override;
-			void	SubmitDraw(sce::Gnmx::GnmxGfxContext& cmdList, sce::Gnm::ShaderStage stage);
 
 			void	InitAttributeBuffer(sce::Gnm::Buffer& buffer, sce::Gnm::DataFormat format, void* offset);
 
@@ -57,6 +57,8 @@ namespace NCL {
 
 			sce::Gnm::Buffer* attributeBuffers;
 			int					attributeCount;
+
+			PS4Renderer& renderer;
 		};
 	}
 }

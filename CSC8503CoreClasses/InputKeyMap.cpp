@@ -9,19 +9,20 @@
 
 
 InputKeyMap::InputKeyMap() {
+#ifdef x64
 	XboxControllerManager::GetXboxController().CheckPorts();
 	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
 	if (numOfPlayers >= 4)	numOfPlayers = 4;
 	for (int i = 1; i <= numOfPlayers; i++) {
 		ChangePlayerControlTypeMap(i, ControllerType::Xbox);
 	}
+#endif // x64
+
+	
 	buttonstates = InputType::Empty;
 	movementAxis = NCL::Maths::Vector2(0);
 	cameraAxis = NCL::Maths::Vector2(0);
 	mousePosition = NCL::Maths::Vector2(0);
-#ifdef x64
-	ChangePlayerControlTypeMap(0, ControllerType::KeyboardMouse);
-#endif // x64
 #ifdef _ORBIS
 	ChangePlayerControlTypeMap(0, ControllerType::PS4);
 #endif // _ORBIS
@@ -41,11 +42,13 @@ void InputKeyMap::Update() {
 	for (auto playerTypePair : playerControlTypeMap) {
 		UpdatePlayer(playerTypePair.first);
 	}
+#ifdef x64
 	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
 	if (numOfPlayers >= 4)	numOfPlayers = 4;
 	for (int i = 1; i <= numOfPlayers; i++) {
 		XboxControllerManager::GetXboxController().UpdateALastState(i);
 	}
+#endif //x64
 
 	upStates   = oldStates & (buttonstates ^ oldStates);
 	downStates = buttonstates & (oldStates ^ buttonstates);
@@ -205,7 +208,7 @@ void InputKeyMap::UpdateWindows(int playerID)
 }
 
 void InputKeyMap::UpdateWindowsGameStateDependant(int playerID) {
-	GameStateManager* gameStateManager = &GameStateManager::instance();
+	CSC8503::GameStateManager* gameStateManager = &CSC8503::GameStateManager::instance();
 	GameState gameState = gameStateManager->GetGameState();
 
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) {
@@ -285,7 +288,7 @@ void InputKeyMap::UpdateXbox(int playerID)
 }
 
 void InputKeyMap::UpdateXboxGameStateDependant(int playerID) {
-	GameStateManager* gameStateManager = &GameStateManager::instance();
+	CSC8503::GameStateManager* gameStateManager = &CSC8503::GameStateManager::instance();
 	GameState gameState = gameStateManager->GetGameState();
 
 	if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_BACK)) {

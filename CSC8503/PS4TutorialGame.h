@@ -13,10 +13,12 @@ namespace NCL {
 		class Maze;
 		class PhysicsSystem;
 		class GameObject;
+		class GameWorld;
 		class MeshGeometry;
 		class PlayerObject;
 		class Boss;
-		class TutorialGame {
+		class Light;
+		class PS4TutorialGame {
 		public:
 			enum class InitMode {
 				EMPTY,
@@ -31,8 +33,8 @@ namespace NCL {
 				AUDIO_TEST//added for audio testing
 			};
 
-			TutorialGame();
-			~TutorialGame();
+			PS4TutorialGame();
+			~PS4TutorialGame();
 
 			void InitWorld(InitMode mode = InitMode::EMPTY);
 
@@ -87,7 +89,7 @@ namespace NCL {
 #ifdef USEVULKAN
 			GameTechVulkanRenderer* renderer;
 #elif _ORBIS
-			NCL::PS4::PS4Renderer* renderer;
+			NCL::Rendering::PS4Renderer* renderer;
 #else
 			NCL::CSC8503::GameTechRenderer* renderer;
 #endif

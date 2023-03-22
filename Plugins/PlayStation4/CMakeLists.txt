@@ -21,6 +21,7 @@ set(Header_Files
     "PS4Sound.h"
     "PS4Texture.h"
     "PS4Window.h"
+   "PS4Renderer.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -41,6 +42,7 @@ set(Source_Files
     "PS4Sound.cpp"
     "PS4Texture.cpp"
     "PS4Window.cpp"
+   "PS4Renderer.cpp"
 )
 
 source_group("Source Files" FILES ${Source_Files})
