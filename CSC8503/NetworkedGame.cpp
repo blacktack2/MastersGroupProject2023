@@ -71,8 +71,13 @@ void NetworkedGame::StartAsServer() {
 	thisServer->RegisterPacketHandler(Received_State, this);
 	thisServer->RegisterPacketHandler(Player_Connected, this);
 	thisServer->RegisterPacketHandler(Player_Disconnected, this);
-
-	StartLobby();
+	if (!thisServer->IsInitialise()) {
+		gameStateManager.SetGameState(GameState::Quit);
+	}
+	else {
+		StartLobby();
+	}
+	
 }
 
 void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
@@ -171,7 +176,7 @@ void NetworkedGame::UpdateGame(float dt) {
 	game_dt = dt;
 	timeToNextPacket -= dt;
 	if (timeToNextPacket < 0) {
-		if (thisServer) {
+		if (thisServer && thisServer->IsInitialise()){
 			UpdateAsServer(dt);
 		}
 		else if (thisClient) {

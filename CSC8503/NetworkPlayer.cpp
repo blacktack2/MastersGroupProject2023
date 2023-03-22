@@ -101,8 +101,8 @@ void NetworkPlayer::Shoot()
 	projectileFireRateTimer = projectileFireRate;
 	PlayerBullet* bullet = PrepareBullet();
 
-	bullet->OnDestroyCallback = [&](Bullet& bullet) {
-		std::cout << "destroyed" << std::endl;
+	bullet->OnDestroyCallback = [&, bullet ](Bullet& b) {
+		
 	};
 
 	ItemInitPacket newObj;
