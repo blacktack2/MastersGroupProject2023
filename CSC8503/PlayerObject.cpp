@@ -62,12 +62,16 @@ void PlayerObject::Update(float dt) {
 	//Debug::DrawLine(transform.GetGlobalPosition() - Vector3(0, radius, 0), transform.GetGlobalPosition() - Vector3(0, jumpTriggerDist,0), Debug::RED);
 	//Change game 
 	if (health.GetHealth() <= 0) {
+		Debug::Print("You got Inked!", Vector2(36, 50), Debug::RED,20.0f, playerID);
 		keyMap.Update();
 		GetAxisInput();
 		SetPitchYaw();
 		MoveCamera(dt);
 		//ChangeLoseState();
 		return;
+	}
+	if (this->transform.GetGlobalPosition().y < -10) {
+		health.SetHealth(0);
 	}
 		
 	health.Update(dt);
@@ -164,7 +168,7 @@ void PlayerObject::MoveCamera(float dt) {
 			lookingAt = closestCollision.collidedAt;
 		}
 		else {
-			std::cout << "dist " << closestCollision.rayDistance << std::endl;
+			//std::cout << "dist " << closestCollision.rayDistance << std::endl;
 		}
 	}
 	//camera->UpdateCamera(dt);

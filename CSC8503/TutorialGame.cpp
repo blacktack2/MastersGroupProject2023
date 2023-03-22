@@ -62,7 +62,6 @@ renderer(GameTechRenderer::instance()), gameWorld(GameWorld::instance()), keyMap
 
 	physics = std::make_unique<PhysicsSystem>(gameWorld);
 	
-	SoundSystem::Initialize();
 	StartLevel();
 	gameStateManager.SetIsNetworked(false);
 }
@@ -77,11 +76,13 @@ TutorialGame::~TutorialGame() {
 }
 
 void TutorialGame::StartLevel() {
+	SoundSystem::Initialize();
+
 	InitWorld();
 	XboxControllerManager::GetXboxController().CheckPorts();
 	numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
-	if (numOfPlayers > 4)
-		numOfPlayers = 4;
+	if (numOfPlayers > 3)
+		numOfPlayers = 3;
 	boss = AddBossToWorld({ 0, 5, -20 }, Vector3(4), 2);
 	// A messy way of spawning multiple player and 
 	AddPlayer(0, ControllerType::KeyboardMouse);
@@ -234,29 +235,31 @@ void TutorialGame::ProcessState() {
 		float totalHealth = 0;
 		for (int i = 0; i < playerNum; i++) {
 			totalHealth += players[i]->GetHealth()->GetHealth();
+			// TODO - makeshift crosshair
+			Debug::Print("+", Vector2(49.1f, 51.1f), Vector4(1, 1, 1, 1), 20.0f, i);
 		}
 		if (totalHealth <= 0) {
 			gameStateManager.SetGameState(GameState::Lose);
 		}
 	}
 
-	switch (gameStateManager.GetGameState()) {
-	case GameState::OnGoing:
-		// TODO - makeshift crosshair
-		Debug::Print("+", Vector2(49.5f, 49.5f), Vector4(1, 1, 1, 1));
-		break;
-	case GameState::Win:
-		Debug::Print("You Win!", Vector2(5.0f, 70.0f), Debug::GREEN);
-		Debug::Print("Press [R] or [Start] to play again", Vector2(5, 80), Debug::WHITE);
-		break;
-	case GameState::Lose:
-		Debug::Print("You Lose!", Vector2(5.0f, 70.0f), Debug::RED);
-		Debug::Print("Press [R] or [Start] to play again", Vector2(5, 80), Debug::WHITE);
-		break;
+	for (int i = 0; i < playerNum; i++) {
+		switch (gameStateManager.GetGameState()) {
+		case GameState::Win:
+			Debug::Print("You Win!", Vector2(5.0f, 70.0f), Debug::GREEN, 20.0f, i);
+			Debug::Print("Press [R] or [Start] to play again", Vector2(5, 80), Debug::WHITE, 20.0f, i);
+			break;
+		case GameState::Lose:
+			Debug::Print("You Lose!", Vector2(5.0f, 70.0f), Debug::RED, 20.0f, i);
+			Debug::Print("Press [R] or [Start] to play again", Vector2(5, 80), Debug::WHITE, 20.0f, i);
+			break;
+		}
 	}
 
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	if (keyMap.GetButton(InputType::Restart)) {
+		//std::cout << "restarting level\n";
+		SoundSystem::Destroy();
 		this->StartLevel();
 	}
 	if (keyMap.GetButton(InputType::Return)) {

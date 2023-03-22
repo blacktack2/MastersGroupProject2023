@@ -151,6 +151,8 @@ set(Menu_Files
     "ScreenMultiplayer.cpp"
     "ScreenMultiplayerOption.h"
     "ScreenMultiplayerOption.cpp"
+    "ScreenAddress.h"
+    "ScreenAddress.cpp"
     "OptionManager.h"
     "OptionManager.cpp"
     "HealthBar.h"
@@ -167,6 +169,8 @@ set(network_Files
     "NetworkPlayer.cpp"
     "NetworkBoss.h"
     "NetworkBoss.cpp"
+    "IpAddress.h"
+    "IpAddress.cpp"
 )
 source_group("Network Files" FILES ${network_Files})
 

@@ -26,7 +26,7 @@ namespace NCL {
 			Vector4 colourB;
 		};
 
-		static void Print(const std::string& text, const Vector2& pos, const Vector4& colour = Vector4(1, 1, 1, 1), const float size = 20.0f);
+		static void Print(const std::string& text, const Vector2& pos, const Vector4& colour = Vector4(1, 1, 1, 1), const float size = 20.0f, int player = MAX_ENTRIES - 1);
 		static void DrawLine(const Vector3& startpoint, const Vector3& endpoint, const Vector4& colour = Vector4(1, 1, 1, 1), float time = 0.0f);
 
 		static void DrawAxisLines(const Matrix4& modelMatrix, float scaleBoost = 1.0f, float time = 0.0f);
@@ -35,8 +35,7 @@ namespace NCL {
 
 		static SimpleFont* GetDebugFont();
 
-		static const std::vector<DebugStringEntry>& GetDebugStrings();
-		static void ClearDebugStrings();
+		static const std::vector<DebugStringEntry>& GetDebugStrings(int player = MAX_ENTRIES - 1);
 		static const std::vector<DebugLineEntry>& GetDebugLines();
 
 		static const Vector4 RED;
@@ -50,8 +49,11 @@ namespace NCL {
 		static const Vector4 MAGENTA;
 		static const Vector4 CYAN;
 	protected:
-		static std::vector<DebugStringEntry> stringEntries;
-		static std::vector<DebugLineEntry>   lineEntries;
+		// MAX_ENTRIES - 1 = Full scene entries
+		static constexpr unsigned int MAX_ENTRIES = 5;
+
+		static std::vector<DebugStringEntry> stringEntries[MAX_ENTRIES];
+		static std::vector<DebugLineEntry> lineEntries;
 
 		static SimpleFont* debugFont;
 	};
