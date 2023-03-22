@@ -24,17 +24,17 @@ ScreenAddress::~ScreenAddress() {
 PushdownState::PushdownResult ScreenAddress::OnUpdate(float dt, PushdownState** newState) {
 	std::string address;
 	for (int i = 0; i < 4; i++) {
-		address += std::to_string(optionManager.GetIpAddress().GetAddress(i));
+		address += std::format ("{:_>3}", optionManager.GetIpAddress().GetAddress(i));
 		if (i != 3) {
 			address += ".";
 		}
 	}
 	Debug::Print(address, Vector2(50.0f, 40.0f), Debug::BLUE);
-	std::cout << address << std::endl;
 	menuManager.Update(dt);
 	keyMap.Update();
 	renderer.Render();
 	if (menuState == ChangeState::Resume || menuState == ChangeState::Quit) {
+		Debug::UpdateRenderables(dt);
 		return PushdownResult::Pop;
 	}
 	menuState = ChangeState::OnGoing;
