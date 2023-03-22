@@ -18,7 +18,7 @@ namespace NCL {
 			type = VolumeType::Invalid;
 			layer = CollisionLayer::Default;
 		}
-		~CollisionVolume() {}
+		virtual ~CollisionVolume() {}
 
 		CollisionLayer GetCollisionLayer() {
 			return layer;
