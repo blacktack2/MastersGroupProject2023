@@ -83,7 +83,7 @@ void ScreenMultiplayerOption::InitMenu() {
 			button.SetTexture(AssetLibrary<TextureBase>::GetAsset("button1"));
 		});
 
-	menu.AddButton(0.5f, 0.0f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button0"), [&](Button& button) {
+	menu.AddButton(0.5f, 0.0f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button8"), [&](Button& button) {
 		std::cout << "Start server button clicked\n";
 		menuState = ChangeState::StartServer;
 		}, [&](Button& button) {
