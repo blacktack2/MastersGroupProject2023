@@ -29,7 +29,7 @@ PushdownState::PushdownResult ScreenAddress::OnUpdate(float dt, PushdownState** 
 			address += ".";
 		}
 	}
-	Debug::Print("address", Vector2(20.0f, 40.0f), Debug::BLUE);
+	Debug::Print(address, Vector2(50.0f, 40.0f), Debug::BLUE);
 	std::cout << address << std::endl;
 	menuManager.Update(dt);
 	keyMap.Update();
@@ -38,6 +38,7 @@ PushdownState::PushdownResult ScreenAddress::OnUpdate(float dt, PushdownState** 
 		return PushdownResult::Pop;
 	}
 	menuState = ChangeState::OnGoing;
+	Debug::UpdateRenderables(dt);
 	return PushdownResult::NoChange;
 }
 
