@@ -236,7 +236,6 @@ void NetworkedGame::BossTarget()
 }
 
 void NetworkedGame::UpdateAsServer(float dt) {
-	Debug::DrawAxisLines(localPlayer->GetTransform().GetGlobalMatrix());
 	//update Game state
 	float health = 0;
 	health += static_cast<NetworkPlayer*>(localPlayer)->GetHealth()->GetHealth();
@@ -260,7 +259,19 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	else {
 		for (auto i : connectedClients) {
 			SendSnapshot(true, i);
+			PlayerSyncPacket newPacket;
+			NetworkPlayer* p = static_cast<NetworkPlayer*>(serverPlayers[i]);
+			newPacket.playerID = p->GetPlayerID();
+			newPacket.health = p->GetHealth()->GetHealth();
+			newPacket.anim = p->GetAnimation();
+			thisServer->SendGlobalPacket(static_cast<GamePacket*>(&newPacket));
 		}
+		PlayerSyncPacket newPacket;
+		NetworkPlayer* p = static_cast<NetworkPlayer*>(localPlayer);
+		newPacket.playerID = p->GetPlayerID();
+		newPacket.health = p->GetHealth()->GetHealth();
+		newPacket.anim = p->GetAnimation();
+		thisServer->SendGlobalPacket(static_cast<GamePacket*>(&newPacket));
 	}
 
 	//move main player
@@ -400,7 +411,7 @@ PlayerObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 	else if (playerID == 3) {
 		colour = Vector4(0, 1, 1, 1);
 	}
-	PlayerObject* newPlayer = AddNetworkPlayerToWorld(Vector3(0, 5, 90), playerID);
+	PlayerObject* newPlayer = AddNetworkPlayerToWorld(Vector3(0 + playerID * 5, 5, 90), playerID);
 	if (isSelf) {
 		keyMap.ChangePlayerControlTypeMap(selfID, ControllerType::KeyboardMouse);
 		SetCameraFollow(newPlayer);
@@ -520,7 +531,12 @@ void NetworkedGame::HandleClientIDPacket(GamePacket* payload, int source) {
 }
 
 void NetworkedGame::HandlePlayerSyncPacket(GamePacket* payload, int source) {
-	
+	int playerID = ((PlayerSyncPacket*)payload)->playerID;
+	if (serverPlayers.contains(playerID)) {
+		NetworkPlayer* p = static_cast<NetworkPlayer*>(serverPlayers[playerID]);
+		p->GetHealth()->SetHealth(((PlayerSyncPacket*)payload)->health);
+		p->SetAnimation(((PlayerSyncPacket*)payload)->anim);
+	}
 }
 
 void NetworkedGame::HandleItemInitPacket(GamePacket* payload, int source) {
@@ -735,6 +751,7 @@ void NetworkedGame::ProcessState() {
 	}
 	
 	if (keyMap.GetButton(InputType::Return)) {
+		std::cout << "quit" << std::endl;
 		gameStateManager.SetGameState(GameState::Quit);
 	}
 }

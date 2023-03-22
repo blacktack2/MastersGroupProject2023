@@ -52,7 +52,7 @@ void NCL::CSC8503::NetworkPlayer::MoveInput(unsigned int keyPress, short int axi
 
 void NCL::CSC8503::NetworkPlayer::ServerSideMovement(float dt)
 {
-	RotateToCamera();
+	//RotateToCamera();
 	Vector3 dir = Vector3(0, 0, 0);
 	lastKey = keyMap.GetButtonState();
 	keyMap.Update();
@@ -66,6 +66,7 @@ void NCL::CSC8503::NetworkPlayer::ServerSideMovement(float dt)
 		GetButtonInput(keyMap.GetButtonState());
 		Move(dir);
 		MoveAnimation();
+		RotateToCamera();
 	}
 }
 

@@ -40,6 +40,8 @@ PushdownState::PushdownResult ScreenPause::OnUpdate(float dt, PushdownState** ne
 		game->UpdateGame(dt);
 	}
 
+	Debug::UpdateRenderables(dt);
+
 	switch (menuState)
 	{
 	case ChangeState::Resume:
@@ -58,6 +60,7 @@ PushdownState::PushdownResult ScreenPause::OnUpdate(float dt, PushdownState** ne
 			NetworkedGame* netGame = dynamic_cast<NetworkedGame*>(game);
 			if (netGame) {
 				netGame->FreezeSelf();
+				gameStateManager.SetGameState(GameState::Quit);
 			}
 		}
 		return PushdownResult::Pop;

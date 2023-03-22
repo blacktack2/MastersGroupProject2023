@@ -43,6 +43,8 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	frameBuffer->Unbind();
 
 	AddModelShader(AssetLibrary<ShaderBase>::GetAsset("modelDefault"));
+	AddModelShader(AssetLibrary<ShaderBase>::GetAsset("modelDisplace"));
+	AddModelShader(AssetLibrary<ShaderBase>::GetAsset("modelParallax"));
 	AddModelShader(AssetLibrary<ShaderBase>::GetAsset("paintDefault"));
 	AddModelShader(AssetLibrary<ShaderBase>::GetAsset("animationDefault"));
 }
@@ -85,9 +87,12 @@ void ModelRPass::AddModelShader(std::shared_ptr<ShaderBase> shader) {
 	modelShaders.push_back(shader);
 	shader->Bind();
 
-	shader->SetUniformInt("albedoTex", 0);
-	shader->SetUniformInt("bumpTex"  , 1);
-	shader->SetUniformInt("specTex"  , 2);
+	shader->SetUniformInt("albedoTex"  , 0);
+	shader->SetUniformInt("bumpTex"    , 1);
+	shader->SetUniformInt("specTex"    , 2);
+	shader->SetUniformInt("paintTex"   , 3);
+	shader->SetUniformInt("heightTex"  , 4);
+	shader->SetUniformInt("parallaxTex", 4);
 
 	shader->Unbind();
 }

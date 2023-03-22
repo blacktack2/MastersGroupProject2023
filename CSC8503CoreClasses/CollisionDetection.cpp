@@ -55,7 +55,7 @@ void NCL::CollisionDetection::ClosestRayPoints(const Vector3& centerA, const Vec
 	const Vector3& centerB, const Vector3& dirB, float lenB,
 	Vector3& bestA, Vector3& bestB) {
 	float t1, t2;
-	if (dirA == dirB) {
+	if ((dirA - dirB).GetAbsMaxElement() < 0.0001) {
 		t1 = 0;
 		t2 = 0;
 	} else {
@@ -475,7 +475,8 @@ bool NCL::CollisionDetection::CapsuleIntersection(const CapsuleVolume& volumeA, 
 	float offsetB = halfHeightB - radiusB;
 	Vector3 dirA = orientationA * Vector3(0, 1, 0);
 	Vector3 dirB = orientationB * Vector3(0, 1, 0);
-
+	dirA.Normalise();
+	dirB.Normalise();
 	Vector3 pointA;
 	Vector3 pointB;
 	ClosestRayPoints(centerA, dirA, offsetA, centerB, dirB, offsetB, pointA, pointB);

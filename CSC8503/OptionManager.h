@@ -7,6 +7,8 @@
  */
 #pragma once
 #include "IpAddress.h"
+#include "DebugViewPoint.h"
+
 namespace NCL {
 	namespace CSC8503 {
 		class OptionManager {
@@ -38,7 +40,10 @@ namespace NCL {
 			void SetSunMove(bool flag) { isSunMove = flag; };
 			bool GetSunMove() { return isSunMove; };
 
-			void SetDebugMode(bool flag) { isDebugMode = flag; };
+			void SetDebugMode(bool flag) {
+				isDebugMode = flag;
+				DebugViewPoint::Instance().enabled = flag;
+			};
 			bool GetDebugMode() { return isDebugMode; };
 
 			void SetSound(bool flag) { isSound = flag; };

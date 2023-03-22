@@ -1,5 +1,8 @@
 #include "InkEffectManager.h"
 #include "Vector4.h"
+
+
+
 using namespace NCL;
 using namespace CSC8503;
 using namespace Maths;
@@ -22,10 +25,10 @@ Vector3 InkEffectManager::GetColour(NCL::InkType type) {
 		return Vector3(1, 1, 1);
 		break;
 	case NCL::InkType::BossDamage:
-		return Vector3(0.2f, 1.0f, 0.5f);
+		return Vector3(255 / 255.0f, 63 / 255.0f, 10 / 255.0f);
 		break;
 	case NCL::InkType::PlayerDamage:
-		return Vector3(1, 0, 0);
+		return Vector3(3 / 255.0f, 66 / 255.0f, 195 / 255.0f);
 		break;
 	}
 }

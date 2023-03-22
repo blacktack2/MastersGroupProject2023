@@ -23,6 +23,8 @@
 using namespace NCL;
 using namespace Rendering;
 
+RendererBase* RendererBase::baseInstance = nullptr;
+
 RendererBase::RendererBase(Window& window) : hostWindow(window)	{
 }
 

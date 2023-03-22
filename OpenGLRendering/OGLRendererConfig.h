@@ -28,6 +28,8 @@ namespace NCL {
 			void SetCullFace(bool enabled, CullFace mode) override;
 			void SetDepthTest(bool enabled, DepthTestFunc func, float nearVal, float farVal) override;
 			void SetDepthMask(bool enabled = false) override;
+
+			void SetPatchVertices(int numVertices) override;
 		};
 	}
 }

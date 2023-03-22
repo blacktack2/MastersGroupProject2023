@@ -22,7 +22,7 @@ GameObject::GameObject(GameObject& other) : gameWorld(GameWorld::instance()), tr
 	boundingVolume = other.boundingVolume == nullptr ? nullptr : CollisionVolume::Clone(*other.boundingVolume);
 	physicsObject  = other.physicsObject  == nullptr ? nullptr : new PhysicsObject(*other.physicsObject, &transform);
 	renderObject   = other.renderObject   == nullptr ? nullptr : new RenderObject(*other.renderObject, transform);
-	networkObject  = other.networkObject  == nullptr ? nullptr : new NetworkObject(*other.networkObject);
+	networkObject  = other.networkObject  == nullptr ? nullptr : new NetworkObject(*this);
 
 	isActive = other.isActive;
 	worldID = -1;
@@ -74,4 +74,35 @@ void GameObject::UpdateBroadphaseAABB() {
 
 		broadphaseAABB = mat * Vector3(r, h, r);
 	}
+}
+
+void GameObject::SetRenderObject(RenderObject* newObject) {
+	if (renderObject)
+	{
+		delete renderObject;
+	}
+	renderObject = newObject;
+}
+
+void GameObject::SetPhysicsObject(PhysicsObject* newObject) {
+	if (physicsObject)
+	{
+		delete physicsObject;
+	}
+	physicsObject = newObject;
+}
+
+void GameObject::SetNetworkObject(NetworkObject* newObject) {
+	if (networkObject) {
+		delete networkObject;
+	}
+	networkObject = newObject;
+}
+
+void GameObject::SetBoundingVolume(CollisionVolume* vol) {
+	if (boundingVolume)
+	{
+		delete boundingVolume;
+	}
+	boundingVolume = vol;
 }

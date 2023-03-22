@@ -24,6 +24,10 @@
 
 #include "AnimatedRenderObject.h"
 
+#include "Vector3.h"
+
+#include "SoundSource.h"
+
 
 class BehaviourNodeWithChildren;
 
@@ -111,6 +115,10 @@ namespace NCL {
             float SqrDistToTarget();
             float DistToTarget();
 
+            void SetBossOrientation(Vector3* facingDir);
+
+            void SetupAudio();
+
             float deltaTime = 0.0f;
             bool isClient = false;
 
@@ -145,6 +153,15 @@ namespace NCL {
 
             BehaviourNodeWithChildren* behaviourTree;
             BossAction bossAction = NoAction;
+
+            SoundSource* hurtSource;
+            SoundSource* inkRainSource;
+            SoundSource* fatherSource;
+            SoundSource* wowSource;
+            SoundSource* tuturuSource;
+            SoundSource* senpaiSource;
+            SoundSource* nyaSource;
+            SoundSource* waitSource;
         };
     }
 }

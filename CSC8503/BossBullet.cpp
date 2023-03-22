@@ -8,7 +8,6 @@
  */
 #include "BossBullet.h"
 #include "Boss.h"
-#include "PaintRenderObject.h"
 #include "InkEffectManager.h"
 #include "GameGridManager.h"
 
@@ -18,6 +17,7 @@ using namespace CSC8503;
 BossBullet::BossBullet() : Bullet() {
 	inkType = NCL::InkType::BossDamage;
 	UpdateColour();
+	
 }
 
 BossBullet::BossBullet(BossBullet& other) : Bullet(other) {

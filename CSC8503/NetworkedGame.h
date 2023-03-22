@@ -140,6 +140,7 @@ namespace NCL {
 		struct PlayerSyncPacket : public GamePacket {
 			int		playerID = -1;
 			int		health = -1;
+			PlayerMovingDirection anim = PlayerMovingDirection::Idle;
 
 			PlayerSyncPacket() {
 				type = PlayerSync_Message;

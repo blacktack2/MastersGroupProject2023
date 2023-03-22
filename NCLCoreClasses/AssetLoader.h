@@ -33,7 +33,7 @@ namespace NCL {
 	typedef std::function<std::unique_ptr<BufferObjectBase>(size_t size, unsigned int binding)> BufferObjectCreateFunction;
 	typedef std::function<std::unique_ptr<FrameBuffer>()> FrameBufferCreateFunction;
 	typedef std::function<std::unique_ptr<MeshGeometry>()> MeshCreateFunction;
-	typedef std::function<std::unique_ptr<ShaderBase>(const std::string& vertex, const std::string& fragment)> ShaderCreateFunction;
+	typedef std::function<std::unique_ptr<ShaderBase>(const std::string& vertex, const std::string& fragment, const std::string& tessCont, const std::string& tessEval, const std::string& geometry)> ShaderCreateFunction;
 	typedef std::function<std::unique_ptr<TextureBase>(TextureType type, unsigned int width, unsigned int height)> TextureCreateFunction;
 
 	/**
@@ -61,8 +61,8 @@ namespace NCL {
 		static std::unique_ptr<BufferObjectBase> CreateBufferObject(size_t size, unsigned int binding);
 		static std::unique_ptr<FrameBuffer>      CreateFrameBuffer();
 		static std::unique_ptr<MeshGeometry>     CreateMesh();
-		static std::unique_ptr<ShaderBase>       CreateShader(const std::string& vertex, const std::string& fragment);
-		static std::unique_ptr<ShaderBase>       CreateShaderAndInit(const std::string& vertex, const std::string& fragment);
+		static std::unique_ptr<ShaderBase>       CreateShader(const std::string& vertex, const std::string& fragment, const std::string& tessCont = "", const std::string& tessEval = "", const std::string& geometry = "");
+		static std::unique_ptr<ShaderBase>       CreateShaderAndInit(const std::string& vertex, const std::string& fragment, const std::string& tessCont = "", const std::string& tessEval = "", const std::string& geometry = "");
 		static std::unique_ptr<TextureBase>      CreateTexture(TextureType type, unsigned int width, unsigned int height);
 	protected:
 		static std::string GetFileExtension(const std::string& fileExtension);

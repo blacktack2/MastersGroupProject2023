@@ -96,6 +96,7 @@ source_group("Physics" FILES ${Physics})
 
 set(Header_Files
     "Debug.h"
+    "DebugViewPoint.h"
     "GameObject.h"
     "GameWorld.h"
     "InputKeyMap.h"
@@ -110,6 +111,7 @@ source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
     "Debug.cpp"
+    "DebugViewPoint.cpp"
     "GameObject.cpp"
     "GameWorld.cpp"
     "InputKeyMap.cpp"

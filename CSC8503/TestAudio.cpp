@@ -13,7 +13,6 @@
 #include "Bullet.h"
 #include "Debug.h"
 #include "GameWorld.h"
-#include "Maze.h"
 #include "OrientationConstraint.h"
 #include "PhysicsObject.h"
 #include "PlayerObject.h"

@@ -56,6 +56,10 @@ namespace NCL {
 			RendererBase(Window& w);
 			virtual ~RendererBase() = default;
 
+			static RendererBase& instance() {
+				return *baseInstance;
+			}
+
 			virtual bool HasInitialised() const = 0;
 
 			void Render() {
@@ -243,6 +247,8 @@ namespace NCL {
 
 			virtual void SwapBuffers() = 0;
 			virtual void ClearBackbuffer() = 0;
+
+			static RendererBase* baseInstance;
 		private:
 			struct MainPass {
 				IMainRenderPass& pass;

@@ -24,9 +24,7 @@ namespace NCL {
 
 			virtual void Update(float dt) {}
 
-			void SetBoundingVolume(CollisionVolume* vol) {
-				boundingVolume = vol;
-			}
+			void SetBoundingVolume(CollisionVolume* vol);
 
 			const CollisionVolume* GetBoundingVolume() const {
 				return boundingVolume;
@@ -56,17 +54,11 @@ namespace NCL {
 				return networkObject;
 			}
 
-			void SetRenderObject(RenderObject* newObject) {
-				renderObject = newObject;
-			}
+			void SetRenderObject(RenderObject* newObject);
 
-			void SetPhysicsObject(PhysicsObject* newObject) {
-				physicsObject = newObject;
-			}
+			void SetPhysicsObject(PhysicsObject* newObject);
 
-			void SetNetworkObject(NetworkObject* newObject) {
-				networkObject = newObject;
-			}
+			void SetNetworkObject(NetworkObject* newObject);
 
 			const std::string& GetName() const {
 				return name;
