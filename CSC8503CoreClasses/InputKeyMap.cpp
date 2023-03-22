@@ -258,7 +258,7 @@ void InputKeyMap::UpdateXbox(int playerID)
 		SetButton(InputType::DOWN);
 	}
 	if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_A)) {
-		SetButton(InputType::Confirm);
+		SetButton(InputType::Confirm_K);
 	}
 }
 
