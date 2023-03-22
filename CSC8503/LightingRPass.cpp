@@ -66,6 +66,7 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	lightShader->Unbind();
 
 	AddShadowShader(AssetLibrary<ShaderBase>::GetAsset("shadowDefault"));
+	AddShadowShader(AssetLibrary<ShaderBase>::GetAsset("shadowAnimated"));
 }
 
 void LightingRPass::OnWindowResize(int width, int height) {
