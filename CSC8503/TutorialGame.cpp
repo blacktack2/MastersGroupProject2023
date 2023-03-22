@@ -82,7 +82,6 @@ void TutorialGame::StartLevel() {
 	numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
 	if (numOfPlayers > 4)
 		numOfPlayers = 4;
-	numOfPlayers = 1;
 	boss = AddBossToWorld({ 0, 5, -20 }, Vector3(4), 2);
 	// A messy way of spawning multiple player and 
 	AddPlayer(0, ControllerType::KeyboardMouse);
@@ -128,7 +127,6 @@ void TutorialGame::UpdateGame(float dt) {
 
 	GameState gameState = gameStateManager.GetGameState();
 	keyMap.Update();
-	std::cout << "dist between " << (players[0]->GetTransform().GetGlobalPosition() - players[1]->GetTransform().GetGlobalPosition()).Length() << "\r";
 	// TODO - This is temporary (remove)
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM1)) {
 		renderer.SetNumPlayers(1);
