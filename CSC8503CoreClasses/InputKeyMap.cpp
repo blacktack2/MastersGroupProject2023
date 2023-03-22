@@ -156,7 +156,7 @@ void InputKeyMap::UpdateWindows(int playerID)
 	}
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN))
 	{
-		SetButton(InputType::Confirm, playerID);
+		SetButton(InputType::Confirm_K, playerID);
 	}
 
 	if (Window::GetMouse()) {

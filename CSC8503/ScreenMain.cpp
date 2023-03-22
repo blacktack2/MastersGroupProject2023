@@ -82,7 +82,6 @@ void ScreenMain::InitMenu() {
 			StartPointer = false;
 			button.SetTexture(AssetLibrary<TextureBase>::GetAsset("button0"));
 	});
-	
 
 	menu.AddButton(0.5f, 0.0f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button1"), [&](Button& button) {
 		std::cout << "Multiplayer button clicked\n";

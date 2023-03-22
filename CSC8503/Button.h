@@ -51,7 +51,6 @@ namespace NCL {
             void DrawExtras() override;
         private:
             void CheckMousePosition(Vector2 mousePos);
-            void CheckPointer(float pointerPosY);
 
             NCL::InputKeyMap& keyMap;
             GameTechRenderer& renderer;
@@ -64,7 +63,6 @@ namespace NCL {
             Vector4 btncolour = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 
             bool isMouseHover;
-            bool isPointer;
 
             overlap_func OnClickCallback = nullptr;
             overlap_func OnSelectCallback = nullptr;

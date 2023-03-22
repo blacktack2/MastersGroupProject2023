@@ -57,7 +57,7 @@ void Button::Update(float dt){
         OnSelect();
     }
 
-    if (keyMap.GetButtonDown(InputType::Confirm)) {
+    if (keyMap.GetButtonDown(InputType::Confirm_K)) {
         OnPress();
     }
 }
@@ -100,9 +100,4 @@ void Button::CheckMousePosition(Vector2 mousePos) {
     mousePos.y = -(mousePos.y * 2 / (float)renderer.GetHeight() - 1);
     isMouseHover = !(mousePos.x < (posX - width ) || mousePos.x > (posX + width) ||
                      mousePos.y < (posY - height) || mousePos.y > (posY + height));
-}
-
-void Button::CheckPointer(float pointerPosY) {
-    pointerPosY = -(pointerPosY * 2 / (float)renderer.GetHeight() - 1);
-    isPointer = !(pointerPosY < (posY - height) || pointerPosY >(posY + height));
 }
