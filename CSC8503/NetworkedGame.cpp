@@ -698,26 +698,26 @@ NetworkBoss* NetworkedGame::AddNetworkBossToWorld(const Vector3& position, Vecto
 }
 
 void NetworkedGame::ProcessState() {
-
+	if(localPlayer)
 	switch (gameStateManager.GetGameState()) {
 	case GameState::Win:
 	case GameState::Lose:
 		if(thisServer){
-			Debug::Print("Press [R] or [Start] to return to lobby", Vector2(5, 80), Debug::WHITE);
+			Debug::Print("Press [R] or [Start] to return to lobby", Vector2(5, 80), Debug::WHITE,20.0f, localPlayer->GetPlayerID());
 		}
 		if (thisClient) {
-			Debug::Print("Please Wait for server to return to lobby", Vector2(5, 80), Debug::WHITE);
+			Debug::Print("Please Wait for server to return to lobby", Vector2(5, 80), Debug::WHITE, 20.0f, localPlayer->GetPlayerID());
 		}
 		break;
 	case GameState::Lobby:
 		std::string s = "Connected Player: ";
 		s += std::to_string(connectedPlayerIDs.size() + 1 ) + "/" + std::to_string(MAXPLAYER);
-		Debug::Print(s.c_str(), Vector2(55, 06), Debug::WHITE);
+		Debug::Print(s.c_str(), Vector2(55, 06), Debug::WHITE, 20.0f, localPlayer->GetPlayerID());
 		if (thisServer) {
-			Debug::Print("Press [R] or [Start] to Start the Game", Vector2(5, 80), Debug::WHITE);
+			Debug::Print("Press [R] or [Start] to Start the Game", Vector2(5, 80), Debug::WHITE, 20.0f, localPlayer->GetPlayerID());
 		}
 		if (thisClient) {
-			Debug::Print("Please Wait for server to Start the Game", Vector2(5, 80), Debug::WHITE);
+			Debug::Print("Please Wait for server to Start the Game", Vector2(5, 80), Debug::WHITE, 20.0f, localPlayer->GetPlayerID());
 		}
 		break;
 	}
