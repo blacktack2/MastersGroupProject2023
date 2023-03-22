@@ -14,7 +14,7 @@ NetworkObject::NetworkObject(GameObject& o, int id) : object(o), renderTransform
 		networkID = id;
 	else
 		networkID = o.GetWorldID();
-	object.SetNetworkObject(this);
+
 	renderTransform = o.GetTransform();
 	(object.GetRenderObject())->SetTransform(renderTransform);
 	lastDeltaState.position = object.GetTransform().GetGlobalPosition();
@@ -115,6 +115,7 @@ bool NetworkObject::ReadItemInitPacket(ItemInitPacket& p, float dt) {
 	static_cast<Bullet*>(&object)->SetLifespan(5.0f);
 	object.GetTransform().SetPosition(p.position);
 	object.GetTransform().SetOrientation(p.orientation);
+	//std::cout << p.scale << std::endl;
 	object.GetTransform().SetScale(p.scale);
 	object.GetPhysicsObject()->SetLinearVelocity(p.velocity);
 

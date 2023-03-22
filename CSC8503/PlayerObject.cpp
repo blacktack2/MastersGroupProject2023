@@ -58,12 +58,13 @@ void PlayerObject::ClearCamera() {
 
 void PlayerObject::Update(float dt) {
 	Vector3 t = transform.GetGlobalOrientation() * projectileSpawnPoint + transform.GetGlobalPosition();
-	Debug::DrawLine(t, t + Vector3(0, 0.5f, 0), Debug::BLUE);
-	Debug::DrawLine(t, t + Vector3(0, -0.5f, 0), Debug::GREEN);
 
-	Debug::DrawLine(transform.GetGlobalPosition() - Vector3(0, radius, 0), transform.GetGlobalPosition() - Vector3(0, jumpTriggerDist,0), Debug::RED);
+	//Debug::DrawLine(transform.GetGlobalPosition() - Vector3(0, radius, 0), transform.GetGlobalPosition() - Vector3(0, jumpTriggerDist,0), Debug::RED);
 	//Change game 
 	if (health.GetHealth() <= 0) {
+		keyMap.Update();
+		GetAxisInput();
+		SetPitchYaw();
 		MoveCamera(dt);
 		//ChangeLoseState();
 		return;
@@ -77,6 +78,9 @@ void PlayerObject::Update(float dt) {
 	CheckGround();
 	if (!isNetwork) {
 		Movement(dt);
+	}
+	else {
+		MoveAnimation();
 	}
 
 	//If on ink
@@ -296,13 +300,18 @@ void PlayerObject::RotateByAxis() {
 
 }
 
-void NCL::CSC8503::PlayerObject::RotatePlayer()
+void NCL::CSC8503::PlayerObject::SetPitchYaw()
 {
 	float sensitivity = 1.5f;
 	pitch += axis[Axis4] * sensitivity;
 	yaw -= axis[Axis3] * sensitivity;
 	pitch = std::clamp(pitch, -90.0f, 90.0f);
 	yaw += (yaw < 0) ? 360.0f : ((yaw > 360.0f) ? -360.0f : 0.0f);
+}
+
+void NCL::CSC8503::PlayerObject::RotatePlayer()
+{
+	SetPitchYaw();
 
 	RotateYaw(yaw);
 }
