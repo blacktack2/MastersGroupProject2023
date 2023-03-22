@@ -114,14 +114,14 @@ void RendererBase::ResizeViewport() {
 			playerViewports[1] = Vector4(0.5f, 0.0f, 0.5f, 1.0f);
 			break;
 		case 4:
-			playerViewports[3] = Vector4(0.5f, 0.5f, 0.5f, 0.5f);
+			playerViewports[3] = Vector4(0.5f, 0.0f, 0.5f, 0.5f);
 			[[ fallthrough ]];
 		case 3:
 			splitWidth  = static_cast<int>(GetWidth() * 0.5f);
 			splitHeight = static_cast<int>(GetHeight() * 0.5f);
-			playerViewports[0] = Vector4(0.0f, 0.0f, 0.5f, 0.5f);
-			playerViewports[1] = Vector4(0.5f, 0.0f, 0.5f, 0.5f);
-			playerViewports[2] = Vector4(0.0f, 0.5f, 0.5f, 0.5f);
+			playerViewports[0] = Vector4(0.0f, 0.5f, 0.5f, 0.5f);
+			playerViewports[1] = Vector4(0.5f, 0.5f, 0.5f, 0.5f);
+			playerViewports[2] = Vector4(0.0f, 0.0f, 0.5f, 0.5f);
 			break;
 	}
 	for (auto& pass : mainRenderPasses) {

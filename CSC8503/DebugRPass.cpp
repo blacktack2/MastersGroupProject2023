@@ -59,7 +59,7 @@ void DebugRPass::RenderLines() {
 	}
 
 	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetAspect());
+	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetSplitAspect());
 	
 	Matrix4 viewProjMatrix  = projMatrix * viewMatrix;
 

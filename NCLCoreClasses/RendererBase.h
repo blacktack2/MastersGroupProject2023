@@ -115,6 +115,9 @@ namespace NCL {
 			 */
 			void UpdatePipeline();
 
+			inline float GetSplitAspect() {
+				return (float)splitWidth / (float)splitHeight;
+			}
 			inline int GetSplitWidth() const {
 				return splitWidth;
 			}
