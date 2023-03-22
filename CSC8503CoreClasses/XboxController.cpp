@@ -42,10 +42,12 @@ int XboxController::GetActiveControllerNumber()
     return connectedControllers.size();
 }
 
-void XboxController::UpdateALastState(unsigned int controllerNum) {
+void XboxController::UpdateLastState(unsigned int controllerNum) {
     UpdateConnection(controllerNum);
-    buttonALastState[controllerNum] = (state.Gamepad.wButtons & XINPUT_GAMEPAD_A);
+    buttonLastState[XINPUT_GAMEPAD_A][controllerNum] = (state.Gamepad.wButtons & XINPUT_GAMEPAD_A);
+    buttonLastState[XINPUT_GAMEPAD_BACK][controllerNum] = (state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK);
 }
+
 bool XboxController::UpdateConnection(unsigned int controllerNum)   // controllerNum == 1,2,3,4
 {
     controllerNum--;
@@ -184,7 +186,7 @@ bool XboxController::GetButton(unsigned int controllerNum, short int button)    
     return keyDown & button;
 }
 
-bool XboxController::GetAButtonClick(unsigned int controllerNum)      // n normalized to 0 ~ 1
+bool XboxController::GetButtonClick(unsigned int controllerNum, short int button)      // n normalized to 0 ~ 1
 {
     if (!UpdateConnection(controllerNum))   // Controller is not connected OR controllerNum is out of range
     {
@@ -193,5 +195,5 @@ bool XboxController::GetAButtonClick(unsigned int controllerNum)      // n norma
 
     WORD   keyDown = state.Gamepad.wButtons;
 
-    return (keyDown & XINPUT_GAMEPAD_A) && buttonALastState[controllerNum] == false;
+    return (keyDown & button) && buttonLastState[button][controllerNum] == false;
 }

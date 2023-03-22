@@ -39,6 +39,10 @@ PushdownState::PushdownResult ScreenPause::OnUpdate(float dt, PushdownState** ne
 		}
 		game->UpdateGame(dt);
 	}
+	
+	if (keyMap.GetButton(InputType::Pause)) {
+		menuState = ChangeState::Resume;
+	}
 
 	Debug::UpdateRenderables(dt);
 
@@ -76,7 +80,7 @@ void ScreenPause::OnAwake() {
 
 	renderer.EnableOverlayPass("Menu", true);
 	renderer.EnableOverlayPass("Debug", false);
-	renderer.EnableOverlayPass("Hud", false);
+	//renderer.EnableOverlayPass("Hud", false);
 	renderer.UpdatePipeline();
 
 	Window::GetWindow()->ShowOSPointer(true);

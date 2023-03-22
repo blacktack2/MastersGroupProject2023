@@ -33,7 +33,7 @@ void InputKeyMap::Update() {
 	int numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
 	if (numOfPlayers >= 4)	numOfPlayers = 4;
 	for (int i = 1; i <= numOfPlayers; i++) {
-		XboxControllerManager::GetXboxController().UpdateALastState(i);
+		XboxControllerManager::GetXboxController().UpdateLastState(i);
 	}
 
 	upStates   = oldStates & (buttonstates ^ oldStates);
@@ -142,10 +142,11 @@ void InputKeyMap::UpdateWindows(int playerID)
 	{
 		SetButton(InputType::FreeLook, playerID);
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE))
+	/*
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE))
 	{
 		SetButton(InputType::Pause, playerID);
-	}
+	}*/
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN ) || Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT))
 	{
 		SetButton(InputType::DOWN, playerID);
@@ -257,7 +258,7 @@ void InputKeyMap::UpdateXbox(int playerID)
 	if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_DPAD_DOWN)) {
 		SetButton(InputType::DOWN);
 	}
-	if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_A)) {
+	if (XboxControllerManager::GetXboxController().GetButtonClick(playerID, XINPUT_GAMEPAD_A)) {
 		SetButton(InputType::Confirm);
 	}
 }
@@ -266,7 +267,7 @@ void InputKeyMap::UpdateXboxGameStateDependant(int playerID) {
 	GameStateManager* gameStateManager = &GameStateManager::instance();
 	GameState gameState = gameStateManager->GetGameState();
 
-	if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_BACK)) {
+	if (XboxControllerManager::GetXboxController().GetButtonClick(playerID, XINPUT_GAMEPAD_BACK)) {
 		SetButton(InputType::Pause);
 	}
 	switch (gameState) {
