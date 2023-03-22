@@ -95,9 +95,17 @@ void ScreenPause::InitMenu() {
 		menuState = ChangeState::Resume;
 		}, [&](Button& button) {
 			ResumePointer = false;
-			if (optionManager.GetCounter() % 4 == 1) {
-				std::cout << "Resume button selected\n";
-				ResumePointer = true;
+			if (optionManager.GetCounter() > 0) {
+				if (optionManager.GetCounter() % 4 == 1) {
+					std::cout << "Resume button selected\n";
+					ResumePointer = true;
+				}
+			}
+			else if (optionManager.GetCounter() <= 0) {
+				if (optionManager.GetCounter() % 4 == 0) {
+					std::cout << "Resume button selected\n";
+					ResumePointer = true;
+				}
 			}
 			ResumePointer ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("buttonSlide4")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("button4"));
 		}, [&](Button& button) {
@@ -114,9 +122,17 @@ void ScreenPause::InitMenu() {
 		menuState = ChangeState::Option;
 		}, [&](Button& button) {
 			OptionPointer = false;
-			if (optionManager.GetCounter() % 4 == 2) {
-				std::cout << "Option button selected\n";
-				OptionPointer = true;
+			if (optionManager.GetCounter() > 0) {
+				if (optionManager.GetCounter() % 4 == 2) {
+					std::cout << "Option button selected\n";
+					OptionPointer = true;
+				}
+			}
+			else if (optionManager.GetCounter() < 0) {
+				if (optionManager.GetCounter() % 4 == -3) {
+					std::cout << "Option button selected\n";
+					OptionPointer = true;
+				}
 			}
 			OptionPointer ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("buttonSlide5")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("button5"));
 		}, [&](Button& button) {
@@ -133,9 +149,17 @@ void ScreenPause::InitMenu() {
 		// TODO - Add functionality
 		}, [&](Button& button) {
 			TitlePointer = false;
-			if (optionManager.GetCounter() % 4 == 3) {
-				std::cout << "Title button selected\n";
-				TitlePointer = true;
+			if (optionManager.GetCounter() > 0) {
+				if (optionManager.GetCounter() % 4 == 3) {
+					std::cout << "Dummy button selected\n";
+					TitlePointer = true;
+				}
+			}
+			else if (optionManager.GetCounter() < 0) {
+				if (optionManager.GetCounter() % 4 == -2) {
+					std::cout << "Dummy button selected\n";
+					TitlePointer = true;
+				}
 			}
 			TitlePointer ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("buttonSlide6")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("button6"));
 		}, [&](Button& button) {
@@ -153,9 +177,17 @@ void ScreenPause::InitMenu() {
 		menuState = ChangeState::Quit;
 		}, [&](Button& button) {
 			QuitPointer = false;
-			if (optionManager.GetCounter() % 4 == 0) {
-				std::cout << "Quit button selected\n";
-				QuitPointer = true;
+			if (optionManager.GetCounter() > 0) {
+				if (optionManager.GetCounter() % 4 == 0) {
+					std::cout << "Quit button selected\n";
+					QuitPointer = true;
+				}
+			}
+			else if (optionManager.GetCounter() < 0) {
+				if (optionManager.GetCounter() % 4 == -1) {
+					std::cout << "Quit button selected\n";
+					QuitPointer = true;
+				}
 			}
 			QuitPointer ? button.SetTexture(AssetLibrary<TextureBase>::GetAsset("buttonSlide7")) : button.SetTexture(AssetLibrary<TextureBase>::GetAsset("button7"));
 		}, [&](Button& button) {
