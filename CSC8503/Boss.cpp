@@ -32,9 +32,15 @@ Boss::Boss() {
 
 Boss::~Boss() {
     delete behaviourTree;
+
     delete hurtSource;
     delete inkRainSource;
     delete fatherSource;
+    delete wowSource;
+    delete tuturuSource;
+    delete senpaiSource;
+    delete nyaSource;
+    delete waitSource;
 }
 
 void Boss::BuildTree() {
@@ -229,12 +235,16 @@ void Boss::SetupAudio()
     hurtSource->SetGain(0.0f);
     hurtSource->SetSoundBuffer(Sound::AddSound("tom.wav"));
     hurtSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+    //hurtSource->SetTarget(this);
+    //hurtSource->SetMaxDistance(10.0f);
     hurtSource->SetGain(1.0f);
     hurtSource->SetPitch(1.0f);
+    //SoundSystem::GetSoundSystem()->AddSoundSource(hurtSource);
 
     inkRainSource = new SoundSource();
     inkRainSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
     inkRainSource->SetGain(0.0f);
+    //inkRainSource->SetMaxDistance(10.0f);
     inkRainSource->SetSoundBuffer(Sound::AddSound("inkRain.wav"));
     inkRainSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
     inkRainSource->SetGain(1.0f);
@@ -287,8 +297,6 @@ void Boss::SetupAudio()
     waitSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
     waitSource->SetGain(1.0f);
     waitSource->SetPitch(1.0f);
-
-    SoundSystem::GetSoundSystem()->SetListener(this);
 
 }
 
@@ -735,7 +743,9 @@ bool Boss::BulletsStorm() {
             for (; currentPhase < (2 * PI + bulletsStormAngle); currentPhase += dAngle) {
                 Vector3 rayDir = transform.GetGlobalOrientation() * Vector3(cos(currentPhase), 0, sin(currentPhase));
                 Vector3 bombVelocity = rayDir * bombSpeed;
-                releaseBossBullet(bombVelocity, bombScale);
+                Vector3 p = this->GetTransform().GetGlobalPosition();
+                p.y = p.y - 7;
+                releaseBossBullet(bombVelocity, bombScale, p);
             }
             physicsObject->SetAngularVelocity(transform.GetGlobalOrientation() * Vector3 { 1, 1, 1 });
         }
