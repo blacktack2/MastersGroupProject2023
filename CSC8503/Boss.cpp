@@ -735,7 +735,9 @@ bool Boss::BulletsStorm() {
             for (; currentPhase < (2 * PI + bulletsStormAngle); currentPhase += dAngle) {
                 Vector3 rayDir = transform.GetGlobalOrientation() * Vector3(cos(currentPhase), 0, sin(currentPhase));
                 Vector3 bombVelocity = rayDir * bombSpeed;
-                releaseBossBullet(bombVelocity, bombScale);
+                Vector3 p = this->GetTransform().GetGlobalPosition();
+                p.y = p.y - 7;
+                releaseBossBullet(bombVelocity, bombScale, p);
             }
             physicsObject->SetAngularVelocity(transform.GetGlobalOrientation() * Vector3 { 1, 1, 1 });
         }
