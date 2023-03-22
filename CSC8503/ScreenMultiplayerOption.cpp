@@ -9,6 +9,7 @@
  */
 #pragma once
 #include "ScreenMultiplayerOption.h"
+#include "ScreenAddress.h"
 
 #include "AssetLibrary.h"
 
@@ -28,6 +29,9 @@ PushdownState::PushdownResult ScreenMultiplayerOption::OnUpdate(float dt, Pushdo
 	keyMap.Update();
 	renderer.Render();
 	switch (menuState) {
+	case ChangeState::IpAddress:
+		*newState = new ScreenAddress();
+		return PushdownResult::Push;
 	case ChangeState::StartServer:
 		*newState = new ScreenMultiplayer(true);
 		return PushdownResult::Push;
@@ -48,7 +52,7 @@ void ScreenMultiplayerOption::OnAwake() {
 	menuManager.SetCurrentMenu(NAME);
 
 	renderer.EnableOverlayPass("Menu", true);
-	renderer.EnableOverlayPass("Debug", false);
+	renderer.EnableOverlayPass("DebugSplit", false);
 	renderer.EnableOverlayPass("Hud", false);
 	renderer.EnableRenderScene(false);
 	renderer.UpdatePipeline();
@@ -62,7 +66,7 @@ void ScreenMultiplayerOption::InitMenu() {
 
 	menu.AddButton(0.5f, 0.3f, 0.2f, 0.1f, AssetLibrary<TextureBase>::GetAsset("button10"), [&](Button& button) {
 		std::cout << "IP button clicked\n";
-		//menuState = ChangeState::Start;
+		menuState = ChangeState::IpAddress;
 		}, [&](Button& button) {
 			IPPointer = false;
 			if (optionManager.GetCounter() > 0) {
@@ -81,7 +85,7 @@ void ScreenMultiplayerOption::InitMenu() {
 		}, [&](Button& button) {
 			if (IPPointer) {
 				std::cout << "IP button pressed\n";
-				//menuState = ChangeState::Start;
+				menuState = ChangeState::IpAddress;
 			}
 			IPPointer = false;
 			button.SetTexture(AssetLibrary<TextureBase>::GetAsset("button10"));

@@ -46,7 +46,7 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	shader->SetUniformFloat("cirrus", 0.5f);
 	shader->SetUniformFloat("cumulus", 0.5f);
 
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetAspect());
+	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetSplitAspect());
 	shader->SetUniformMatrix("projMatrix", projMatrix);
 
 	shader->Unbind();
