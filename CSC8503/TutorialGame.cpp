@@ -366,7 +366,7 @@ PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& positi
 	static int id = 0;
 
 	PlayerObject* character = new PlayerObject(playerID);
-	CapsuleVolume* volume = new CapsuleVolume(1.2f, 1.0f, CollisionLayer::Player);
+	CapsuleVolume* volume = new CapsuleVolume(1.2f, 0.2f, CollisionLayer::Player);
 
 	character->SetBoundingVolume(volume);
 
