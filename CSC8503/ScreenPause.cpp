@@ -79,7 +79,7 @@ void ScreenPause::OnAwake() {
 	menuManager.SetCurrentMenu(NAME);
 
 	renderer.EnableOverlayPass("Menu", true);
-	renderer.EnableOverlayPass("Debug", false);
+	renderer.EnableOverlayPass("DebugSplit", false);
 	//renderer.EnableOverlayPass("Hud", false);
 	renderer.UpdatePipeline();
 

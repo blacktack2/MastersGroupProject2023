@@ -60,8 +60,7 @@ void ModelRPass::Render() {
 		shader->Bind();
 
 		Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-		float screenAspect = (float)renderer.GetSplitWidth() / (float)renderer.GetSplitHeight();
-		Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
+		Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetSplitAspect());
 
 		shader->SetUniformMatrix("viewMatrix", viewMatrix);
 		shader->SetUniformMatrix("projMatrix", projMatrix);
