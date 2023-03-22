@@ -156,7 +156,7 @@ void InputKeyMap::UpdateWindows(int playerID)
 	}
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN))
 	{
-		SetButton(InputType::Confirm, playerID);
+		SetButton(InputType::Confirm_K, playerID);
 	}
 
 	if (Window::GetMouse()) {
@@ -258,7 +258,7 @@ void InputKeyMap::UpdateXbox(int playerID)
 		SetButton(InputType::DOWN);
 	}
 	if (XboxControllerManager::GetXboxController().GetButton(playerID, XINPUT_GAMEPAD_A)) {
-		SetButton(InputType::Confirm);
+		SetButton(InputType::Confirm_K);
 	}
 }
 

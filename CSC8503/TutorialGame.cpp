@@ -62,7 +62,6 @@ renderer(GameTechRenderer::instance()), gameWorld(GameWorld::instance()), keyMap
 
 	physics = std::make_unique<PhysicsSystem>(gameWorld);
 	
-	SoundSystem::Initialize();
 	StartLevel();
 	gameStateManager.SetIsNetworked(false);
 }
@@ -77,6 +76,8 @@ TutorialGame::~TutorialGame() {
 }
 
 void TutorialGame::StartLevel() {
+	SoundSystem::Initialize();
+
 	InitWorld();
 	XboxControllerManager::GetXboxController().CheckPorts();
 	numOfPlayers = XboxControllerManager::GetXboxController().GetActiveControllerNumber();
@@ -258,6 +259,8 @@ void TutorialGame::ProcessState() {
 
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	if (keyMap.GetButton(InputType::Restart)) {
+		//std::cout << "restarting level\n";
+		SoundSystem::Destroy();
 		this->StartLevel();
 	}
 	if (keyMap.GetButton(InputType::Return)) {
