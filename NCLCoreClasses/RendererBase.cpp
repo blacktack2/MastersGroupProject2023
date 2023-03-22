@@ -56,6 +56,8 @@ void RendererBase::EnableOverlayPass(const std::string& name, bool enable) {
 
 void RendererBase::UpdatePipeline() {
 	renderPipeline.clear();
+	renderOverlaySplit.clear();
+	renderOverlayFull.clear();
 	if (doRenderScene) {
 		for (auto& pass : mainRenderPasses) {
 			renderPipeline.push_back(pass.pass);
@@ -80,11 +82,14 @@ void RendererBase::UpdatePipeline() {
 			presentPass->SetSceneTexIn(combinePass->GetOutTex());
 		}
 	}
-	overlayFullPipeline.clear();
 	if (doRenderOver) {
 		for (auto& pass : overlayRenderPasses) {
 			if (pass.enabled) {
-				overlayFullPipeline.push_back(pass.pass);
+				if (pass.split) {
+					renderOverlaySplit.push_back(pass.pass);
+				} else {
+					renderOverlayFull.push_back(pass.pass);
+				}
 			}
 		}
 	}
@@ -95,14 +100,29 @@ void RendererBase::OnWindowResize(int width, int height) {
 }
 
 void RendererBase::ResizeViewport() {
-	switch (numPlayers) {
-	default:
-	case 1:
-		splitWidth = static_cast<int>(GetWidth()); splitHeight = static_cast<int>(GetHeight()); break;
-	case 2:
-		splitWidth = static_cast<int>(GetWidth() * 0.5f); splitHeight = static_cast<int>(GetHeight()); break;
-	case 3: case 4:
-		splitWidth = static_cast<int>(GetWidth() * 0.5f); splitHeight = static_cast<int>(GetHeight() * 0.5f); break;
+	switch (numSplits) {
+		default:
+		case 1:
+			splitWidth  = static_cast<int>(GetWidth());
+			splitHeight = static_cast<int>(GetHeight());
+			playerViewports[0] = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+			break;
+		case 2:
+			splitWidth  = static_cast<int>(GetWidth() * 0.5f);
+			splitHeight = static_cast<int>(GetHeight());
+			playerViewports[0] = Vector4(0.0f, 0.0f, 0.5f, 1.0f);
+			playerViewports[1] = Vector4(0.5f, 0.0f, 0.5f, 1.0f);
+			break;
+		case 4:
+			playerViewports[3] = Vector4(0.5f, 0.5f, 0.5f, 0.5f);
+			[[ fallthrough ]];
+		case 3:
+			splitWidth  = static_cast<int>(GetWidth() * 0.5f);
+			splitHeight = static_cast<int>(GetHeight() * 0.5f);
+			playerViewports[0] = Vector4(0.0f, 0.0f, 0.5f, 0.5f);
+			playerViewports[1] = Vector4(0.5f, 0.0f, 0.5f, 0.5f);
+			playerViewports[2] = Vector4(0.0f, 0.5f, 0.5f, 0.5f);
+			break;
 	}
 	for (auto& pass : mainRenderPasses) {
 		pass.pass.OnWindowResize(splitWidth, splitHeight);
@@ -121,61 +141,34 @@ void RendererBase::ResizeViewport() {
 	}
 }
 
-void RendererBase::RenderViewPort(int viewportID, int cameraID, const std::vector<float>& viewports, bool displayHudDebug) {
-	size_t index = (size_t)viewportID * 4;
-	GetConfig().SetDefaultViewport(0, 0, viewports[index + 2], viewports[index + 3]);
+void RendererBase::RenderViewPort(int cameraID, const Vector4& viewport) {
+	GetConfig().SetDefaultViewport(0, 0, viewport.z, viewport.w);
+
 	SetGameWorldMainCamera(cameraID);
 	RenderScene();
-	GetConfig().SetDefaultViewport(viewports[index], viewports[index + 1], viewports[index + 2], viewports[index + 3]);
+
+	GetConfig().SetDefaultViewport(viewport.x, viewport.y, viewport.z, viewport.w);
+
 	RenderPresent();
-	DisplayWinLoseInformation(cameraID);
-	EnableOverlayPass("Menu", false);
-	if (!displayHudDebug) {
-		EnableOverlayPass("Hud", true);
-		EnableOverlayPass("Debug", true);
-	}
-	UpdatePipeline();
-	RenderOverlay();
+	RenderOverlaySplit();
+	//DisplayWinLoseInformation(cameraID);
 }
 
 void RendererBase::RenderFrame() {
-	static const std::vector<float> viewports1 = {
-		0.0f, 0.0f, 1.0f, 1.0f,
-	};
-	static const std::vector<float> viewports2 = {
-		0.0f, 0.0f, 0.5f, 1.0f,
-		0.5f, 0.0f, 0.5f, 1.0f,
-	};
-	static const std::vector<float> viewports4 = {
-		0.0f, 0.0f, 0.5f, 0.5f,
-		0.0f, 0.5f, 0.5f, 0.5f,
-		0.5f, 0.0f, 0.5f, 0.5f,
-		0.5f, 0.5f, 0.5f, 0.5f,
-	};
-	const std::vector<float>& viewports = numPlayers > 2 ? viewports4 : (numPlayers > 1 ? viewports2 : viewports1);
 	ClearBackbuffer();
 	int mainCamera = GetGameWorldMainCamera();
 	bool temp1 = overlayRenderPasses[overlayMap["Menu"]].enabled;
 
-	//viewport 0 is always main camera
-	RenderViewPort(0, mainCamera, viewports, temp1);
-	int cameraID = 0;
-	for (size_t i = 1; i < numPlayers; i++) {
-		if (cameraID == mainCamera) {
-			cameraID++;
-		}
-		//if (i > 1) { SetGameWorldDeltaTime(0.0f); }
-		RenderViewPort(i, cameraID, viewports, temp1);
-		cameraID++;
+	RenderViewPort(mainCamera, playerViewports[0]);
+	// Only time numSplits is > 1, is split-screen where mainCamera is always 0
+	// In networking numSplits should always be 1, therefore this loop is ignored
+	for (int cameraID = 1; cameraID < numSplits; cameraID++) {
+		RenderViewPort(cameraID, playerViewports[cameraID]);
 	}
 	
 	SetGameWorldMainCamera(mainCamera);
 	GetConfig().SetDefaultViewport();
-	EnableOverlayPass("Menu", temp1);
-	EnableOverlayPass("Hud", false);
-	EnableOverlayPass("Debug", false);
-	UpdatePipeline();
-	RenderOverlay();
+	RenderOverlayFull();
 }
 
 void RendererBase::RenderScene() {
@@ -188,8 +181,14 @@ void RendererBase::RenderPresent() {
 	presentPass->Render();
 }
 
-void RendererBase::RenderOverlay() {
-	for (auto& pass : overlayFullPipeline) {
+void RendererBase::RenderOverlaySplit() {
+	for (auto& pass : renderOverlaySplit) {
+		pass.get().Render();
+	}
+}
+
+void RendererBase::RenderOverlayFull() {
+	for (auto& pass : renderOverlayFull) {
 		pass.get().Render();
 	}
 }

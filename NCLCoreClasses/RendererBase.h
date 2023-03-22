@@ -67,7 +67,10 @@ namespace NCL {
 
 			virtual bool SetVerticalSync(VerticalSyncState s) = 0;
 			inline void SetNumPlayers(unsigned int numPlayers) {
-				this->numPlayers = numPlayers;
+				if (numSplits == numPlayers) {
+					return;
+				}
+				numSplits = numPlayers;
 				ResizeViewport();
 			}
 
@@ -210,9 +213,11 @@ namespace NCL {
 			 * @brief Must be followed by a call to UpdatePipeline() to take effect.
 			 * 
 			 * @param name Unique name identifier for this render pass.
+			 * @param isSplit If true, this pass will be displayed per split
+			 * screen, otherwise will always be displayed over the entire screen.
 			 */
-			inline void AddOverlayPass(IOverlayRenderPass& pass, const std::string& name) {
-				overlayRenderPasses.push_back({ pass, true });
+			inline void AddOverlayPass(IOverlayRenderPass& pass, const std::string& name, bool isSplit) {
+				overlayRenderPasses.push_back({ pass, true, isSplit });
 				overlayMap.insert({ name, overlayRenderPasses.size() - 1});
 			}
 
@@ -246,13 +251,14 @@ namespace NCL {
 			};
 
 			void ResizeViewport();
-			void RenderViewPort(int viewportID, int cameraID, const std::vector<float>& viewports, bool displayHudDebug);
+			void RenderViewPort(int cameraID, const Vector4& viewport);
 			void RenderFrame();
 			void RenderScene();
 			void RenderPresent();
-			void RenderOverlay();
+			void RenderOverlaySplit();
+			void RenderOverlayFull();
 
-			unsigned int numPlayers = 4;
+			unsigned int numSplits = 4;
 			int splitWidth = 1, splitHeight = 1;
 
 			Window& hostWindow;
@@ -271,12 +277,15 @@ namespace NCL {
 			std::unordered_map<std::string, size_t> overlayMap{};
 
 			std::vector<std::reference_wrapper<IRenderPass>> renderPipeline{};
-			std::vector<std::reference_wrapper<IRenderPass>> overlayFullPipeline{};
+			std::vector<std::reference_wrapper<IRenderPass>> renderOverlaySplit{};
+			std::vector<std::reference_wrapper<IRenderPass>> renderOverlayFull{};
 
-			Vector4 player1Viewport = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
-			Vector4 player2Viewport = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
-			Vector4 player3Viewport = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
-			Vector4 player4Viewport = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+			std::vector<Vector4> playerViewports = {
+				Vector4(0.0f, 0.0f, 1.0f, 1.0f),
+				Vector4(0.0f, 0.0f, 1.0f, 1.0f),
+				Vector4(0.0f, 0.0f, 1.0f, 1.0f),
+				Vector4(0.0f, 0.0f, 1.0f, 1.0f),
+			};
 
 			/**
 			* TODO:
