@@ -29,8 +29,6 @@ PushdownState::PushdownResult ScreenAddress::OnUpdate(float dt, PushdownState** 
 			address += ".";
 		}
 	}
-	renderer.EnableOverlayPass("Debug", true);
-	renderer.UpdatePipeline();
 	Debug::Print("address", Vector2(20.0f, 40.0f), Debug::BLUE);
 	std::cout << address << std::endl;
 	menuManager.Update(dt);
@@ -49,7 +47,6 @@ void ScreenAddress::OnAwake() {
 	menuManager.SetCurrentMenu(NAME);
 
 	renderer.EnableOverlayPass("Menu", true);
-	renderer.EnableOverlayPass("Debug", true);
 	renderer.UpdatePipeline();
 
 	optionManager.SetCounter(0);

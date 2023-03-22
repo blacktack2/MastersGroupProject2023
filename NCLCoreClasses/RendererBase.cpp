@@ -159,6 +159,7 @@ void RendererBase::RenderFrame() {
 	int mainCamera = GetGameWorldMainCamera();
 	bool temp1 = overlayRenderPasses[overlayMap["Menu"]].enabled;
 
+	currentlySplit = true;
 	RenderViewPort(mainCamera, playerViewports[0]);
 	// Only time numSplits is > 1, is split-screen where mainCamera is always 0
 	// In networking numSplits should always be 1, therefore this loop is ignored
@@ -168,6 +169,7 @@ void RendererBase::RenderFrame() {
 	
 	SetGameWorldMainCamera(mainCamera);
 	GetConfig().SetDefaultViewport();
+	currentlySplit = false;
 	RenderOverlayFull();
 }
 

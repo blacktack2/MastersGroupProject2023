@@ -73,11 +73,13 @@ void GameTechRenderer::InitPipeline() {
 	hudPass = std::make_unique<HudRPass>();
 	AddOverlayPass(*hudPass, "Hud", true);
 
+	debugPass = std::make_unique<DebugRPass>();
+	AddOverlayPass(*debugPass, "DebugSplit", true);
+
 	menuPass = std::make_unique<MenuRPass>();
 	AddOverlayPass(*menuPass, "Menu", false);
 
-	debugPass = std::make_unique<DebugRPass>();
-	AddOverlayPass(*debugPass, "Debug", false);
+	AddOverlayPass(*debugPass, "DebugFull", false);
 
 	UpdatePipeline();
 }

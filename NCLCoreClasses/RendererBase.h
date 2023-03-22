@@ -132,6 +132,10 @@ namespace NCL {
 				return (int)hostWindow.GetScreenSize().y;
 			}
 
+			inline bool IsCurrentlySplit() {
+				return currentlySplit;
+			}
+
 			/**
 			 * @brief Clear the backbuffer, or the current framebuffer.
 			 * 
@@ -287,12 +291,7 @@ namespace NCL {
 				Vector4(0.0f, 0.0f, 1.0f, 1.0f),
 			};
 
-			/**
-			* TODO:
-			*	Split renderePipeline&overlayPipeline to have one for each player
-			*	Store player specific viewports in Vector4 member variables
-			*	Try to simplify the RenderFrame mainloop (preferably to just a few for loops)
-			*/
+			bool currentlySplit = false;
 		};
 	}
 }
