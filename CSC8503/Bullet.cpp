@@ -28,6 +28,7 @@ void Bullet::Update(float dt) {
 		GetPhysicsObject()->ClearForces();
 		GetPhysicsObject()->SetLinearVelocity(Vector3(0.0f));
 		GetPhysicsObject()->SetAngularVelocity(Vector3(0.0f));
+		physicsObject->SetInverseMass(1.0f);
 		return;
 	}
 	lifespan -= dt;
@@ -41,6 +42,7 @@ void Bullet::OnCollisionBegin(GameObject* other) {
 	}
 	PaintCollision(*other);
 	SetBoundingVolume((CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer));
+	physicsObject->SetInverseMass(0);
 	lifespan = 0;
 }
 
@@ -50,6 +52,7 @@ void Bullet::OnTriggerBegin(GameObject* other) {
 	}
 	PaintCollision(*other);
 	SetBoundingVolume((CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer));
+	physicsObject->SetInverseMass(0);
 	lifespan = 0;
 }
 
