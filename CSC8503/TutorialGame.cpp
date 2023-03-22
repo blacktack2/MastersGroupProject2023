@@ -332,7 +332,7 @@ GameObject* TutorialGame::AddWallYToWorld(const Vector3& position) {
 GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 	GameObject* floor = new GameObject("Floor");
 
-	Vector3 floorSize = Vector3(200, 2, 200);
+	Vector3 floorSize = Vector3(210, 2, 210);
 	AABBVolume* volume = new AABBVolume(floorSize, CollisionLayer::PaintAble);
 	floor->SetBoundingVolume((CollisionVolume*)volume);
 	floor->GetTransform()
@@ -437,7 +437,7 @@ void TutorialGame::UpdateLevel() {
 				Vector3 dimensions{ interval / 2.0f, 15, interval / 2.0f };
 				Obstacle* pillar = new Obstacle{ object, true };
 
-				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.3f, 2.0f, 1.3f }, CollisionLayer::PaintAble));
+				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.0f, 2.0f, 1.0f }, CollisionLayer::PaintAble));
 
 				pillar->GetTransform()
 					.SetPosition(object->worldPos + Vector3{ 0,15,0 })
@@ -456,7 +456,7 @@ void TutorialGame::UpdateLevel() {
 			if (object->objectType == ObjectType::FenceX){
 				Vector3 dimensions{ interval / 2.0f, 3.0f, interval / 5.0f };
 				Obstacle* fenceX = new Obstacle{ object, true };
-				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions*2, CollisionLayer::PaintAble));
+				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
 				fenceX->GetTransform()
 					.SetPosition(object->worldPos + Vector3{ 0,3,0 })
 					.SetScale(dimensions * 2);
@@ -474,7 +474,7 @@ void TutorialGame::UpdateLevel() {
 			if (object->objectType == ObjectType::FenceY) {
 				Vector3 dimensions{ interval / 5.0f, 3.0f, interval / 2.0f };
 				Obstacle* fenceY = new Obstacle{ object, true };
-				fenceY->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * 2, CollisionLayer::PaintAble));
+				fenceY->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
 				fenceY->GetTransform()
 					.SetPosition(object->worldPos + Vector3{ 0,3,0 })
 					.SetScale(dimensions * 2);
@@ -492,7 +492,7 @@ void TutorialGame::UpdateLevel() {
 			if (object->objectType == ObjectType::Shelter) {
 				Vector3 dimensions{ interval / 1.0f, 5.0f, interval / 1.0f };
 				Obstacle* shelter = new Obstacle{ object, false };
-				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions*Vector3{0.5f,0.8f,1.0f}, CollisionLayer::PaintAble));
+				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions*Vector3{0.4f,0.8f,0.75f}, CollisionLayer::PaintAble));
 				shelter->GetTransform()
 					.SetPosition(object->worldPos + Vector3{ 0.0f,2.7f, 0.0f })
 					.SetScale(dimensions);

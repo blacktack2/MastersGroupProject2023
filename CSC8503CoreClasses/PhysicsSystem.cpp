@@ -322,9 +322,9 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 	Vector3 fullVelocityA = physA->GetLinearVelocity() + angVelocityA;
 	Vector3 fullVelocityB = physB->GetLinearVelocity() + angVelocityB;
 
-	Vector3 contactVelocity = fullVelocityB - fullVelocityA;
+	Vector3 contactVelocity = (fullVelocityB - fullVelocityA);
 
-	float impulseForce = Vector3::Dot(contactVelocity, p.normal);
+	float impulseForce = std::min(Vector3::Dot(contactVelocity, p.normal), 0.0f);
 
 	Vector3 inertiaA = Vector3::Cross(physA->GetInverseInertiaTensor() * Vector3::Cross(relativeA, p.normal), relativeA);
 	Vector3 inertiaB = Vector3::Cross(physB->GetInverseInertiaTensor() * Vector3::Cross(relativeB, p.normal), relativeB);
