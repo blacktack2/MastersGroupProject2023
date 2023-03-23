@@ -15,7 +15,7 @@ NetworkBoss::NetworkBoss(NetworkedGame* game) : Boss()
 {
 	this->game = game;
 	if(!this->game->GetServer())
-		isClient = true;
+		isSpawnBullet = false;
 }
 
 NetworkBoss::~NetworkBoss()
@@ -46,3 +46,7 @@ void NetworkBoss::BulletModification(BossBullet* bullet)
 		game->GetServer()->SendGlobalPacket(&newObj);
 }
 
+void NetworkBoss::SetBossAction(BossAction action)
+{
+	bossAction = action;
+}

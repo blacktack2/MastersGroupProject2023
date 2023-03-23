@@ -395,7 +395,7 @@ void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
 }
 
 BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p) {
-    if (isClient) {
+    if (!isSpawnBullet) {
         return nullptr;
     }
     BossBullet* ink = BulletInstanceManager::instance().GetBossBullet();
@@ -705,7 +705,7 @@ bool Boss::InkRain(PlayerObject* player) {
         return true;
     }
     inkRainTimer += deltaTime;
-    if (inkRainTimer > rainPeriod && !isClient) {
+    if (inkRainTimer > rainPeriod && isSpawnBullet) {
         inkRainTimer = 0.0f;
         rain[currentRainBomb]->SetLifespan(0.0f);
         Vector3 bombDirection = (player->GetTransform().GetGlobalPosition() - rainBombPositions[currentRainBomb]).Normalised();

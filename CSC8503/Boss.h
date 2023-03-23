@@ -120,7 +120,6 @@ namespace NCL {
             void SetupAudio();
 
             float deltaTime = 0.0f;
-            bool isClient = false;
 
             Health health = Health(100);
 
@@ -162,6 +161,9 @@ namespace NCL {
             SoundSource* senpaiSource;
             SoundSource* nyaSource;
             SoundSource* waitSource;
+
+            //enable Spawn bullet (networking)
+            bool isSpawnBullet = true;
         };
     }
 }

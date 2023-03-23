@@ -18,7 +18,7 @@ enum BasicNetworkMessages {
 	Shutdown,
 	ClientID_Message,
 	PlayerSync_Message,
-	BossAction_Message,
+	BossSync_Message,
 	GameState_Message,
 	Lobby_Message
 };
@@ -62,15 +62,6 @@ struct PlayerConnectionPacket : public GamePacket {
 		size = sizeof(PlayerConnectionPacket) - sizeof(GamePacket);
 	}
 };
-struct BossActionPacket : public GamePacket {
-	short int bossAction = 0;
-
-	BossActionPacket() {
-		type = BossAction_Message;
-		size = sizeof(BossActionPacket) - sizeof(GamePacket);
-	}
-};
-
 class PacketReceiver {
 public:
 	virtual void ReceivePacket(int type, GamePacket* payload, int source = -1) = 0;

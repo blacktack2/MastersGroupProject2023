@@ -91,7 +91,7 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(PlayerSync_Message, this);
 	thisClient->RegisterPacketHandler(ClientID_Message, this);
 	thisClient->RegisterPacketHandler(Item_Init_Message, this);
-	thisClient->RegisterPacketHandler(BossAction_Message, this);
+	thisClient->RegisterPacketHandler(BossSync_Message, this);
 	thisClient->RegisterPacketHandler(GameState_Message, this);
 	thisClient->RegisterPacketHandler(Lobby_Message, this);
 
@@ -369,8 +369,8 @@ void NetworkedGame::SendSnapshot(bool deltaFrame, int playerID) {
 		}
 	});
 	if (boss) {
-		BossActionPacket newPacket;
-		newPacket.bossAction = static_cast<short int> (boss->GetBossAction());
+		BossSyncPacket newPacket;
+		newPacket.anim = boss->GetBossAction();
 		thisServer->SendPacket(static_cast <GamePacket*> (&newPacket), playerID);
 	}
 }
@@ -544,11 +544,9 @@ void NetworkedGame::HandleItemInitPacket(GamePacket* payload, int source) {
 
 void NetworkedGame::HandleBossActionPacket(GamePacket* payload, int source)
 {
-	//Needs Implementing in Boss's Code
-	
-	Boss::BossAction action = static_cast<Boss::BossAction>(static_cast<BossActionPacket*>(payload)->bossAction);
+	Boss::BossAction action = static_cast<BossSyncPacket*>(payload)->anim;
 	if (boss) {
-		//boss->SetBossAction(action);
+		static_cast<NetworkBoss*>(boss)->SetBossAction(action);
 	}
 }
 
@@ -616,7 +614,7 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	case Item_Init_Message:
 		ClientProcessNetworkObject(payload, source);
 		break;
-	case BossAction_Message:
+	case BossSync_Message:
 		HandleBossActionPacket(payload, source);
 		break;
 	case GameState_Message:
