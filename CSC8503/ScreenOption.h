@@ -14,6 +14,7 @@
 #include "OptionManager.h"
 
 #include "DebugViewPoint.h"
+#include "NetworkedGame.h"
 
 #include <functional>
 
@@ -22,7 +23,7 @@ using namespace CSC8503;
 
 class ScreenOption : public PushdownState {
 public:
-	ScreenOption();
+	ScreenOption(TutorialGame* game = nullptr);
 	~ScreenOption();
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 	void OnAwake() override;
@@ -44,6 +45,8 @@ private:
 	OptionManager& optionManager = OptionManager::instance();
 
 	ChangeState menuState = ChangeState::None;
+
+	TutorialGame* game;
 
 	const std::string NAME = "option";
 

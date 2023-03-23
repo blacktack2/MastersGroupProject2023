@@ -2,7 +2,7 @@
 #include "NetworkedGame.h"
 #include "NetworkObject.h"
 #include "GameServer.h"
-
+#include "Sound.h"
 using namespace NCL;
 using namespace CSC8503;
 
@@ -98,6 +98,7 @@ void NetworkPlayer::Shoot()
 {
 	if (projectileFireRateTimer > 0)
 		return;
+	PlayAudio(PlayerAudio::ShootAudio);
 	projectileFireRateTimer = projectileFireRate;
 	PlayerBullet* bullet = PrepareBullet();
 	GameServer* server = game->GetServer();
@@ -123,4 +124,9 @@ void NetworkPlayer::Shoot()
 	
 	if(game->GetServer())
 		game->GetServer()->SendGlobalPacket(&newObj,true);
+}
+
+void NetworkPlayer::PlayShootSound()
+{
+	PlayAudio(PlayerAudio::ShootAudio);
 }

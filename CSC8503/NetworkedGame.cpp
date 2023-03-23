@@ -28,6 +28,7 @@
 
 #include "GameTechRenderer.h"
 #include "Hud.h"
+#include "SoundSystem.h"
 
 constexpr auto COLLISION_MSG = 30;
 constexpr auto OBJECTID_START = 10; //reserve 0-4 for playerID;
@@ -125,6 +126,8 @@ void NetworkedGame::Clear()
 
 void NetworkedGame::StartLobby()
 {
+	SoundSystem::Destroy();
+	SoundSystem::Initialize();
 	canJoin = true;
 	InitWorld();
 	SpawnPlayers();
@@ -138,7 +141,8 @@ void NetworkedGame::StartLobby()
 
 void NetworkedGame::StartLevel() {
 	canJoin = false;
-
+	SoundSystem::Destroy();
+	SoundSystem::Initialize();
 	InitWorld();
 	SpawnPlayers();
 	int id = OBJECTID_START;
@@ -260,18 +264,14 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	if (packetsToSnapshot < 0) {
 		for (auto i : connectedClients) {
 			SendSnapshot(false, i);
-		}
-		packetsToSnapshot = fullPacketToDeltaRate;
-	}
-	else {
-		for (auto i : connectedClients) {
-			SendSnapshot(true, i);
-			PlayerSyncPacket newPacket;
-			NetworkPlayer* p = static_cast<NetworkPlayer*>(serverPlayers[i]);
-			newPacket.playerID = p->GetPlayerID();
-			newPacket.health = p->GetHealth()->GetHealth();
-			newPacket.anim = p->GetAnimation();
-			thisServer->SendGlobalPacket(static_cast<GamePacket*>(&newPacket));
+			if (serverPlayers.contains(i)) {
+				PlayerSyncPacket newPacket;
+				NetworkPlayer* p = static_cast<NetworkPlayer*>(serverPlayers[i]);
+				newPacket.playerID = p->GetPlayerID();
+				newPacket.health = p->GetHealth()->GetHealth();
+				newPacket.anim = p->GetAnimation();
+				thisServer->SendGlobalPacket(static_cast<GamePacket*>(&newPacket));
+			}
 		}
 		PlayerSyncPacket newPacket;
 		NetworkPlayer* p = static_cast<NetworkPlayer*>(localPlayer);
@@ -279,6 +279,12 @@ void NetworkedGame::UpdateAsServer(float dt) {
 		newPacket.health = p->GetHealth()->GetHealth();
 		newPacket.anim = p->GetAnimation();
 		thisServer->SendGlobalPacket(static_cast<GamePacket*>(&newPacket));
+		packetsToSnapshot = fullPacketToDeltaRate;
+	}
+	else { // delta
+		for (auto i : connectedClients) {
+			SendSnapshot(true, i);
+		}
 	}
 
 	//move main player

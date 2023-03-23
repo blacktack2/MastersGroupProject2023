@@ -469,7 +469,6 @@ bool Boss::RandomWalk() {
 
 bool Boss::StabPlayer(PlayerObject* player) {
     SetBossOrientation(nullptr);
-    nyaSource->Play(Sound::AddSound("nya.wav"));
 
     Vector3 bombScale{ 0.75,0.75,0.75 };
     float bombSpeed = 40.0f;
@@ -497,7 +496,6 @@ bool Boss::StabPlayer(PlayerObject* player) {
 
 bool Boss::Spin(PlayerObject* player) {
     SetBossOrientation(nullptr);
-    tuturuSource->Play(Sound::AddSound("tuturu.wav"));
     Vector3 bombScale{ 0.75,0.75,0.75 };
     float bombSpeed = 40.0f;
     Vector3 bombDirection = (player->GetTransform().GetGlobalPosition() - this->GetTransform().GetGlobalPosition()).Normalised();
@@ -534,7 +532,6 @@ bool Boss::Spin(PlayerObject* player) {
 
 bool Boss::UseLaserOnPlayer(PlayerObject* player) {
     SetBossOrientation(nullptr);
-    wowSource->Play(Sound::AddSound("wow.wav"));
     Vector3 bombScale{ 2,2,2 };
     float bombSpeed = 40.0f;
     Vector3 bombDirection = (player->GetTransform().GetGlobalPosition() - this->GetTransform().GetGlobalPosition()).Normalised();
@@ -571,7 +568,6 @@ bool Boss::UseLaserOnPlayer(PlayerObject* player) {
 
 bool Boss::JumpTo(PlayerObject* player) {
     SetBossOrientation(nullptr);
-    senpaiSource->Play(Sound::AddSound("senpai.wav"));
     float hangTime = 5.0f;
     if (jumpToTimer == 0.0f) {
         float jumpSpeed = 35.0f;
@@ -594,7 +590,6 @@ bool Boss::JumpTo(PlayerObject* player) {
 
 bool Boss::JumpAway(PlayerObject* player) {
     SetBossOrientation(nullptr);
-    waitSource->Play(Sound::AddSound("wait.wav"));
     float hangTime = 5.0f;
     if (jumpAwayTimer == 0.0f) {
         float jumpSpeed = 35.0f;
@@ -644,7 +639,6 @@ bool Boss::SeekHeal(bool& hasHeal) {
 
 bool Boss::InkRain(PlayerObject* player) {
     SetBossOrientation(nullptr);
-    inkRainSource->Play(Sound::AddSound("inkRain.wav"));
     float rainPeriod = 0.1f;
     int rainRange = 30;
     int numOfBomb = 30;
@@ -697,7 +691,6 @@ bool Boss::InkRain(PlayerObject* player) {
 
 bool Boss::BulletsStorm() {
     SetBossOrientation(nullptr);
-    fatherSource->Play(Sound::AddSound("father.wav"));
     float bulletsStormDuration = 5.0f;
     float bulletsStormPeriod = 0.1f;
     Vector3 bombScale{ 1,1,1 };
@@ -748,41 +741,49 @@ void Boss::PlayAnimation()
         if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("WalkForward").get()) {
             anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("WalkForward"));
         }
+
         break;
     case Attack1:
         if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack1").get()) {
             anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack1"));
         }
+        nyaSource->Play(Sound::AddSound("nya.wav"));
         break;
     case Attack2:
         if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack2").get()) {
             anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack2"));
         }
+        tuturuSource->Play(Sound::AddSound("tuturu.wav"));
         break;
     case Attack3:
         if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack3").get()) {
             anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack3"));
         }
+        wowSource->Play(Sound::AddSound("wow.wav"));
         break;
     case Move2:
         if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Jump").get()) {
             anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Jump"));
         }
+        senpaiSource->Play(Sound::AddSound("senpai.wav"));
         break;
     case Move3:
         if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Jump").get()) {
             anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Jump"));
         }
+        waitSource->Play(Sound::AddSound("wait.wav"));
         break;
     case Attack4:
         if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack6").get()) {
             anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack6"));
         }
+        inkRainSource->Play(Sound::AddSound("inkRain.wav"));
         break;
     case Attack5:
         if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack5").get()) {
             anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack5"));
         }
+        fatherSource->Play(Sound::AddSound("father.wav"));
         break;
     }
 }

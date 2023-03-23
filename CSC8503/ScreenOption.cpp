@@ -14,7 +14,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-ScreenOption::ScreenOption() {
+ScreenOption::ScreenOption(TutorialGame* game) {
 	InitMenu();
 	OnAwake();
 }
@@ -27,6 +27,9 @@ PushdownState::PushdownResult ScreenOption::OnUpdate(float dt, PushdownState** n
 	menuManager.Update(dt);
 	keyMap.Update();
 	renderer.Render();
+	if (game) {
+		game->UpdateGame(dt);
+	}
 	if (menuState == ChangeState::Resume || menuState == ChangeState::Quit) {
 		return PushdownResult::Pop;
 	}

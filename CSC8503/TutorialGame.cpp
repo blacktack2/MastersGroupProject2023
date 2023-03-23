@@ -76,6 +76,7 @@ TutorialGame::~TutorialGame() {
 }
 
 void TutorialGame::StartLevel() {
+	SoundSystem::Destroy();
 	SoundSystem::Initialize();
 
 	InitWorld();
@@ -155,18 +156,20 @@ void TutorialGame::UpdateGame(float dt) {
 
 	if (!optionManager.GetSound()) {
 		SoundSystem::GetSoundSystem()->SetMasterVolume(0.0);
+		//SoundSystem::GetSoundSystem()->Update(dt);
 	}
 	if (optionManager.GetSound()) {
 		//SoundSystem::GetSoundSystem()->SetMasterVolume(0.5);
-		SoundSystem::GetSoundSystem()->Update(dt);
+		SoundSystem::GetSoundSystem()->SetMasterVolume(0.5 + optionManager.GetUpTimes() * 0.1 - optionManager.GetDownTimes() * 0.1);
+		//SoundSystem::GetSoundSystem()->Update(dt);
 	}
 	if (optionManager.GetVolumeUp()) {
 		int i = optionManager.GetUpTimes();
-		SoundSystem::GetSoundSystem()->SetMasterVolume(0.5 + i * 0.1);
+		//SoundSystem::GetSoundSystem()->SetMasterVolume(0.5 + i * 0.1 - i * 0.1);
 	}
 	if (optionManager.GetVolumeDown()) {
 		int i = optionManager.GetDownTimes();
-		SoundSystem::GetSoundSystem()->SetMasterVolume(0.5 - i * 0.1);
+		//SoundSystem::GetSoundSystem()->SetMasterVolume(0.5 - i * 0.1);
 	}
 	debugViewPoint.FinishTime("Update Sound");
 
@@ -259,7 +262,6 @@ void TutorialGame::ProcessState() {
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	if (keyMap.GetButton(InputType::Restart)) {
 		//std::cout << "restarting level\n";
-		SoundSystem::Destroy();
 		this->StartLevel();
 	}
 	if (keyMap.GetButton(InputType::Return)) {

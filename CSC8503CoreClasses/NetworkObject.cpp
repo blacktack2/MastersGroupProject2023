@@ -188,8 +188,13 @@ bool NetworkObject::ReadItemDestroyPacket(ItemDestroyPacket& p, float dt) {
 			};
 			GameWorld::instance().AddGameObject(tempPaint);
 			b->SetPaintEnable(true);
+			b->SetActive(false);
+			b->GetPhysicsObject()->ClearForces();
+			b->GetPhysicsObject()->SetLinearVelocity(Vector3(0.0f));
+			b->GetPhysicsObject()->SetAngularVelocity(Vector3(0.0f));
+			b->GetPhysicsObject()->SetInverseMass(1.0f);
 		}
-		object.GetTransform().SetPosition(p.position);
+		//object.GetTransform().SetPosition(p.position);
 	//}
 	return true;
 }

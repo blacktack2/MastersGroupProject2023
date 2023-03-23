@@ -166,7 +166,6 @@ void GameWorld::UpdateWorld(float dt) {
 
 	//dynamicQuadTree.DebugDraw();
 	//staticQuadTree.DebugDraw();
-	std::cout << gameObjects.size() << std::endl;
 }
 
 void GameWorld::PostUpdateWorld() {
