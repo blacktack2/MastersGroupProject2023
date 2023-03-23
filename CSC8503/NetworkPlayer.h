@@ -62,6 +62,8 @@ namespace NCL {
 				playerMovingDirection = anim;
 			}
 
+			void PlayShootSound();
+
 			bool isFrozen;
 		protected:
 			NetworkedGame* game;

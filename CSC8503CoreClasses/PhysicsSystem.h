@@ -18,6 +18,7 @@ namespace NCL {
 			}
 
 			void SetGravity(const Vector3& g);
+			void ClearObjTriggers(GameObject* target);
 
 		protected:
 			void BasicCollisionDetection();

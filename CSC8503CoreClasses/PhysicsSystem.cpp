@@ -28,6 +28,21 @@ void PhysicsSystem::SetGravity(const Vector3& g) {
 	gravity = g;
 }
 
+void PhysicsSystem::ClearObjTriggers(GameObject* target)
+{
+	for (auto i = allTriggers.begin(); i != allTriggers.end(); ) {
+		auto& info = const_cast<CollisionDetection::CollisionInfo&>(*i);
+		if (info.a->IsMarkedDelete() || info.b->IsMarkedDelete()) {
+			info.a->OnTriggerEnd(info.b);
+			info.b->OnTriggerEnd(info.a);
+			i = allTriggers.erase(i);
+		}
+		else {
+			++i;
+		}
+	}
+}
+
 /*
 
 If the 'game' is ever reset, the PhysicsSystem must be

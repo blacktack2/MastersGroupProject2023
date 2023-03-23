@@ -29,21 +29,12 @@ void Bullet::Update(float dt) {
 		GetPhysicsObject()->SetLinearVelocity(Vector3(0.0f));
 		GetPhysicsObject()->SetAngularVelocity(Vector3(0.0f));
 		physicsObject->SetInverseMass(1.0f);
+		OnDestroy();
 		return;
 	}
 	lifespan -= dt;
 
 	//Debug::DrawLine(transform.GetGlobalPosition(), transform.GetGlobalPosition() + Vector3(0, 0.01f , 0), Vector4(0, 1, 1, 1));
-}
-
-void Bullet::OnCollisionBegin(GameObject* other) {
-	if (!other) {
-		return;
-	}
-	PaintCollision(*other);
-	SetBoundingVolume((CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer));
-	physicsObject->SetInverseMass(0);
-	lifespan = 0;
 }
 
 void Bullet::OnTriggerBegin(GameObject* other) {
@@ -56,6 +47,22 @@ void Bullet::OnTriggerBegin(GameObject* other) {
 	lifespan = 0;
 }
 
+void Bullet::OnCollisionBegin(GameObject* other) {
+	if (!other) {
+		return;
+	}
+	PaintCollision(*other);
+	SetBoundingVolume((CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer));
+	physicsObject->SetInverseMass(0);
+	lifespan = 0;
+}
+
+void NCL::CSC8503::Bullet::OnDestroy()
+{
+	if (OnDestroyCallback) {
+		OnDestroyCallback(*this);
+	}
+}
 void Bullet::UpdateColour() {
 	colour = InkEffectManager::instance().GetColour(inkType);
 	//if (this->GetRenderObject()) {
@@ -73,8 +80,13 @@ void Bullet::Resize(Vector3 scale) {
 void Bullet::SetPaintRadius(float scale) {
 	paintRadius = scale;
 }
+float Bullet::GetPaintRadius() {
+	return paintRadius;
+}
 
 void Bullet::PaintCollision(GameObject& other) {
+	if (!paintEnable)
+		return;
 	if (other.GetBoundingVolume()->layer != CollisionLayer::PaintAble) {
 		return;
 	}

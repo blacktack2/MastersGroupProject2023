@@ -147,6 +147,14 @@ namespace NCL {
 				size = sizeof(PlayerSyncPacket) - sizeof(GamePacket);
 			}
 		};
+		struct BossSyncPacket : public GamePacket {
+			Boss::BossAction anim = Boss::BossAction::NoAction;
+
+			BossSyncPacket() {
+				type = BossSync_Message;
+				size = sizeof(BossSyncPacket) - sizeof(GamePacket);
+			}
+		};
 		struct ClientIDPacket : public GamePacket {
 			int		objectID = -1;
 

@@ -35,12 +35,12 @@ void GameClient::UpdateClient() {
 	ENetEvent event;
 	while (enet_host_service(netHandle, &event, 0) > 0) {
 		if(event.type == ENET_EVENT_TYPE_CONNECT){
-			std::cout << "CLient : Connected to server!" << std::endl;
-			std::cout << event.peer << " " << event.channelID << std::endl;
+			//std::cout << "CLient : Connected to server!" << std::endl;
+			//std::cout << event.peer << " " << event.channelID << std::endl;
 		}
 		else if (event.type == ENET_EVENT_TYPE_DISCONNECT) {
 			event.peer->data = NULL;
-			std::cout << "CLient : Disconnected to server!" << std::endl;
+			//std::cout << "CLient : Disconnected to server!" << std::endl;
 			GameStateManager* gameState = &GameStateManager::instance();
 			gameState->SetGameState(GameState::Quit);
 		}

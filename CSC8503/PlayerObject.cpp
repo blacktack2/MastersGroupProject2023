@@ -63,6 +63,9 @@ void PlayerObject::Update(float dt) {
 	//Change game 
 	if (health.GetHealth() <= 0) {
 		Debug::Print("You got Inked!", Vector2(36, 50), Debug::RED,20.0f, playerID);
+		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+		anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle"));
+		anim->SetAniSpeed(1.0f);
 		keyMap.Update();
 		GetAxisInput();
 		SetPitchYaw();
@@ -84,7 +87,10 @@ void PlayerObject::Update(float dt) {
 		Movement(dt);
 	}
 	else {
-		MoveAnimation();
+		if (health.GetHealth() > 0) {
+			MoveAnimation();
+			//Movement(dt);
+		}
 	}
 
 	//If on ink
@@ -93,7 +99,7 @@ void PlayerObject::Update(float dt) {
 		if (node) {
 			InkEffectManager::instance().ApplyInkEffect(node->inkType, &health, 0);
 			if (node->inkType == NCL::InkType::BossDamage) {
-				hurtSource->Play(Sound::AddSound("yell.wav"));
+				PlayAudio(PlayerAudio::HurtAudio);
 			}
 		}
 	}
@@ -142,16 +148,7 @@ void PlayerObject::Move(Vector3 dir) {
 	this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
 
 	if ((dir != Vector3(0)) && this->GetPhysicsObject()->GetLinearVelocity().y < 0.01f) {
-		srand((unsigned int)time);
-		int randomFootstep = rand() % 3 + 1;
-		switch (randomFootstep) {
-		case 1:foot1->Play(Sound::AddSound("fs01.wav"));
-			break;
-		case 2:foot2->Play(Sound::AddSound("fs02.wav"));
-			break;
-		case 3:foot3->Play(Sound::AddSound("fs03.wav"));
-			break;
-		}
+		PlayAudio(PlayerAudio::MoveAudio);
 	}
 	lastDir = dir;
 }
@@ -355,9 +352,9 @@ PlayerBullet* PlayerObject::PrepareBullet()
 }
 
 void PlayerObject::Shoot() {
-	attackSource->Play(Sound::AddSound("playerShoot.wav"));
 	if (projectileFireRateTimer > 0)
 		return;
+	PlayAudio(PlayerAudio::ShootAudio);
 	projectileFireRateTimer = projectileFireRate;
 	PlayerBullet* bullet = PrepareBullet();
 }
@@ -366,8 +363,7 @@ void NCL::CSC8503::PlayerObject::Jump()
 {
 	if (onGround && jumpTimer <= 0.0f) {
 		//jumpSource->SetPosition
-		jumpSource->Play(Sound::AddSound("playerJump.wav"));
-		std::cout << "jump" << std::endl;
+		PlayAudio(PlayerAudio::JumpAudio);
 		Vector3 upDir = Vector3(0, 1, 0);
 		jumpTimer = jumpCooldown;
 		this->GetPhysicsObject()->ApplyLinearImpulse(upDir * jumpSpeed);
@@ -426,9 +422,36 @@ void NCL::CSC8503::PlayerObject::SetupAudio()
 
 }
 
+void NCL::CSC8503::PlayerObject::PlayAudio(PlayerAudio type)
+{
+	srand((unsigned int)time);
+	int randomFootstep = rand() % 3 + 1;
+	switch (type) {
+	case PlayerAudio::JumpAudio:
+		jumpSource->Play(Sound::AddSound("playerJump.wav"));
+		break;
+	case PlayerAudio::MoveAudio:
+		switch (randomFootstep) {
+		case 1:foot1->Play(Sound::AddSound("fs01.wav"));
+			break;
+		case 2:foot2->Play(Sound::AddSound("fs02.wav"));
+			break;
+		case 3:foot3->Play(Sound::AddSound("fs03.wav"));
+			break;
+		}
+		break;
+	case PlayerAudio::HurtAudio:
+		hurtSource->Play(Sound::AddSound("yell.wav"));
+		break;
+	case PlayerAudio::ShootAudio:
+		attackSource->Play(Sound::AddSound("playerShoot.wav"));
+		break;
+	}
+}
+
 void  NCL::CSC8503::PlayerObject::MoveAnimation() {
+	AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
 	if (this->GetPhysicsObject()->GetLinearVelocity().y > 0.01f) {		// Jumping	
-		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
 		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerJump").get()) {
 			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerJump"));
 			//anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle"));
@@ -436,63 +459,54 @@ void  NCL::CSC8503::PlayerObject::MoveAnimation() {
 		}
 	}
 	else if (playerMovingDirection == PlayerMovingDirection::Idle) {
-		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
 		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle").get()) {
 			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerIdle"));
 			anim->SetAniSpeed(1.0f);
 		}
 	}
 	else if (playerMovingDirection == PlayerMovingDirection::MoveForward) {
-		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
 		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerForward").get()) {
 			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerForward"));
 			anim->SetAniSpeed(1.0f);
 		}
 	}
 	else if (playerMovingDirection == PlayerMovingDirection::MoveBackward) {
-		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
 		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerBackward").get()) {
 			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerBackward"));
 			anim->SetAniSpeed(1.0f);
 		}
 	}
 	else if (playerMovingDirection == PlayerMovingDirection::MoveToRight) {
-		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
 		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerRight").get()) {
 			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerRight"));
 			anim->SetAniSpeed(1.0f);
 		}
 	}
 	else if (playerMovingDirection == PlayerMovingDirection::MoveToLeft) {
-		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
 		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerLeft").get()) {
 			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerLeft"));
 			anim->SetAniSpeed(1.0f);
 		}
 	}
 	else if (playerMovingDirection == PlayerMovingDirection::MoveBackwardLeft) {
-		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
 		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerBackwardLeft").get()) {
 			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerBackwardLeft"));
 			anim->SetAniSpeed(1.0f);
 		}
 	}
 	else if (playerMovingDirection == PlayerMovingDirection::MoveBackwardRight) {
-		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
 		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerBackwardRight").get()) {
 			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerBackwardRight"));
 			anim->SetAniSpeed(1.0f);
 		}
 	}
 	else if (playerMovingDirection == PlayerMovingDirection::MoveForwardLeft) {
-		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
 		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerForwardLeft").get()) {
 			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerForwardLeft"));
 			anim->SetAniSpeed(1.0f);
 		}
 	}
 	else if (playerMovingDirection == PlayerMovingDirection::MoveForwardRight) {
-		AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
 		if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("PlayerForwardRight").get()) {
 			anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("PlayerForwardRight"));
 			anim->SetAniSpeed(1.0f);

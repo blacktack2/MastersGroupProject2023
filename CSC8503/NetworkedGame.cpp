@@ -28,6 +28,7 @@
 
 #include "GameTechRenderer.h"
 #include "Hud.h"
+#include "SoundSystem.h"
 
 constexpr auto COLLISION_MSG = 30;
 constexpr auto OBJECTID_START = 10; //reserve 0-4 for playerID;
@@ -48,8 +49,9 @@ NetworkedGame::NetworkedGame(bool isServer)	{
 	game_dt = 0;
 	objectID = OBJECTID_START;
 	gameStateManager.SetGameState(GameState::Lobby);
+	gameWorld.SetPhysicsSystem(physics.get());
 	if (isServer) {
-		std::cout << "start as server" << std::endl;
+		//std::cout << "start as server" << std::endl;
 		StartAsServer();
 	}
 	else {
@@ -77,8 +79,13 @@ void NetworkedGame::StartAsServer() {
 	thisServer->RegisterPacketHandler(Received_State, this);
 	thisServer->RegisterPacketHandler(Player_Connected, this);
 	thisServer->RegisterPacketHandler(Player_Disconnected, this);
-
-	StartLobby();
+	if (!thisServer->IsInitialise()) {
+		gameStateManager.SetGameState(GameState::Quit);
+	}
+	else {
+		StartLobby();
+	}
+	
 }
 
 void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
@@ -92,7 +99,8 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(PlayerSync_Message, this);
 	thisClient->RegisterPacketHandler(ClientID_Message, this);
 	thisClient->RegisterPacketHandler(Item_Init_Message, this);
-	thisClient->RegisterPacketHandler(BossAction_Message, this);
+	thisClient->RegisterPacketHandler(Item_Destroy_Message, this);
+	thisClient->RegisterPacketHandler(BossSync_Message, this);
 	thisClient->RegisterPacketHandler(GameState_Message, this);
 	thisClient->RegisterPacketHandler(Lobby_Message, this);
 
@@ -118,6 +126,8 @@ void NetworkedGame::Clear()
 
 void NetworkedGame::StartLobby()
 {
+	SoundSystem::Destroy();
+	SoundSystem::Initialize();
 	canJoin = true;
 	InitWorld();
 	SpawnPlayers();
@@ -131,13 +141,14 @@ void NetworkedGame::StartLobby()
 
 void NetworkedGame::StartLevel() {
 	canJoin = false;
-
+	SoundSystem::Destroy();
+	SoundSystem::Initialize();
 	InitWorld();
 	SpawnPlayers();
 	int id = OBJECTID_START;
 	BulletInstanceManager::instance().AddNetworkObject(id);
 
-	boss = AddNetworkBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
+	boss = AddNetworkBossToWorld({ 0, 5, -20 }, Vector3(4), 2);
 	boss->SetNextTarget(players[0]);
 	localPlayer->GetCamera()->GetHud().AddHealthBar(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
 
@@ -177,7 +188,7 @@ void NetworkedGame::UpdateGame(float dt) {
 	game_dt = dt;
 	timeToNextPacket -= dt;
 	if (timeToNextPacket < 0) {
-		if (thisServer) {
+		if (thisServer && thisServer->IsInitialise()){
 			UpdateAsServer(dt);
 		}
 		else if (thisClient) {
@@ -253,18 +264,14 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	if (packetsToSnapshot < 0) {
 		for (auto i : connectedClients) {
 			SendSnapshot(false, i);
-		}
-		packetsToSnapshot = fullPacketToDeltaRate;
-	}
-	else {
-		for (auto i : connectedClients) {
-			SendSnapshot(true, i);
-			PlayerSyncPacket newPacket;
-			NetworkPlayer* p = static_cast<NetworkPlayer*>(serverPlayers[i]);
-			newPacket.playerID = p->GetPlayerID();
-			newPacket.health = p->GetHealth()->GetHealth();
-			newPacket.anim = p->GetAnimation();
-			thisServer->SendGlobalPacket(static_cast<GamePacket*>(&newPacket));
+			if (serverPlayers.contains(i)) {
+				PlayerSyncPacket newPacket;
+				NetworkPlayer* p = static_cast<NetworkPlayer*>(serverPlayers[i]);
+				newPacket.playerID = p->GetPlayerID();
+				newPacket.health = p->GetHealth()->GetHealth();
+				newPacket.anim = p->GetAnimation();
+				thisServer->SendGlobalPacket(static_cast<GamePacket*>(&newPacket));
+			}
 		}
 		PlayerSyncPacket newPacket;
 		NetworkPlayer* p = static_cast<NetworkPlayer*>(localPlayer);
@@ -272,6 +279,12 @@ void NetworkedGame::UpdateAsServer(float dt) {
 		newPacket.health = p->GetHealth()->GetHealth();
 		newPacket.anim = p->GetAnimation();
 		thisServer->SendGlobalPacket(static_cast<GamePacket*>(&newPacket));
+		packetsToSnapshot = fullPacketToDeltaRate;
+	}
+	else { // delta
+		for (auto i : connectedClients) {
+			SendSnapshot(true, i);
+		}
 	}
 
 	//move main player
@@ -291,7 +304,7 @@ void NetworkedGame::UpdateAsServer(float dt) {
 
 	if (gameStateManager.GetGameState() == GameState::Lobby) {
 		if (keyMap.GetButton(Start)) {
-			std::cout << "Start Level" << std::endl;
+			//std::cout << "Start Level" << std::endl;
 			StartLevel();
 		}
 	}
@@ -370,8 +383,8 @@ void NetworkedGame::SendSnapshot(bool deltaFrame, int playerID) {
 		}
 	});
 	if (boss) {
-		BossActionPacket newPacket;
-		newPacket.bossAction = static_cast<short int> (boss->GetBossAction());
+		BossSyncPacket newPacket;
+		newPacket.anim = boss->GetBossAction();
 		thisServer->SendPacket(static_cast <GamePacket*> (&newPacket), playerID);
 	}
 }
@@ -411,7 +424,7 @@ PlayerObject* NetworkedGame::SpawnPlayer(int playerID, bool isSelf){
 	else if (playerID == 3) {
 		colour = Vector4(0, 1, 1, 1);
 	}
-	PlayerObject* newPlayer = AddNetworkPlayerToWorld(Vector3(0 + playerID * 5, 5, 90), playerID);
+	PlayerObject* newPlayer = AddNetworkPlayerToWorld(Vector3(-5 + playerID * 5, 5, 90), playerID);
 	if (isSelf) {
 		keyMap.ChangePlayerControlTypeMap(selfID, ControllerType::KeyboardMouse);
 		SetCameraFollow(newPlayer);
@@ -545,11 +558,9 @@ void NetworkedGame::HandleItemInitPacket(GamePacket* payload, int source) {
 
 void NetworkedGame::HandleBossActionPacket(GamePacket* payload, int source)
 {
-	//Needs Implementing in Boss's Code
-	
-	Boss::BossAction action = static_cast<Boss::BossAction>(static_cast<BossActionPacket*>(payload)->bossAction);
+	Boss::BossAction action = static_cast<BossSyncPacket*>(payload)->anim;
 	if (boss) {
-		//boss->SetBossAction(action);
+		static_cast<NetworkBoss*>(boss)->SetBossAction(action);
 	}
 }
 
@@ -579,7 +590,7 @@ void NetworkedGame::HandleLobbyPacket(GamePacket* payload, int source)
 		break;
 	case LobbyState::Full:
 	case LobbyState::Started:
-		std::cout << "Quit due to lobby" << std::endl;
+		//std::cout << "Quit due to lobby" << std::endl;
 		gameStateManager.SetGameState(GameState::Quit);
 		break;
 	default:
@@ -614,10 +625,11 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	case PlayerSync_Message:
 		HandlePlayerSyncPacket(payload, source);
 		break;
+	case Item_Destroy_Message:
 	case Item_Init_Message:
 		ClientProcessNetworkObject(payload, source);
 		break;
-	case BossAction_Message:
+	case BossSync_Message:
 		HandleBossActionPacket(payload, source);
 		break;
 	case GameState_Message:
@@ -741,17 +753,17 @@ void NetworkedGame::ProcessState() {
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	if (thisServer) {
 		if (keyMap.GetButton(InputType::Start)) {
-			std::cout << "Starting" << std::endl;
+			//std::cout << "Starting" << std::endl;
 			this->StartLevel();
 		}
 		if (keyMap.GetButton(InputType::Restart)) {
-			std::cout << "Return to lobby" << std::endl;
+			//std::cout << "Return to lobby" << std::endl;
 			this->StartLobby();
 		}
 	}
 	
 	if (keyMap.GetButton(InputType::Return)) {
-		std::cout << "quit" << std::endl;
+		//std::cout << "quit" << std::endl;
 		gameStateManager.SetGameState(GameState::Quit);
 	}
 }

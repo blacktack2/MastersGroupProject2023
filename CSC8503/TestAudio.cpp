@@ -63,7 +63,7 @@ void TestAudio::TestAudio1()
 	
 
 
-	std::cout << "Hello World!\n";
+	//std::cout << "Hello World!\n";
 
 	//Setup Source
 

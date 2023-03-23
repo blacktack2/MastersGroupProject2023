@@ -4,6 +4,12 @@
 #include "./enet/enet.h"
 #include "Maths.h"
 #include "../CSC8503/Bullet.h"
+#include "../CSC8503/BossBullet.h"
+#include "SphereVolume.h"
+#include "GameWorld.h"
+#include "../CSC8503/GameGridManager.h"
+#include "PhysicsSystem.h"
+
 using namespace NCL;
 using namespace CSC8503;
 
@@ -40,6 +46,11 @@ bool NetworkObject::ReadPacket(GamePacket& p, float dt) {
 		if (networkID != ((ItemInitPacket*)&p)->objectID)
 			return false;
 		return ReadItemInitPacket((ItemInitPacket&)p, dt);
+	}
+	if (p.type == Item_Destroy_Message) {
+		if (networkID != ((ItemDestroyPacket*)&p)->objectID)
+			return false;
+		return ReadItemDestroyPacket((ItemDestroyPacket&)p, dt);
 	}
 	return false; //this isn't a packet we care about!
 }
@@ -95,29 +106,37 @@ bool NetworkObject::ReadFullPacket(FullPacket &p, float dt) {
 	lastFullState = p.fullState;
 
 	lastDeltaState = p.fullState;
-	/*
-	if (p.health != -1) {
-		if (PlayerObject* player = dynamic_cast<PlayerObject*>(&object)) {
-			std::cout << "sync client health" << std::endl;;
-			player->GetHealth()->SetHealth(p.health);
-		}
-	}*/
+
 	//Debug::DrawLine(p.fullState.position, p.fullState.position + Vector3(0,0.1,0), Debug::BLUE, 2.0f);
 
 	stateHistory.emplace_back(lastFullState);
 
 	object.GetTransform().SetPosition(p.fullState.position);
 	object.GetTransform().SetOrientation(p.fullState.orientation);
+	//object.GetPhysicsObject()->SetAngularVelocity(p.fullState.angularVelocity);
+	//object.GetPhysicsObject()->SetLinearVelocity(p.fullState.linearVelocity);
 	return true; 
 }
 
 bool NetworkObject::ReadItemInitPacket(ItemInitPacket& p, float dt) {
-	static_cast<Bullet*>(&object)->SetLifespan(5.0f);
 	object.GetTransform().SetPosition(p.position);
 	object.GetTransform().SetOrientation(p.orientation);
 	//std::cout << p.scale << std::endl;
 	object.GetTransform().SetScale(p.scale);
 	object.GetPhysicsObject()->SetLinearVelocity(p.velocity);
+	object.GetPhysicsObject()->SetAngularVelocity(p.angular);
+	
+	if (Bullet* b = dynamic_cast<Bullet*>(&object)) {
+		b->SetPaintRadius(p.paintRadius / 100);
+		b->SetLifespan(5.0f);
+		b->SetPaintEnable(false);
+		if (BossBullet* b = dynamic_cast<BossBullet*>(&object)) {
+			b->GetPhysicsObject()->SetInverseMass(1.0f);
+			b->GetPhysicsObject()->SetGravWeight(0);
+			b->GetPhysicsObject()->SetDampingWeight(0);
+		}
+	}
+	
 
 	lastDeltaState.position = object.GetTransform().GetGlobalPosition();
 	lastDeltaState.orientation = object.GetTransform().GetGlobalOrientation();
@@ -125,6 +144,58 @@ bool NetworkObject::ReadItemInitPacket(ItemInitPacket& p, float dt) {
 	this->SnapRenderToSelf();
 	object.SetActive(true);
 
+	return true;
+}
+
+bool NetworkObject::ReadItemDestroyPacket(ItemDestroyPacket& p, float dt) {
+	//std::cout << "destroyed" << std::endl;
+	//if (object.IsActive()) {
+		//object.SetActive(false);
+		if (Bullet* b = dynamic_cast<Bullet*>(&object)) {
+			b->SetLifespan(0);
+
+			//dirty way of syncing paint
+			GameObject* tempPaint = new GameObject();
+			tempPaint->GetTransform().SetPosition(p.position);
+			float r = b->GetPaintRadius();
+			tempPaint->SetBoundingVolume((CollisionVolume*) new SphereVolume(r, b->GetBoundingVolume()->layer));
+			tempPaint->SetPhysicsObject(new PhysicsObject(&tempPaint->GetTransform(), tempPaint->GetBoundingVolume(), true));
+			Vector3 colour = b->GetColour();
+			NCL::InkType inkType = b->GetInkType();
+			tempPaint->OnCollisionBeginCallback = [&,tempPaint, r, colour, inkType](GameObject* other) {
+				if (other->GetBoundingVolume()->layer != CollisionLayer::PaintAble) {
+					return;
+				}
+				RenderObject* renderObj = other->GetRenderObject();
+				if (!(renderObj && renderObj->GetPaintTex())) {
+					return;
+				}
+				renderObj->AddPaintCollision(tempPaint->GetTransform().GetGlobalPosition(), r, colour);
+				GameGridManager::instance().PaintPosition(tempPaint->GetTransform().GetGlobalPosition(), r, inkType);
+				tempPaint->Delete();
+			};
+			tempPaint->OnTriggerBeginCallback = [&, tempPaint, r, colour, inkType](GameObject* other) {
+				if (other->GetBoundingVolume()->layer != CollisionLayer::PaintAble) {
+					return;
+				}
+				RenderObject* renderObj = other->GetRenderObject();
+				if (!(renderObj && renderObj->GetPaintTex())) {
+					return;
+				}
+				renderObj->AddPaintCollision(tempPaint->GetTransform().GetGlobalPosition(), r, colour);
+				GameGridManager::instance().PaintPosition(tempPaint->GetTransform().GetGlobalPosition(), r, inkType);
+				tempPaint->Delete();
+			};
+			GameWorld::instance().AddGameObject(tempPaint);
+			b->SetPaintEnable(true);
+			b->SetActive(false);
+			b->GetPhysicsObject()->ClearForces();
+			b->GetPhysicsObject()->SetLinearVelocity(Vector3(0.0f));
+			b->GetPhysicsObject()->SetAngularVelocity(Vector3(0.0f));
+			b->GetPhysicsObject()->SetInverseMass(1.0f);
+		}
+		//object.GetTransform().SetPosition(p.position);
+	//}
 	return true;
 }
 
@@ -166,11 +237,6 @@ bool NetworkObject::WriteFullPacket(GamePacket**p) {
 	fp->fullState.stateID = lastFullState.stateID++;
 	fp->fullState.linearVelocity = object.GetPhysicsObject()->GetLinearVelocity();
 	fp->fullState.angularVelocity = object.GetPhysicsObject()->GetAngularVelocity();
-	/*
-	if (PlayerObject* player = dynamic_cast<PlayerObject*>(&object)) {
-		fp->health = player->GetHealth()->GetHealth();
-	}
-	*/
 
 	*p = fp;
 	stateHistory.emplace_back(fp->fullState);
