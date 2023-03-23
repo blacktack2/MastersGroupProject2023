@@ -147,9 +147,24 @@
     <WavePsslc Include="..\Assets\Shaders\PS4\VertexShader.pssl">
       <Filter>Shaders</Filter>
     </WavePsslc>
+    <WavePsslc Include="DebugText_VertexShader.pssl">
+      <Filter>Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="DebugText_PixelShader.pssl">
+      <Filter>Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="..\Assets\Shaders\PS4\PaintVertexShader.pssl">
+      <Filter>Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="..\Assets\Shaders\PS4\PaintPixelShader.pssl">
+      <Filter>Shaders</Filter>
+    </WavePsslc>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\Assets\Textures\doge.png">
+      <Filter>Textures</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\Assets\Textures\checkerboard.png">
       <Filter>Textures</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -5,6 +5,7 @@
 #include "../Common/GameWorld.h"
 #include "../Common/MeshGeometry.h"
 #include "../Common/ShaderBase.h"
+#include "../Common/TextureBase.h"
 
 namespace NCL {
 	namespace PS4 {
@@ -23,13 +24,23 @@ namespace NCL {
 
 			void UpdateViewProjectionMatrix(PS4Camera* camera);
 
-			void DrawRenderObject(const CSC8503::RenderObject* o);
+			void CreatePaintTexture(unsigned int width, unsigned int height, CSC8503::RenderObject* object);
+
+			void DrawRenderObject(const CSC8503::RenderObject* object);
 
 			void Update(float dt) override;
 
 			void SetDefaultShader(PS4Shader* s) { defaultShader = s; }
+			//void SetPaintShader(PS4Shader* s) { paintShader = s; }
 
 		protected:
+
+			struct PaintData {
+				float position[3];
+				float colour[3];
+				float size;
+			};
+
 			GameWorld& gameWorld;
 
 			vector<const CSC8503::RenderObject*>activeObjects;
@@ -37,9 +48,14 @@ namespace NCL {
 			
 
 			PS4Shader* defaultShader;
+			//PS4Shader* paintShader;
+
+			//PS4Texture* defaultPaintTex;
+
 			NCL::Maths::Matrix4* viewProjMat;
 			Gnm::Buffer	cameraBuffer;
 			
+			sce::Gnm::RenderTarget paintTarget;
 		};
 	}
 }

@@ -108,8 +108,8 @@ void ExampleRenderer::DrawRenderObject(RenderObject* o) {
 	PS4Shader*	realShader	= (PS4Shader*)o->GetShader();
 	PS4Mesh*	realMesh	= (PS4Mesh*)o->mesh;
 
-	int objIndex = realShader->GetConstantBufferIndex("RenderObjectData");
-	int camIndex = realShader->GetConstantBufferIndex("CameraData");
+	int objIndex = realShader->GetConstantVertexBufferIndex("RenderObjectData");
+	int camIndex = realShader->GetConstantVertexBufferIndex("CameraData");
 
 	currentGFXContext->setConstantBuffers(Gnm::kShaderStageVs, objIndex, 1, &constantBuffer);
 	currentGFXContext->setConstantBuffers(Gnm::kShaderStageVs, camIndex, 1, &cameraBuffer);

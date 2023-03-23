@@ -4,6 +4,7 @@
 #include "../Plugins/PlayStation4/PS4Shader.h"
 #include "../Plugins/PlayStation4/PS4Frame.h"
 #include "../Common/RenderObject.h"
+#include "../Common/Debug.h"
 
 using namespace NCL;
 using namespace Rendering;
@@ -18,6 +19,8 @@ PS4Renderer::PS4Renderer(GameWorld& world) : PS4RendererBase((PS4Window*)Window:
 
 	cameraBuffer.initAsConstantBuffer(viewProjMat, sizeof(Matrix4));
 	cameraBuffer.setResourceMemoryType(Gnm::kResourceMemoryTypeRO); // it's a constant buffer, so read-only is OK
+
+	//CreatePaintTexture(1, 1, nullptr);
 }
 
 
@@ -65,9 +68,77 @@ void NCL::PS4::PS4Renderer::RenderFrame()
 
 	currentGFXContext->waitUntilSafeForRendering(videoHandle, currentGPUBuffer);
 
+	//gameWorld.OperateOnContents([&](GameObject* gameObject) {
+	//	const CollisionVolume* volume = gameObject->GetBoundingVolume();
+	//	if (!volume || volume->layer != CollisionLayer::PaintAble) {
+	//		return;
+	//	}
+
+	//	CSC8503::RenderObject* renderObj = gameObject->GetRenderObject();
+	//	if (!renderObj || !renderObj->GetPaintTexture()) {
+	//		return;
+	//	}
+
+	//	
+	//	const auto& target = renderObj->GetPaintTarget();
+	//	currentGFXContext->setRenderTargetMask(0xF);
+	//	currentGFXContext->setRenderTarget(0, &target);
+
+	//	currentGFXContext->setupScreenViewport(0, 0, target.getWidth(), target.getHeight(), 0.5f, 0.5f);
+	//	currentGFXContext->setScreenScissor(0, 0, target.getWidth(), target.getHeight());
+	//	currentGFXContext->setWindowScissor(0, 0, target.getWidth(), target.getHeight(), sce::Gnm::WindowOffsetMode::kWindowOffsetDisable);
+	//	currentGFXContext->setGenericScissor(0, 0, target.getWidth(), target.getHeight(), sce::Gnm::WindowOffsetMode::kWindowOffsetDisable);
+
+	//	for (const auto& collision : renderObj->GetPaintCollisions()) {
+
+	//		Matrix4* modelMat = (Matrix4*)currentGFXContext->allocateFromCommandBuffer(sizeof(Matrix4), Gnm::kEmbeddedDataAlignment4);
+	//		*modelMat = renderObj->GetTransform()->GetGlobalMatrix();
+
+	//		Gnm::Buffer modelBuffer;
+	//		modelBuffer.initAsConstantBuffer(modelMat, sizeof(Matrix4));
+	//		modelBuffer.setResourceMemoryType(Gnm::kResourceMemoryTypeRO); // it's a constant buffer, so read-only is OK
+
+	//		
+
+	//		PaintData* paintData = (PaintData*)currentGFXContext->allocateFromCommandBuffer(sizeof(PaintData), Gnm::kEmbeddedDataAlignment4);
+	//		memcpy(&paintData->position, &collision.center.array, sizeof(float) * 3);
+	//		memcpy(&paintData->colour, &collision.colour.array, sizeof(float) * 3);
+	//		//memcpy(&data->colour, &collision.colour.array, sizeof(float) * 3);
+	//		paintData->size = collision.radius;
+
+	//		Gnm::Buffer paintBuffer;
+	//		paintBuffer.initAsConstantBuffer(paintData, sizeof(PaintData));
+	//		paintBuffer.setResourceMemoryType(Gnm::kResourceMemoryTypeRO); // it's a constant buffer, so read-only is O
+
+	//		int objDataIndex = paintShader->GetConstantVertexBufferIndex("RenderObjectData");
+	//		currentGFXContext->setConstantBuffers(Gnm::kShaderStageVs, objDataIndex, 1, &modelBuffer);
+
+	//		int paintDataIndex = paintShader->GetConstantPixelBufferIndex("PaintData");
+	//		currentGFXContext->setConstantBuffers(Gnm::kShaderStagePs, paintDataIndex, 1, &paintBuffer);
+
+	//		paintShader->SubmitShaderSwitch(*currentGFXContext);
+
+	//		((PS4Mesh*)renderObj->GetMesh())->SubmitDraw(*currentGFXContext, Gnm::ShaderStage::kShaderStageVs);
+	//	}
+
+	//	currentGFXContext->waitForGraphicsWrites(
+	//		target.getBaseAddress256ByteBlocks(),
+	//		(target.getSliceSizeInBytes() * 1) >> 8,
+	//		Gnm::kWaitTargetSlotCb0,
+	//		Gnm::kCacheActionWriteBackAndInvalidateL1andL2,
+	//		Gnm::kExtendedCacheActionFlushAndInvalidateCbCache,
+	//		Gnm::kStallCommandBufferParserDisable
+	//	);
+	//	
+	//	Gnm::Texture apiTex;
+	//	apiTex.initFromRenderTarget(&target, false);
+	//	((PS4Texture*)renderObj->GetPaintTexture())->SetAPITexture(apiTex);
+	//	renderObj->ClearPaintCollisions();
+	//});
+
+
 	SetRenderBuffer(currentPS4Buffer, true, true, true);
 
-	
 
 	//Primitive Setup State
 	Gnm::PrimitiveSetup primitiveSetup;
@@ -88,13 +159,15 @@ void NCL::PS4::PS4Renderer::RenderFrame()
 	trilinearSampler.init();
 	trilinearSampler.setMipFilterMode(Gnm::kMipFilterModeLinear);
 
-	
 
 	for (auto& i : activeObjects) {
-		if(!(i->GetShader()))
+		if (!(i->GetShader()))
 			defaultShader->SubmitShaderSwitch(*currentGFXContext);
-		
 		currentGFXContext->setTextures(Gnm::kShaderStagePs, 0, 1, &((PS4Texture*)(*i).GetDefaultTexture())->GetAPITexture());
+		//PS4Texture* paintTex = (PS4Texture*)(*i).GetPaintTexture();
+		//paintTex = paintTex ? paintTex : defaultPaintTex;
+		//currentGFXContext->setTextures(Gnm::kShaderStagePs, 1, 1, &paintTex->GetAPITexture());
+		
 		currentGFXContext->setSamplers(Gnm::kShaderStagePs, 0, 1, &trilinearSampler);
 		DrawRenderObject(i);
 	}
@@ -110,6 +183,64 @@ void NCL::PS4::PS4Renderer::UpdateViewProjectionMatrix(PS4Camera* camera)
 	*viewProjMat = Matrix4::Perspective(0.1f, 1000.0f, (float)currentWidth / (float)currentHeight, 45.0f) * camera->BuildViewMatrix();
 }
 
+void NCL::PS4::PS4Renderer::CreatePaintTexture(unsigned int width, unsigned int height, CSC8503::RenderObject* object)
+{
+	//sce::Gnm::RenderTarget colourTarget;
+
+	//Gnm::RenderTargetSpec spec;
+	//spec.init();
+	//spec.m_width = width;
+	//spec.m_height = height;
+	//spec.m_numSamples = Gnm::kNumSamples1;
+	//spec.m_numFragments = Gnm::kNumFragments1;
+	//spec.m_colorFormat = Gnm::kDataFormatB8G8R8A8Unorm;
+
+	//GpuAddress::computeSurfaceTileMode(Gnm::GpuMode::kGpuModeBase, &spec.m_colorTileModeHint, GpuAddress::kSurfaceTypeColorTargetDisplayable, spec.m_colorFormat, 1);
+
+	//int32_t success = colourTarget.init(&spec);
+
+
+	//if (success != SCE_GNM_OK) {
+	//	bool a = true;
+	//}
+
+	//const Gnm::SizeAlign colourAlign = colourTarget.getColorSizeAlign();
+
+	//void* colourMemory = stackAllocators[MEMORY_GARLIC].allocate(colourAlign);
+
+	//Gnm::registerResource(nullptr, ownerHandle, colourMemory, colourAlign.m_size,
+	//	"Paint", Gnm::kResourceTypeRenderTargetBaseAddress, 0);
+
+	//colourTarget.setAddresses(colourMemory, NULL, NULL);
+	////Clearing the colour target i.e texture
+
+	//Gnm::Texture apiTex;
+	//apiTex.initFromRenderTarget(&colourTarget, false);
+
+	//currentGFXContext->setRenderTargetMask(0xF);
+	//currentGFXContext->setRenderTarget(0, &colourTarget);
+
+	//currentGFXContext->setupScreenViewport(0, 0, colourTarget.getWidth(), colourTarget.getHeight(), 0.5f, 0.5f);
+	//currentGFXContext->setScreenScissor(0, 0, colourTarget.getWidth(), colourTarget.getHeight());
+	//currentGFXContext->setWindowScissor(0, 0, colourTarget.getWidth(), colourTarget.getHeight(), sce::Gnm::WindowOffsetMode::kWindowOffsetDisable);
+	//currentGFXContext->setGenericScissor(0, 0, colourTarget.getWidth(), colourTarget.getHeight(), sce::Gnm::WindowOffsetMode::kWindowOffsetDisable);
+
+	//sce::Vectormath::Scalar::Aos::Vector4 clearColour(1.0f, 0.0f, 0.0f, 1.0f);
+	//SurfaceUtil::clearRenderTarget(*currentGFXContext, &colourTarget, clearColour);
+
+
+
+	//PS4Texture* tex = new PS4Texture();
+	//tex->SetAPITexture(apiTex);
+
+	//if (object) {
+	//	object->SetPaintTexture(tex, colourTarget);
+	//} else {
+	//	defaultPaintTex = tex;
+	//	paintTarget = colourTarget;
+	//}
+}
+
 void NCL::PS4::PS4Renderer::DrawRenderObject(const CSC8503::RenderObject* o)
 {
 	Matrix4* modelMat = (Matrix4*)currentGFXContext->allocateFromCommandBuffer(sizeof(Matrix4), Gnm::kEmbeddedDataAlignment4);
@@ -122,8 +253,16 @@ void NCL::PS4::PS4Renderer::DrawRenderObject(const CSC8503::RenderObject* o)
 	PS4Shader* realShader = (PS4Shader*)defaultShader;
 	PS4Mesh* realMesh = (PS4Mesh*)o->GetMesh();
 
-	int objIndex = realShader->GetConstantBufferIndex("RenderObjectData");
-	int camIndex = realShader->GetConstantBufferIndex("CameraData");
+	Vector4* colour = (Vector4*)currentGFXContext->allocateFromCommandBuffer(sizeof(Matrix4), Gnm::kEmbeddedDataAlignment4);
+	*colour = o->GetColour();
+	Gnm::Buffer constantBuffer1;
+	constantBuffer1.initAsConstantBuffer(colour, sizeof(float) * 4);
+	constantBuffer1.setResourceMemoryType(Gnm::kResourceMemoryTypeRO); // it's a constant buffer, so read-only is O
+	int colourIndex = realShader->GetConstantVertexBufferIndex("Colour");
+	currentGFXContext->setConstantBuffers(Gnm::kShaderStageVs, colourIndex, 1, &constantBuffer1);
+
+	int objIndex = realShader->GetConstantVertexBufferIndex("RenderObjectData");
+	int camIndex = realShader->GetConstantVertexBufferIndex("CameraData");
 
 	currentGFXContext->setConstantBuffers(Gnm::kShaderStageVs, objIndex, 1, &constantBuffer);
 	currentGFXContext->setConstantBuffers(Gnm::kShaderStageVs, camIndex, 1, &cameraBuffer);

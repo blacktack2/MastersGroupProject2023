@@ -94,6 +94,7 @@ void	PS4Mesh::UploadToGPU() {
 		memcpy(&vertexBuffer[i].textureCoord, &texCoords[i], sizeof(float) * 2);
 		memcpy(&vertexBuffer[i].normal,		  &normals[i],   sizeof(float) * 3);
 		memcpy(&vertexBuffer[i].tangent,	  &tangents[i],  sizeof(float) * 3);
+		//memcpy(&vertexBuffer[i].colour, &colours[i], sizeof(float) * 4);
 	}
 
 	for (int i = 0; i < GetIndexCount(); ++i) { //Our index buffer might not have the same data size as the source indices?
@@ -101,12 +102,13 @@ void	PS4Mesh::UploadToGPU() {
 	}	
 
 	attributeCount		= 4;
-	attributeBuffers	= new sce::Gnm::Buffer[4];
+	attributeBuffers	= new sce::Gnm::Buffer[attributeCount];
 
 	InitAttributeBuffer(attributeBuffers[0], Gnm::kDataFormatR32G32B32Float, &(vertexBuffer[0].position));
 	InitAttributeBuffer(attributeBuffers[1], Gnm::kDataFormatR32G32Float	, &(vertexBuffer[0].textureCoord));
 	InitAttributeBuffer(attributeBuffers[2], Gnm::kDataFormatR32G32B32Float, &(vertexBuffer[0].normal));
 	InitAttributeBuffer(attributeBuffers[3], Gnm::kDataFormatR32G32B32Float, &(vertexBuffer[0].tangent));
+	//InitAttributeBuffer(attributeBuffers[4], Gnm::kDataFormatR32G32B32A32Float, &(vertexBuffer[0].colour));
 }
 
 void	PS4Mesh::InitAttributeBuffer(sce::Gnm::Buffer &buffer, Gnm::DataFormat format, void*offset) {

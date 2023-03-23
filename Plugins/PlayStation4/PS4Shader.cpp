@@ -165,8 +165,16 @@ void	PS4Shader::SubmitShaderSwitch(Gnmx::GnmxGfxContext& cmdList) {
 	cmdList.setPsShader(pixelShader, &pixelCache);
 }
 
-int		PS4Shader::GetConstantBufferIndex(const std::string &name) {
+int PS4Shader::GetConstantVertexBufferIndex(const std::string &name) {
 	sce::Shader::Binary::Buffer* constantBuffer = vertexBinary.getBufferResourceByName(name.c_str());
+	if (!constantBuffer) {
+		return -1;
+	}
+	return constantBuffer->m_resourceIndex;
+}
+
+int NCL::PS4::PS4Shader::GetConstantPixelBufferIndex(const std::string& name) {
+	sce::Shader::Binary::Buffer* constantBuffer = pixelBinary.getBufferResourceByName(name.c_str());
 	if (!constantBuffer) {
 		return -1;
 	}

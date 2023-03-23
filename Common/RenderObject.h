@@ -2,6 +2,9 @@
 #include "TextureBase.h"
 #include "ShaderBase.h"
 #include "Vector4.h"
+#include "Vector3.h"
+#include <gnm.h>
+
 
 namespace NCL {
 	namespace Rendering {
@@ -19,17 +22,41 @@ namespace NCL {
 		class RenderObject
 		{
 		public:
+			struct PaintCollision {
+				PaintCollision(const Vector3& cen, float r, const Vector3& col) {
+					center = cen;
+					radius = r;
+					colour = col;
+				}
+
+				Vector3 center;
+				float radius;
+				Vector3 colour;
+			};
+
 			RenderObject(Transform* parentTransform, CSC8503::MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader = nullptr);
 			RenderObject(RenderObject& other, Transform* parentTransform);
 			~RenderObject();
 
 			void SetDefaultTexture(TextureBase* t) {
-				texture = t;
+				albedoTexture = t;
 			}
 
 			TextureBase* GetDefaultTexture() const {
-				return texture;
+				return albedoTexture;
 			}
+			
+			/*void SetPaintTexture(TextureBase* tex, const sce::Gnm::RenderTarget& target) {
+				paintTexture = tex;
+				paintTarget  = target;
+			}
+
+			TextureBase* GetPaintTexture() const {
+				return paintTexture;
+			}
+			const sce::Gnm::RenderTarget& GetPaintTarget() const {
+				return paintTarget;
+			}*/
 
 			MeshGeometry* GetMesh() const {
 				return mesh;
@@ -58,11 +85,28 @@ namespace NCL {
 
 			virtual void ConfigerShaderExtras(OGLShader* shaderOGL) const {}
 
+
+			inline const std::vector<PaintCollision>& GetPaintCollisions() {
+				return paintCollisions;
+			}
+			inline void AddPaintCollision(const Vector3& center, float radius, const Vector3& colour = Vector3(1.0f)) {
+				paintCollisions.emplace_back(center, radius, colour);
+			}
+			inline void ClearPaintCollisions() {
+				paintCollisions.clear();
+			}
+
 		protected:
 			Transform* transform;
 			CSC8503::MeshGeometry* mesh;
-			TextureBase* texture;
+
+			TextureBase* albedoTexture;
+			//TextureBase* paintTexture= nullptr;
+
+			//sce::Gnm::RenderTarget paintTarget;
+
 			ShaderBase* shader;
+			std::vector<PaintCollision>  paintCollisions{};
 			Vector4			colour;
 		};
 	}

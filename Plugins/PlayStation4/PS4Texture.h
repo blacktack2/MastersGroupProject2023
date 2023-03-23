@@ -11,16 +11,20 @@ namespace NCL::PS4 {
 	public:
 		friend class PS4RendererBase;
 
+		PS4Texture();
 		~PS4Texture();
 
 		static PS4Texture* LoadTextureFromFile(const std::string& filename);
+
+		void SetAPITexture(const sce::Gnm::Texture& tex) {
+			apiTexture = tex;
+		}
 
 		const sce::Gnm::Texture&  GetAPITexture() {
 			return apiTexture;
 		}
 
 	protected:
-		PS4Texture();
 		sce::Gnm::Texture apiTexture;
 	};
 }

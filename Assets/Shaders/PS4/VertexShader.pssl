@@ -8,18 +8,24 @@ ConstantBuffer CameraData
 	column_major matrix camMatrix;
 };
 
+ConstantBuffer Colour{
+	float4 objColour;
+}
+
 struct VS_INPUT
 {
 	float3 Position		: POSITION0;
 	float2 UV			: TEXCOORD0;
 	float3 Normal		: TEXCOORD1;
 	float3 Tangent		: TEXCOORD2;
+	//float4 Colour		: TEXCOORD3;
 };
 
 struct VS_OUTPUT
 {
 	float4 Position		: S_POSITION;
 	float2 UV			: TEXCOORD0; 
+	float4 Colour		: TEXCOORD1; 
 };
 
 VS_OUTPUT main(VS_INPUT Input)
@@ -28,7 +34,7 @@ VS_OUTPUT main(VS_INPUT Input)
 
 	Output.Position = mul(mul(camMatrix,modelMatrix), float4(Input.Position.xyz, 1));
 
-	//Output.Color = Input.Color;
+	Output.Colour = objColour;
 	Output.UV = Input.UV;
 
 	return Output;

@@ -87,6 +87,9 @@ NCL::CSC8503::TutorialGame::~TutorialGame()
 	delete pillarMesh;
 	delete fenceMesh;
 
+
+
+	delete inkableTex;
 	delete basicTex;
 }
 
@@ -158,11 +161,15 @@ void NCL::CSC8503::TutorialGame::InitialiseAssets()
 	pillarMesh= renderer->LoadMesh("pillarCube.msh");
 
 	basicTex = PS4::PS4Texture::LoadTextureFromFile("doge.gnf");
+	inkableTex = PS4::PS4Texture::LoadTextureFromFile("checkerboard.gnf");
 
 #ifdef _ORBIS
-	PS4::PS4Shader* s= (PS4::PS4Shader*)renderer->LoadShader("/app0/Assets/Shaders/PS4/VertexShader.sb",
+	PS4::PS4Shader* shader = (PS4::PS4Shader*)renderer->LoadShader("/app0/Assets/Shaders/PS4/VertexShader.sb",
 		"/app0/Assets/Shaders/PS4/PixelShader.sb");
-	renderer->SetDefaultShader(s);
+	renderer->SetDefaultShader(shader);
+	/*PS4::PS4Shader* paintShader = (PS4::PS4Shader*)renderer->LoadShader("/app0/Assets/Shaders/PS4/PaintVertexShader.sb",
+		"/app0/Assets/Shaders/PS4/PaintPixelShader.sb");
+	renderer->SetPaintShader(paintShader);*/
 #endif
 }
 
@@ -187,13 +194,14 @@ GameObject* NCL::CSC8503::TutorialGame::AddFloorToWorld(const NCL::Maths::Vector
 	GameObject* floor = new GameObject("Floor");
 
 	Vector3 floorSize = Vector3(200, 2, 200);
-	AABBVolume* volume = new AABBVolume(floorSize);
+	AABBVolume* volume = new AABBVolume(floorSize, CollisionLayer::PaintAble);
 	floor->SetBoundingVolume((CollisionVolume*)volume);
 	floor->GetTransform()
 		.SetScale(floorSize * 2)
 		.SetPosition(position);
 
 	RenderObject* render = new RenderObject(&floor->GetTransform(), cubeMesh, basicTex);
+	renderer->CreatePaintTexture(1024,1024,render);
 	floor->SetRenderObject(render);
 
 	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));
@@ -266,13 +274,13 @@ GameObject* NCL::CSC8503::TutorialGame::AddCubeToWorld(const Maths::Vector3& pos
 Boss* TutorialGame::AddBossToWorld(const Maths::Vector3& position, Maths::Vector3 dimensions, float inverseMass) {
 	Boss* boss = new Boss();
 
-	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions));
+	boss->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions,CollisionLayer::Enemy));
 
 	boss->GetTransform()
 		.SetPosition(position)
 		.SetScale(dimensions);
 
-	boss->SetRenderObject(new RenderObject(&boss->GetTransform(), enemyMesh, basicTex));
+	boss->SetRenderObject(new RenderObject(&boss->GetTransform(), enemyMesh, inkableTex));
 
 	boss->GetRenderObject()->SetColour({ 1, 1, 1, 1 });
 	boss->SetPhysicsObject(new PhysicsObject(&boss->GetTransform(), boss->GetBoundingVolume()));
@@ -312,7 +320,8 @@ void NCL::CSC8503::TutorialGame::UpdateLevel()
 					.SetScale(dimensions * 2);
 				//pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("pillar"), healingKitTex, nullptr));
 
-				RenderObject* render = new RenderObject(&pillar->GetTransform(),pillarMesh, basicTex);
+				RenderObject* render = new RenderObject(&pillar->GetTransform(),pillarMesh, inkableTex);
+				render->SetColour(Vector4(1, 0, 1, 1));
 				pillar->SetRenderObject(render);
 
 				pillar->SetPhysicsObject(new PhysicsObject(&pillar->GetTransform(), pillar->GetBoundingVolume()));
@@ -329,7 +338,7 @@ void NCL::CSC8503::TutorialGame::UpdateLevel()
 					.SetScale(dimensions * 2);
 				//fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), basicTex, nullptr));		// TODO: change to the right Mesh
 
-				RenderObject* render = new RenderObject(&fenceX->GetTransform(), fenceMesh, basicTex);
+				RenderObject* render = new RenderObject(&fenceX->GetTransform(), fenceMesh, inkableTex);
 				fenceX->SetRenderObject(render);
 
 				fenceX->SetPhysicsObject(new PhysicsObject(&fenceX->GetTransform(), fenceX->GetBoundingVolume()));
@@ -346,7 +355,7 @@ void NCL::CSC8503::TutorialGame::UpdateLevel()
 					.SetScale(dimensions * 2);
 				//fenceY->SetRenderObject(new RenderObject(&fenceY->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceY"), basicTex, nullptr));		// TODO: change to the right Mesh
 
-				RenderObject* render = new RenderObject(&fenceY->GetTransform(), fenceMesh, basicTex);
+				RenderObject* render = new RenderObject(&fenceY->GetTransform(), fenceMesh, inkableTex);
 				fenceY->SetRenderObject(render);
 
 				fenceY->SetPhysicsObject(new PhysicsObject(&fenceY->GetTransform(), fenceY->GetBoundingVolume()));
@@ -363,7 +372,8 @@ void NCL::CSC8503::TutorialGame::UpdateLevel()
 					.SetScale(dimensions);
 				//shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("shelter"), basicTex, nullptr));
 
-				RenderObject* render = new RenderObject(&shelter->GetTransform(),cubeMesh, basicTex);
+				RenderObject* render = new RenderObject(&shelter->GetTransform(),cubeMesh, inkableTex);
+				renderer->CreatePaintTexture(128, 128, render);
 				shelter->SetRenderObject(render);
 
 				shelter->SetPhysicsObject(new PhysicsObject(&shelter->GetTransform(), shelter->GetBoundingVolume()));
@@ -431,8 +441,6 @@ GameObject* NCL::CSC8503::TutorialGame::AddCapsuleToWorld(const Maths::Vector3& 
 
 PlayerObject* NCL::CSC8503::TutorialGame::AddPlayerToWorld(const Maths::Vector3& position, bool cameraFollow)
 {
-	static int id = 0;
-
 	PlayerObject* character = new PlayerObject(0);
 	SphereVolume* volume = new SphereVolume(1.0f, CollisionLayer::Player);
 

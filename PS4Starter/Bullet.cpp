@@ -14,6 +14,7 @@
 #include "GameGridManager.h"
 #include "../Common/SphereVolume.h"
 #include "../Common/RenderObject.h"
+#include "../Common/PhysicsObject.h"
 #endif // _ORBIS
 
 
@@ -32,11 +33,15 @@ Bullet::~Bullet() {
 }
 
 void Bullet::Update(float dt) {
-	lifespan -= dt;
-	if (lifespan <= 0) {
+	if (lifespan < 0) {
 		isActive = false;
+		GetPhysicsObject()->ClearForces();
+		GetPhysicsObject()->SetLinearVelocity(Vector3(0.0f));
+		GetPhysicsObject()->SetAngularVelocity(Vector3(0.0f));
+		physicsObject->SetInverseMass(1.0f);
 		return;
 	}
+	lifespan -= dt;
 
 	//Debug::DrawLine(transform.GetGlobalPosition(), transform.GetGlobalPosition() + Vector3(0, 0.01f , 0), Vector4(0, 1, 1, 1));
 }
@@ -46,6 +51,7 @@ void Bullet::OnCollisionBegin(GameObject* other) {
 	{
 		//PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
 		//renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), paintRadius, colour)); //->to be implemented
+		PaintCollision(*other);
 		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), paintRadius, inkType);
 	}
 	if (lifespan > 0)
@@ -56,17 +62,13 @@ void Bullet::OnCollisionBegin(GameObject* other) {
 }
 
 void Bullet::OnTriggerBegin(GameObject* other) {
-	if (other->GetBoundingVolume()->layer == CollisionLayer::PaintAble)
-	{
-		//PaintRenderObject* renderObj = (PaintRenderObject*)other->GetRenderObject();
-		//renderObj->AddPaintCollision(PaintCollision(transform.GetGlobalPosition(), paintRadius, colour)); //-> to be implemented
-		GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), paintRadius, inkType);
+	if (!other) {
+		return;
 	}
-	if (lifespan > 0)
-	{
-		boundingVolume = (CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer);
-		lifespan = -1;
-	}
+	PaintCollision(*other);
+	SetBoundingVolume((CollisionVolume*) new SphereVolume(paintRadius, boundingVolume->layer));
+	physicsObject->SetInverseMass(0);
+	lifespan = 0;
 }
 
 void Bullet::UpdateColour() {
@@ -82,4 +84,16 @@ void Bullet::Resize(Vector3 scale) {
 	delete boundingVolume;
 	boundingVolume = (CollisionVolume*) new SphereVolume(scale.x, layer);
 	transform.SetScale(scale);
+}
+
+void Bullet::PaintCollision(GameObject& other) {
+	if (other.GetBoundingVolume()->layer != CollisionLayer::PaintAble) {
+		return;
+	}
+	RenderObject* renderObj = other.GetRenderObject();
+	/*if (!(renderObj && renderObj->GetPaintTexture())) {
+		return;
+	}*/
+	//renderObj->AddPaintCollision(transform.GetGlobalPosition(), paintRadius, colour);
+	//GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), paintRadius, inkType);
 }

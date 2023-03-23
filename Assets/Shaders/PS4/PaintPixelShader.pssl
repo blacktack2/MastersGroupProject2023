@@ -1,0 +1,23 @@
+ConstantBuffer PaintData
+{
+	float3 paintPos;
+	float3 paintColour;
+	float paintRadius;
+};
+
+struct VS_OUTPUT
+{
+	float4 Position		: S_POSITION;
+	float2 UV			: TEXCOORD0;
+	float4 Colour		: TEXCOORD1; 
+};
+
+float4 main(VS_OUTPUT In) : S_TARGET_OUTPUT
+{
+	float3 relative = In.Position - paintPos;
+	float distSquared = dot(relative, relative);
+	
+	if (distSquared <= (paintRadius * paintRadius * 1000000.0))
+		return float4(paintColour, 1.0f);
+	return float4(0.0f);
+}  

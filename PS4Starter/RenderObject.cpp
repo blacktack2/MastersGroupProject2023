@@ -18,7 +18,7 @@ RenderObject::RenderObject()
 
 RenderObject::~RenderObject()
 {
-
+	
 }
 
 RenderObject::RenderObject(CSC8503::MeshGeometry* m, NCL::Rendering::ShaderBase* s, NCL::Rendering::TextureBase* t) {

@@ -40,7 +40,8 @@ namespace NCL::PS4 {
 			
 		static PS4Shader* GenerateShader(const std::string& vertex, const std::string& pixel);
 
-		int		GetConstantBufferIndex(const std::string& name);
+		int GetConstantVertexBufferIndex(const std::string& name);
+		int GetConstantPixelBufferIndex(const std::string& name);
 
 		void SetUniformInt(const std::string& uniform, int v1) override;
 		void SetUniformInt(const std::string& uniform, int v1, int v2) override;
@@ -70,7 +71,7 @@ namespace NCL::PS4 {
 		bool LoadShaderBinary(const std::string& name, char*& into, int& dataSize);
 
 		bool ShaderIsBinary(const std::string& name);
-bool LoadSuccess() const {
+		bool LoadSuccess() const {
 				return false;
 			}
 

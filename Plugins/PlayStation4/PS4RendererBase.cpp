@@ -136,7 +136,7 @@ PS4ScreenBuffer*	PS4RendererBase::GenerateScreenBuffer(uint width, uint height, 
 		void *colourMemory = stackAllocators[MEMORY_GARLIC].allocate(colourAlign);
 
 		Gnm::registerResource(nullptr, ownerHandle, colourMemory, colourAlign.m_size,
-			"Colour", Gnm::kResourceTypeDepthRenderTargetBaseAddress, 0);
+			"Colour", Gnm::kResourceTypeRenderTargetBaseAddress, 0);
 
 		buffer->colourTarget.setAddresses(colourMemory, NULL, NULL);
 	}
