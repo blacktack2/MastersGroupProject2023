@@ -140,9 +140,10 @@ namespace NCL {
 			MeshGeometry* sphereMesh = nullptr;
 
 			TextureBase* basicTex = nullptr;
-			TextureBase* healingKitTex = nullptr;		/////////
-			TextureBase* inkableTex = nullptr;		/////////
-			TextureBase* noiseTex = nullptr;		/////////
+			TextureBase* floorTex = nullptr;		/////////
+			TextureBase* floorBumpTex = nullptr;		/////////
+			TextureBase* obstacleTex= nullptr;		/////////
+			TextureBase* enemyTex= nullptr;		/////////
 			//ShaderBase* inkableShader = nullptr;		/////////
 			//ShaderBase* basicShader = nullptr;
 

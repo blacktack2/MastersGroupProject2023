@@ -12,7 +12,7 @@ namespace NCL {
 		class PS4Renderer : public PS4RendererBase {
 		public:
 			PS4Renderer(GameWorld& world);
-			~PS4Renderer() {};
+			~PS4Renderer();
 
 			MeshGeometry* LoadMesh(const std::string& name);
 			TextureBase* LoadTexture(const std::string& name);
@@ -51,6 +51,7 @@ namespace NCL {
 			//PS4Shader* paintShader;
 
 			//PS4Texture* defaultPaintTex;
+			PS4Texture* defaultBumpTex;
 
 			NCL::Maths::Matrix4* viewProjMat;
 			Gnm::Buffer	cameraBuffer;

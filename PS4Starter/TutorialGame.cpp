@@ -89,7 +89,9 @@ NCL::CSC8503::TutorialGame::~TutorialGame()
 
 
 
-	delete inkableTex;
+	delete obstacleTex;
+	delete floorBumpTex;
+	delete floorTex;
 	delete basicTex;
 }
 
@@ -161,7 +163,9 @@ void NCL::CSC8503::TutorialGame::InitialiseAssets()
 	pillarMesh= renderer->LoadMesh("pillarCube.msh");
 
 	basicTex = PS4::PS4Texture::LoadTextureFromFile("doge.gnf");
-	inkableTex = PS4::PS4Texture::LoadTextureFromFile("checkerboard.gnf");
+	obstacleTex = PS4::PS4Texture::LoadTextureFromFile("checkerboard.gnf");
+	floorTex = PS4::PS4Texture::LoadTextureFromFile("Floor/Floor_basecolor.gnf");
+	floorBumpTex= PS4::PS4Texture::LoadTextureFromFile("Floor/Floor_normal.gnf");
 
 #ifdef _ORBIS
 	PS4::PS4Shader* shader = (PS4::PS4Shader*)renderer->LoadShader("/app0/Assets/Shaders/PS4/VertexShader.sb",
@@ -200,8 +204,9 @@ GameObject* NCL::CSC8503::TutorialGame::AddFloorToWorld(const NCL::Maths::Vector
 		.SetScale(floorSize * 2)
 		.SetPosition(position);
 
-	RenderObject* render = new RenderObject(&floor->GetTransform(), cubeMesh, basicTex);
-	renderer->CreatePaintTexture(1024,1024,render);
+	RenderObject* render = new RenderObject(&floor->GetTransform(), cubeMesh, floorTex);
+	//renderer->CreatePaintTexture(1024,1024,render);
+	render->SetBumpTexture(floorBumpTex);
 	floor->SetRenderObject(render);
 
 	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));
@@ -280,7 +285,7 @@ Boss* TutorialGame::AddBossToWorld(const Maths::Vector3& position, Maths::Vector
 		.SetPosition(position)
 		.SetScale(dimensions);
 
-	boss->SetRenderObject(new RenderObject(&boss->GetTransform(), enemyMesh, inkableTex));
+	boss->SetRenderObject(new RenderObject(&boss->GetTransform(), enemyMesh, obstacleTex));
 
 	boss->GetRenderObject()->SetColour({ 1, 1, 1, 1 });
 	boss->SetPhysicsObject(new PhysicsObject(&boss->GetTransform(), boss->GetBoundingVolume()));
@@ -320,7 +325,7 @@ void NCL::CSC8503::TutorialGame::UpdateLevel()
 					.SetScale(dimensions * 2);
 				//pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("pillar"), healingKitTex, nullptr));
 
-				RenderObject* render = new RenderObject(&pillar->GetTransform(),pillarMesh, inkableTex);
+				RenderObject* render = new RenderObject(&pillar->GetTransform(),pillarMesh, obstacleTex);
 				render->SetColour(Vector4(1, 0, 1, 1));
 				pillar->SetRenderObject(render);
 
@@ -338,7 +343,7 @@ void NCL::CSC8503::TutorialGame::UpdateLevel()
 					.SetScale(dimensions * 2);
 				//fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), basicTex, nullptr));		// TODO: change to the right Mesh
 
-				RenderObject* render = new RenderObject(&fenceX->GetTransform(), fenceMesh, inkableTex);
+				RenderObject* render = new RenderObject(&fenceX->GetTransform(), fenceMesh, obstacleTex);
 				fenceX->SetRenderObject(render);
 
 				fenceX->SetPhysicsObject(new PhysicsObject(&fenceX->GetTransform(), fenceX->GetBoundingVolume()));
@@ -355,7 +360,7 @@ void NCL::CSC8503::TutorialGame::UpdateLevel()
 					.SetScale(dimensions * 2);
 				//fenceY->SetRenderObject(new RenderObject(&fenceY->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceY"), basicTex, nullptr));		// TODO: change to the right Mesh
 
-				RenderObject* render = new RenderObject(&fenceY->GetTransform(), fenceMesh, inkableTex);
+				RenderObject* render = new RenderObject(&fenceY->GetTransform(), fenceMesh, obstacleTex);
 				fenceY->SetRenderObject(render);
 
 				fenceY->SetPhysicsObject(new PhysicsObject(&fenceY->GetTransform(), fenceY->GetBoundingVolume()));
@@ -372,7 +377,7 @@ void NCL::CSC8503::TutorialGame::UpdateLevel()
 					.SetScale(dimensions);
 				//shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("shelter"), basicTex, nullptr));
 
-				RenderObject* render = new RenderObject(&shelter->GetTransform(),cubeMesh, inkableTex);
+				RenderObject* render = new RenderObject(&shelter->GetTransform(),cubeMesh, obstacleTex);
 				renderer->CreatePaintTexture(128, 128, render);
 				shelter->SetRenderObject(render);
 

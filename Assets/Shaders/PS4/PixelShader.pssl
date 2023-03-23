@@ -2,17 +2,49 @@
 SamplerState samp0 : register(s0);
 
 Texture2D colorMap : register(t0);
+Texture2D bumpMap : register(t1);
+
+
 
 struct VS_OUTPUT
 {
 	float4 Position		: S_POSITION;
 	float2 UV			: TEXCOORD0;
-	float4 Colour		: TEXCOORD1; 
+	float4 Colour		: TEXCOORD1;
+	float3 cameraPos: TEXCOORD2;
+	float3 normal       : NORMAL0;
+	float3 tangent      : TANGENT0;
+	float3 binormal     : BINORMAL0;
+	float3 WorldPosition : WPOS0;
 };
 
 float4 main(VS_OUTPUT In) : S_TARGET_OUTPUT
 {
-	float4 albedo = colorMap.Sample(samp0, In.UV.xy);
+	const float3 lightDir = normalize(float3(1, -1, 1));
+	float4 albedo = colorMap.Sample(samp0, float2(In.UV.x*10,In.UV.y*10)) * In.Colour;
+	float4 bump   = bumpMap.Sample(samp0, float2(In.UV.x*10,In.UV.y*10));
+//
+	float3x3 TBN = float3x3(
+		normalize(In.tangent),
+		normalize(In.binormal),
+		normalize(In.normal)
+	);
 
-	return albedo * In.Colour;
+	float3 normal = bump.xyz * 2.0 - 1.0;
+	normal = normalize(mul(TBN, normalize(normal)));
+
+	float3 viewDir = normalize(In.cameraPos - In.WorldPosition);
+	float3 halfDir = normalize(lightDir + viewDir);
+
+	float lambert = clamp(dot(lightDir, normal), 0.0f, 1.0f);
+	float rFactor = clamp(dot(halfDir, normal), 0.0f, 1.0f);
+	float specFactor = pow(rFactor, 60.0f) * 0.33f;
+
+	float3 result = albedo.rgb * lambert;
+	result += specFactor;
+	result += albedo * float3(0.1f);
+
+	return float4(result, 1.0f);
+
+	//return albedo;
 }  

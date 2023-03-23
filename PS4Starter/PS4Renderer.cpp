@@ -3,6 +3,7 @@
 #include "../Plugins/PlayStation4/PS4Mesh.h"
 #include "../Plugins/PlayStation4/PS4Shader.h"
 #include "../Plugins/PlayStation4/PS4Frame.h"
+#include "../Plugins/PlayStation4/PS4Texture.h"
 #include "../Common/RenderObject.h"
 #include "../Common/Debug.h"
 
@@ -21,6 +22,13 @@ PS4Renderer::PS4Renderer(GameWorld& world) : PS4RendererBase((PS4Window*)Window:
 	cameraBuffer.setResourceMemoryType(Gnm::kResourceMemoryTypeRO); // it's a constant buffer, so read-only is OK
 
 	//CreatePaintTexture(1, 1, nullptr);
+
+	defaultBumpTex = PS4::PS4Texture::LoadTextureFromFile("DefaultBump.gnf");
+}
+
+NCL::PS4::PS4Renderer::~PS4Renderer()
+{
+	delete defaultBumpTex;
 }
 
 
@@ -168,6 +176,10 @@ void NCL::PS4::PS4Renderer::RenderFrame()
 		//paintTex = paintTex ? paintTex : defaultPaintTex;
 		//currentGFXContext->setTextures(Gnm::kShaderStagePs, 1, 1, &paintTex->GetAPITexture());
 		
+		PS4Texture* bumpTex = (PS4Texture*)((*i).GetBumpTexture());
+		bumpTex = (bumpTex!=nullptr) ? bumpTex : defaultBumpTex;
+		currentGFXContext->setTextures(Gnm::kShaderStagePs, 1, 1, &(bumpTex)->GetAPITexture());
+
 		currentGFXContext->setSamplers(Gnm::kShaderStagePs, 0, 1, &trilinearSampler);
 		DrawRenderObject(i);
 	}
@@ -246,26 +258,38 @@ void NCL::PS4::PS4Renderer::DrawRenderObject(const CSC8503::RenderObject* o)
 	Matrix4* modelMat = (Matrix4*)currentGFXContext->allocateFromCommandBuffer(sizeof(Matrix4), Gnm::kEmbeddedDataAlignment4);
 	*modelMat = o->GetTransform()->GetGlobalMatrix();
 
-	Gnm::Buffer constantBuffer;
-	constantBuffer.initAsConstantBuffer(modelMat, sizeof(Matrix4));
-	constantBuffer.setResourceMemoryType(Gnm::kResourceMemoryTypeRO); // it's a constant buffer, so read-only is OK
+	Gnm::Buffer modelMatBuffer;
+	modelMatBuffer.initAsConstantBuffer(modelMat, sizeof(Matrix4));
+	modelMatBuffer.setResourceMemoryType(Gnm::kResourceMemoryTypeRO); // it's a constant buffer, so read-only is OK
+
+	Vector4* colour = (Vector4*)currentGFXContext->allocateFromCommandBuffer(sizeof(Vector4), Gnm::kEmbeddedDataAlignment4);
+	*colour = o->GetColour();
+	Gnm::Buffer objectColourBuffer;
+	objectColourBuffer.initAsConstantBuffer(colour, sizeof(float) * 4);
+	objectColourBuffer.setResourceMemoryType(Gnm::kResourceMemoryTypeRO); // it's a constant buffer, so read-only is O
+
+	Vector3* cameraPos = (Vector3*)currentGFXContext->allocateFromCommandBuffer(sizeof(Vector3), Gnm::kEmbeddedDataAlignment4);
+	*cameraPos = gameWorld.GetMainCamera()->GetPosition();
+	Gnm::Buffer cameraPosBuffer;
+	cameraPosBuffer.initAsConstantBuffer(cameraPos, sizeof(float) * 3);
+	cameraPosBuffer.setResourceMemoryType(Gnm::kResourceMemoryTypeRO); // it's a constant buffer, so read-only is O
+
 
 	PS4Shader* realShader = (PS4Shader*)defaultShader;
 	PS4Mesh* realMesh = (PS4Mesh*)o->GetMesh();
 
-	Vector4* colour = (Vector4*)currentGFXContext->allocateFromCommandBuffer(sizeof(Matrix4), Gnm::kEmbeddedDataAlignment4);
-	*colour = o->GetColour();
-	Gnm::Buffer constantBuffer1;
-	constantBuffer1.initAsConstantBuffer(colour, sizeof(float) * 4);
-	constantBuffer1.setResourceMemoryType(Gnm::kResourceMemoryTypeRO); // it's a constant buffer, so read-only is O
-	int colourIndex = realShader->GetConstantVertexBufferIndex("Colour");
-	currentGFXContext->setConstantBuffers(Gnm::kShaderStageVs, colourIndex, 1, &constantBuffer1);
-
 	int objIndex = realShader->GetConstantVertexBufferIndex("RenderObjectData");
 	int camIndex = realShader->GetConstantVertexBufferIndex("CameraData");
+	int cameraPosIndex = realShader->GetConstantVertexBufferIndex("CameraPositionData");
+	int colourIndex = realShader->GetConstantVertexBufferIndex("Colour");
 
-	currentGFXContext->setConstantBuffers(Gnm::kShaderStageVs, objIndex, 1, &constantBuffer);
+
+	currentGFXContext->setConstantBuffers(Gnm::kShaderStageVs, objIndex, 1, &modelMatBuffer);
 	currentGFXContext->setConstantBuffers(Gnm::kShaderStageVs, camIndex, 1, &cameraBuffer);
+	currentGFXContext->setConstantBuffers(Gnm::kShaderStageVs, cameraPosIndex, 1, &cameraPosBuffer);
+	currentGFXContext->setConstantBuffers(Gnm::kShaderStageVs, colourIndex, 1, &objectColourBuffer);
+
+	
 
 	realShader->SubmitShaderSwitch(*currentGFXContext);
 	realMesh->SubmitDraw(*currentGFXContext, Gnm::ShaderStage::kShaderStageVs);

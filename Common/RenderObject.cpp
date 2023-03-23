@@ -9,6 +9,7 @@ RenderObject::RenderObject(Transform* parentTransform, CSC8503::MeshGeometry* me
 	this->albedoTexture = tex;
 	this->shader = shader;
 	this->colour = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	bumpTexture = nullptr;
 }
 
 RenderObject::RenderObject(RenderObject& other, Transform* parentTransform) {
@@ -17,6 +18,7 @@ RenderObject::RenderObject(RenderObject& other, Transform* parentTransform) {
 	albedoTexture = other.albedoTexture;
 	shader = other.shader;
 	colour = other.colour;
+	bumpTexture = other.bumpTexture;
 }
 
 RenderObject::~RenderObject() {

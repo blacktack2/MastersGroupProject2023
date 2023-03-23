@@ -167,5 +167,14 @@
     <CustomBuild Include="..\Assets\Textures\checkerboard.png">
       <Filter>Textures</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\Assets\Textures\DefaultBump.png">
+      <Filter>Textures</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\Assets\Textures\Floor\Floor_basecolor.tga">
+      <Filter>Textures</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\Assets\Textures\Floor\Floor_normal.tga">
+      <Filter>Textures</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

@@ -46,6 +46,14 @@ namespace NCL {
 				return albedoTexture;
 			}
 			
+			void SetBumpTexture(TextureBase* t) {
+				bumpTexture= t;
+			}
+
+			TextureBase* GetBumpTexture() const {
+				return bumpTexture;
+			}
+			
 			/*void SetPaintTexture(TextureBase* tex, const sce::Gnm::RenderTarget& target) {
 				paintTexture = tex;
 				paintTarget  = target;
@@ -101,6 +109,7 @@ namespace NCL {
 			CSC8503::MeshGeometry* mesh;
 
 			TextureBase* albedoTexture;
+			TextureBase* bumpTexture= nullptr;
 			//TextureBase* paintTexture= nullptr;
 
 			//sce::Gnm::RenderTarget paintTarget;
