@@ -146,6 +146,9 @@ namespace NCL {
             bool rainIsInitialised = false;
             int currentRainBomb = 0;
 
+            int consecutiveJumpCounter = 0;
+            int consecutiveLaserCounter = 0;
+
             std::vector<BossBullet*> rain;
             std::vector<Vector3> rainBombPositions;
 

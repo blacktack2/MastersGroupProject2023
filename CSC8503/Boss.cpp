@@ -22,7 +22,7 @@
 #include "SoundSystem.h"
 
 const float offensiveHealthLowerBound = 50;
-const float bossVision = 80;
+const float bossVision = 90;
 const float distanceToHaveCloseCombat = 40;
 
 Boss::Boss() {
@@ -141,9 +141,18 @@ void Boss::BuildTree() {
         case Success:
             return state;
         case Initialise:
-            if (std::rand() % 100 > 70) return Failure;
+            //if too much laser auto fail
+            //if too many jump  auto success
+            if (std::rand() % 100 > 30 && consecutiveLaserCounter >= 3 && consecutiveJumpCounter <= 3) {
+                return Failure;
+            }
+            //if (std::rand() % 100 > 70) return Failure;
         }
-        if (UseLaserOnPlayer(target)) return Success;
+        if (UseLaserOnPlayer(target)) {
+            consecutiveLaserCounter++;
+            consecutiveJumpCounter = 0;
+            return Success;
+        }
         bossAction = Attack3;
         return Ongoing;
     }));
@@ -156,7 +165,11 @@ void Boss::BuildTree() {
             return state;
         }
 
-        if (JumpTo(target)) return Success;
+        if (JumpTo(target)) {
+            consecutiveJumpCounter++;
+            consecutiveLaserCounter = 0;
+            return Success;
+        }
         bossAction = Move2;
         return Ongoing;
     }));
@@ -309,9 +322,11 @@ void Boss::Update(float dt) {
     // check if inked
     GameNode* node = GameGridManager::instance().NearestNode(this->GetTransform().GetGlobalPosition());
     if (node) {
-        InkEffectManager::instance().ApplyInkEffect(node->inkType, GetHealth(), 1);
-        if (node->inkType == NCL::InkType::PlayerDamage) {
-            hurtSource->Play(Sound::AddSound("tom.wav"));
+        if (this->GetTransform().GetGlobalPosition().y <= 10) {
+            InkEffectManager::instance().ApplyInkEffect(node->inkType, GetHealth(), 1);
+            if (node->inkType == NCL::InkType::PlayerDamage) {
+                hurtSource->Play(Sound::AddSound("tom.wav"));
+            }
         }
     }
     //check boss health
@@ -345,8 +360,11 @@ void Boss::Update(float dt) {
 
 void Boss::ChangeLoseState()
 {
-    bossAction = Dead;
-    gameStateManager->SetGameState(GameState::Win);
+    if (isSpawnBullet) {
+        bossAction = Dead;
+        gameStateManager->SetGameState(GameState::Win);
+    }
+   
 }
 
 void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt) {
