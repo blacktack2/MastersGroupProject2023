@@ -324,14 +324,16 @@ void Boss::Update(float dt) {
             ChangeLoseState();
         }
     }
-    
-    if (health.GetHealth() > 0 )
+
+    if (health.GetHealth() > 0)
     {
         bossAction = NoAction;
         if (behaviourTree->Execute(dt) != Ongoing) {
             behaviourTree->Reset();
         }
     }
+
+    PlayAnimation();
 
     //std::cout << "Boss doing " << bossAction << std::endl;
 
@@ -443,10 +445,6 @@ void Boss::SetBossOrientation(Vector3* facingDir) {
 }
 
 bool Boss::RandomWalk() {
-    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("WalkForward").get()) {
-        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("WalkForward"));
-    }
     float speed = 20.0f;
     float period = 1.0f;    // change direction in period-seconds
     randomWalkTimer += deltaTime;
@@ -469,10 +467,6 @@ bool Boss::RandomWalk() {
 bool Boss::StabPlayer(PlayerObject* player) {
     SetBossOrientation(nullptr);
     nyaSource->Play(Sound::AddSound("nya.wav"));
-    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack1").get()) {
-        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack1"));
-    }
 
     Vector3 bombScale{ 0.75,0.75,0.75 };
     float bombSpeed = 40.0f;
@@ -501,10 +495,6 @@ bool Boss::StabPlayer(PlayerObject* player) {
 bool Boss::Spin(PlayerObject* player) {
     SetBossOrientation(nullptr);
     tuturuSource->Play(Sound::AddSound("tuturu.wav"));
-    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack2").get()) {
-        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack2"));
-    }
     Vector3 bombScale{ 0.75,0.75,0.75 };
     float bombSpeed = 40.0f;
     Vector3 bombDirection = (player->GetTransform().GetGlobalPosition() - this->GetTransform().GetGlobalPosition()).Normalised();
@@ -542,10 +532,6 @@ bool Boss::Spin(PlayerObject* player) {
 bool Boss::UseLaserOnPlayer(PlayerObject* player) {
     SetBossOrientation(nullptr);
     wowSource->Play(Sound::AddSound("wow.wav"));
-    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack3").get()) {
-        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack3"));
-    }
     Vector3 bombScale{ 2,2,2 };
     float bombSpeed = 40.0f;
     Vector3 bombDirection = (player->GetTransform().GetGlobalPosition() - this->GetTransform().GetGlobalPosition()).Normalised();
@@ -583,10 +569,6 @@ bool Boss::UseLaserOnPlayer(PlayerObject* player) {
 bool Boss::JumpTo(PlayerObject* player) {
     SetBossOrientation(nullptr);
     senpaiSource->Play(Sound::AddSound("senpai.wav"));
-    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Jump").get()) {
-        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Jump"));
-    }
     float hangTime = 5.0f;
     if (jumpToTimer == 0.0f) {
         float jumpSpeed = 35.0f;
@@ -609,11 +591,7 @@ bool Boss::JumpTo(PlayerObject* player) {
 
 bool Boss::JumpAway(PlayerObject* player) {
     SetBossOrientation(nullptr);
-    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
     waitSource->Play(Sound::AddSound("wait.wav"));
-    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Jump").get()) {
-        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Jump"));
-    }
     float hangTime = 5.0f;
     if (jumpAwayTimer == 0.0f) {
         float jumpSpeed = 35.0f;
@@ -664,10 +642,6 @@ bool Boss::SeekHeal(bool& hasHeal) {
 bool Boss::InkRain(PlayerObject* player) {
     SetBossOrientation(nullptr);
     inkRainSource->Play(Sound::AddSound("inkRain.wav"));
-    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack6").get()) {
-        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack6"));
-    }
     float rainPeriod = 0.1f;
     int rainRange = 30;
     int numOfBomb = 30;
@@ -721,10 +695,6 @@ bool Boss::InkRain(PlayerObject* player) {
 bool Boss::BulletsStorm() {
     SetBossOrientation(nullptr);
     fatherSource->Play(Sound::AddSound("father.wav"));
-    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack5").get()) {
-        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack5"));
-    }
     float bulletsStormDuration = 5.0f;
     float bulletsStormPeriod = 0.1f;
     Vector3 bombScale{ 1,1,1 };
@@ -765,4 +735,51 @@ float Boss::SqrDistToTarget() {
 }
 float Boss::DistToTarget() {
     return  (transform.GetGlobalPosition() - target->GetTransform().GetGlobalPosition()).Length();
+}
+
+void Boss::PlayAnimation()
+{
+    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+    switch (bossAction) {
+    case Move1:
+        if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("WalkForward").get()) {
+            anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("WalkForward"));
+        }
+        break;
+    case Attack1:
+        if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack1").get()) {
+            anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack1"));
+        }
+        break;
+    case Attack2:
+        if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack2").get()) {
+            anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack2"));
+        }
+        break;
+    case Attack3:
+        if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack3").get()) {
+            anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack3"));
+        }
+        break;
+    case Move2:
+        if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Jump").get()) {
+            anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Jump"));
+        }
+        break;
+    case Move3:
+        if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Jump").get()) {
+            anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Jump"));
+        }
+        break;
+    case Attack4:
+        if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack6").get()) {
+            anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack6"));
+        }
+        break;
+    case Attack5:
+        if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack5").get()) {
+            anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack5"));
+        }
+        break;
+    }
 }

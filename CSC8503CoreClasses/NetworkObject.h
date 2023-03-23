@@ -16,6 +16,7 @@ namespace NCL {
 			Vector3		scale;
 			Quaternion	orientation;
 			Vector3		velocity;
+			short int	paintRadius = 200;
 
 			ItemInitPacket() {
 				type = Item_Init_Message;

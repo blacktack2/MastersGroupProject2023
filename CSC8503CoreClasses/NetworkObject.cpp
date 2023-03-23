@@ -4,6 +4,7 @@
 #include "./enet/enet.h"
 #include "Maths.h"
 #include "../CSC8503/Bullet.h"
+#include "../CSC8503/BossBullet.h"
 using namespace NCL;
 using namespace CSC8503;
 
@@ -95,29 +96,35 @@ bool NetworkObject::ReadFullPacket(FullPacket &p, float dt) {
 	lastFullState = p.fullState;
 
 	lastDeltaState = p.fullState;
-	/*
-	if (p.health != -1) {
-		if (PlayerObject* player = dynamic_cast<PlayerObject*>(&object)) {
-			std::cout << "sync client health" << std::endl;;
-			player->GetHealth()->SetHealth(p.health);
-		}
-	}*/
+
 	//Debug::DrawLine(p.fullState.position, p.fullState.position + Vector3(0,0.1,0), Debug::BLUE, 2.0f);
 
 	stateHistory.emplace_back(lastFullState);
 
 	object.GetTransform().SetPosition(p.fullState.position);
 	object.GetTransform().SetOrientation(p.fullState.orientation);
+	object.GetPhysicsObject()->SetAngularVelocity(p.fullState.angularVelocity);
+	object.GetPhysicsObject()->SetLinearVelocity(p.fullState.linearVelocity);
 	return true; 
 }
 
 bool NetworkObject::ReadItemInitPacket(ItemInitPacket& p, float dt) {
-	static_cast<Bullet*>(&object)->SetLifespan(5.0f);
 	object.GetTransform().SetPosition(p.position);
 	object.GetTransform().SetOrientation(p.orientation);
 	//std::cout << p.scale << std::endl;
 	object.GetTransform().SetScale(p.scale);
 	object.GetPhysicsObject()->SetLinearVelocity(p.velocity);
+	
+	if (Bullet* b = dynamic_cast<Bullet*>(&object)) {
+		b->SetPaintRadius(p.paintRadius / 100);
+		b->SetLifespan(5.0f);
+		if (BossBullet* b = dynamic_cast<BossBullet*>(&object)) {
+			b->GetPhysicsObject()->SetInverseMass(1.0f);
+			b->GetPhysicsObject()->SetGravWeight(0);
+			b->GetPhysicsObject()->SetDampingWeight(0);
+		}
+	}
+	
 
 	lastDeltaState.position = object.GetTransform().GetGlobalPosition();
 	lastDeltaState.orientation = object.GetTransform().GetGlobalOrientation();
@@ -175,11 +182,6 @@ bool NetworkObject::WriteFullPacket(GamePacket**p) {
 	fp->fullState.stateID = lastFullState.stateID++;
 	fp->fullState.linearVelocity = object.GetPhysicsObject()->GetLinearVelocity();
 	fp->fullState.angularVelocity = object.GetPhysicsObject()->GetAngularVelocity();
-	/*
-	if (PlayerObject* player = dynamic_cast<PlayerObject*>(&object)) {
-		fp->health = player->GetHealth()->GetHealth();
-	}
-	*/
 
 	*p = fp;
 	stateHistory.emplace_back(fp->fullState);

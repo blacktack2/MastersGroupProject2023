@@ -109,6 +109,8 @@ namespace NCL {
             {
                 return &health;
             }
+
+            void PlayAnimation();
         protected:
 
             void BuildTree();

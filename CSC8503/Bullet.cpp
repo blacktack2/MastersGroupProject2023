@@ -77,6 +77,9 @@ void Bullet::Resize(Vector3 scale) {
 void Bullet::SetPaintRadius(float scale) {
 	paintRadius = scale;
 }
+float Bullet::GetPaintRadius() {
+	return paintRadius;
+}
 
 void Bullet::PaintCollision(GameObject& other) {
 	if (other.GetBoundingVolume()->layer != CollisionLayer::PaintAble) {

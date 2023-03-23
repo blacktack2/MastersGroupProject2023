@@ -26,6 +26,7 @@ namespace NCL {
 			void Resize(Vector3 scale);
 
 			void SetPaintRadius(float scale);
+			float GetPaintRadius();
 
 			overlap_func OnDestroyCallback = nullptr;
 

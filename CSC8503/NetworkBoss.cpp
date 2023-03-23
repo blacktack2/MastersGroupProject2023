@@ -41,6 +41,7 @@ void NetworkBoss::BulletModification(BossBullet* bullet)
 	newObj.scale = objTransform.GetScale();
 	newObj.velocity = bullet->GetPhysicsObject()->GetLinearVelocity();
 	newObj.objectID = bullet->GetNetworkObject()->GetNetworkID();
+	newObj.paintRadius = bullet->GetPaintRadius() * 100;
 
 	if (game->GetServer())
 		game->GetServer()->SendGlobalPacket(&newObj);

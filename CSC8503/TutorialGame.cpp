@@ -358,7 +358,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position) {
 }
 
 void TutorialGame::AddPlayer(int index, ControllerType type) {
-	players[index] = AddPlayerToWorld(index, Vector3(0 + index * 5, 5, 90));
+	players[index] = AddPlayerToWorld(index, Vector3(-5 + index * 5, 5, 90));
 	keyMap.ChangePlayerControlTypeMap(index, type);
 	players[index]->GetCamera()->GetHud().AddHealthBar(players[index]->GetHealth(), Vector2(-0.6f, 0.9f), Vector2(0.35f, 0.03f));
 	players[index]->GetCamera()->GetHud().SetPlayerHealth(players[index]->GetHealth());
