@@ -147,16 +147,16 @@
     <WavePsslc Include="..\Assets\Shaders\PS4\VertexShader.pssl">
       <Filter>Shaders</Filter>
     </WavePsslc>
-    <WavePsslc Include="DebugText_VertexShader.pssl">
-      <Filter>Shaders</Filter>
-    </WavePsslc>
-    <WavePsslc Include="DebugText_PixelShader.pssl">
-      <Filter>Shaders</Filter>
-    </WavePsslc>
     <WavePsslc Include="..\Assets\Shaders\PS4\PaintVertexShader.pssl">
       <Filter>Shaders</Filter>
     </WavePsslc>
     <WavePsslc Include="..\Assets\Shaders\PS4\PaintPixelShader.pssl">
+      <Filter>Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="..\Assets\Shaders\PS4\DebugText_PixelShader.pssl">
+      <Filter>Shaders</Filter>
+    </WavePsslc>
+    <WavePsslc Include="..\Assets\Shaders\PS4\DebugText_VertexShader.pssl">
       <Filter>Shaders</Filter>
     </WavePsslc>
   </ItemGroup>
@@ -174,6 +174,9 @@
       <Filter>Textures</Filter>
     </CustomBuild>
     <CustomBuild Include="..\Assets\Textures\Floor\Floor_normal.tga">
+      <Filter>Textures</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\Assets\Textures\PressStart2P.png">
       <Filter>Textures</Filter>
     </CustomBuild>
   </ItemGroup>

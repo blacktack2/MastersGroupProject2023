@@ -28,6 +28,7 @@ namespace NCL::PS4 {
 		static PS4Mesh* GenerateSinglePoint();
 
 		void	UploadToGPU() override;
+		void	UploadDebugToGPU() ;
 		void	SubmitDraw(Gnmx::GnmxGfxContext& cmdList, Gnm::ShaderStage stage);
 
 		void	InitAttributeBuffer(sce::Gnm::Buffer &buffer, Gnm::DataFormat format, void*offset);
@@ -40,7 +41,7 @@ namespace NCL::PS4 {
 			float textureCoord[2];
 			float normal[3];
 			float tangent[3];
-			//float colour[4];
+			float colour[4];
 		};
 
 		sce::Gnm::IndexSize		indexType;

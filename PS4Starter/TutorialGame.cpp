@@ -171,6 +171,9 @@ void NCL::CSC8503::TutorialGame::InitialiseAssets()
 	PS4::PS4Shader* shader = (PS4::PS4Shader*)renderer->LoadShader("/app0/Assets/Shaders/PS4/VertexShader.sb",
 		"/app0/Assets/Shaders/PS4/PixelShader.sb");
 	renderer->SetDefaultShader(shader);
+	PS4::PS4Shader* shader1 = (PS4::PS4Shader*)renderer->LoadShader("/app0/Assets/Shaders/PS4/DebugText_VertexShader.sb",
+		"/app0/Assets/Shaders/PS4/DebugText_PixelShader.sb");
+	renderer->SetDebugShader(shader1);
 	/*PS4::PS4Shader* paintShader = (PS4::PS4Shader*)renderer->LoadShader("/app0/Assets/Shaders/PS4/PaintVertexShader.sb",
 		"/app0/Assets/Shaders/PS4/PaintPixelShader.sb");
 	renderer->SetPaintShader(paintShader);*/

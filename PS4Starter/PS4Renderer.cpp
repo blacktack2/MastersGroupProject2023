@@ -183,7 +183,58 @@ void NCL::PS4::PS4Renderer::RenderFrame()
 		currentGFXContext->setSamplers(Gnm::kShaderStagePs, 0, 1, &trilinearSampler);
 		DrawRenderObject(i);
 	}
+	//Debug text
+	primitiveSetup.setCullFace(Gnm::kPrimitiveSetupCullFaceNone);
+	currentGFXContext->setPrimitiveSetup(primitiveSetup);
 	
+	const std::vector<Debug::DebugStringEntry>& strings = Debug::GetDebugStrings();
+	
+	//if (!strings.empty()) {
+	if (true) {
+		PS4Mesh* debugMesh = new PS4Mesh();
+		PS4Texture* debugtexture = (PS4Texture*)Debug::GetDebugFont()->GetTexture();
+		currentGFXContext->setTextures(Gnm::kShaderStagePs, 0, 1, &(debugtexture)->GetAPITexture());
+
+		debugTextPos.clear();
+		debugTextColours.clear();
+		debugTextUVs.clear();
+
+		for (auto s : strings) {
+			//float size = 20.0f;
+			std::cout << s.data<<std::endl;
+			Debug::GetDebugFont()->BuildVerticesForString(s.data, s.position, s.colour, s.size, debugTextPos, debugTextUVs, debugTextColours);
+			
+		}
+		std::string test = "Hello World";
+		Vector2 testPos = Vector2(50, 50);
+		Vector4 testColor = Vector4(1, 1, 1, 1);
+
+		Debug::GetDebugFont()->BuildVerticesForString(test, testPos, testColor, 20.0f, debugTextPos, debugTextUVs, debugTextColours);
+		debugMesh->SetVertexPositions(debugTextPos);
+		debugMesh->SetVertexColours(debugTextColours);
+		debugMesh->SetVertexTextureCoords(debugTextUVs);
+		
+
+		debugMesh->UploadDebugToGPU();
+
+		Matrix4* viewProjMatrix = (Matrix4*)currentGFXContext->allocateFromCommandBuffer(sizeof(Matrix4), Gnm::kEmbeddedDataAlignment4);
+		*viewProjMatrix = Matrix4::Orthographic(0.0, 100.0f, 100, 0, -1.0f, 1.0f);
+
+		Gnm::Buffer viewProjMatBuffer;
+		viewProjMatBuffer.initAsConstantBuffer(viewProjMatrix, sizeof(Matrix4));
+		viewProjMatBuffer.setResourceMemoryType(Gnm::kResourceMemoryTypeRO); // it's a constant buffer, so read-only is OK
+		int objIndex = debugShader->GetConstantVertexBufferIndex("ShaderConstants");
+		currentGFXContext->setConstantBuffers(Gnm::kShaderStageVs, objIndex, 1, &viewProjMatBuffer);
+		debugShader->SubmitShaderSwitch(*currentGFXContext);
+		/*currentGFXContext->setVertexBuffers(Gnm::ShaderStage::kShaderStageVs, 0, attributeCount, attributeBuffers);
+		currentGFXContext->setPrimitiveType(sce::Gnm::PrimitiveType::kPrimitiveTypeTriList);
+		currentGFXContext->setIndexSize(sce::Gnm::IndexSize::kIndexSize32);
+		currentGFXContext->drawIndex(debugMesh->GetIndexCount(), debugMesh->GetIndexData());*/
+		debugMesh->SubmitDraw(*currentGFXContext, Gnm::ShaderStage::kShaderStageVs);
+	}
+	else {
+		std::cout << "Empty debug strings" << std::endl;
+	}
 
 	currentFrame->EndFrame();
 }

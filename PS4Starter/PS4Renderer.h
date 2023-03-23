@@ -31,6 +31,7 @@ namespace NCL {
 			void Update(float dt) override;
 
 			void SetDefaultShader(PS4Shader* s) { defaultShader = s; }
+			void SetDebugShader(PS4Shader* s) { debugShader = s; }
 			//void SetPaintShader(PS4Shader* s) { paintShader = s; }
 
 		protected:
@@ -48,6 +49,7 @@ namespace NCL {
 			
 
 			PS4Shader* defaultShader;
+			PS4Shader* debugShader;
 			//PS4Shader* paintShader;
 
 			//PS4Texture* defaultPaintTex;
@@ -57,6 +59,11 @@ namespace NCL {
 			Gnm::Buffer	cameraBuffer;
 			
 			sce::Gnm::RenderTarget paintTarget;
+
+			//debug
+			std::vector<Vector3> debugTextPos;
+			std::vector<Vector4> debugTextColours;
+			std::vector<Vector2> debugTextUVs;
 		};
 	}
 }

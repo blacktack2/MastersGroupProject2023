@@ -8,6 +8,7 @@ https://research.ncl.ac.uk/game/
 */
 #include "SimpleFont.h"
 #include "TextureLoader.h"
+#include "../Plugins/PlayStation4/PS4Texture.h"
 #include "Assets.h"
 #include <fstream>
 
@@ -25,7 +26,7 @@ SimpleFont::SimpleFont(const std::string&filename, const std::string&texName)
 	numChars	= 0;
 	/*allCharData	= nullptr;*/
 
-	texture		= TextureLoader::LoadAPITexture(texName);
+	texture		= PS4::PS4Texture::LoadTextureFromFile(texName);
 
 	std::ifstream fontFile(Assets::FONTSSDIR + filename);
 

@@ -111,6 +111,38 @@ void	PS4Mesh::UploadToGPU() {
 	//InitAttributeBuffer(attributeBuffers[4], Gnm::kDataFormatR32G32B32A32Float, &(vertexBuffer[0].colour));
 }
 
+void NCL::PS4::PS4Mesh::UploadDebugToGPU(){
+	vertexDataSize = GetVertexCount() * sizeof(MeshVertex);
+	indexDataSize = GetVertexCount() * sizeof(int);
+
+	indexBuffer = static_cast<int*>			(garlicAllocator->allocate(indexDataSize, Gnm::kAlignmentOfBufferInBytes));
+	vertexBuffer = static_cast<MeshVertex*>	(garlicAllocator->allocate(vertexDataSize, Gnm::kAlignmentOfBufferInBytes));
+
+	indexType = sce::Gnm::IndexSize::kIndexSize32;
+	primitiveType = sce::Gnm::PrimitiveType::kPrimitiveTypeTriList;
+
+	Gnm::registerResource(nullptr, ownerHandle, indexBuffer, indexDataSize, "IndexData", Gnm::kResourceTypeIndexBufferBaseAddress, 0);
+	Gnm::registerResource(nullptr, ownerHandle, vertexBuffer, vertexDataSize, "VertexData", Gnm::kResourceTypeIndexBufferBaseAddress, 0);
+	
+	for (int i = 0; i < GetVertexCount(); ++i) {
+		memcpy(&vertexBuffer[i].position, &positions[i], sizeof(float) * 3);
+		memcpy(&vertexBuffer[i].textureCoord, &texCoords[i], sizeof(float) * 2);
+		memcpy(&vertexBuffer[i].colour, &colours[i], sizeof(float) * 4);
+		
+	}
+
+	for (int i = 0; i < GetIndexCount(); ++i) { //Our index buffer might not have the same data size as the source indices?
+		indexBuffer[i] = i;
+	}
+
+	attributeCount = 3;
+	attributeBuffers = new sce::Gnm::Buffer[attributeCount];
+
+	InitAttributeBuffer(attributeBuffers[0], Gnm::kDataFormatR32G32B32Float, &(vertexBuffer[0].position));
+	InitAttributeBuffer(attributeBuffers[1], Gnm::kDataFormatR32G32Float, &(vertexBuffer[0].textureCoord));
+	InitAttributeBuffer(attributeBuffers[2], Gnm::kDataFormatR32G32B32A32Float, &(vertexBuffer[0].colour));
+}
+
 void	PS4Mesh::InitAttributeBuffer(sce::Gnm::Buffer &buffer, Gnm::DataFormat format, void*offset) {
 	buffer.initAsVertexBuffer(offset, format, sizeof(MeshVertex), GetVertexCount());
 	buffer.setResourceMemoryType(Gnm::kResourceMemoryTypeRO);

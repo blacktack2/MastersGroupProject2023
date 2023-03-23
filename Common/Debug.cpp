@@ -77,7 +77,7 @@ void Debug::UpdateRenderables(float dt) {
 
 SimpleFont* Debug::GetDebugFont() {
 	if (!debugFont) {
-		debugFont = new SimpleFont("PressStart2P.fnt", "PressStart2P.png");
+		debugFont = new SimpleFont("PressStart2P.fnt", "PressStart2P.gnf");
 	}
 	return debugFont;
 }
