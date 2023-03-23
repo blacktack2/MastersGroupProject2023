@@ -35,9 +35,71 @@ void OGLLoadingManager::Load(std::function<void()> func) {
 	std::thread t(&OGLLoadingManager::RunFunc, this, func);
 	DisplayLoadingScreen();
 	t.join();
-	AssetLibrary<MeshGeometry>::RunOnAssets([](MeshGeometry& asset)->void { asset.UploadToGPU(); });
-	AssetLibrary<ShaderBase>  ::RunOnAssets([](ShaderBase&   asset)->void { asset.Initialize() ; });
-	AssetLibrary<TextureBase> ::RunOnAssets([](TextureBase&  asset)->void { asset.Initialize() ; });
+	float time = 0;
+	AssetLibrary<MeshGeometry>::RunOnAssets([&](MeshGeometry& asset)->void {
+		time += window->GetTimer()->GetTimeDeltaSeconds(); 
+		if (time >= 0.25f)
+		{
+			shaderTime += time;
+			while (shaderTime > 1) {
+				shaderTime -= 1;
+			}
+			renderer.BeginFrame();
+			renderer.ClearBuffers(ClearBit::ColorDepth);
+			shader->Bind();
+			shader->SetUniformFloat("screenSize", window->GetScreenSize());
+			shader->SetUniformFloat("time", shaderTime);
+			quad->Draw();
+
+			renderer.EndFrame();
+			renderer.SwapBuffers();
+			time = 0;
+		}
+		asset.UploadToGPU();
+		});
+	AssetLibrary<ShaderBase>  ::RunOnAssets([&](ShaderBase&   asset)->void { 
+		time += window->GetTimer()->GetTimeDeltaSeconds();
+		if (time >= 0.25f)
+		{
+			shaderTime += time;
+			while (shaderTime > 1) {
+				shaderTime -= 1;
+			}
+			renderer.BeginFrame();
+			renderer.ClearBuffers(ClearBit::ColorDepth);
+			shader->Bind();
+			shader->SetUniformFloat("screenSize", window->GetScreenSize());
+			shader->SetUniformFloat("time", time);
+			quad->Draw();
+
+			renderer.EndFrame();
+			renderer.SwapBuffers();
+			time = 0;
+		}
+		asset.Initialize() ; });
+	/*AssetLibrary<TextureBase> ::RunOnAssets([&](TextureBase& asset)->void {
+		time += window->GetTimer()->GetTimeDeltaSeconds();
+		if (time >= 0.25f)
+		{
+			shaderTime += time;
+			while (shaderTime > 1) {
+				shaderTime -= 1;
+			}
+			renderer.BeginFrame();
+			renderer.ClearBuffers(ClearBit::ColorDepth);
+			shader->Bind();
+			shader->SetUniformFloat("screenSize", window->GetScreenSize());
+			shader->SetUniformFloat("time", shaderTime);
+			quad->Draw();
+
+			renderer.EndFrame();
+			renderer.SwapBuffers();
+			time = 0;
+		}
+		asset.Initialize(); 
+		});*/
+
+	shader->Unbind();
 }
 
 void OGLLoadingManager::RunFunc(std::function<void()> func) {
@@ -47,18 +109,18 @@ void OGLLoadingManager::RunFunc(std::function<void()> func) {
 }
 
 void OGLLoadingManager::DisplayLoadingScreen() {
-	float time = 0;
+	shaderTime = 0;
 	//renderer->MakeCurrent(renderer->renderContext);
 	while (window->UpdateWindow()) {
-		time += window->GetTimer()->GetTimeDeltaSeconds();
-		while (time > 1) {
-			time -= 1;
+		shaderTime += window->GetTimer()->GetTimeDeltaSeconds();
+		while (shaderTime > 1) {
+			shaderTime -= 1;
 		}
 		renderer.BeginFrame();
 		renderer.ClearBuffers(ClearBit::ColorDepth);
 		shader->Bind();
 		shader->SetUniformFloat("screenSize", window->GetScreenSize());
-		shader->SetUniformFloat("time", time);
+		shader->SetUniformFloat("time", shaderTime);
 		quad->Draw();
 
 		renderer.EndFrame();
