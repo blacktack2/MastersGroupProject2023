@@ -5,6 +5,11 @@
 #include "Maths.h"
 #include "../CSC8503/Bullet.h"
 #include "../CSC8503/BossBullet.h"
+#include "SphereVolume.h"
+#include "GameWorld.h"
+#include "../CSC8503/GameGridManager.h"
+#include "PhysicsSystem.h"
+
 using namespace NCL;
 using namespace CSC8503;
 
@@ -124,6 +129,7 @@ bool NetworkObject::ReadItemInitPacket(ItemInitPacket& p, float dt) {
 	if (Bullet* b = dynamic_cast<Bullet*>(&object)) {
 		b->SetPaintRadius(p.paintRadius / 100);
 		b->SetLifespan(5.0f);
+		b->SetPaintEnable(false);
 		if (BossBullet* b = dynamic_cast<BossBullet*>(&object)) {
 			b->GetPhysicsObject()->SetInverseMass(1.0f);
 			b->GetPhysicsObject()->SetGravWeight(0);
@@ -143,10 +149,48 @@ bool NetworkObject::ReadItemInitPacket(ItemInitPacket& p, float dt) {
 
 bool NetworkObject::ReadItemDestroyPacket(ItemDestroyPacket& p, float dt) {
 	//std::cout << "destroyed" << std::endl;
-	if (object.IsActive()) {
+	//if (object.IsActive()) {
 		//object.SetActive(false);
+		if (Bullet* b = dynamic_cast<Bullet*>(&object)) {
+			b->SetLifespan(0);
+
+			//dirty way of syncing paint
+			GameObject* tempPaint = new GameObject();
+			tempPaint->GetTransform().SetPosition(p.position);
+			float r = b->GetPaintRadius();
+			tempPaint->SetBoundingVolume((CollisionVolume*) new SphereVolume(r, b->GetBoundingVolume()->layer));
+			tempPaint->SetPhysicsObject(new PhysicsObject(&tempPaint->GetTransform(), tempPaint->GetBoundingVolume(), true));
+			Vector3 colour = b->GetColour();
+			NCL::InkType inkType = b->GetInkType();
+			tempPaint->OnCollisionBeginCallback = [&,tempPaint, r, colour, inkType](GameObject* other) {
+				if (other->GetBoundingVolume()->layer != CollisionLayer::PaintAble) {
+					return;
+				}
+				RenderObject* renderObj = other->GetRenderObject();
+				if (!(renderObj && renderObj->GetPaintTex())) {
+					return;
+				}
+				renderObj->AddPaintCollision(tempPaint->GetTransform().GetGlobalPosition(), r, colour);
+				GameGridManager::instance().PaintPosition(tempPaint->GetTransform().GetGlobalPosition(), r, inkType);
+				tempPaint->Delete();
+			};
+			tempPaint->OnTriggerBeginCallback = [&, tempPaint, r, colour, inkType](GameObject* other) {
+				if (other->GetBoundingVolume()->layer != CollisionLayer::PaintAble) {
+					return;
+				}
+				RenderObject* renderObj = other->GetRenderObject();
+				if (!(renderObj && renderObj->GetPaintTex())) {
+					return;
+				}
+				renderObj->AddPaintCollision(tempPaint->GetTransform().GetGlobalPosition(), r, colour);
+				GameGridManager::instance().PaintPosition(tempPaint->GetTransform().GetGlobalPosition(), r, inkType);
+				tempPaint->Delete();
+			};
+			GameWorld::instance().AddGameObject(tempPaint);
+			b->SetPaintEnable(true);
+		}
 		object.GetTransform().SetPosition(p.position);
-	}
+	//}
 	return true;
 }
 

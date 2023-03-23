@@ -30,6 +30,16 @@ namespace NCL {
 
 			overlap_func OnDestroyCallback = nullptr;
 
+			void SetPaintEnable(bool isEnable) {
+				paintEnable = isEnable;
+			}
+
+			Vector3 GetColour() {
+				return colour;
+			}
+			NCL::InkType GetInkType() {
+				return inkType;
+			}
 		protected:
 			void PaintCollision(GameObject& other);
 
@@ -38,6 +48,7 @@ namespace NCL {
 			Vector3 colour = Vector3(1, 0, 1);
 			NCL::InkType inkType;
 
+			bool paintEnable = true;
 		};
 	}
 }

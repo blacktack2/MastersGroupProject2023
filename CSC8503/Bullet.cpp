@@ -82,6 +82,8 @@ float Bullet::GetPaintRadius() {
 }
 
 void Bullet::PaintCollision(GameObject& other) {
+	if (!paintEnable)
+		return;
 	if (other.GetBoundingVolume()->layer != CollisionLayer::PaintAble) {
 		return;
 	}

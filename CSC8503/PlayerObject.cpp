@@ -80,7 +80,9 @@ void PlayerObject::Update(float dt) {
 		Movement(dt);
 	}
 	else {
-		MoveAnimation();
+		if (health.GetHealth() <= 0) {
+			MoveAnimation();
+		}
 	}
 
 	//If on ink

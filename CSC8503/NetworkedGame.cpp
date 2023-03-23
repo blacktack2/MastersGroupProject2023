@@ -47,6 +47,7 @@ NetworkedGame::NetworkedGame(bool isServer)	{
 	game_dt = 0;
 	objectID = OBJECTID_START;
 	gameStateManager.SetGameState(GameState::Lobby);
+	gameWorld.SetPhysicsSystem(physics.get());
 	if (isServer) {
 		std::cout << "start as server" << std::endl;
 		StartAsServer();
