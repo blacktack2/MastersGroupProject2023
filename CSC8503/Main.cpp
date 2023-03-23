@@ -104,7 +104,7 @@ void LoadGlobalAssets() {
 	AssetLibrary<TextureBase>::AddAsset("defaultSpec", std::move(AssetLoader::LoadTexture("DefaultSpec.png")));
 	AssetLibrary<TextureBase>::AddAsset("defaultPaint", std::move(AssetLoader::LoadTexture("DefaultPaint.png")));
 	AssetLibrary<TextureBase>::AddAsset("basic", std::move(AssetLoader::LoadTexture("checkerboard.png")));
-	AssetLibrary<TextureBase>::AddAsset("pillarTex", std::move(AssetLoader::LoadTexture("pillarTex.jpg")));
+	//AssetLibrary<TextureBase>::AddAsset("pillarTex", std::move(AssetLoader::LoadTexture("pillarTex.jpg")));
 
 	AssetLibrary<MeshMaterial>::AddAsset("default", std::make_shared<MeshMaterial>("Default.mat"));
 	AssetLibrary<MeshMaterial>::AddAsset("pillar", std::make_shared<MeshMaterial>("Building/Column_04_Old.mat"));

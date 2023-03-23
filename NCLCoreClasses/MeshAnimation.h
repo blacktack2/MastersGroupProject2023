@@ -36,7 +36,9 @@ namespace NCL {
 		inline float GetFrameRate() const {
 			return frameRate;
 		}
-
+		inline void SetFrameRate(float framerate){
+			frameRate = framerate;
+		}
 		/**
 		 * @brief Get joint matrices for a specific frame.
 		 * @brief Will result in undefined behaviour if frame is greater than

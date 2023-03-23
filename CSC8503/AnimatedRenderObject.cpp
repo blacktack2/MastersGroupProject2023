@@ -49,6 +49,7 @@ void AnimatedRenderObject::PreDraw(int sublayer, ShaderBase& shader) {
 		frameMatrices.emplace_back(frameData[i] * invBindPose[i]);
 	}
 	shader.SetUniformMatrix("joints", frameMatrices);
+	//animSpeed = 1.0f;
 }
 
 void AnimatedRenderObject::PreShadow(int sublayer, ShaderBase& shader) {
