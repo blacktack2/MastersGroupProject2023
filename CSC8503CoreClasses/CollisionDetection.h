@@ -134,6 +134,8 @@ namespace NCL {
 	protected:
 
 	private:
+		static Vector3 ClosestPointOnLineSegment(Vector3 start, Vector3 end, Vector3 point);
+
 		CollisionDetection()	{}
 		~CollisionDetection()	{}
 	};

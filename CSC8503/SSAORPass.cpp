@@ -111,8 +111,7 @@ void SSAORPass::DrawSSAO() {
 
 	Matrix4 viewMatrix = GameWorld::instance().GetMainCamera()->BuildViewMatrix();
 	ssaoShader->SetUniformMatrix("viewMatrix", viewMatrix);
-	float aspect = (float)renderer.GetSplitWidth() / (float)renderer.GetSplitHeight();
-	Matrix4 projMatrix = GameWorld::instance().GetMainCamera()->BuildProjectionMatrix(aspect);
+	Matrix4 projMatrix = GameWorld::instance().GetMainCamera()->BuildProjectionMatrix(renderer.GetSplitAspect());
 	ssaoShader->SetUniformMatrix("projMatrix", projMatrix);
 
 	quad->Draw();

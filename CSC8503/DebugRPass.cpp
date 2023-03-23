@@ -59,7 +59,7 @@ void DebugRPass::RenderLines() {
 	}
 
 	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetAspect());
+	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetSplitAspect());
 	
 	Matrix4 viewProjMatrix  = projMatrix * viewMatrix;
 
@@ -90,7 +90,7 @@ void DebugRPass::RenderLines() {
 }
 
 void DebugRPass::RenderText() {
-	const std::vector<Debug::DebugStringEntry>& strings = Debug::GetDebugStrings();
+	const std::vector<Debug::DebugStringEntry>& strings = renderer.IsCurrentlySplit() ? Debug::GetDebugStrings(renderer.GetGameWorldMainCamera()) : Debug::GetDebugStrings();
 	if (strings.empty()) {
 		return;
 	}

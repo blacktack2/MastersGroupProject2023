@@ -4,7 +4,7 @@
 
 using namespace NCL;
 
-std::vector<Debug::DebugStringEntry> Debug::stringEntries;
+std::vector<Debug::DebugStringEntry> Debug::stringEntries[MAX_ENTRIES];
 std::vector<Debug::DebugLineEntry>   Debug::lineEntries;
 
 SimpleFont* Debug::debugFont = nullptr;
@@ -20,7 +20,7 @@ const Vector4 Debug::YELLOW  = Vector4(1, 1, 0, 1);
 const Vector4 Debug::MAGENTA = Vector4(1, 0, 1, 1);
 const Vector4 Debug::CYAN    = Vector4(0, 1, 1, 1);
 
-void Debug::Print(const std::string& text, const Vector2& pos, const Vector4& colour, const float size) {
+void Debug::Print(const std::string& text, const Vector2& pos, const Vector4& colour, const float size, int player) {
 	DebugStringEntry newEntry;
 
 	newEntry.data = text;
@@ -28,7 +28,7 @@ void Debug::Print(const std::string& text, const Vector2& pos, const Vector4& co
 	newEntry.colour = colour;
 	newEntry.size = size;
 
-	stringEntries.emplace_back(newEntry);
+	stringEntries[player].emplace_back(newEntry);
 }
 
 void Debug::DrawLine(const Vector3& startpoint, const Vector3& endpoint, const Vector4& colour, float time) {
@@ -65,7 +65,9 @@ void Debug::UpdateRenderables(float dt) {
 			return entry.time < 0;
 		}),
 		lineEntries.end());
-	stringEntries.clear();
+	for (auto& entries : stringEntries) {
+		entries.clear();
+	}
 }
 
 SimpleFont* Debug::GetDebugFont() {
@@ -75,12 +77,8 @@ SimpleFont* Debug::GetDebugFont() {
 	return debugFont;
 }
 
-const std::vector<Debug::DebugStringEntry>& Debug::GetDebugStrings() {
-	return stringEntries;
-}
-
-void Debug::ClearDebugStrings() {
-	stringEntries.clear();
+const std::vector<Debug::DebugStringEntry>& Debug::GetDebugStrings(int player) {
+	return stringEntries[player];
 }
 
 const std::vector<Debug::DebugLineEntry>& Debug::GetDebugLines() {

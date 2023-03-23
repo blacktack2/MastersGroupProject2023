@@ -20,6 +20,7 @@
 #include "AssetLibrary.h"
 #include "PrefabLibrary.h"
 #include "BulletInstanceManager.h"
+#include "OptionManager.h"
 
 #include <bitset>
 #include <Maths.h>
@@ -53,7 +54,12 @@ NetworkedGame::NetworkedGame(bool isServer)	{
 		StartAsServer();
 	}
 	else {
-		StartAsClient(127, 0, 0, 1);
+		StartAsClient(
+			OptionManager::instance().GetIpAddress().GetAddress(0), 
+			OptionManager::instance().GetIpAddress().GetAddress(1),
+			OptionManager::instance().GetIpAddress().GetAddress(2),
+			OptionManager::instance().GetIpAddress().GetAddress(3)
+		);
 	}
 }
 
@@ -665,7 +671,7 @@ void NetworkedGame::OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b) {
 PlayerObject* NetworkedGame::AddNetworkPlayerToWorld(const Vector3& position, int playerID) {
 	static int id = 0;
 	NetworkPlayer* character = new NetworkPlayer( this, playerID);
-	CapsuleVolume* volume = new CapsuleVolume(1.2f, 0.2f, CollisionLayer::Player);
+	CapsuleVolume* volume = new CapsuleVolume(1.2f, 0.5f, CollisionLayer::Player);
 
 	character->SetBoundingVolume(volume);
 
@@ -714,26 +720,26 @@ NetworkBoss* NetworkedGame::AddNetworkBossToWorld(const Vector3& position, Vecto
 }
 
 void NetworkedGame::ProcessState() {
-
+	if(localPlayer)
 	switch (gameStateManager.GetGameState()) {
 	case GameState::Win:
 	case GameState::Lose:
 		if(thisServer){
-			Debug::Print("Press [R] or [Start] to return to lobby", Vector2(5, 80), Debug::WHITE);
+			Debug::Print("Press [R] or [Start] to return to lobby", Vector2(5, 80), Debug::WHITE,20.0f, localPlayer->GetPlayerID());
 		}
 		if (thisClient) {
-			Debug::Print("Please Wait for server to return to lobby", Vector2(5, 80), Debug::WHITE);
+			Debug::Print("Please Wait for server to return to lobby", Vector2(5, 80), Debug::WHITE, 20.0f, localPlayer->GetPlayerID());
 		}
 		break;
 	case GameState::Lobby:
 		std::string s = "Connected Player: ";
 		s += std::to_string(connectedPlayerIDs.size() + 1 ) + "/" + std::to_string(MAXPLAYER);
-		Debug::Print(s.c_str(), Vector2(55, 06), Debug::WHITE);
+		Debug::Print(s.c_str(), Vector2(55, 06), Debug::WHITE, 20.0f, localPlayer->GetPlayerID());
 		if (thisServer) {
-			Debug::Print("Press [R] or [Start] to Start the Game", Vector2(5, 80), Debug::WHITE);
+			Debug::Print("Press [R] or [Start] to Start the Game", Vector2(5, 80), Debug::WHITE, 20.0f, localPlayer->GetPlayerID());
 		}
 		if (thisClient) {
-			Debug::Print("Please Wait for server to Start the Game", Vector2(5, 80), Debug::WHITE);
+			Debug::Print("Please Wait for server to Start the Game", Vector2(5, 80), Debug::WHITE, 20.0f, localPlayer->GetPlayerID());
 		}
 		break;
 	}

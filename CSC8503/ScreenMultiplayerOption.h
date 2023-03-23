@@ -35,6 +35,7 @@ private:
 		OnGoing,
 		StartServer,
 		StartClient,
+		IpAddress,
 		Quit
 	};
 	OptionManager& optionManager = OptionManager::instance();

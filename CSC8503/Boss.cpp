@@ -448,7 +448,7 @@ void Boss::SetBossOrientation(Vector3* facingDir) {
 
 bool Boss::RandomWalk() {
     float speed = 20.0f;
-    float period = 1.0f;    // change direction in period-seconds
+    float period = 0.5f;    // change direction in period-seconds
     randomWalkTimer += deltaTime;
     if (randomWalkTimer > period) {
         randomWalkTimer = 0.0f;
