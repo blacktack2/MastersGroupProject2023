@@ -35,11 +35,22 @@ void NetworkBoss::ChangeLoseState()
 void NetworkBoss::BulletModification(BossBullet* bullet)
 {
 	ItemInitPacket newObj;
+	GameServer* server = game->GetServer();
+	bullet->OnDestroyCallback = [&, bullet, server](Bullet& b) {
+		if (server) {
+			ItemDestroyPacket packet;
+			packet.position = bullet->GetTransform().GetGlobalPosition();
+			packet.objectID = bullet->GetNetworkObject()->GetNetworkID();
+			server->SendGlobalPacket(&packet, true);
+		}
+	};
+
 	Transform objTransform = bullet->GetTransform();
 	newObj.position = objTransform.GetGlobalPosition();
 	newObj.orientation = objTransform.GetGlobalOrientation();
 	newObj.scale = objTransform.GetScale();
 	newObj.velocity = bullet->GetPhysicsObject()->GetLinearVelocity();
+	newObj.angular = bullet->GetPhysicsObject()->GetAngularVelocity();
 	newObj.objectID = bullet->GetNetworkObject()->GetNetworkID();
 	newObj.paintRadius = bullet->GetPaintRadius() * 100;
 

@@ -325,7 +325,7 @@ void Boss::Update(float dt) {
         }
     }
 
-    if (health.GetHealth() > 0)
+    if (health.GetHealth() > 0 && isSpawnBullet)
     {
         bossAction = NoAction;
         if (behaviourTree->Execute(dt) != Ongoing) {
@@ -441,7 +441,9 @@ void Boss::SetBossOrientation(Vector3* facingDir) {
     }
     dir.y = 0;
     Quaternion orientation = Quaternion(Matrix4::BuildViewMatrix(this->GetTransform().GetGlobalPosition() + dir * 10, this->GetTransform().GetGlobalPosition(), Vector3(0, 1, 0)).Inverse());
-    this->GetTransform().SetOrientation(orientation);
+    if (isSpawnBullet) {
+        this->GetTransform().SetOrientation(orientation);
+    }
 }
 
 bool Boss::RandomWalk() {
@@ -454,6 +456,7 @@ bool Boss::RandomWalk() {
         float z = (float)((std::rand() % 11) - 5);
         randomWalkDirection = Vector3{ x,0,z };
         randomWalkDirection = randomWalkDirection.Normalised();
+
         SetBossOrientation(&randomWalkDirection);
         //Quaternion orientation = Quaternion(Matrix4::BuildViewMatrix(this->GetTransform().GetGlobalPosition() + randomWalkDirection * 10, this->GetTransform().GetGlobalPosition(), Vector3(0, 1, 0)).Inverse());
         //this->GetTransform().SetOrientation(orientation);

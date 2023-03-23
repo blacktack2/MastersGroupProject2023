@@ -91,6 +91,7 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(PlayerSync_Message, this);
 	thisClient->RegisterPacketHandler(ClientID_Message, this);
 	thisClient->RegisterPacketHandler(Item_Init_Message, this);
+	thisClient->RegisterPacketHandler(Item_Destroy_Message, this);
 	thisClient->RegisterPacketHandler(BossSync_Message, this);
 	thisClient->RegisterPacketHandler(GameState_Message, this);
 	thisClient->RegisterPacketHandler(Lobby_Message, this);
@@ -136,7 +137,7 @@ void NetworkedGame::StartLevel() {
 	int id = OBJECTID_START;
 	BulletInstanceManager::instance().AddNetworkObject(id);
 
-	boss = AddNetworkBossToWorld({ 0, 5, -20 }, { 2,2,2 }, 1);
+	boss = AddNetworkBossToWorld({ 0, 5, -20 }, Vector3(4), 2);
 	boss->SetNextTarget(players[0]);
 	localPlayer->GetCamera()->GetHud().AddHealthBar(boss->GetHealth(), Vector2(0.0f, -0.8f), Vector2(0.7f, 0.04f));
 
@@ -611,6 +612,7 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	case PlayerSync_Message:
 		HandlePlayerSyncPacket(payload, source);
 		break;
+	case Item_Destroy_Message:
 	case Item_Init_Message:
 		ClientProcessNetworkObject(payload, source);
 		break;

@@ -16,11 +16,22 @@ namespace NCL {
 			Vector3		scale;
 			Quaternion	orientation;
 			Vector3		velocity;
+			Vector3		angular;
 			short int	paintRadius = 200;
 
 			ItemInitPacket() {
 				type = Item_Init_Message;
 				size = sizeof(ItemInitPacket) - sizeof(GamePacket);
+			}
+		};
+		struct ItemDestroyPacket : public GamePacket {
+			int		objectID = -1;
+			short int index = 0;
+			Vector3		position;
+
+			ItemDestroyPacket() {
+				type = Item_Destroy_Message;
+				size = sizeof(ItemDestroyPacket) - sizeof(GamePacket);
 			}
 		};
 
@@ -103,7 +114,7 @@ namespace NCL {
 			virtual bool ReadDeltaPacket(DeltaPacket& p, float dt);
 			virtual bool ReadFullPacket(FullPacket& p, float dt);
 			virtual bool ReadItemInitPacket(ItemInitPacket& p, float dt);
-			virtual bool ReadItemDestroyPacket(ItemInitPacket& p, float dt);
+			virtual bool ReadItemDestroyPacket(ItemDestroyPacket& p, float dt);
 
 			virtual bool WriteDeltaPacket(GamePacket** p, int stateID);
 			virtual bool WriteFullPacket(GamePacket** p);

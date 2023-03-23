@@ -100,9 +100,14 @@ void NetworkPlayer::Shoot()
 		return;
 	projectileFireRateTimer = projectileFireRate;
 	PlayerBullet* bullet = PrepareBullet();
-
-	bullet->OnDestroyCallback = [&, bullet ](Bullet& b) {
-		
+	GameServer* server = game->GetServer();
+	bullet->OnDestroyCallback = [&, bullet, server](Bullet& b) {
+		if (server) {
+			ItemDestroyPacket packet;
+			packet.position = bullet->GetTransform().GetGlobalPosition();
+			packet.objectID = bullet->GetNetworkObject()->GetNetworkID();
+			server->SendGlobalPacket(&packet, true);
+		}
 	};
 
 	ItemInitPacket newObj;
@@ -111,10 +116,11 @@ void NetworkPlayer::Shoot()
 	newObj.orientation = objTransform.GetGlobalOrientation();
 	newObj.scale = objTransform.GetScale();
 	newObj.velocity = bullet->GetPhysicsObject()->GetLinearVelocity();
+	newObj.angular = bullet->GetPhysicsObject()->GetAngularVelocity();
 	newObj.objectID = bullet->GetNetworkObject()->GetNetworkID();
 	newObj.paintRadius = bullet->GetPaintRadius() * 100;
 
 	
 	if(game->GetServer())
-		game->GetServer()->SendGlobalPacket(&newObj);
+		game->GetServer()->SendGlobalPacket(&newObj,true);
 }

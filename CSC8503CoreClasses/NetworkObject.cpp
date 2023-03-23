@@ -42,6 +42,11 @@ bool NetworkObject::ReadPacket(GamePacket& p, float dt) {
 			return false;
 		return ReadItemInitPacket((ItemInitPacket&)p, dt);
 	}
+	if (p.type == Item_Destroy_Message) {
+		if (networkID != ((ItemDestroyPacket*)&p)->objectID)
+			return false;
+		return ReadItemDestroyPacket((ItemDestroyPacket&)p, dt);
+	}
 	return false; //this isn't a packet we care about!
 }
 
@@ -103,8 +108,8 @@ bool NetworkObject::ReadFullPacket(FullPacket &p, float dt) {
 
 	object.GetTransform().SetPosition(p.fullState.position);
 	object.GetTransform().SetOrientation(p.fullState.orientation);
-	object.GetPhysicsObject()->SetAngularVelocity(p.fullState.angularVelocity);
-	object.GetPhysicsObject()->SetLinearVelocity(p.fullState.linearVelocity);
+	//object.GetPhysicsObject()->SetAngularVelocity(p.fullState.angularVelocity);
+	//object.GetPhysicsObject()->SetLinearVelocity(p.fullState.linearVelocity);
 	return true; 
 }
 
@@ -114,6 +119,7 @@ bool NetworkObject::ReadItemInitPacket(ItemInitPacket& p, float dt) {
 	//std::cout << p.scale << std::endl;
 	object.GetTransform().SetScale(p.scale);
 	object.GetPhysicsObject()->SetLinearVelocity(p.velocity);
+	object.GetPhysicsObject()->SetAngularVelocity(p.angular);
 	
 	if (Bullet* b = dynamic_cast<Bullet*>(&object)) {
 		b->SetPaintRadius(p.paintRadius / 100);
@@ -135,11 +141,11 @@ bool NetworkObject::ReadItemInitPacket(ItemInitPacket& p, float dt) {
 	return true;
 }
 
-bool NetworkObject::ReadItemDestroyPacket(ItemInitPacket& p, float dt) {
+bool NetworkObject::ReadItemDestroyPacket(ItemDestroyPacket& p, float dt) {
+	//std::cout << "destroyed" << std::endl;
 	if (object.IsActive()) {
-		//static_cast<Bullet*>(&object)->
+		//object.SetActive(false);
 		object.GetTransform().SetPosition(p.position);
-		object.GetTransform().SetOrientation(p.orientation);
 	}
 	return true;
 }

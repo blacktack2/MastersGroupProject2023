@@ -13,6 +13,7 @@ enum BasicNetworkMessages {
 	Full_State,		//Full transform etc
 	Received_State, //received from a client, informs that its received packet n
 	Item_Init_Message,
+	Item_Destroy_Message,
 	Player_Connected,
 	Player_Disconnected,
 	Shutdown,
