@@ -151,7 +151,7 @@ void NCL::PS4::PS4Renderer::RenderFrame()
 	//Primitive Setup State
 	Gnm::PrimitiveSetup primitiveSetup;
 	primitiveSetup.init();
-	primitiveSetup.setCullFace(Gnm::kPrimitiveSetupCullFaceNone);
+	primitiveSetup.setCullFace(Gnm::kPrimitiveSetupCullFaceBack);
 	primitiveSetup.setFrontFace(Gnm::kPrimitiveSetupFrontFaceCcw);
 	//primitiveSetup.setPolygonMode()
 	currentGFXContext->setPrimitiveSetup(primitiveSetup);
