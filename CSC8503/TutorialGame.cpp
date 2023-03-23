@@ -130,6 +130,7 @@ void TutorialGame::UpdateGame(float dt) {
 	GameState gameState = gameStateManager.GetGameState();
 	keyMap.Update();
 	// TODO - This is temporary (remove)
+	/*
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM1)) {
 		renderer.SetNumPlayers(1);
 		gameWorld.SetScreenNum(1);
@@ -146,6 +147,7 @@ void TutorialGame::UpdateGame(float dt) {
 		renderer.SetNumPlayers(4);
 		gameWorld.SetScreenNum(4);
 	}
+*/
 	
 	if (optionManager.GetSunMove()) {
 		float runtime = gameWorld.GetRunTime();
@@ -293,7 +295,7 @@ void TutorialGame::InitDefaultFloor() {
 GameObject* TutorialGame::AddBackGroundToWorld(const Vector3& position) {
 	GameObject* backGround = new GameObject("BackGround");
 	backGround->GetTransform()
-		.SetScale(Vector3(10, 10, 10))
+		.SetScale(Vector3(5, 3, 5))
 		.SetPosition(position);
 	RenderObject* renderObject = new RenderObject(backGround->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("mountMesh"), AssetLibrary<MeshMaterial>::GetAsset("mountMat"));
 	backGround->SetRenderObject(renderObject);
@@ -443,7 +445,7 @@ void TutorialGame::UpdateLevel() {
 				pillar->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions * Vector3{ 1.0f, 2.0f, 1.0f }, CollisionLayer::PaintAble));
 
 				pillar->GetTransform()
-					.SetPosition(object->worldPos + Vector3{ 0,15,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,14.7f,0 })
 					.SetScale(dimensions * 2);
 				//pillar->SetRenderObject(new RenderObject(&pillar->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("pillar"), healingKitTex, nullptr));
 				
@@ -461,7 +463,7 @@ void TutorialGame::UpdateLevel() {
 				Obstacle* fenceX = new Obstacle{ object, true };
 				fenceX->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
 				fenceX->GetTransform()
-					.SetPosition(object->worldPos + Vector3{ 0,3,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,2.8f,0 })
 					.SetScale(dimensions * 2);
 				//fenceX->SetRenderObject(new RenderObject(&fenceX->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceX"), basicTex, nullptr));		// TODO: change to the right Mesh
 				
@@ -479,7 +481,7 @@ void TutorialGame::UpdateLevel() {
 				Obstacle* fenceY = new Obstacle{ object, true };
 				fenceY->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions, CollisionLayer::PaintAble));
 				fenceY->GetTransform()
-					.SetPosition(object->worldPos + Vector3{ 0,3,0 })
+					.SetPosition(object->worldPos + Vector3{ 0,2.8f,0 })
 					.SetScale(dimensions * 2);
 				//fenceY->SetRenderObject(new RenderObject(&fenceY->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("fenceY"), basicTex, nullptr));		// TODO: change to the right Mesh
 				
@@ -497,7 +499,7 @@ void TutorialGame::UpdateLevel() {
 				Obstacle* shelter = new Obstacle{ object, false };
 				shelter->SetBoundingVolume((CollisionVolume*)new AABBVolume(dimensions*Vector3{0.4f,0.8f,0.75f}, CollisionLayer::PaintAble));
 				shelter->GetTransform()
-					.SetPosition(object->worldPos + Vector3{ 0.0f,2.7f, 0.0f })
+					.SetPosition(object->worldPos + Vector3{ 0.0f, 2.95f, 0.0f })
 					.SetScale(dimensions);
 				//shelter->SetRenderObject(new RenderObject(&shelter->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("shelter"), basicTex, nullptr));
 

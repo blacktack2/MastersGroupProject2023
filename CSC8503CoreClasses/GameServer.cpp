@@ -82,11 +82,11 @@ void GameServer::UpdateServer() {
 
 			ProcessPacket(&packet, nextClientID);
 
-			std::cout << "Server: New client connected" << std::endl;
+			//std::cout << "Server: New client connected" << std::endl;
 			nextClientID++;
 		}
 		else if (type == ENetEventType::ENET_EVENT_TYPE_DISCONNECT) {
-			std::cout << "Server: A client has disconnected" << peerToClientID[p] << std::endl;
+			//std::cout << "Server: A client has disconnected" << peerToClientID[p] << std::endl;
 			PlayerConnectionPacket packet = PlayerConnectionPacket();
 			packet.type = Player_Disconnected;
 			packet.playerID = peerToClientID[p];

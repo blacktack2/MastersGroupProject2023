@@ -133,8 +133,8 @@ namespace NCL {
 		float top       = 0.0f;
 		float bottom    = 0.0f;
 		float nearPlane = 1.0f;
-		float farPlane  = 100.0f;
-		float fov       = 45.0f;
+		float farPlane  = 1500.0f;
+		float fov       = 50.0f;
 
 		float yaw;
 		float pitch;

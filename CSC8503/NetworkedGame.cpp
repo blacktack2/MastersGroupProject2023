@@ -51,7 +51,7 @@ NetworkedGame::NetworkedGame(bool isServer)	{
 	gameStateManager.SetGameState(GameState::Lobby);
 	gameWorld.SetPhysicsSystem(physics.get());
 	if (isServer) {
-		std::cout << "start as server" << std::endl;
+		//std::cout << "start as server" << std::endl;
 		StartAsServer();
 	}
 	else {
@@ -304,7 +304,7 @@ void NetworkedGame::UpdateAsServer(float dt) {
 
 	if (gameStateManager.GetGameState() == GameState::Lobby) {
 		if (keyMap.GetButton(Start)) {
-			std::cout << "Start Level" << std::endl;
+			//std::cout << "Start Level" << std::endl;
 			StartLevel();
 		}
 	}
@@ -590,7 +590,7 @@ void NetworkedGame::HandleLobbyPacket(GamePacket* payload, int source)
 		break;
 	case LobbyState::Full:
 	case LobbyState::Started:
-		std::cout << "Quit due to lobby" << std::endl;
+		//std::cout << "Quit due to lobby" << std::endl;
 		gameStateManager.SetGameState(GameState::Quit);
 		break;
 	default:
@@ -753,17 +753,17 @@ void NetworkedGame::ProcessState() {
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
 	if (thisServer) {
 		if (keyMap.GetButton(InputType::Start)) {
-			std::cout << "Starting" << std::endl;
+			//std::cout << "Starting" << std::endl;
 			this->StartLevel();
 		}
 		if (keyMap.GetButton(InputType::Restart)) {
-			std::cout << "Return to lobby" << std::endl;
+			//std::cout << "Return to lobby" << std::endl;
 			this->StartLobby();
 		}
 	}
 	
 	if (keyMap.GetButton(InputType::Return)) {
-		std::cout << "quit" << std::endl;
+		//std::cout << "quit" << std::endl;
 		gameStateManager.SetGameState(GameState::Quit);
 	}
 }
