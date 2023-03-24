@@ -72,12 +72,9 @@ TutorialGame::~TutorialGame() {
 	BulletInstanceManager::instance().NullifyArray();
 	gridManager.Clear();
 
-	SoundSystem::Destroy();
 }
 
 void TutorialGame::StartLevel() {
-	SoundSystem::Destroy();
-	SoundSystem::Initialize();
 
 	InitWorld();
 	XboxControllerManager::GetXboxController().CheckPorts();

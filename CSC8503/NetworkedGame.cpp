@@ -126,8 +126,6 @@ void NetworkedGame::Clear()
 
 void NetworkedGame::StartLobby()
 {
-	SoundSystem::Destroy();
-	SoundSystem::Initialize();
 	canJoin = true;
 	InitWorld();
 	SpawnPlayers();
@@ -141,8 +139,6 @@ void NetworkedGame::StartLobby()
 
 void NetworkedGame::StartLevel() {
 	canJoin = false;
-	SoundSystem::Destroy();
-	SoundSystem::Initialize();
 	InitWorld();
 	SpawnPlayers();
 	int id = OBJECTID_START;

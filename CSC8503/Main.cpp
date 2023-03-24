@@ -28,8 +28,8 @@
 #include "PushdownMachine.h"
 
 #include "PushdownState.h"
-
-#include "TestAudio.h"
+#include "SoundSystem.h"
+//#include "TestAudio.h"
 
 #include "ScreenMain.h"
 
@@ -361,11 +361,13 @@ void StartPushdownAutomata(Window* w) {
 int main() {
 	Window* w = Window::CreateGameWindow("CSC8507 Game technology!", 1280, 720);
 	GameTechRenderer& renderer = GameTechRenderer::instance();
+	SoundSystem::Initialize();
 	OGLLoadingManager loadingScreen = OGLLoadingManager(w, renderer);
 
 	std::cout << "loading\n";
 	
 	loadingScreen.Load(LoadAsset);
+	
 	renderer.InitPipeline();
 	
 	if (!w->HasInitialised()) {
@@ -373,6 +375,6 @@ int main() {
 	}	
 
 	StartPushdownAutomata(w);
-
+	SoundSystem::Destroy();
 	Window::DestroyGameWindow();
 }
