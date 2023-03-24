@@ -143,7 +143,7 @@ void Boss::BuildTree() {
         case Initialise:
             //if too much laser auto fail
             //if too many jump  auto success
-            if (std::rand() % 100 > 50 && consecutiveLaserCounter >= 3 && consecutiveJumpCounter <= 3) {
+            if ((std::rand() % 100 > 50 && consecutiveJumpCounter <= 3) || consecutiveLaserCounter >= 3) {
                 return Failure;
             }
             //if (std::rand() % 100 > 70) return Failure;
@@ -220,7 +220,7 @@ void Boss::BuildTree() {
         case Success:
             return state;
         case Initialise:
-            if (std::rand() % 100 > 70) return Failure;
+            if (std::rand() % 100 > 50) return Failure;
         }
         if (InkRain(target)) return Success;
         bossAction = Attack4;
