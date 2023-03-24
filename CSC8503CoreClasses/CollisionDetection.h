@@ -4,6 +4,7 @@
  * 
  * @author Shashwat Kashyap
  * @author Stuart Lewis
+ * @author Harry Brettell
  * @date   March 2023
  */
 #pragma once
