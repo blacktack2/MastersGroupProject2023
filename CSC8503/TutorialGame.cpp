@@ -388,6 +388,7 @@ PlayerObject* TutorialGame::AddPlayerToWorld(int playerID, const Vector3& positi
 	character->GetRenderObject()->SetColour(Vector4(1, 0.9f, 0.8f, 1));
 
 	character->GetPhysicsObject()->SetInverseMass(1);
+	character->GetPhysicsObject()->SetGravWeight(2.0f);
 	character->GetPhysicsObject()->InitSphereInertia();
 
 	gameWorld.AddGameObject(character);
