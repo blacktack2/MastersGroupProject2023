@@ -525,7 +525,7 @@ void PhysicsSystem::IntegrateVelocity(float dt) {
 		position += linearVel * dt;
 		transform.SetPosition(position);
 
-		frameLinearDamping = 1.0f - ( (globalDamping * (*i)->GetPhysicsObject()->GetDampingWeight()) * dt);
+		frameLinearDamping = std::max(1.0f - ( (globalDamping * (*i)->GetPhysicsObject()->GetDampingWeight()) * dt), 0.0f);
 
 		linearVel *= frameLinearDamping;
 		object->SetLinearVelocity(linearVel);

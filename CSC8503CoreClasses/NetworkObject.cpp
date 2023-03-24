@@ -123,6 +123,7 @@ bool NetworkObject::ReadItemInitPacket(ItemInitPacket& p, float dt) {
 	object.GetTransform().SetOrientation(p.orientation);
 	//std::cout << p.scale << std::endl;
 	object.GetTransform().SetScale(p.scale);
+	renderTransform.SetScale(p.scale);
 	object.GetPhysicsObject()->SetLinearVelocity(p.velocity);
 	object.GetPhysicsObject()->SetAngularVelocity(p.angular);
 	
@@ -279,5 +280,5 @@ void NetworkObject::UpdateDelta(float dt) {
 	//Debug::DrawLine(object.GetTransform().GetGlobalPosition(), object.GetTransform().GetGlobalPosition() + Vector3(0, 0.5, 0), Debug::RED, 0.01f);
 
 	renderTransform.SetPosition(Vector3::Lerp(renderTransform.GetGlobalPosition(), lastDeltaState.position, posT));
-	renderTransform.SetOrientation(Quaternion::Lerp(renderTransform.GetGlobalOrientation(), lastDeltaState.orientation, 0.2));
+	renderTransform.SetOrientation(Quaternion::Lerp(renderTransform.GetGlobalOrientation(), lastDeltaState.orientation, posT));
 }
