@@ -222,7 +222,7 @@ void OGLShader::PrintCompileLog(GLuint object) {
 
 	std::string infoLog((size_t)logLength, 0);
 	glGetShaderInfoLog(object, logLength, nullptr, infoLog.data());
-	std::cout << "Compile Log:\n" << infoLog << "\n";
+	//std::cout << "Compile Log:\n" << infoLog << "\n";
 }
 
 void OGLShader::PrintLinkLog(GLuint program) {
@@ -234,5 +234,5 @@ void OGLShader::PrintLinkLog(GLuint program) {
 
 	std::string infoLog((size_t)logLength, 0);
 	glGetProgramInfoLog(program, logLength, nullptr, infoLog.data());
-	std::cout << "Link Log:\n" << infoLog << "\n";
+	//std::cout << "Link Log:\n" << infoLog << "\n";
 }

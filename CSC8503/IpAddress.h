@@ -18,11 +18,11 @@ namespace NCL {
 			void Print() {
 				for (int i = 0; i < 4; i++) {
 					if (address[i].size() == 0) {
-						std::cout << "0" << ".";
-					}else
-						std::cout << address[i] << ".";
+						//std::cout << "0" << ".";
+					}//else
+						//std::cout << address[i] << ".";
 				}
-				std::cout << std::endl;
+				//std::cout << std::endl;
 			}
 			int GetAddress(int index) {
 				if (index > 3) {

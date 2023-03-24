@@ -29,15 +29,15 @@ OGLComputeShader::OGLComputeShader(const std::string& s) {
 	glLinkProgram(programID);
 	glGetProgramiv(programID, GL_LINK_STATUS, &programValid);
 
-	std::cout << "Loading compute shader " << s << std::endl;
+	//std::cout << "Loading compute shader " << s << std::endl;
 	if (programValid != GL_TRUE) {
-		std::cout << "Compute shader has failed!" << std::endl;
+		//std::cout << "Compute shader has failed!" << std::endl;
 		threadsInGroup[0] = 0;
 		threadsInGroup[1] = 0;
 		threadsInGroup[2] = 0;
 	}
 	else {
-		std::cout << "Compute shader loaded!" << std::endl;
+		//std::cout << "Compute shader loaded!" << std::endl;
 		
 		glGetProgramiv(programID, GL_COMPUTE_WORK_GROUP_SIZE, threadsInGroup);
 	}

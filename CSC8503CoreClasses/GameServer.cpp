@@ -32,7 +32,7 @@ bool GameServer::Initialise() {
 	netHandle = enet_host_create(&address, clientMax, 1, 0, 0);
 
 	if (!netHandle) {
-		std::cout << __FUNCTION__ << " failed to create network handle!" << std::endl;
+		//std::cout << __FUNCTION__ << " failed to create network handle!" << std::endl;
 		return false;
 	}
 	return true;
@@ -40,7 +40,7 @@ bool GameServer::Initialise() {
 
 bool GameServer::IsInitialise() {
 	if (!netHandle) {
-		std::cout << __FUNCTION__ << " failed to create network handle!" << std::endl;
+		//std::cout << __FUNCTION__ << " failed to create network handle!" << std::endl;
 		return false;
 	}
 	return true;

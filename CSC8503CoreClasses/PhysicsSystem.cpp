@@ -95,15 +95,15 @@ float realDT	= idealDT;
 void PhysicsSystem::Update(float dt) {	
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::N)) {
 		useSimpleContainer = !useSimpleContainer;
-		std::cout << "Setting broad container to " << useSimpleContainer << std::endl;
+		//std::cout << "Setting broad container to " << useSimpleContainer << std::endl;
 	}
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::I)) {
 		constraintIterationCount--;
-		std::cout << "Setting constraint iterations to " << constraintIterationCount << std::endl;
+		//std::cout << "Setting constraint iterations to " << constraintIterationCount << std::endl;
 	}
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::O)) {
 		constraintIterationCount++;
-		std::cout << "Setting constraint iterations to " << constraintIterationCount << std::endl;
+		//std::cout << "Setting constraint iterations to " << constraintIterationCount << std::endl;
 	}
 
 	dTOffset += dt; //We accumulate time delta here - there might be remainders from previous frame!
@@ -192,7 +192,7 @@ void PhysicsSystem::Update(float dt) {
 	if (updateTime > realDT) {
 		realHZ /= 2;
 		realDT *= 2;
-		std::cout << "Dropping iteration count due to long physics time...(now " << realHZ << ")\n";
+		//std::cout << "Dropping iteration count due to long physics time...(now " << realHZ << ")\n";
 	}
 	else if(dt*2 < realDT) { //we have plenty of room to increase iteration count!
 		int temp = realHZ;
@@ -204,7 +204,7 @@ void PhysicsSystem::Update(float dt) {
 			realDT = idealDT;
 		}
 		if (temp != realHZ) {
-			std::cout << "Raising iteration count due to short physics time...(now " << realHZ << ")\n";
+			//std::cout << "Raising iteration count due to short physics time...(now " << realHZ << ")\n";
 		}
 	}
 }

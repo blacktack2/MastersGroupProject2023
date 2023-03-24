@@ -29,7 +29,7 @@ bool NetworkBase::ProcessPacket(GamePacket* packet, int peerID) {
 		}
 		return true;
 	}
-	std::cout << __FUNCTION__ << "no handler for packet type " << packet->type << std::endl;
+	//std::cout << __FUNCTION__ << "no handler for packet type " << packet->type << std::endl;
 
 	return false;
 }

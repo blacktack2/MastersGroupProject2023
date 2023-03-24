@@ -16,7 +16,7 @@ using namespace NCL::Assets;
 bool NCL::Assets::ReadTextFile(const std::string &filepath, std::string& result) {
 	std::ifstream file(filepath, std::ios::in);
 	if (!file) {
-		std::cout << __FUNCTION__ << " can't read file " << filepath << "\n";
+		//std::cout << __FUNCTION__ << " can't read file " << filepath << "\n";
 		return false;
 	}
 	std::ostringstream stream;

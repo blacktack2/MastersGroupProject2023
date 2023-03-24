@@ -23,13 +23,13 @@ void	Sound::LoadFromWAV(std::string filename) {
 
 	drwav_int16* pSampleData = drwav_open_file_and_read_pcm_frames_s16(filename.c_str(), &mWavData.channels, &mWavData.sampleRate, &mWavData.totalPCMFrameCount, nullptr);
 	if (pSampleData == NULL) {
-		std::cerr << "failed to load audio file" << std::endl;
+		//std::cerr << "failed to load audio file" << std::endl;
 		drwav_free(pSampleData, nullptr); //todo use raii to clean this up
 		return;
 	}
 	if (mWavData.getTotalSamples() > drwav_uint64(std::numeric_limits<size_t>::max()))
 	{
-		std::cerr << "too much data in file for 32bit addressed vector" << std::endl;
+		//std::cerr << "too much data in file for 32bit addressed vector" << std::endl;
 		drwav_free(pSampleData, nullptr);
 		return;
 	}
@@ -61,7 +61,7 @@ ALuint Sound::AddSound(std::string name) {
 		}*/
 		else {
 			s = new Sound();
-			std::cout << "Incompatible file extension '" << extension << "'!\n";
+			//std::cout << "Incompatible file extension '" << extension << "'!\n";
 		}
 
 		sSounds.insert(make_pair(name, s));

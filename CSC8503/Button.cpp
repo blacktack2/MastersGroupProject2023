@@ -72,7 +72,7 @@ Vector4 Button::GetDimension() const {
 
 void Button::OnClick() {
     if (!OnClickCallback) {
-        std::cout << "Button has no OnClick callback!\n";
+        //std::cout << "Button has no OnClick callback!\n";
         return;
     }
     OnClickCallback(*this);
@@ -80,7 +80,7 @@ void Button::OnClick() {
 
 void Button::OnSelect() {
     if (!OnSelectCallback) {
-        std::cout << "Button has no OnSelect callback!\n";
+        //std::cout << "Button has no OnSelect callback!\n";
         return;
     }
     OnSelectCallback(*this);
@@ -88,7 +88,7 @@ void Button::OnSelect() {
 
 void Button::OnPress() {
     if (!OnPressCallback) {
-        std::cout << "Button has no OnPress callback!\n";
+        //std::cout << "Button has no OnPress callback!\n";
         return;
     }
     OnPressCallback(*this);
