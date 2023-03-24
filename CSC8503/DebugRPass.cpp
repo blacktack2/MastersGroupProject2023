@@ -21,7 +21,9 @@
 #include "Debug.h"
 
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Maths;
+using namespace NCL::Rendering;
 
 DebugRPass::DebugRPass() :
 OGLOverlayRenderPass(), gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
@@ -41,9 +43,6 @@ OGLOverlayRenderPass(), gameWorld(GameWorld::instance()), renderer(GameTechRende
 	textMesh = AssetLoader::CreateMesh();
 }
 
-DebugRPass::~DebugRPass() {
-}
-
 void DebugRPass::Render() {
 	renderer.GetConfig().SetCullFace(false);
 
@@ -60,7 +59,7 @@ void DebugRPass::RenderLines() {
 	}
 
 	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetAspect());
+	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetSplitAspect());
 	
 	Matrix4 viewProjMatrix  = projMatrix * viewMatrix;
 
@@ -91,7 +90,7 @@ void DebugRPass::RenderLines() {
 }
 
 void DebugRPass::RenderText() {
-	const std::vector<Debug::DebugStringEntry>& strings = Debug::GetDebugStrings();
+	const std::vector<Debug::DebugStringEntry>& strings = renderer.IsCurrentlySplit() ? Debug::GetDebugStrings(renderer.GetGameWorldMainCamera()) : Debug::GetDebugStrings();
 	if (strings.empty()) {
 		return;
 	}
@@ -107,8 +106,8 @@ void DebugRPass::RenderText() {
 	debugTextUVs.clear();
 
 	for (const auto& s : strings) {
-		float size = 20.0f;
-		Debug::GetDebugFont()->BuildVerticesForString(s.data, s.position, s.colour, size, debugTextPos, debugTextUVs, debugTextColours);
+		//float size = 20.0f;
+		Debug::GetDebugFont()->BuildVerticesForString(s.data, s.position, s.colour, s.size, debugTextPos, debugTextUVs, debugTextColours);
 	}
 
 	textMesh->SetVertexPositions(debugTextPos);
@@ -132,9 +131,8 @@ void DebugRPass::RenderWinLoseInformation(bool win) {
 	debugTextColours.clear();
 	debugTextUVs.clear();
 
-	float size = 20.0f;
-	if (win) Debug::GetDebugFont()->BuildVerticesForString("You Win!", Vector2(5, 80), Vector4(0, 1, 0, 1), size, debugTextPos, debugTextUVs, debugTextColours);
-	else Debug::GetDebugFont()->BuildVerticesForString("You got Inked!", Vector2(5, 80), Vector4(1, 0, 0, 1), size, debugTextPos, debugTextUVs, debugTextColours);
+	constexpr float size = 20.0f;
+	Debug::GetDebugFont()->BuildVerticesForString(win ? "You Win!" : "You got Inked!", Vector2(36, 50), win ? Debug::GREEN : Debug::RED, size, debugTextPos, debugTextUVs, debugTextColours);
 
 	textMesh->SetVertexPositions(debugTextPos);
 	textMesh->SetVertexColours(debugTextColours);

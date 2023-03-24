@@ -24,7 +24,7 @@ OGLBufferObject::~OGLBufferObject() {
 	glDeleteBuffers(1, &id);
 }
 
-void OGLBufferObject::Read(void* data, int offset, int amount) {
+void OGLBufferObject::Read(void* data, int offset, int amount) const {
 	glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, amount == 0 ? size - offset : amount, data);
 }
 
@@ -32,11 +32,11 @@ void OGLBufferObject::Write(const void* data, int offset, int amount) {
 	glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, amount == 0 ? size - offset : amount, data);
 }
 
-void OGLBufferObject::Bind() {
+void OGLBufferObject::Bind() const {
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
 }
 
-void OGLBufferObject::Unbind() {
+void OGLBufferObject::Unbind() const {
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 

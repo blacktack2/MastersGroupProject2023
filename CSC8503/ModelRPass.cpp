@@ -14,38 +14,39 @@
 #include "AssetLoader.h"
 
 #include "FrameBuffer.h"
-#include "MeshGeometry.h"
 #include "ShaderBase.h"
 #include "TextureBase.h"
 
 #include "RenderObject.h"
 
-using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Rendering;
 
 ModelRPass::ModelRPass() : OGLMainRenderPass(),
 gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	albedoOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetSplitWidth(), renderer.GetSplitHeight());
 	normalOutTex = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetSplitWidth(), renderer.GetSplitHeight());
-	depthOutTex  = AssetLoader::CreateTexture(TextureType::Depth, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	specOutTex   = AssetLoader::CreateTexture(TextureType::ColourRGBA8, renderer.GetSplitWidth(), renderer.GetSplitHeight());
+	depthOutTex  = AssetLoader::CreateTexture(TextureType::Depth      , renderer.GetSplitWidth(), renderer.GetSplitHeight());
 	AddScreenTexture(*albedoOutTex);
 	AddScreenTexture(*normalOutTex);
+	AddScreenTexture(*specOutTex);
 	AddScreenTexture(*depthOutTex);
 
 	frameBuffer = AssetLoader::CreateFrameBuffer();
 	frameBuffer->Bind();
 	frameBuffer->AddTexture(*albedoOutTex);
 	frameBuffer->AddTexture(*normalOutTex);
+	frameBuffer->AddTexture(*specOutTex);
 	frameBuffer->AddTexture(*depthOutTex);
 	frameBuffer->DrawBuffers();
 	frameBuffer->Unbind();
 
 	AddModelShader(AssetLibrary<ShaderBase>::GetAsset("modelDefault"));
+	AddModelShader(AssetLibrary<ShaderBase>::GetAsset("modelDisplace"));
+	AddModelShader(AssetLibrary<ShaderBase>::GetAsset("modelParallax"));
 	AddModelShader(AssetLibrary<ShaderBase>::GetAsset("paintDefault"));
 	AddModelShader(AssetLibrary<ShaderBase>::GetAsset("animationDefault"));
-}
-
-ModelRPass::~ModelRPass() {
 }
 
 void ModelRPass::Render() {
@@ -59,8 +60,7 @@ void ModelRPass::Render() {
 		shader->Bind();
 
 		Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-		float screenAspect = (float)renderer.GetSplitWidth() / (float)renderer.GetSplitHeight();
-		Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
+		Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetSplitAspect());
 
 		shader->SetUniformMatrix("viewMatrix", viewMatrix);
 		shader->SetUniformMatrix("projMatrix", projMatrix);
@@ -87,8 +87,12 @@ void ModelRPass::AddModelShader(std::shared_ptr<ShaderBase> shader) {
 	modelShaders.push_back(shader);
 	shader->Bind();
 
-	shader->SetUniformInt("albedoTex", 0);
-	shader->SetUniformInt("bumpTex"  , 1);
+	shader->SetUniformInt("albedoTex"  , 0);
+	shader->SetUniformInt("bumpTex"    , 1);
+	shader->SetUniformInt("specTex"    , 2);
+	shader->SetUniformInt("paintTex"   , 3);
+	shader->SetUniformInt("heightTex"  , 4);
+	shader->SetUniformInt("parallaxTex", 4);
 
 	shader->Unbind();
 }

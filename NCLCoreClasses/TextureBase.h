@@ -72,7 +72,7 @@ namespace NCL {
 
 		class TextureBase {
 		public:
-			virtual ~TextureBase();
+			virtual ~TextureBase() = default;
 
 			inline TextureType GetType() {
 				return type;
@@ -81,6 +81,11 @@ namespace NCL {
 				return bufferType;
 			}
 
+			/**
+			 * @brief Generate and initialize the texture.
+			 * @brief Data provided via the TextureBase::SoftUpload()
+			 * method is also uploaded.
+			 */
 			virtual void Initialize() = 0;
 
 			/**
@@ -103,6 +108,7 @@ namespace NCL {
 			/**
 			 * @brief Temporarily store the data on the CPU, to be uploaded later using
 			 * the alternate overload during TextureBase::Initialize().
+			 * @brief Texture must first be bound.
 			 * @brief See TextureBase::Upload().
 			 *
 			 * @param data Source data to upload.
@@ -149,14 +155,14 @@ namespace NCL {
 			 * @brief Set the edge wrap method for when a pixel is sampled outside
 			 * the bounds of the texture.
 			 * @brief Texture must first be bound.
-			 * @brief Default is ClampToEdge.
+			 * @brief Default is ClampToEdge, except for RGBA32F textures,
+			 * which default to Repeat.
 			 */
 			virtual void SetEdgeWrap(EdgeWrap edgeWrap) = 0;
 		protected:
 			TextureBase(TextureType type);
-
-			TextureType type;
 		private:
+			TextureType type;
 			BufferType bufferType;
 		};
 	}

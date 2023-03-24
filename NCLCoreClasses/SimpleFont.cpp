@@ -15,9 +15,8 @@
 
 #include <fstream>
 
-using namespace NCL;
-using namespace Rendering;
-using namespace Maths;
+using namespace NCL::Rendering;
+using namespace NCL::Maths;
 
 SimpleFont::SimpleFont(const std::string& filename, const TextureBase& texture) :
 texture(texture) {
@@ -56,12 +55,7 @@ int SimpleFont::GetVertexCountForString(const std::string& text) {
 
 void SimpleFont::BuildVerticesForString(const std::string& text, const Vector2& startPos, const Vector4& colour, float size, std::vector<Vector3>&positions, std::vector<Vector2>&texCoords, std::vector<Vector4>&colours) {
 	int endChar = startChar + numChars;
-
 	float currentX = 0.0f;
-
-	if (positions.size() > 1000) {
-		return;
-	}
 
 	positions.reserve(positions.size() + (text.length() * 6));
 	colours.reserve(colours.size() + (text.length() * 6));

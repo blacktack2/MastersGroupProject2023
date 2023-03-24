@@ -40,12 +40,19 @@ namespace NCL {
 				currentFrame = 0;
 				nextFrame = 0;
 			}
+			inline void SetAniSpeed(float speed) {
+				animSpeed = speed;
+			}
 		protected:
 			void PreDraw(int sublayer, ShaderBase& shader) override;
+
+			void PreShadow(int sublayer, ShaderBase& shader) override;
 
 			ShaderBase& GetDefaultShader() override;
 
 			std::shared_ptr<MeshAnimation> anim;
+
+			ShaderBase& GetDefaultShadowShader() override;
 
 			int currentFrame;
 			int nextFrame;

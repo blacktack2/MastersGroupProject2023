@@ -20,8 +20,12 @@
 
 #include "RenderObject.h"
 
+#include "Light.h"
+
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Maths;
+using namespace NCL::Rendering;
 
 LightingRPass::LightingRPass() : OGLMainRenderPass(),
 gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
@@ -56,14 +60,13 @@ gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 
 	lightShader->SetUniformInt("depthTex", 0);
 	lightShader->SetUniformInt("normalTex", 1);
-	lightShader->SetUniformInt("shadowTex", 2);
+	lightShader->SetUniformInt("specTex", 2);
+	lightShader->SetUniformInt("shadowTex", 3);
 
 	lightShader->Unbind();
 
 	AddShadowShader(AssetLibrary<ShaderBase>::GetAsset("shadowDefault"));
-}
-
-LightingRPass::~LightingRPass() {
+	AddShadowShader(AssetLibrary<ShaderBase>::GetAsset("shadowAnimated"));
 }
 
 void LightingRPass::OnWindowResize(int width, int height) {
@@ -140,11 +143,12 @@ void LightingRPass::DrawLight(const Light& light, const Matrix4& shadowMatrix) {
 
 	depthTexIn->Bind(0);
 	normalTexIn->Bind(1);
-	shadowMapTex->Bind(2);
+	specTexIn->Bind(2);
+	shadowMapTex->Bind(3);
 
 	lightShader->SetUniformFloat("cameraPos", gameWorld.GetMainCamera()->GetPosition());
 
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetAspect());
+	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(renderer.GetSplitAspect());
 	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
 	Matrix4 inverseViewProj = (projMatrix * viewMatrix).Inverse();
 

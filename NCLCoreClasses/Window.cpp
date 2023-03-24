@@ -1,5 +1,12 @@
+/**
+ * @file   Window.cpp
+ * @brief  See Window.h.
+ * 
+ * @author Stuart Lewis
+ * @author Rich Davidson
+ * @date   March 2023
+ */
 #include "Window.h"
-#include <thread>
 
 #ifdef _WIN32
 #include "Win32Window.h"
@@ -11,26 +18,31 @@
 
 #include "RendererBase.h"
 
+#include <thread>
+
 using namespace NCL;
-using namespace Rendering;
+using namespace NCL::Rendering;
 
-Window*		Window::window		= nullptr;
-Keyboard*	Window::keyboard	= nullptr;
-Mouse*		Window::mouse		= nullptr;
-GameTimer*	Window::timer		= nullptr;
+Window*    Window::window   = nullptr;
+Keyboard*  Window::keyboard = nullptr;
+Mouse*     Window::mouse    = nullptr;
+GameTimer* Window::timer    = nullptr;
 
-Window::Window()	{
-	renderer	= nullptr;
-	window		= this;
-	timer		= new GameTimer();
+Window::Window() {
+	renderer = nullptr;
+	window   = this;
+	timer    = new GameTimer();
 }
 
-Window::~Window()	{
-	delete keyboard;keyboard= nullptr;
-	delete mouse;	mouse	= nullptr;
-	delete timer;	timer	= nullptr;
-	window = nullptr;
+Window::~Window() {
+	delete keyboard;
+	keyboard = nullptr;
+
+	delete mouse;
+	mouse = nullptr;
+
 	delete timer;
+	timer = nullptr;
 }
 
 Window* Window::CreateGameWindow(std::string title, int sizeX, int sizeY, bool fullScreen, int offsetX, int offsetY) {
@@ -45,7 +57,7 @@ Window* Window::CreateGameWindow(std::string title, int sizeX, int sizeY, bool f
 #endif
 }
 
-void	Window::SetRenderer(RendererBase* r) {
+void Window::SetRenderer(RendererBase* r) {
 	if (renderer && renderer != r) {
 		renderer->OnWindowDetach();
 	}
@@ -56,7 +68,7 @@ void	Window::SetRenderer(RendererBase* r) {
 	}
 }
 
-bool	Window::UpdateWindow() {
+bool Window::UpdateWindow() {
 	std::this_thread::yield();
 	timer->Tick();
 

@@ -8,40 +8,40 @@
 #pragma once
 #include "OGLMainRenderPass.h"
 
-#include "Light.h"
-
 #include <functional>
 #include <memory>
 #include <optional>
 
 namespace NCL {
 	class MeshGeometry;
-}
 
-namespace NCL {
+	namespace Maths {
+		class Matrix4;
+	}
+
 	namespace Rendering {
 		class FrameBuffer;
 		class ShaderBase;
 		class TextureBase;
 	}
-}
 
-using namespace NCL;
-using namespace Rendering;
+	using namespace NCL::Maths;
+	using namespace NCL::Rendering;
 
-namespace NCL {
 	namespace CSC8503 {
 		class GameWorld;
 		class GameTechRenderer;
 
+		class Light;
+
 		class LightingRPass : public OGLMainRenderPass {
 		public:
 			LightingRPass();
-			~LightingRPass();
+			~LightingRPass() = default;
 
-			virtual void OnWindowResize(int width, int height) override;
+			void OnWindowResize(int width, int height) override;
 
-			virtual void Render() override;
+			void Render() override;
 
 			void AddShadowShader(std::shared_ptr<ShaderBase> shader);
 
@@ -55,9 +55,11 @@ namespace NCL {
 			inline void SetDepthTexIn(TextureBase& tex) {
 				depthTexIn = &tex;
 			}
-
 			inline void SetNormalTexIn(TextureBase& tex) {
 				normalTexIn = &tex;
+			}
+			inline void SetSpecTexIn(TextureBase& tex) {
+				specTexIn = &tex;
 			}
 		private:
 			void DrawShadowMap(const Light& light, const Matrix4& shadowMatrix);
@@ -72,8 +74,9 @@ namespace NCL {
 			std::unique_ptr<FrameBuffer> shadowFrameBuffer;
 			std::unique_ptr<FrameBuffer> lightFrameBuffer;
 
-			TextureBase* depthTexIn = nullptr;
+			TextureBase* depthTexIn  = nullptr;
 			TextureBase* normalTexIn = nullptr;
+			TextureBase* specTexIn   = nullptr;
 
 			std::unique_ptr<TextureBase> shadowMapTex;
 

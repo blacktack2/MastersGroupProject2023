@@ -5,12 +5,11 @@ set(PROJECT_NAME CSC8503)
 ################################################################################
 
 set(Header_Files
-    "DebugViewPoint.h"
+    
     "GameLevel.h"
     "GameGrid.h"
     "GameGridManager.h"
     "GameStateManager.h"
-	"Maze.h"
     "MenuRenderObject.h"
     "Obstacle.h"
     "StateGameObject.h"
@@ -19,13 +18,12 @@ set(Header_Files
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
-    "DebugViewPoint.cpp"
+    
     "GameLevel.cpp"
     "GameGrid.cpp"
     "GameGridManager.cpp"
     "GameStateManager.cpp"
     "Main.cpp"
-	"Maze.cpp"
     "MenuRenderObject.cpp"
 
     "StateGameObject.cpp"
@@ -57,8 +55,6 @@ set(Render_Files
     "DebugRPass.cpp"
     "PresentRPass.h"
     "PresentRPass.cpp"
-    "PaintRenderObject.h"
-    "PaintRenderObject.cpp"
     "PaintingRPass.cpp"
     "PaintingRPass.h"
     "ModelRPass.h"
@@ -155,6 +151,8 @@ set(Menu_Files
     "ScreenMultiplayer.cpp"
     "ScreenMultiplayerOption.h"
     "ScreenMultiplayerOption.cpp"
+    "ScreenAddress.h"
+    "ScreenAddress.cpp"
     "OptionManager.h"
     "OptionManager.cpp"
     "HealthBar.h"
@@ -171,6 +169,8 @@ set(network_Files
     "NetworkPlayer.cpp"
     "NetworkBoss.h"
     "NetworkBoss.cpp"
+    "IpAddress.h"
+    "IpAddress.cpp"
 )
 source_group("Network Files" FILES ${network_Files})
 

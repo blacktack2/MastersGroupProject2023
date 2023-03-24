@@ -50,6 +50,7 @@
 #include <thread>
 #include <sstream>
 
+
 using namespace NCL;
 using namespace CSC8503;
 
@@ -82,29 +83,46 @@ void LoadGlobalAssets() {
 	}
 	AssetLibrary<MeshGeometry>::AddAsset("cube", AssetLoader::LoadMesh("cube.msh"));
 	AssetLibrary<MeshGeometry>::AddAsset("sphere", AssetLoader::LoadMesh("sphere.msh"));
+	AssetLibrary<MeshMaterial>::AddAsset("bulletLava", std::make_shared<MeshMaterial>("bulletLava.mat"));
+	AssetLibrary<MeshMaterial>::AddAsset("bulletWater", std::make_shared<MeshMaterial>("bulletWater.mat"));
 	AssetLibrary<MeshGeometry>::AddAsset("goat", AssetLoader::LoadMesh("Goat.msh"));
 	AssetLibrary<MeshGeometry>::AddAsset("capsule", AssetLoader::LoadMesh("capsule.msh"));
+	AssetLibrary<MeshGeometry>::AddAsset("patchCube", AssetLoader::LoadMesh("cube.msh"));
+	AssetLibrary<MeshGeometry>::GetAsset("patchCube")->SetPrimitiveType(GeometryPrimitive::Patches);
 
-	AssetLibrary<MeshGeometry>::AddAsset("fenceX", AssetLoader::LoadMesh("fenceXCube.msh"));
-	AssetLibrary<MeshGeometry>::AddAsset("fenceY", AssetLoader::LoadMesh("fenceYCube.msh"));
-	AssetLibrary<MeshGeometry>::AddAsset("wall", AssetLoader::LoadMesh("cube.msh"));
-	AssetLibrary<MeshGeometry>::AddAsset("shelter", AssetLoader::LoadMesh("shelterCube.msh"));
-	AssetLibrary<MeshGeometry>::AddAsset("pillar", AssetLoader::LoadMesh("pillarMsh.msh"));
+	AssetLibrary<MeshGeometry>::AddAsset("fenceX", AssetLoader::LoadMesh("Building/newFence.msh"));
+	AssetLibrary<MeshMaterial>::AddAsset("fenceX", std::make_shared<MeshMaterial>("Building/newFence.mat"));
+	AssetLibrary<MeshGeometry>::AddAsset("fenceY", AssetLoader::LoadMesh("Building/newFenceY.msh"));
+	AssetLibrary<MeshMaterial>::AddAsset("fenceY", std::make_shared<MeshMaterial>("Building/newFence.mat"));
+	//AssetLibrary<MeshGeometry>::AddAsset("wall", AssetLoader::LoadMesh("cube.msh"));
+	AssetLibrary<MeshGeometry>::AddAsset("shelter", AssetLoader::LoadMesh("Building/shelter.msh"));
+	AssetLibrary<MeshMaterial>::AddAsset("shelter", std::make_shared<MeshMaterial>("Building/shelter.mat"));
+	AssetLibrary<MeshGeometry>::AddAsset("pillar", AssetLoader::LoadMesh("Building/Column_04_Old.msh"));
 
 	AssetLibrary<TextureBase>::AddAsset("defaultAlbedo", std::move(AssetLoader::LoadTexture("DefaultAlbedo.png")));
 	AssetLibrary<TextureBase>::AddAsset("defaultBump", std::move(AssetLoader::LoadTexture("DefaultBump.png")));
 	AssetLibrary<TextureBase>::AddAsset("defaultSpec", std::move(AssetLoader::LoadTexture("DefaultSpec.png")));
+	AssetLibrary<TextureBase>::AddAsset("defaultPaint", std::move(AssetLoader::LoadTexture("DefaultPaint.png")));
 	AssetLibrary<TextureBase>::AddAsset("basic", std::move(AssetLoader::LoadTexture("checkerboard.png")));
-	AssetLibrary<TextureBase>::AddAsset("pillarTex", std::move(AssetLoader::LoadTexture("pillarTex.jpg")));
+	//AssetLibrary<TextureBase>::AddAsset("pillarTex", std::move(AssetLoader::LoadTexture("pillarTex.jpg")));
 
 	AssetLibrary<MeshMaterial>::AddAsset("default", std::make_shared<MeshMaterial>("Default.mat"));
-	AssetLibrary<MeshMaterial>::AddAsset("pillar", std::make_shared<MeshMaterial>("pillar.mat"));
+	AssetLibrary<MeshMaterial>::AddAsset("pillar", std::make_shared<MeshMaterial>("Building/Column_04_Old.mat"));
 	AssetLibrary<MeshMaterial>::AddAsset("floor", std::make_shared<MeshMaterial>("Floor.mat"));
+	AssetLibrary<MeshGeometry>::AddAsset("mountMesh", AssetLoader::LoadMesh("BackGround/background.msh"));
+	AssetLibrary<MeshMaterial>::AddAsset("mountMat", std::make_shared<MeshMaterial>("BackGround/background.mat"));
+	AssetLibrary<MeshGeometry>::AddAsset("wallX", AssetLoader::LoadMesh("Building/wallX.msh"));
+	AssetLibrary<MeshMaterial>::AddAsset("wall", std::make_shared<MeshMaterial>("Building/wall.mat"));
+	AssetLibrary<MeshGeometry>::AddAsset("wallY", AssetLoader::LoadMesh("Building/wallY.msh"));
+
 
 	AssetLibrary<ShaderBase>::AddAsset("modelDefault", std::move(AssetLoader::CreateShader("modelDefault.vert", "modelDefault.frag")));
+	AssetLibrary<ShaderBase>::AddAsset("modelDisplace", std::move(AssetLoader::CreateShader("modelDisplace.vert", "modelDefault.frag", "modelDisplace.tesc", "modelDisplace.tese")));
+	AssetLibrary<ShaderBase>::AddAsset("modelParallax", std::move(AssetLoader::CreateShader("modelDefault.vert", "modelParallax.frag")));
 	AssetLibrary<ShaderBase>::AddAsset("paintDefault", std::move(AssetLoader::CreateShader("modelDefault.vert", "modelPaintTexture.frag")));
 	AssetLibrary<ShaderBase>::AddAsset("animationDefault", std::move(AssetLoader::CreateShader("modelAnimated.vert", "modelAnimated.frag")));
 	AssetLibrary<ShaderBase>::AddAsset("shadowDefault", std::move(AssetLoader::CreateShader("shadowDefault.vert", "shadowDefault.frag")));
+	AssetLibrary<ShaderBase>::AddAsset("shadowAnimated", std::move(AssetLoader::CreateShader("shadowAnimated.vert", "shadowDefault.frag")));
 }
 
 void LoadMenuAsset() {
@@ -121,6 +139,9 @@ void LoadMenuAsset() {
 	AssetLibrary<TextureBase>::AddAsset("button5", AssetLoader::LoadTexture("Menu/button5.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("button6", AssetLoader::LoadTexture("Menu/button6.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("button7", AssetLoader::LoadTexture("Menu/button7.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button8", AssetLoader::LoadTexture("Menu/button8.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button9", AssetLoader::LoadTexture("Menu/button9.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("button10", AssetLoader::LoadTexture("Menu/button10.jpg"));
 
 	AssetLibrary<TextureBase>::AddAsset("buttonSlide0", AssetLoader::LoadTexture("Menu/buttonSlide0.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("buttonSlide1", AssetLoader::LoadTexture("Menu/buttonSlide1.jpg"));
@@ -130,6 +151,9 @@ void LoadMenuAsset() {
 	AssetLibrary<TextureBase>::AddAsset("buttonSlide5", AssetLoader::LoadTexture("Menu/buttonSlide5.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("buttonSlide6", AssetLoader::LoadTexture("Menu/buttonSlide6.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("buttonSlide7", AssetLoader::LoadTexture("Menu/buttonSlide7.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide8", AssetLoader::LoadTexture("Menu/buttonSlide8.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide9", AssetLoader::LoadTexture("Menu/buttonSlide9.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("buttonSlide10", AssetLoader::LoadTexture("Menu/buttonSlide10.jpg"));
 
 	AssetLibrary<TextureBase>::AddAsset("checkbox0", AssetLoader::LoadTexture("Menu/checkbox.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("checkbox1", AssetLoader::LoadTexture("Menu/checkboxmark.jpg"));
@@ -152,6 +176,34 @@ void LoadMenuAsset() {
 	AssetLibrary<TextureBase>::AddAsset("num7", AssetLoader::LoadTexture("Menu/num7.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("num8", AssetLoader::LoadTexture("Menu/num8.jpg"));
 	AssetLibrary<TextureBase>::AddAsset("num9", AssetLoader::LoadTexture("Menu/num9.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("dot", AssetLoader::LoadTexture("Menu/dot.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("backspace", AssetLoader::LoadTexture("Menu/delete.jpg"));
+
+	AssetLibrary<TextureBase>::AddAsset("num0s", AssetLoader::LoadTexture("Menu/num0s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num1s", AssetLoader::LoadTexture("Menu/num1s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num2s", AssetLoader::LoadTexture("Menu/num2s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num3s", AssetLoader::LoadTexture("Menu/num3s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num4s", AssetLoader::LoadTexture("Menu/num4s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num5s", AssetLoader::LoadTexture("Menu/num5s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num6s", AssetLoader::LoadTexture("Menu/num6s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num7s", AssetLoader::LoadTexture("Menu/num7s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num8s", AssetLoader::LoadTexture("Menu/num8s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("num9s", AssetLoader::LoadTexture("Menu/num9s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("dots", AssetLoader::LoadTexture("Menu/dots.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("backspaces", AssetLoader::LoadTexture("Menu/deletes.jpg"));
+
+	AssetLibrary<TextureBase>::AddAsset("numSlide0", AssetLoader::LoadTexture("Menu/num0s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("numSlide1", AssetLoader::LoadTexture("Menu/num1s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("numSlide2", AssetLoader::LoadTexture("Menu/num2s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("numSlide3", AssetLoader::LoadTexture("Menu/num3s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("numSlide4", AssetLoader::LoadTexture("Menu/num4s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("numSlide5", AssetLoader::LoadTexture("Menu/num5s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("numSlide6", AssetLoader::LoadTexture("Menu/num6s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("numSlide7", AssetLoader::LoadTexture("Menu/num7s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("numSlide8", AssetLoader::LoadTexture("Menu/num8s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("numSlide9", AssetLoader::LoadTexture("Menu/num9s.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("dotSlide", AssetLoader::LoadTexture("Menu/dots.jpg"));
+	AssetLibrary<TextureBase>::AddAsset("backspaceSlide", AssetLoader::LoadTexture("Menu/deletes.jpg"));
 	
 	AssetLibrary<TextureBase>::AddAsset("fontAtlas", std::move(AssetLoader::LoadTexture("PressStart2P.png")));
 	AssetLibrary<TextureBase>::AddAsset("BossHealthBarBorder", std::move(AssetLoader::LoadTexture("HP/Borders/Border_Style_3.png")));
@@ -165,7 +217,7 @@ void LoadMenuAsset() {
 }
 
 void LoadAnimationAsset() {
-	std::cout << "Loading animation assets";
+	std::cout << "Loading animation assets\n";
 	AssetLibrary<MeshGeometry>::AddAsset("boss", AssetLoader::LoadMesh("Boss/Boss.msh"));
 
 	AssetLibrary<MeshMaterial>::AddAsset("boss", std::make_shared<MeshMaterial>("Boss/Boss.mat"));
@@ -174,33 +226,37 @@ void LoadAnimationAsset() {
 	AssetLibrary<MeshAnimation>::AddAsset("Jump", std::make_shared<MeshAnimation>("Boss/Jump.anm"));
 	AssetLibrary<MeshAnimation>::AddAsset("Attack1", std::make_shared<MeshAnimation>("Boss/SillyDancing.anm"));
 	AssetLibrary<MeshAnimation>::AddAsset("Attack2", std::make_shared<MeshAnimation>("Boss/HipHopDancing.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("Attack4", std::make_shared<MeshAnimation>("Boss/RambaDancing.anm"));
 	AssetLibrary<MeshAnimation>::AddAsset("Attack3", std::make_shared<MeshAnimation>("Boss/JoyfulJump.anm"));
-	AssetLibrary<MeshAnimation>::AddAsset("Attack4", std::make_shared<MeshAnimation>("Boss/RumbaDancing.anm"));
 	AssetLibrary<MeshAnimation>::AddAsset("Attack5", std::make_shared<MeshAnimation>("Boss/NorthernSoulSpin.anm"));
-	AssetLibrary<MeshAnimation>::AddAsset("Attack6", std::make_shared<MeshAnimation>("Boss/SambaDancing.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("Attack6", std::make_shared<MeshAnimation>("Boss/newSambaDancing.anm"));
 
 	AssetLibrary<MeshGeometry>::AddAsset("player", AssetLoader::LoadMesh("Player/Player.msh"));
 
 	AssetLibrary<MeshMaterial>::AddAsset("player", std::make_shared<MeshMaterial>("Player/Player.mat"));
 
-	AssetLibrary<MeshAnimation>::AddAsset("PlayerJump", std::make_shared<MeshAnimation>("Player/Jump.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerJump", std::make_shared<MeshAnimation>("Player/PlayerJump.anm"));
 	AssetLibrary<MeshAnimation>::AddAsset("PlayerIdle", std::make_shared<MeshAnimation>("Player/PlayerIdle.anm"));
-	AssetLibrary<MeshAnimation>::AddAsset("PlayerForward", std::make_shared<MeshAnimation>("Player/PlayerForward.anm"));
-	AssetLibrary<MeshAnimation>::AddAsset("PlayerBackward", std::make_shared<MeshAnimation>("Player/PlayerBackward.anm"));
-	AssetLibrary<MeshAnimation>::AddAsset("PlayerLeft", std::make_shared<MeshAnimation>("Player/PlayerLeft.anm"));
 	AssetLibrary<MeshAnimation>::AddAsset("PlayerRight", std::make_shared<MeshAnimation>("Player/PlayerRight.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerLeft", std::make_shared<MeshAnimation>("Player/PlayerLeft.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerForwardRight", std::make_shared<MeshAnimation>("Player/PlayerForwardRight.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerForwardLeft", std::make_shared<MeshAnimation>("Player/PlayerForwardLeft.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerForward", std::make_shared<MeshAnimation>("Player/PlayerForward.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerBackwardRight", std::make_shared<MeshAnimation>("Player/PlayerBackwardRight.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerBackwardLeft", std::make_shared<MeshAnimation>("Player/PlayerBackwardLeft.anm"));
+	AssetLibrary<MeshAnimation>::AddAsset("PlayerBackward", std::make_shared<MeshAnimation>("Player/PlayerBackward.anm"));
 }
 
 void LoadPrefabs() {
-	float bulletRadius = 0.2f;
+	float bulletRadius = 0.25f;
 	std::unique_ptr<GameObject> bulletPrefab = std::make_unique<PlayerBullet>();
 
 	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::PlayerProj));
 	bulletPrefab->GetTransform().SetScale(Vector3(bulletRadius));
 
-	bulletPrefab->SetRenderObject(new RenderObject(bulletPrefab->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("sphere"), nullptr));
+	bulletPrefab->SetRenderObject(new RenderObject(bulletPrefab->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("sphere"), AssetLibrary<MeshMaterial>::GetAsset("bulletWater")));
 	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume(), true));
-	bulletPrefab->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.8f, 1.0f));
+//	bulletPrefab->GetRenderObject()->SetColour(Vector4(1, 0.5f, 0.8f, 1.0f));
 
 	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
 	bulletPrefab->GetPhysicsObject()->SetGravWeight(1.0f);
@@ -215,10 +271,10 @@ void LoadPrefabs() {
 	bulletPrefab->SetBoundingVolume((CollisionVolume*) new SphereVolume(bulletRadius, CollisionLayer::EnemyProj));
 	bulletPrefab->GetTransform().SetScale(Vector3(bulletRadius));
 
-	bulletPrefab->SetRenderObject(new RenderObject(bulletPrefab->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("sphere"), nullptr));
+	bulletPrefab->SetRenderObject(new RenderObject(bulletPrefab->GetTransform(), AssetLibrary<MeshGeometry>::GetAsset("sphere"), AssetLibrary<MeshMaterial>::GetAsset("bulletLava")));
 	bulletPrefab->SetPhysicsObject(new PhysicsObject(&bulletPrefab->GetTransform(), bulletPrefab->GetBoundingVolume(), true));
 
-	bulletPrefab->GetRenderObject()->SetColour(Vector4(0.2f, 1.0f, 0.5f, 1.0f));
+//	bulletPrefab->GetRenderObject()->SetColour(Vector4(0.2f, 1.0f, 0.5f, 1.0f));
 
 	bulletPrefab->GetPhysicsObject()->SetInverseMass(1.0f);
 	bulletPrefab->GetPhysicsObject()->SetGravWeight(1.0f);

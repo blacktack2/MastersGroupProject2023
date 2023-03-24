@@ -34,14 +34,18 @@ namespace NCL
         bool GetLeftTrigger(unsigned int controllerNum, float& n);
 
         bool GetButton(unsigned int controllerNum, short int button);
+        bool GetButtonClick(unsigned int controllerNum, short int button);
 
+        void UpdateLastState(unsigned int controllerNum);
     protected:
-
         bool UpdateConnection(unsigned int controllerNum);
 
         XINPUT_STATE state;
         DWORD dwResult;
         XINPUT_VIBRATION vibration;
         std::vector<int> connectedControllers;
+        std::map <short int, bool [4] > buttonLastState;
+        bool buttonALastState[4] = {false};
+        bool buttonStartLastState[4] = {false};
     };
 }

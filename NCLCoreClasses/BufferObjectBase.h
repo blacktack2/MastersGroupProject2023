@@ -16,7 +16,7 @@ namespace NCL {
 		 */
 		class BufferObjectBase {
 		public:
-			virtual ~BufferObjectBase();
+			virtual ~BufferObjectBase() = default;
 
 			/**
 			 * @brief Read data from this buffer, or a subset of it, into dataOut.
@@ -25,7 +25,7 @@ namespace NCL {
 			 * @param offset Offset (in bytes) of the first element to read from.
 			 * @param amount Number of bytes to read.
 			 */
-			virtual void Read(void* dataOut, int offset = 0, int amount = 0) = 0;
+			virtual void Read(void* dataOut, int offset = 0, int amount = 0) const = 0;
 			/**
 			 * @brief Fill the buffer, or a subset of it, with the contents of
 			 * dataIn.
@@ -36,8 +36,8 @@ namespace NCL {
 			 */
 			virtual void Write(const void* dataIn, int offset = 0, int amount = 0) = 0;
 
-			virtual void Bind() = 0;
-			virtual void Unbind() = 0;
+			virtual void Bind() const = 0;
+			virtual void Unbind() const = 0;
 
 			/**
 			 * @brief Create a new buffer of the specified size, and delete the old
@@ -46,7 +46,7 @@ namespace NCL {
 			 *
 			 * @param to New size (in bytes) of the buffer.
 			 */
-			void Resize(size_t to) {
+			inline void Resize(size_t to) {
 				size = to;
 				OnResize();
 			}

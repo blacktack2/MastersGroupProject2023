@@ -14,21 +14,14 @@
 #include <vector>
 
 namespace NCL {
-	class MeshGeometry;
-}
-
-namespace NCL {
 	namespace Rendering {
 		class FrameBuffer;
 		class ShaderBase;
 		class TextureBase;
 	}
-}
 
-using namespace NCL;
-using namespace Rendering;
+	using namespace NCL::Rendering;
 
-namespace NCL {
 	namespace CSC8503 {
 		class GameTechRenderer;
 		class GameWorld;
@@ -36,9 +29,9 @@ namespace NCL {
 		class ModelRPass : public OGLMainRenderPass {
 		public:
 			ModelRPass();
-			~ModelRPass();
+			~ModelRPass() = default;
 
-			virtual void Render() override;
+			void Render() override;
 
 			void AddModelShader(std::shared_ptr<ShaderBase> shader);
 
@@ -52,6 +45,9 @@ namespace NCL {
 			inline TextureBase& GetNormalOutTex() const {
 				return *normalOutTex;
 			}
+			inline TextureBase& GetSpecOutTex() const {
+				return *specOutTex;
+			}
 			inline TextureBase& GetDepthOutTex() const {
 				return *depthOutTex;
 			}
@@ -63,6 +59,7 @@ namespace NCL {
 
 			std::unique_ptr<TextureBase> albedoOutTex;
 			std::unique_ptr<TextureBase> normalOutTex;
+			std::unique_ptr<TextureBase> specOutTex;
 			std::unique_ptr<TextureBase> depthOutTex;
 
 			std::vector<std::shared_ptr<ShaderBase>> modelShaders{};

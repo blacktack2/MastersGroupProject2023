@@ -18,7 +18,7 @@ namespace NCL {
 		class OGLRendererConfig : public RendererConfigBase {
 		public:
 			OGLRendererConfig(RendererBase& renderer);
-			virtual ~OGLRendererConfig() = default;
+			~OGLRendererConfig() override = default;
 
 			void SetViewport(int x, int y, unsigned int width, unsigned int height) override;
 			void SetClearColour(float r, float g, float b, float a) override;
@@ -28,6 +28,8 @@ namespace NCL {
 			void SetCullFace(bool enabled, CullFace mode) override;
 			void SetDepthTest(bool enabled, DepthTestFunc func, float nearVal, float farVal) override;
 			void SetDepthMask(bool enabled = false) override;
+
+			void SetPatchVertices(int numVertices) override;
 		};
 	}
 }

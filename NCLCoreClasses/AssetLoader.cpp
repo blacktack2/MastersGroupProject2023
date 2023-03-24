@@ -25,7 +25,7 @@
 using namespace NCL;
 using namespace Rendering;
 
-std::map<std::string, TextureDataLoadFunction> AssetLoader::fileHandlers;
+std::map<std::string, TextureDataLoadFunction> AssetLoader::fileHandlers{};
 
 MeshLoadFunction    AssetLoader::meshLoad    = nullptr;
 TextureLoadFunction AssetLoader::textureLoad = nullptr;
@@ -173,20 +173,20 @@ std::unique_ptr<MeshGeometry> AssetLoader::CreateMesh() {
 	return meshCreate();
 }
 
-std::unique_ptr<ShaderBase> AssetLoader::CreateShader(const std::string& vertex, const std::string& fragment) {
+std::unique_ptr<ShaderBase> AssetLoader::CreateShader(const std::string& vertex, const std::string& fragment, const std::string& tessCont, const std::string& tessEval, const std::string& geometry) {
 	if (shaderCreate == nullptr) {
 		std::cout << __FUNCTION__ << " no Shader Create Function has been defined!\n";
 		return nullptr;
 	}
-	return shaderCreate(vertex, fragment);
+	return shaderCreate(vertex, fragment, tessCont, tessEval, geometry);
 }
 
-std::unique_ptr<ShaderBase> AssetLoader::CreateShaderAndInit(const std::string& vertex, const std::string& fragment) {
+std::unique_ptr<ShaderBase> AssetLoader::CreateShaderAndInit(const std::string& vertex, const std::string& fragment, const std::string& tessCont, const std::string& tessEval, const std::string& geometry) {
 	if (shaderCreateAndInit == nullptr) {
 		std::cout << __FUNCTION__ << " no Shader Create And Init Function has been defined!\n";
 		return nullptr;
 	}
-	return shaderCreateAndInit(vertex, fragment);
+	return shaderCreateAndInit(vertex, fragment, tessCont, tessEval, geometry);
 }
 
 std::unique_ptr<TextureBase> AssetLoader::CreateTexture(TextureType type, unsigned int width, unsigned int height) {

@@ -1,21 +1,30 @@
+/**
+ * @file   Win32Window.cpp
+ * @brief  See Win32Window.h.
+ * 
+ * @author Rich Davidson
+ * @date   March 2023
+ */
 #include "Win32Window.h"
+
 #ifdef _WIN32
 #include "Windowsx.h"
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <io.h>
-using namespace NCL;
-using namespace Win32Code;
+
+using namespace NCL::Win32Code;
 
 #define WINDOWCLASS "WindowClass"
 
-Win32Window::Win32Window(const std::string& title, int sizeX, int sizeY, bool fullScreen, int offsetX, int offsetY)	{
-	forceQuit		= false;
-	init			= false;
-	mouseLeftWindow	= false;
-	lockMouse		= false;
-	showMouse		= true;
-	active			= true;
+Win32Window::Win32Window(const std::string& title, int sizeX, int sizeY, bool fullScreen, int offsetX, int offsetY) {
+	forceQuit       = false;
+	init            = false;
+	mouseLeftWindow = false;
+	lockMouse       = false;
+	showMouse       = true;
+	active          = true;
 
 	this->fullScreen = fullScreen;
 
@@ -31,12 +40,12 @@ Win32Window::Win32Window(const std::string& title, int sizeX, int sizeY, bool fu
 	WNDCLASSEX windowClass;
 	ZeroMemory(&windowClass, sizeof(WNDCLASSEX));
 
-	if (!GetClassInfoEx(windowInstance, WINDOWCLASS, &windowClass))	{
-		windowClass.cbSize		= sizeof(WNDCLASSEX);
-	    windowClass.style		= CS_HREDRAW | CS_VREDRAW;
-		windowClass.lpfnWndProc	= (WNDPROC)WindowProc;
-		windowClass.hInstance	= windowInstance;
-		windowClass.hCursor		= LoadCursor(NULL, IDC_ARROW);
+	if (!GetClassInfoEx(windowInstance, WINDOWCLASS, &windowClass)) {
+		windowClass.cbSize        = sizeof(WNDCLASSEX);
+		windowClass.style         = CS_HREDRAW | CS_VREDRAW;
+		windowClass.lpfnWndProc   = (WNDPROC)WindowProc;
+		windowClass.hInstance     = windowInstance;
+		windowClass.hCursor       = LoadCursor(NULL, IDC_ARROW);
 		windowClass.hbrBackground = (HBRUSH)COLOR_WINDOW;
 		windowClass.lpszClassName = WINDOWCLASS;
 
@@ -47,45 +56,48 @@ Win32Window::Win32Window(const std::string& title, int sizeX, int sizeY, bool fu
 	}
 
 	if(fullScreen) {
-		DEVMODE dmScreenSettings;								// Device Mode
-		memset(&dmScreenSettings,0,sizeof(dmScreenSettings));	// Makes Sure Memory's Cleared
+		DEVMODE dmScreenSettings; // Device Mode
+		memset(&dmScreenSettings,0,sizeof(dmScreenSettings)); // Makes Sure Memory's Cleared
 
-		dmScreenSettings.dmSize=sizeof(dmScreenSettings);		// Size Of The Devmode Structure
-		dmScreenSettings.dmPelsWidth		= sizeX;			// Selected Screen Width
-		dmScreenSettings.dmPelsHeight		= sizeY;			// Selected Screen Height
-		dmScreenSettings.dmBitsPerPel		= 32;				// Selected Bits Per Pixel
+		dmScreenSettings.dmSize=sizeof(dmScreenSettings); // Size Of The Devmode Structure
+		dmScreenSettings.dmPelsWidth  = sizeX; // Selected Screen Width
+		dmScreenSettings.dmPelsHeight = sizeY; // Selected Screen Height
+		dmScreenSettings.dmBitsPerPel = 32;    // Selected Bits Per Pixel
 		dmScreenSettings.dmDisplayFrequency = 60;
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
 
-		if(ChangeDisplaySettings(&dmScreenSettings,CDS_FULLSCREEN)!=DISP_CHANGE_SUCCESSFUL)	{
+		if(ChangeDisplaySettings(&dmScreenSettings,CDS_FULLSCREEN)!=DISP_CHANGE_SUCCESSFUL) {
 			std::cout << __FUNCTION__ << " Failed to switch to fullscreen!\n";
 			return;
 		}
 	}
 
 	windowHandle = CreateWindowEx(fullScreen ? WS_EX_TOPMOST : NULL,
-	WINDOWCLASS,    // name of the window class
-	title.c_str(),   // title of the window
-	fullScreen ? WS_POPUP|WS_VISIBLE : WS_OVERLAPPEDWINDOW|WS_POPUP|WS_VISIBLE|WS_SYSMENU|WS_MAXIMIZEBOX|WS_MINIMIZEBOX,    // window style
-						(int)position.x,	// x-position of the window
-                        (int)position.y,	// y-position of the window
-                        (int)size.x,		// width of the window
-                        (int)size.y,		// height of the window
-                        NULL,				// No parent window!
-                        NULL,				// No Menus!
-						windowInstance,		// application handle
-                        NULL);				// No multiple windows!
+		WINDOWCLASS,     // name of the window class
+		title.c_str(),   // title of the window
+		fullScreen ?
+			(WS_POPUP | WS_VISIBLE) :
+			(WS_OVERLAPPEDWINDOW | WS_POPUP | WS_VISIBLE | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX), // window style
+		(int)position.x, // x-position of the window
+		(int)position.y, // y-position of the window
+		(int)size.x,     // width of the window
+		(int)size.y,     // height of the window
+		nullptr,         // No parent window!
+		nullptr,         // No Menus!
+		windowInstance,  // application handle
+		nullptr          // No multiple windows!
+	);
 
  	if(!windowHandle) {
 		std::cout << __FUNCTION__ << " Failed to create window!\n";
 		return;
 	}
 
-	winMouse	= new Win32Mouse(windowHandle);
+	winMouse    = new Win32Mouse(windowHandle);
 	winKeyboard = new Win32Keyboard(windowHandle);
 
-	keyboard	= winKeyboard;
-	mouse		= winMouse;
+	keyboard = winKeyboard;
+	mouse = winMouse;
 	winMouse->SetAbsolutePositionBounds(size);
 
 	winMouse->Wake();
@@ -98,17 +110,17 @@ Win32Window::Win32Window(const std::string& title, int sizeX, int sizeY, bool fu
 
 	windowTitle = title;
 
-	init		= true;
-	maximised	= false;
-	minimised	= false;
+	init = true;
+	maximised = false;
+	minimised = false;
 }
 
-Win32Window::~Win32Window(void)	{
+Win32Window::~Win32Window(void) {
 	init = false;
 }
 
-bool	Win32Window::InternalUpdate() {
-	MSG		msg;
+bool Win32Window::InternalUpdate() {
+	MSG msg;
 
 	POINT pt;
 	GetCursorPos(&pt);
@@ -122,47 +134,45 @@ bool	Win32Window::InternalUpdate() {
 	return !forceQuit;
 }
 
-void	Win32Window::UpdateTitle()	{
+void Win32Window::UpdateTitle() {
 	SetWindowText(windowHandle, windowTitle.c_str());
 }
 
-void	Win32Window::SetFullScreen(bool fullScreen) {
+void Win32Window::SetFullScreen(bool fullScreen) {
 	if (fullScreen) {
-		DEVMODE dmScreenSettings;								// Device Mode
-		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));	// Makes Sure Memory's Cleared
+		DEVMODE dmScreenSettings; // Device Mode
+		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings)); // Makes Sure Memory's Cleared
 
-		DEVMODEA settings;
+		DEVMODEA settings{};
 		EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &settings);
 
 		size.x = (float)settings.dmPelsWidth;
 		size.y = (float)settings.dmPelsHeight;
 
-		dmScreenSettings.dmSize				= sizeof(dmScreenSettings);			// Size Of The Devmode Structure
-		dmScreenSettings.dmPelsWidth		= (DWORD)size.x;		// Selected Screen Width
-		dmScreenSettings.dmPelsHeight		= (DWORD)size.y;		// Selected Screen Height
-		dmScreenSettings.dmBitsPerPel		= 32;								// Selected Bits Per Pixel
+		dmScreenSettings.dmSize             = sizeof(dmScreenSettings); // Size Of The Devmode Structure
+		dmScreenSettings.dmPelsWidth        = (DWORD)size.x;            // Selected Screen Width
+		dmScreenSettings.dmPelsHeight       = (DWORD)size.y;            // Selected Screen Height
+		dmScreenSettings.dmBitsPerPel       = 32;                       // Selected Bits Per Pixel
 		dmScreenSettings.dmDisplayFrequency = (DWORD)settings.dmDisplayFrequency;
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
 
 		if (ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
 			std::cout << __FUNCTION__ << " Failed to switch to fullscreen!\n";
-		}
-		else {
+		} else {
 			ResizeRenderer();
 		}
-	}
-	else {
-		DEVMODE dmScreenSettings;								// Device Mode
-		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));	// Makes Sure Memory's Cleared
+	} else {
+		DEVMODE dmScreenSettings; // Device Mode
+		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings)); // Makes Sure Memory's Cleared
 
 		size = defaultSize;
 
-		dmScreenSettings.dmSize = sizeof(dmScreenSettings);	// Size Of The Devmode Structure
-		dmScreenSettings.dmPelsWidth  = (DWORD)size.x;		// Selected Screen Width
-		dmScreenSettings.dmPelsHeight = (DWORD)size.y;		// Selected Screen Height
+		dmScreenSettings.dmSize = sizeof(dmScreenSettings); // Size Of The Devmode Structure
+		dmScreenSettings.dmPelsWidth  = (DWORD)size.x;      // Selected Screen Width
+		dmScreenSettings.dmPelsHeight = (DWORD)size.y;      // Selected Screen Height
 		dmScreenSettings.dmPosition.x = (DWORD)position.x;
 		dmScreenSettings.dmPosition.y = (DWORD)position.y;
-		dmScreenSettings.dmBitsPerPel = 32;					// Selected Bits Per Pixel
+		dmScreenSettings.dmBitsPerPel = 32; // Selected Bits Per Pixel
 		dmScreenSettings.dmDisplayFrequency = 60;
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY | DM_POSITION;
 
@@ -172,123 +182,127 @@ void	Win32Window::SetFullScreen(bool fullScreen) {
 	}
 }
 
-void Win32Window::CheckMessages(MSG &msg)	{
+void Win32Window::CheckMessages(MSG &msg) {
 	Win32Window* thisWindow = (Win32Window*)window;
-	switch (msg.message)	{				// Is There A Message Waiting?
+	switch (msg.message) {
 		case (WM_QUIT):
-		case (WM_CLOSE): {					// Have We Received A Quit Message?
+		case (WM_CLOSE): {
 			thisWindow->ShowOSPointer(true);
 			thisWindow->LockMouseToWindow(false);
 			forceQuit = true;
-		}break;
+			break;
+		}
 		case (WM_INPUT): {
-			UINT dwSize;
-			GetRawInputData((HRAWINPUT)msg.lParam, RID_INPUT, NULL, &dwSize,sizeof(RAWINPUTHEADER));
+			UINT dwSize = 0;
+			GetRawInputData((HRAWINPUT)msg.lParam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
 
 			BYTE* lpb = new BYTE[dwSize];
-	
-			GetRawInputData((HRAWINPUT)msg.lParam, RID_INPUT, lpb, &dwSize,sizeof(RAWINPUTHEADER));
+
+			GetRawInputData((HRAWINPUT)msg.lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER));
 			RAWINPUT* raw = (RAWINPUT*)lpb;
 
 			if (keyboard && raw->header.dwType == RIM_TYPEKEYBOARD && active) {
 				thisWindow->winKeyboard->UpdateRAW(raw);
 			}
 
-			if (mouse && raw->header.dwType == RIM_TYPEMOUSE && active) {			
+			if (mouse && raw->header.dwType == RIM_TYPEMOUSE && active) {
 				thisWindow->winMouse->UpdateRAW(raw);
 			}
 
-			delete lpb;
-		}break;
-
-		default: {								// If Not, Deal With Window Messages
-			TranslateMessage(&msg);				// Translate The Message
-			DispatchMessage(&msg);				// Dispatch The Message
+			delete[] lpb;
+			break;
+		}
+		default: {
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+			break;
 		}
 	}
 }
 
-LRESULT CALLBACK Win32Window::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)	{
+LRESULT CALLBACK Win32Window::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	Win32Window* thisWindow = (Win32Window*)window;
 
 	bool applyResize = false;
 
-    switch(message)	 {
-        case(WM_DESTROY):	{
+	switch(message) {
+		case(WM_DESTROY): {
 			thisWindow->ShowOSPointer(true);
 			thisWindow->LockMouseToWindow(false);
 
 			PostQuitMessage(0);
 			thisWindow->forceQuit = true;
-		} break;
+			break;
+		}
 		case (WM_ACTIVATE): {
-			if(LOWORD(wParam) == WA_INACTIVE)	{
+			if (LOWORD(wParam) == WA_INACTIVE) {
 				thisWindow->active = false;
 				ReleaseCapture();
 				ClipCursor(NULL);
 				if (thisWindow->init && mouse && keyboard) {
 					thisWindow->winMouse->Sleep();
 					thisWindow->winKeyboard->Sleep();
-				}				
-			}
-			else {
+				}
+			} else {
 				thisWindow->active = true;
-				if(thisWindow->init) {
+				if (thisWindow->init) {
 					thisWindow->winMouse->Wake();
 					thisWindow->winKeyboard->Wake();
 
-					if(thisWindow->lockMouse) {
+					if (thisWindow->lockMouse) {
 						thisWindow->LockMouseToWindow(true);
 					}
 				}
 			}
 			return 0;
-		}break;
+		}
 		case (WM_SYSCOMMAND): {
-			if (wParam == SC_RESTORE) {
-				if (thisWindow->minimised) {
-					ShowWindow(thisWindow->windowHandle, SW_RESTORE);
-					if (thisWindow->init) {
-						thisWindow->winMouse->SetAbsolutePositionBounds(thisWindow->size);
-						thisWindow->LockMouseToWindow(thisWindow->lockMouse);
-					}
+			if (wParam == SC_RESTORE && thisWindow->minimised) {
+				ShowWindow(thisWindow->windowHandle, SW_RESTORE);
+				if (thisWindow->init) {
+					thisWindow->winMouse->SetAbsolutePositionBounds(thisWindow->size);
+					thisWindow->LockMouseToWindow(thisWindow->lockMouse);
 				}
 			}
-		}break;
+			break;
+		}
 		case (WM_LBUTTONDOWN): {
-			if(thisWindow->init && thisWindow->lockMouse) {
+			if (thisWindow->init && thisWindow->lockMouse) {
 				thisWindow->LockMouseToWindow(true);
 			}
-		}break;
+			break;
+		}
 		case (WM_MOUSEMOVE): {
-			TRACKMOUSEEVENT tme;
+			TRACKMOUSEEVENT tme{};
 			tme.cbSize = sizeof(TRACKMOUSEEVENT);
 			tme.dwFlags = TME_LEAVE;
 			tme.hwndTrack = thisWindow->windowHandle;
 			TrackMouseEvent(&tme);
 
 			if (mouse) {
-				Win32Mouse*realMouse = (Win32Mouse*)mouse;
+				Win32Mouse* realMouse = (Win32Mouse*)mouse;
 				realMouse->UpdateWindowPosition(
 					Vector2((float)GET_X_LPARAM(lParam), (float)GET_Y_LPARAM(lParam))
 				);
 			}
 
-			if(thisWindow->mouseLeftWindow) {
+			if (thisWindow->mouseLeftWindow) {
 				thisWindow->mouseLeftWindow = false;
 				if (thisWindow->init) {
 					thisWindow->winMouse->Wake();
 					thisWindow->winKeyboard->Wake();
 				}
 			}
-		}break;
-		case(WM_MOUSELEAVE):{
+			break;
+		}
+		case(WM_MOUSELEAVE): {
 			thisWindow->mouseLeftWindow = true;
 			if (thisWindow->init) {
 				thisWindow->winMouse->Sleep();
 				thisWindow->winKeyboard->Sleep();
 			}
-		}break;
+			break;
+		}
 		case(WM_SIZE): {
 			float newX = (float)LOWORD(lParam);
 			float newY = (float)HIWORD(lParam);
@@ -304,21 +318,22 @@ LRESULT CALLBACK Win32Window::WindowProc(HWND hWnd, UINT message, WPARAM wParam,
 				thisWindow->minimised = false;
 				thisWindow->maximised = true;
 				applyResize = true;
-			}
-			else if (wParam == SIZE_RESTORED && thisWindow->maximised) {
+			} else if (wParam == SIZE_RESTORED && thisWindow->maximised) {
 				thisWindow->maximised = false;
 				applyResize = true;
-			}
-			else if (wParam == SIZE_RESTORED && thisWindow->minimised) {
+			} else if (wParam == SIZE_RESTORED && thisWindow->minimised) {
 				thisWindow->minimised = false;
 				applyResize = true;
 			}
-		}break;
+			break;
+		}
 		case(WM_ENTERSIZEMOVE): {
-		}break;
+			break;
+		}
 		case(WM_EXITSIZEMOVE): {
 			applyResize = true;
-		}break;
+			break;
+		}
     }
 
 	if (applyResize) {
@@ -329,39 +344,33 @@ LRESULT CALLBACK Win32Window::WindowProc(HWND hWnd, UINT message, WPARAM wParam,
 		}
 	}
 
-    return DefWindowProc (hWnd, message, wParam, lParam);
+    return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-void	Win32Window::LockMouseToWindow(bool lock)	{
+void Win32Window::LockMouseToWindow(bool lock) {
 	lockMouse = lock;
 	if(lock) {
-		RECT		windowRect;
+		RECT windowRect;
 		GetWindowRect (windowHandle, &windowRect);
 
 		SetCapture(windowHandle);
 		ClipCursor(&windowRect);
-	}
-	else{
+	} else{
 		ReleaseCapture();
 		ClipCursor(NULL);
 	}
 }
 
-void	Win32Window::ShowOSPointer(bool show)	{
+void Win32Window::ShowOSPointer(bool show) {
 	if(show == showMouse) {
-		return;	//ShowCursor does weird things, due to being a counter internally...
+		return;
 	}
 
 	showMouse = show;
-	if(show) {
-		ShowCursor(1);
-	}
-	else{
-		ShowCursor(0);
-	}
+	ShowCursor(show ? 1 : 0);
 }
 
-void	Win32Window::SetConsolePosition(int x, int y)	{
+void Win32Window::SetConsolePosition(int x, int y) {
 	HWND consoleWindow = GetConsoleWindow();
 
 	SetWindowPos(consoleWindow, 0, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
@@ -369,13 +378,13 @@ void	Win32Window::SetConsolePosition(int x, int y)	{
 	SetActiveWindow(windowHandle);
 }
 
-void	Win32Window::SetWindowPosition(int x, int y) {
+void Win32Window::SetWindowPosition(int x, int y) {
 	SetWindowPos(windowHandle, 0, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
 	SetActiveWindow(windowHandle);
 }
 
-void	Win32Window::ShowConsole(bool state)				{
+void Win32Window::ShowConsole(bool state) {
 	HWND consoleWindow = GetConsoleWindow();
 
 	ShowWindow(consoleWindow, state ? SW_RESTORE : SW_HIDE);

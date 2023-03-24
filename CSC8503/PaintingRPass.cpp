@@ -13,25 +13,20 @@
 
 #include "DebugViewPoint.h"
 #include "CollisionVolume.h"
-#include "PaintRenderObject.h"
+#include "RenderObject.h"
 
 using namespace NCL;
-using namespace CSC8503;
+using namespace NCL::CSC8503;
+using namespace NCL::Rendering;
 
 PaintingRPass::PaintingRPass() : OGLMainRenderPass(),
-gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
+debugView(DebugViewPoint::Instance()), gameWorld(GameWorld::instance()), renderer(GameTechRenderer::instance()) {
 	frameBuffer = AssetLoader::CreateFrameBuffer();
 
 	shader = AssetLoader::CreateShaderAndInit("paintStencil.vert", "paintStencil.frag");
 }
 
-PaintingRPass::~PaintingRPass() {
-}
-
 void PaintingRPass::Render() {
-	DebugViewPoint& debugView = DebugViewPoint::Instance();
-	debugView.MarkTime("Paint Objects");
-
 	frameBuffer->Bind();
 	shader->Bind();
 
@@ -42,19 +37,23 @@ void PaintingRPass::Render() {
 
 	world.OperateOnContents([&](GameObject* gameObject) {
 		const CollisionVolume* volume = gameObject->GetBoundingVolume();
-		if (!volume) return;
-		if (volume->layer != CollisionLayer::PaintAble) return;
+		if (!volume || volume->layer != CollisionLayer::PaintAble) {
+			return;
+		}
 
-		PaintRenderObject* renderObj = (PaintRenderObject*)gameObject->GetRenderObject();
+		RenderObject* renderObj = (RenderObject*)gameObject->GetRenderObject();
+		if (!renderObj->GetPaintTex()) {
+			return;
+		}
 
-		frameBuffer->AddTexture(renderObj->GetPaintTexture(), 0);
+		frameBuffer->AddTexture(*renderObj->GetPaintTex(), 0);
 
 		Matrix4 modelMatrix = renderObj->GetTransform().GetGlobalMatrix();
 		shader->SetUniformMatrix("modelMatrix", modelMatrix);
 
-		renderer.GetConfig().SetViewport(0, 0, renderObj->GetWidth(), renderObj->GetHeight());
+		renderer.GetConfig().SetViewport(0, 0, renderObj->GetPaintTexWidth(), renderObj->GetPaintTexHeight());
 
-		for (const PaintCollision& paint : renderObj->GetPaintCollisions()) {
+		for (const RenderObject::PaintCollision& paint : renderObj->GetPaintCollisions()) {
 			shader->SetUniformFloat("paintPos", paint.center);
 			shader->SetUniformFloat("paintColour", paint.colour);
 			shader->SetUniformFloat("paintSize", paint.radius);
@@ -62,7 +61,6 @@ void PaintingRPass::Render() {
 		}
 
 		renderObj->ClearPaintCollisions();
-		
 	});
 
 	renderer.GetConfig().SetViewport();
@@ -72,6 +70,4 @@ void PaintingRPass::Render() {
 
 	shader->Unbind();
 	frameBuffer->Unbind();
-
-	debugView.FinishTime("Paint Objects");
 }

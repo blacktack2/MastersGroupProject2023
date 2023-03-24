@@ -13,7 +13,6 @@
 #include "Bullet.h"
 #include "Debug.h"
 #include "GameWorld.h"
-#include "Maze.h"
 #include "OrientationConstraint.h"
 #include "PhysicsObject.h"
 #include "PlayerObject.h"
@@ -64,7 +63,7 @@ void TestAudio::TestAudio1()
 	
 
 
-	std::cout << "Hello World!\n";
+	//std::cout << "Hello World!\n";
 
 	//Setup Source
 

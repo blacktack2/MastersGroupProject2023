@@ -13,11 +13,13 @@ enum BasicNetworkMessages {
 	Full_State,		//Full transform etc
 	Received_State, //received from a client, informs that its received packet n
 	Item_Init_Message,
+	Item_Destroy_Message,
 	Player_Connected,
 	Player_Disconnected,
 	Shutdown,
+	ClientID_Message,
 	PlayerSync_Message,
-	BossAction_Message,
+	BossSync_Message,
 	GameState_Message,
 	Lobby_Message
 };
@@ -61,15 +63,6 @@ struct PlayerConnectionPacket : public GamePacket {
 		size = sizeof(PlayerConnectionPacket) - sizeof(GamePacket);
 	}
 };
-struct BossActionPacket : public GamePacket {
-	short int bossAction = 0;
-
-	BossActionPacket() {
-		type = BossAction_Message;
-		size = sizeof(BossActionPacket) - sizeof(GamePacket);
-	}
-};
-
 class PacketReceiver {
 public:
 	virtual void ReceivePacket(int type, GamePacket* payload, int source = -1) = 0;
@@ -87,6 +80,7 @@ public:
 	void RegisterPacketHandler(int msgID, PacketReceiver* receiver) {
 		packetHandlers.insert(std::make_pair(msgID, receiver));
 	}
+
 protected:
 	NetworkBase();
 	~NetworkBase();

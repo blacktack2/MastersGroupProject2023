@@ -1,11 +1,11 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   Vector4.h
+ * @brief  Wrapper classes for four-component vector types.
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #pragma once
 #include <algorithm>
 #include <cmath>
@@ -17,7 +17,6 @@ namespace NCL {
 		class Vector2;
 
 		class Vector4 {
-
 		public:
 			union {
 				struct {
@@ -30,7 +29,7 @@ namespace NCL {
 			};
 
 		public:
-			constexpr Vector4(void) : x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
+			constexpr Vector4() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
 
 			explicit constexpr Vector4(float val) : x(val), y(val), z(val), w(val) {}
 
@@ -43,28 +42,14 @@ namespace NCL {
 			Vector4(const Vector3& v3, float w);
 			Vector4(float x, const Vector3& v3);
 
-			~Vector4(void) = default;
+			~Vector4() = default;
 
-			Vector4 Normalised() const {
-				Vector4 temp(*this);
-				temp.Normalise();
-				return temp;
-			}
+			Vector4 Normalised() const;
 
-			void Normalise() {
-				float length = Length();
-
-				if (length != 0.0f) {
-					length = 1.0f / length;
-					x = x * length;
-					y = y * length;
-					z = z * length;
-					w = w * length;
-				}
-			}
+			void Normalise();
 
 			inline float Length() const {
-				return sqrt((x * x) + (y * y) + (z * z) + (w * w));
+				return std::sqrt((x * x) + (y * y) + (z * z) + (w * w));
 			}
 
 			inline constexpr float LengthSquared() const {
@@ -96,6 +81,15 @@ namespace NCL {
 				);
 			}
 
+			static inline constexpr Vector4 Clamp(const Vector4& input, float min, float max) {
+				return Vector4(
+					std::clamp(input.x, min, max),
+					std::clamp(input.y, min, max),
+					std::clamp(input.z, min, max),
+					std::clamp(input.w, min, max)
+				);
+			}
+
 			static inline constexpr Vector4 Abs(const Vector4& input) {
 				return Vector4(
 					std::abs(input.x),
@@ -103,6 +97,10 @@ namespace NCL {
 					std::abs(input.z),
 					std::abs(input.w)
 				);
+			}
+
+			static inline constexpr Vector4 Lerp(const Vector4& a, const Vector4& b, float by) {
+				return (a * (1.0f - by) + (b * by));
 			}
 
 			static inline constexpr float Dot(const Vector4& a, const Vector4& b) {
@@ -151,7 +149,6 @@ namespace NCL {
 				w -= a.w;
 			}
 
-
 			inline constexpr void operator*=(const Vector4& a) {
 				x *= a.x;
 				y *= a.y;
@@ -199,6 +196,32 @@ namespace NCL {
 			inline friend std::ostream& operator<<(std::ostream& o, const Vector4& v) {
 				o << "Vector4(" << v.x << "," << v.y << "," << v.z << "," << v.w << ")\n";
 				return o;
+			}
+		};
+
+		class Vector4i {
+		public:
+			union {
+				struct {
+					int x;
+					int y;
+					int z;
+					int w;
+				};
+				int array[4];
+			};
+
+		public:
+			constexpr Vector4i() : x(0), y(0), z(0), w(0) {}
+
+			constexpr Vector4i(int x, int y, int z, int w) : x(x), y(y), z(z), w(w) {}
+
+			inline constexpr int operator[](int i) const {
+				return array[i];
+			}
+
+			inline constexpr int& operator[](int i) {
+				return array[i];
 			}
 		};
 	}

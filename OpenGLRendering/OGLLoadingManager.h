@@ -27,6 +27,8 @@ namespace NCL {
 		std::unique_ptr<OGLMesh> quad;
 		std::unique_ptr<OGLShader> shader;
 		OGLRenderer& renderer;
+		float shaderTime = 0;
+
 #ifdef _WIN32
 		HGLRC loadingContext;
 #endif

@@ -1,6 +1,6 @@
 /**
  * @file   MeshMaterial.h
- * @brief  
+ * @brief  Utility class for handling mesh materials.
  * 
  * @author Rich Davidson
  * @author Stuart Lewis
@@ -19,14 +19,16 @@ namespace NCL {
 		class ShaderBase;
 		class TextureBase;
 	}
-}
 
-using namespace NCL::Rendering;
+	using namespace NCL::Rendering;
 
-namespace NCL {
+	/**
+	 * @brief Utility class for handling mesh materials.
+	 */
 	class MeshMaterialEntry {
 	public:
-		MeshMaterialEntry() {}
+		MeshMaterialEntry() = default;
+		~MeshMaterialEntry() = default;
 
 		inline void AddTexture(const std::string& name, std::shared_ptr<TextureBase> texture) {
 			textures.emplace(std::make_pair(name, texture));
@@ -35,12 +37,14 @@ namespace NCL {
 			auto i = textures.find(name);
 			return i == textures.end() ? nullptr : i->second.get();
 		}
+
 		inline void SetShader(std::shared_ptr<ShaderBase> shader) {
 			this->shader = shader;
 		}
 		inline ShaderBase* GetShader() const {
 			return shader.get();
 		}
+
 		inline void SetShadowShader(std::shared_ptr<ShaderBase> shader) {
 			shadowShader = shader;
 		}
@@ -57,7 +61,7 @@ namespace NCL {
 	public:
 		MeshMaterial(const std::string& filename);
 		MeshMaterial(const std::vector<std::pair<std::string, std::shared_ptr<TextureBase>>>& textures, std::shared_ptr<ShaderBase> shader);
-		~MeshMaterial() {}
+		~MeshMaterial() = default;
 
 		const MeshMaterialEntry* GetMaterialForLayer(int i) const;
 	protected:

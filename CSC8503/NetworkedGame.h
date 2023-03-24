@@ -75,6 +75,7 @@ namespace NCL {
 			void HandleFullPacket(GamePacket* payload, int source);
 			void HandlePlayerConnectedPacket(GamePacket* payload, int source);
 			void HandlePlayerDisconnectedPacket(GamePacket* payload, int source);
+			void HandleClientIDPacket(GamePacket* payload, int source);
 			void HandlePlayerSyncPacket(GamePacket* payload, int source);
 			void HandleItemInitPacket(GamePacket* payload, int source);
 			void HandleBossActionPacket(GamePacket* payload, int source);
@@ -119,8 +120,8 @@ namespace NCL {
 		};
 
 		struct MessagePacket : public GamePacket {
-			short playerID;
-			short messageID;
+			short playerID = 0;
+			short messageID = 0;
 
 			MessagePacket() {
 				type = Message;
@@ -128,7 +129,7 @@ namespace NCL {
 			}
 		};
 		struct GameStatePacket : public GamePacket {
-			GameState state;
+			GameState state = GameState::Invalid;
 
 			GameStatePacket() {
 				type = GameState_Message;
@@ -137,11 +138,29 @@ namespace NCL {
 			~GameStatePacket() {}
 		};
 		struct PlayerSyncPacket : public GamePacket {
-			int		objectID = -1;
+			int		playerID = -1;
+			int		health = -1;
+			PlayerMovingDirection anim = PlayerMovingDirection::Idle;
 
 			PlayerSyncPacket() {
 				type = PlayerSync_Message;
 				size = sizeof(PlayerSyncPacket) - sizeof(GamePacket);
+			}
+		};
+		struct BossSyncPacket : public GamePacket {
+			Boss::BossAction anim = Boss::BossAction::NoAction;
+
+			BossSyncPacket() {
+				type = BossSync_Message;
+				size = sizeof(BossSyncPacket) - sizeof(GamePacket);
+			}
+		};
+		struct ClientIDPacket : public GamePacket {
+			int		objectID = -1;
+
+			ClientIDPacket() {
+				type = ClientID_Message;
+				size = sizeof(ClientIDPacket) - sizeof(GamePacket);
 			}
 		};
 		struct LobbyPacket : public GamePacket {

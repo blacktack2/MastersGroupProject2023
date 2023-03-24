@@ -17,17 +17,30 @@
 #include "BehaviourAction.h"
 #include "DebugViewPoint.h"
 #include <limits>
+#include "SoundSource.h"
+#include "Sound.h"
+#include "SoundSystem.h"
 
 const float offensiveHealthLowerBound = 50;
-const float bossVision = 80;
+const float bossVision = 90;
 const float distanceToHaveCloseCombat = 40;
 
 Boss::Boss() {
     BuildTree();
+    SetupAudio();
 }
 
 Boss::~Boss() {
     delete behaviourTree;
+
+    delete hurtSource;
+    delete inkRainSource;
+    delete fatherSource;
+    delete wowSource;
+    delete tuturuSource;
+    delete senpaiSource;
+    delete nyaSource;
+    delete waitSource;
 }
 
 void Boss::BuildTree() {
@@ -53,7 +66,7 @@ void Boss::BuildTree() {
     BehaviourSelector* offensinveMoves = new BehaviourSelector("Offensive Moves");
     offensiveMode->AddChild(offensinveMoves);
 
-    offensinveMoves->AddChild(new BehaviourAction("Walk if player to far awway", [&](float dt, BehaviourState state)->BehaviourState {
+    offensinveMoves->AddChild(new BehaviourAction("Walk if player to far away", [&](float dt, BehaviourState state)->BehaviourState {
         switch (state)
         {
         case Failure:
@@ -128,9 +141,18 @@ void Boss::BuildTree() {
         case Success:
             return state;
         case Initialise:
-            if (std::rand() % 100 > 70) return Failure;
+            //if too much laser auto fail
+            //if too many jump  auto success
+            if (std::rand() % 100 > 50 && consecutiveLaserCounter >= 3 && consecutiveJumpCounter <= 3) {
+                return Failure;
+            }
+            //if (std::rand() % 100 > 70) return Failure;
         }
-        if (UseLaserOnPlayer(target)) return Success;
+        if (UseLaserOnPlayer(target)) {
+            consecutiveLaserCounter++;
+            consecutiveJumpCounter = 0;
+            return Success;
+        }
         bossAction = Attack3;
         return Ongoing;
     }));
@@ -143,7 +165,11 @@ void Boss::BuildTree() {
             return state;
         }
 
-        if (JumpTo(target)) return Success;
+        if (JumpTo(target)) {
+            consecutiveJumpCounter++;
+            consecutiveLaserCounter = 0;
+            return Success;
+        }
         bossAction = Move2;
         return Ongoing;
     }));
@@ -215,6 +241,78 @@ void Boss::BuildTree() {
     }));
 }
 
+void Boss::SetupAudio()
+{
+    hurtSource = new SoundSource();
+    hurtSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+    hurtSource->SetGain(0.0f);
+    hurtSource->SetSoundBuffer(Sound::AddSound("tom.wav"));
+    hurtSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+    //hurtSource->SetTarget(this);
+    //hurtSource->SetMaxDistance(10.0f);
+    hurtSource->SetGain(1.0f);
+    hurtSource->SetPitch(1.0f);
+    //SoundSystem::GetSoundSystem()->AddSoundSource(hurtSource);
+
+    inkRainSource = new SoundSource();
+    inkRainSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+    inkRainSource->SetGain(0.0f);
+    //inkRainSource->SetMaxDistance(10.0f);
+    inkRainSource->SetSoundBuffer(Sound::AddSound("inkRain.wav"));
+    inkRainSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+    inkRainSource->SetGain(1.0f);
+    inkRainSource->SetPitch(1.0f);
+
+    fatherSource = new SoundSource();
+    fatherSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+    fatherSource->SetGain(0.0f);
+    fatherSource->SetSoundBuffer(Sound::AddSound("father.wav"));
+    fatherSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+    fatherSource->SetGain(1.0f);
+    fatherSource->SetPitch(1.0f);
+
+    wowSource = new SoundSource();
+    wowSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+    wowSource->SetGain(0.0f);
+    wowSource->SetSoundBuffer(Sound::AddSound("wow.wav"));
+    wowSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+    wowSource->SetGain(1.0f);
+    wowSource->SetPitch(1.0f);
+
+    tuturuSource = new SoundSource();
+    tuturuSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+    tuturuSource->SetGain(0.0f);
+    tuturuSource->SetSoundBuffer(Sound::AddSound("tuturu.wav"));
+    tuturuSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+    tuturuSource->SetGain(1.0f);
+    tuturuSource->SetPitch(1.0f);
+
+    senpaiSource = new SoundSource();
+    senpaiSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+    senpaiSource->SetGain(0.0f);
+    senpaiSource->SetSoundBuffer(Sound::AddSound("senpai.wav"));
+    senpaiSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+    senpaiSource->SetGain(1.0f);
+    senpaiSource->SetPitch(1.0f);
+
+    nyaSource = new SoundSource();
+    nyaSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+    nyaSource->SetGain(0.0f);
+    nyaSource->SetSoundBuffer(Sound::AddSound("nya.wav"));
+    nyaSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+    nyaSource->SetGain(1.0f);
+    nyaSource->SetPitch(1.0f);
+
+    waitSource = new SoundSource();
+    waitSource->SetPriority(SoundPriority::SOUNDPRIORITY_ALWAYS);
+    waitSource->SetGain(0.0f);
+    waitSource->SetSoundBuffer(Sound::AddSound("wait.wav"));
+    waitSource->AttachSource(SoundSystem::GetSoundSystem()->GetSource());
+    waitSource->SetGain(1.0f);
+    waitSource->SetPitch(1.0f);
+
+}
+
 void Boss::Update(float dt) {
     NCL::DebugViewPoint::Instance().MarkTime("Boss Update");
     GetTarget();
@@ -223,8 +321,14 @@ void Boss::Update(float dt) {
     deltaTime = dt;
     // check if inked
     GameNode* node = GameGridManager::instance().NearestNode(this->GetTransform().GetGlobalPosition());
-    if(node)
-        InkEffectManager::instance().ApplyInkEffect(node->inkType, GetHealth(), 1);
+    if (node) {
+        if (this->GetTransform().GetGlobalPosition().y <= 10) {
+            InkEffectManager::instance().ApplyInkEffect(node->inkType, GetHealth(), 1);
+            if (node->inkType == NCL::InkType::PlayerDamage) {
+                hurtSource->Play(Sound::AddSound("tom.wav"));
+            }
+        }
+    }
     //check boss health
     if (gameStateManager->GetGameState() == GameState::OnGoing) {
         if (GetHealth()->GetHealth() <= 0) {
@@ -235,14 +339,19 @@ void Boss::Update(float dt) {
             ChangeLoseState();
         }
     }
-    
-    if (health.GetHealth() > 0 )
+
+    if (health.GetHealth() > 0 && isSpawnBullet)
     {
         bossAction = NoAction;
         if (behaviourTree->Execute(dt) != Ongoing) {
             behaviourTree->Reset();
         }
     }
+
+    PlayAnimation();
+
+    //std::cout << "Boss doing " << bossAction << std::endl;
+
     if (bossAction != prevState) {
         ChangeTarget();
     }
@@ -251,8 +360,11 @@ void Boss::Update(float dt) {
 
 void Boss::ChangeLoseState()
 {
-    bossAction = Dead;
-    gameStateManager->SetGameState(GameState::Win);
+    if (isSpawnBullet) {
+        bossAction = Dead;
+        gameStateManager->SetGameState(GameState::Win);
+    }
+   
 }
 
 void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt) {
@@ -303,11 +415,11 @@ void Boss::Chase(float speed, Vector3 destination, GameGrid* gameGrid, float dt)
 }
 
 BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p) {
-    if (isClient) {
+    if (!isSpawnBullet) {
         return nullptr;
     }
     BossBullet* ink = BulletInstanceManager::instance().GetBossBullet();
-
+    ink->GetPhysicsObject()->SetAngularVelocity(Vector3{20,20,20});
     ink->SetLifespan(5.0f);
     Vector3 position = this->GetTransform().GetGlobalPosition();
     if (p != Vector3{ 99999, 99999, 99999 }) {
@@ -316,6 +428,7 @@ BossBullet* Boss::releaseBossBullet(Vector3 v, Vector3 s, Vector3 p) {
     ink->GetTransform()
         .SetPosition(position);
     ink->Resize(s);
+    ink->SetPaintRadius(s.x * 1.8);
     ink->GetPhysicsObject()->SetInverseMass(1.0f);
     ink->GetPhysicsObject()->SetGravWeight(0);
     ink->GetPhysicsObject()->SetDampingWeight(0);
@@ -336,13 +449,24 @@ void Boss::ChangeTarget(){
     }
 }
 
-bool Boss::RandomWalk() {
-    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("WalkForward").get()) {
-        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("WalkForward"));
+void Boss::SetBossOrientation(Vector3* facingDir) {
+    Vector3 dir;
+    if (!facingDir) {
+        dir = target->GetTransform().GetGlobalPosition() - this->GetTransform().GetGlobalPosition();
     }
+    else {
+        dir = *facingDir;
+    }
+    dir.y = 0;
+    Quaternion orientation = Quaternion(Matrix4::BuildViewMatrix(this->GetTransform().GetGlobalPosition() + dir * 10, this->GetTransform().GetGlobalPosition(), Vector3(0, 1, 0)).Inverse());
+    if (isSpawnBullet) {
+        this->GetTransform().SetOrientation(orientation);
+    }
+}
+
+bool Boss::RandomWalk() {
     float speed = 20.0f;
-    float period = 1.0f;    // change direction in period-seconds
+    float period = 0.5f;    // change direction in period-seconds
     randomWalkTimer += deltaTime;
     if (randomWalkTimer > period) {
         randomWalkTimer = 0.0f;
@@ -350,8 +474,10 @@ bool Boss::RandomWalk() {
         float z = (float)((std::rand() % 11) - 5);
         randomWalkDirection = Vector3{ x,0,z };
         randomWalkDirection = randomWalkDirection.Normalised();
-        Quaternion orientation = Quaternion(Matrix4::BuildViewMatrix(this->GetTransform().GetGlobalPosition() + randomWalkDirection * 10, this->GetTransform().GetGlobalPosition(), Vector3(0, 1, 0)).Inverse());
-        this->GetTransform().SetOrientation(orientation);
+
+        SetBossOrientation(&randomWalkDirection);
+        //Quaternion orientation = Quaternion(Matrix4::BuildViewMatrix(this->GetTransform().GetGlobalPosition() + randomWalkDirection * 10, this->GetTransform().GetGlobalPosition(), Vector3(0, 1, 0)).Inverse());
+        //this->GetTransform().SetOrientation(orientation);
         return true;
     }
     //Debug::DrawLine(GetTransform().GetGlobalPosition(), GetTransform().GetGlobalPosition() + randomWalkDirection * 15, Vector4{ 0,1,0,1 }, 0.0f);
@@ -360,10 +486,7 @@ bool Boss::RandomWalk() {
 }
 
 bool Boss::StabPlayer(PlayerObject* player) {
-    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack1").get()) {
-        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack1"));
-    }
+    SetBossOrientation(nullptr);
 
     Vector3 bombScale{ 0.75,0.75,0.75 };
     float bombSpeed = 40.0f;
@@ -390,10 +513,7 @@ bool Boss::StabPlayer(PlayerObject* player) {
 }
 
 bool Boss::Spin(PlayerObject* player) {
-    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack2").get()) {
-        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack2"));
-    }
+    SetBossOrientation(nullptr);
     Vector3 bombScale{ 0.75,0.75,0.75 };
     float bombSpeed = 40.0f;
     Vector3 bombDirection = (player->GetTransform().GetGlobalPosition() - this->GetTransform().GetGlobalPosition()).Normalised();
@@ -429,10 +549,7 @@ bool Boss::Spin(PlayerObject* player) {
 }
 
 bool Boss::UseLaserOnPlayer(PlayerObject* player) {
-    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack3").get()) {
-        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack3"));
-    }
+    SetBossOrientation(nullptr);
     Vector3 bombScale{ 2,2,2 };
     float bombSpeed = 40.0f;
     Vector3 bombDirection = (player->GetTransform().GetGlobalPosition() - this->GetTransform().GetGlobalPosition()).Normalised();
@@ -468,10 +585,7 @@ bool Boss::UseLaserOnPlayer(PlayerObject* player) {
 }
 
 bool Boss::JumpTo(PlayerObject* player) {
-    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Jump").get()) {
-        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Jump"));
-    }
+    SetBossOrientation(nullptr);
     float hangTime = 5.0f;
     if (jumpToTimer == 0.0f) {
         float jumpSpeed = 35.0f;
@@ -493,10 +607,7 @@ bool Boss::JumpTo(PlayerObject* player) {
 }
 
 bool Boss::JumpAway(PlayerObject* player) {
-    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Jump").get()) {
-        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Jump"));
-    }
+    SetBossOrientation(nullptr);
     float hangTime = 5.0f;
     if (jumpAwayTimer == 0.0f) {
         float jumpSpeed = 35.0f;
@@ -545,10 +656,7 @@ bool Boss::SeekHeal(bool& hasHeal) {
 }
 
 bool Boss::InkRain(PlayerObject* player) {
-    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack6").get()) {
-        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack6"));
-    }
+    SetBossOrientation(nullptr);
     float rainPeriod = 0.1f;
     int rainRange = 30;
     int numOfBomb = 30;
@@ -586,7 +694,7 @@ bool Boss::InkRain(PlayerObject* player) {
         return true;
     }
     inkRainTimer += deltaTime;
-    if (inkRainTimer > rainPeriod && !isClient) {
+    if (inkRainTimer > rainPeriod && isSpawnBullet) {
         inkRainTimer = 0.0f;
         rain[currentRainBomb]->SetLifespan(0.0f);
         Vector3 bombDirection = (player->GetTransform().GetGlobalPosition() - rainBombPositions[currentRainBomb]).Normalised();
@@ -600,10 +708,7 @@ bool Boss::InkRain(PlayerObject* player) {
 }
 
 bool Boss::BulletsStorm() {
-    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
-    if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack5").get()) {
-        anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack5"));
-    }
+    SetBossOrientation(nullptr);
     float bulletsStormDuration = 5.0f;
     float bulletsStormPeriod = 0.1f;
     Vector3 bombScale{ 1,1,1 };
@@ -622,7 +727,9 @@ bool Boss::BulletsStorm() {
             for (; currentPhase < (2 * PI + bulletsStormAngle); currentPhase += dAngle) {
                 Vector3 rayDir = transform.GetGlobalOrientation() * Vector3(cos(currentPhase), 0, sin(currentPhase));
                 Vector3 bombVelocity = rayDir * bombSpeed;
-                releaseBossBullet(bombVelocity, bombScale);
+                Vector3 p = this->GetTransform().GetGlobalPosition();
+                p.y = p.y - 7;
+                releaseBossBullet(bombVelocity, bombScale, p);
             }
             physicsObject->SetAngularVelocity(transform.GetGlobalOrientation() * Vector3 { 1, 1, 1 });
         }
@@ -642,4 +749,59 @@ float Boss::SqrDistToTarget() {
 }
 float Boss::DistToTarget() {
     return  (transform.GetGlobalPosition() - target->GetTransform().GetGlobalPosition()).Length();
+}
+
+void Boss::PlayAnimation()
+{
+    AnimatedRenderObject* anim = static_cast<AnimatedRenderObject*>(GetRenderObject());
+    switch (bossAction) {
+    case Move1:
+        if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("WalkForward").get()) {
+            anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("WalkForward"));
+        }
+
+        break;
+    case Attack1:
+        if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack1").get()) {
+            anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack1"));
+        }
+        nyaSource->Play(Sound::AddSound("nya.wav"));
+        break;
+    case Attack2:
+        if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack2").get()) {
+            anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack2"));
+        }
+        tuturuSource->Play(Sound::AddSound("tuturu.wav"));
+        break;
+    case Attack3:
+        if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack3").get()) {
+            anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack3"));
+        }
+        wowSource->Play(Sound::AddSound("wow.wav"));
+        break;
+    case Move2:
+        if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Jump").get()) {
+            anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Jump"));
+        }
+        senpaiSource->Play(Sound::AddSound("senpai.wav"));
+        break;
+    case Move3:
+        if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Jump").get()) {
+            anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Jump"));
+        }
+        waitSource->Play(Sound::AddSound("wait.wav"));
+        break;
+    case Attack4:
+        if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack6").get()) {
+            anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack6"));
+        }
+        inkRainSource->Play(Sound::AddSound("inkRain.wav"));
+        break;
+    case Attack5:
+        if (&anim->GetAnimation() != AssetLibrary<MeshAnimation>::GetAsset("Attack5").get()) {
+            anim->SetAnimation(AssetLibrary<MeshAnimation>::GetAsset("Attack5"));
+        }
+        fatherSource->Play(Sound::AddSound("father.wav"));
+        break;
+    }
 }

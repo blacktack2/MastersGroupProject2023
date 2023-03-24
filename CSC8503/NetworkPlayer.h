@@ -55,6 +55,15 @@ namespace NCL {
 				this->pitch = pitch;
 			}
 
+			PlayerMovingDirection GetAnimation() {
+				return playerMovingDirection;
+			}
+			void SetAnimation(PlayerMovingDirection anim) {
+				playerMovingDirection = anim;
+			}
+
+			void PlayShootSound();
+
 			bool isFrozen;
 		protected:
 			NetworkedGame* game;

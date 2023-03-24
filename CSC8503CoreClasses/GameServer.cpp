@@ -17,7 +17,9 @@ GameServer::~GameServer()	{
 }
 
 void GameServer::Shutdown() {
-	SendGlobalPacket(BasicNetworkMessages::Shutdown,false);
+	if (IsInitialise()) {
+		SendGlobalPacket(BasicNetworkMessages::Shutdown,false);
+	}
 	enet_host_destroy(netHandle);
 	netHandle = nullptr;
 }
@@ -36,6 +38,13 @@ bool GameServer::Initialise() {
 	return true;
 }
 
+bool GameServer::IsInitialise() {
+	if (!netHandle) {
+		std::cout << __FUNCTION__ << " failed to create network handle!" << std::endl;
+		return false;
+	}
+	return true;
+}
 bool GameServer::SendGlobalPacket(int msgID, bool isReliable) {
 	GamePacket packet;
 	packet.type = msgID;
@@ -67,18 +76,17 @@ void GameServer::UpdateServer() {
 			peerToClientID[p] = nextClientID;
 			clientIDs.push_back(nextClientID);
 			handshakeMap[nextClientID] = false;
-			//std::cout << "outID " << p->outgoingPeerID<<std::endl;
 			PlayerConnectionPacket packet = PlayerConnectionPacket();
 			packet.type = Player_Connected;
 			packet.playerID = nextClientID;
 
 			ProcessPacket(&packet, nextClientID);
 
-			std::cout << "Server: New client connected" << std::endl;
+			//std::cout << "Server: New client connected" << std::endl;
 			nextClientID++;
 		}
 		else if (type == ENetEventType::ENET_EVENT_TYPE_DISCONNECT) {
-			std::cout << "Server: A client has disconnected" << peerToClientID[p] << std::endl;
+			//std::cout << "Server: A client has disconnected" << peerToClientID[p] << std::endl;
 			PlayerConnectionPacket packet = PlayerConnectionPacket();
 			packet.type = Player_Disconnected;
 			packet.playerID = peerToClientID[p];
@@ -98,14 +106,9 @@ void GameServer::UpdateServer() {
 void GameServer::DisconnectClient(int clientID)
 {
 	peerToClientID.erase(clientIDToPeer[clientID]);
-	for (auto i : clientIDs) {
-		std::cout << clientID << " " << i << std::endl;
-	}
+
 	clientIDs.erase(std::remove(clientIDs.begin(), clientIDs.end(), clientID), clientIDs.end());
 	clientIDToPeer.erase(clientID);
-
-
-	std::cout << clientIDs.size() <<std::endl;
 }
 
 void GameServer::SetGameWorld(GameWorld &g) {

@@ -20,7 +20,7 @@ namespace NCL {
 	namespace CSC8503 {
 		class Constraint;
 		class GameObject;
-
+		class PhysicsSystem;
 
 		typedef std::function<void(GameObject*)> GameObjectFunc;
 		typedef std::function<void(Constraint*)> ConstraintFunc;
@@ -121,6 +121,9 @@ namespace NCL {
 			inline void SetScreenNum(int n) {
 				screenNum = n;
 			}
+
+			void SetPhysicsSystem(PhysicsSystem*);
+			PhysicsSystem* GetPhysicsSystem();
 		protected:
 			std::vector<GameObject*> gameObjects;
 			std::vector<Constraint*> constraints;
@@ -145,10 +148,13 @@ namespace NCL {
 			int worldIDCounter;
 			int worldStateCounter;
 
-			float runTime;
+			float runTime = 0.0f;
 			float deltaTime = 0.0f;		// Used by Animation
 
 			int screenNum = 1;
+
+			//dirty physics
+			PhysicsSystem* phys;
 		};
 	}
 }

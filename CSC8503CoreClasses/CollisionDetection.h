@@ -10,6 +10,7 @@
 #include "SphereVolume.h"
 #include "CapsuleVolume.h"
 #include "Ray.h"
+#include "Vector3.h"
 
 using NCL::Camera;
 using namespace NCL::Maths;
@@ -19,18 +20,18 @@ namespace NCL {
 	{
 	public:
 		struct ContactPoint {
-			Vector3 localA;
-			Vector3 localB;
-			Vector3 contactPoint;
-			Vector3 normal;
-			float	penetration;
+			Vector3 localA = Vector3();
+			Vector3 localB = Vector3();
+			Vector3 contactPoint = Vector3();
+			Vector3 normal = Vector3();
+			float	penetration = 0;
 		};
 
 		struct CollisionInfo {
-			GameObject* a;
-			GameObject* b;		
-			int framesLeft;
-			bool isEntered;
+			GameObject* a = nullptr;
+			GameObject* b = nullptr;
+			int framesLeft = 0;
+			bool isEntered = false;
 
 			std::vector<ContactPoint> point;
 
@@ -133,6 +134,8 @@ namespace NCL {
 	protected:
 
 	private:
+		static Vector3 ClosestPointOnLineSegment(Vector3 start, Vector3 end, Vector3 point);
+
 		CollisionDetection()	{}
 		~CollisionDetection()	{}
 	};

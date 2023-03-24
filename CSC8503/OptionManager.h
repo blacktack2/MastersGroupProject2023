@@ -6,6 +6,8 @@
  * @date   February 2023
  */
 #pragma once
+#include "IpAddress.h"
+#include "DebugViewPoint.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -26,6 +28,8 @@ namespace NCL {
 			int downTimes;
 
 			int counter;
+
+			IpAddress address;
 		public:
 			static OptionManager& instance() {
 				static OptionManager INSTANCE;
@@ -36,7 +40,10 @@ namespace NCL {
 			void SetSunMove(bool flag) { isSunMove = flag; };
 			bool GetSunMove() { return isSunMove; };
 
-			void SetDebugMode(bool flag) { isDebugMode = flag; };
+			void SetDebugMode(bool flag) {
+				isDebugMode = flag;
+				DebugViewPoint::Instance().enabled = flag;
+			};
 			bool GetDebugMode() { return isDebugMode; };
 
 			void SetSound(bool flag) { isSound = flag; };
@@ -56,6 +63,8 @@ namespace NCL {
 
 			void SetCounter(int num) { counter = num; };
 			int GetCounter() { return counter; };
+
+			IpAddress& GetIpAddress();
 		};
 	}
 }

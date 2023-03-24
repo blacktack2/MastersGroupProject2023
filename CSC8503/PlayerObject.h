@@ -5,18 +5,41 @@
 #include "GameStateManager.h"
 #include "Health.h"
 #include "PlayerBullet.h"
-#include"AnimatedRenderObject.h"
+#include "AnimatedRenderObject.h"
 namespace NCL {
 	class Camera;
+	class CapsuleVolume;
 	namespace CSC8503 {
 		class Bullet;
 
+		enum PlayerMovingDirection {
+			Idle,
+
+			MoveForward,
+			MoveBackward,
+			MoveToLeft,
+			MoveToRight,
+			MoveForwardLeft,
+			MoveForwardRight,
+			MoveBackwardLeft,
+			MoveBackwardRight,
+		};
+
 		class PlayerObject : public GameObject {
 		public:
+			enum PlayerAudio {
+				JumpAudio,
+				ShootAudio,
+				MoveAudio,
+				HurtAudio
+			};
+
 			PlayerObject(int playerID);
 			~PlayerObject();
 
 			void Update(float dt);
+
+			void ClearCamera();
 
 			virtual void ChangeLoseState();
 
@@ -44,10 +67,11 @@ namespace NCL {
 				return playerID;
 			}
 
+			void SetBoundingVolume(CapsuleVolume* vol);
+
 		protected:
 			void Movement(float dt);
 
-			void MoveTo(Vector3 position);
 			void Move(Vector3 dir);
 			void MoveByPosition(float dt, Vector3 dir);
 			void GetButtonInput(unsigned int keyPress);
@@ -57,6 +81,7 @@ namespace NCL {
 			void RotateYaw(float yaw);
 			void RotateToCamera();
 			void RotateByAxis();
+			void SetPitchYaw();
 			void RotatePlayer();
 		public:
 			void MoveCamera(float dt);
@@ -83,7 +108,7 @@ namespace NCL {
 
 			//shooting related
 			float projectileForce = 15;
-			const Vector3 projectileSpawnPoint = Vector3(0.0f, 0.9f, -1.0f);
+			const Vector3 projectileSpawnPoint = Vector3(0.0f, 0.0f, -1.0f);
 			float projectileLifespan = 5.0f;
 			float projectileFireRate = 0.1f;
 			float projectileFireRateTimer = 0;
@@ -94,17 +119,31 @@ namespace NCL {
 			//camera related
 			Vector3 lookingAt = Vector3(0);
 
-			void MoveAnimation(Vector3 dir);
-		private:
+			//animation
+			void MoveAnimation();
+			PlayerMovingDirection playerMovingDirection = PlayerMovingDirection::Idle;
 
+			//sound
 			void SetupAudio();
+			void PlayAudio(PlayerAudio);
+
+			SoundSource* attackSource;
+			SoundSource* hurtSource;
+
+			SoundSource* foot1;
+			SoundSource* foot2;
+			SoundSource* foot3;
+
+			SoundSource* jumpSource;
+		private:
 
 			//jump related 
 			bool onGround = false;
-			float jumpTriggerDist = 1.1f;
+			float jumpTriggerDist = 0.01f;
 			float jumpTimer = 0.0f;
-			const float jumpCooldown = 0.005f;
+			const float jumpCooldown = 0.5f;
 			float jumpSpeed = 10.0f;
+			float radius = 0;
 
 			//movement related
 			float moveSpeed = 0.4f;
@@ -121,10 +160,6 @@ namespace NCL {
 
 			// legacy variables
 			std::set<int> collidedWith;
-
-			//sound
-			SoundSource* playerSource;
-			SoundSource* attackSource;
 
 			//game state
 			GameStateManager* gameStateManager = &GameStateManager::instance();

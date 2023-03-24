@@ -11,7 +11,6 @@
 
 #include "HealthBar.h"
 #include "Assetlibrary.h"
-#include "HudBase.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -29,16 +28,25 @@ namespace NCL {
 					delete hud;
 				}
 				huds.clear();
+				playerHealth = nullptr;
 			}
 			void loadHuds(int BossHP, int PlayerHP);
 
 			void Draw();
+			
 			void AddHealthBar(Health* hp, Vector2 anchor, Vector2 dimension);
 			const std::vector<HealthBar*>& getHuds() {
 				return huds;
 			};
 
+			void SetPlayerHealth(Health* hp) {
+				playerHealth = hp;
+			}
+			Health* GetPlayerHealth() {
+				return playerHealth;
+			}
 		protected:
+			Health* playerHealth = nullptr;
 			std::vector<HealthBar*> huds;
 		};
 	}

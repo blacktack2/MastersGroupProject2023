@@ -8,27 +8,23 @@
  */
 #include "GameTechRenderer.h"
 
+#include "GameWorld.h"
+
 #include "Camera.h"
-#include "GameObject.h"
-#include "RenderObject.h"
-
-#include "MeshAnimation.h"
-#include "MeshGeometry.h"
-#include "MeshMaterial.h"
-#include "ShaderBase.h"
-#include "TextureBase.h"
-
-#include "AssetLoader.h"
 
 using namespace NCL;
-using namespace Rendering;
-using namespace CSC8503;
+using namespace NCL::Rendering;
+using namespace NCL::CSC8503;
 
 GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()), gameWorld(GameWorld::instance()) {
-	for (int i = 0; i < 4; i++) playersHP[i] = -1;
+	baseInstance = this;
+	for (size_t i = 0; i < 4; i++) {
+		playersHP[i] = -1;
+	}
 }
 
-GameTechRenderer::~GameTechRenderer() {
+void GameTechRenderer::SetGameWorldDeltaTime(float dt) {
+	gameWorld.SetDeltaTime(dt);
 }
 
 void GameTechRenderer::InitPipeline() {
@@ -44,6 +40,7 @@ void GameTechRenderer::InitPipeline() {
 	lightingPass = std::make_unique<LightingRPass>();
 	lightingPass->SetDepthTexIn(modelPass->GetDepthOutTex());
 	lightingPass->SetNormalTexIn(modelPass->GetNormalOutTex());
+	lightingPass->SetSpecTexIn(modelPass->GetSpecOutTex());
 	AddMainPass(*lightingPass);
 
 	ssaoPass = std::make_unique<SSAORPass>();
@@ -74,19 +71,68 @@ void GameTechRenderer::InitPipeline() {
 	SetGamma(gamma);
 	SetPresentPass(*presentPass);
 
-	menuPass = std::make_unique<MenuRPass>();
-	AddOverlayPass(*menuPass, "Menu");
+	hudPass = std::make_unique<HudRPass>();
+	AddOverlayPass(*hudPass, "Hud", true);
 
 	debugPass = std::make_unique<DebugRPass>();
-	AddOverlayPass(*debugPass, "Debug");
-	hudPass = std::make_unique<HudRPass>();
-	AddOverlayPass(*hudPass, "Hud");
+	AddOverlayPass(*debugPass, "DebugSplit", true);
+
+	menuPass = std::make_unique<MenuRPass>();
+	AddOverlayPass(*menuPass, "Menu", false);
+
+	AddOverlayPass(*debugPass, "DebugFull", false);
+
 	UpdatePipeline();
 }
 
-void GameTechRenderer::SortObjectList() {
-
+void GameTechRenderer::SetGamma(float g) {
+	gamma = g;
+	modelPass->SetGamma(gamma);
+	presentPass->SetGamma(gamma);
 }
 
-void GameTechRenderer::Update(float dt) {
+void GameTechRenderer::SetSunDir(Vector3 direction) {
+	sunDirection = direction;
+	skyboxPass->SetSunDir(direction);
+}
+
+void GameTechRenderer::SetBloomAmount(size_t depth) {
+	bloomAmount = std::min(std::max(depth, 1ull), 100ull);
+	bloomPass->SetBloomDepth(bloomAmount);
+}
+
+void GameTechRenderer::SetBloomBias(float bias) {
+	bloomBias = bias;
+	bloomPass->SetBias(bloomBias);
+}
+
+void GameTechRenderer::SetHDRExposure(float exposure) {
+	hdrExposure = exposure;
+	hdrPass->SetExposure(hdrExposure);
+}
+
+void GameTechRenderer::SetSSAORadius(float radius) {
+	ssaoRadius = radius;
+	ssaoPass->SetRadius(ssaoRadius);
+}
+
+void GameTechRenderer::SetSSAOBias(float bias) {
+	ssaoBias = bias;
+	ssaoPass->SetBias(ssaoBias);
+}
+
+void GameTechRenderer::SetGameWorldMainCamera(int cameraNum) {
+	gameWorld.SetMainCamera(cameraNum);
+}
+
+int GameTechRenderer::GetGameWorldMainCamera() {
+	return gameWorld.GetMainCameraIndex();
+}
+
+void GameTechRenderer::DisplayWinLoseInformation(int playerID) {
+	gameWorld.GetCamera(playerID)->GetHud();
+	if (gameWorld.GetCamera(playerID)->GetHud().GetPlayerHealth() != nullptr) {
+		if(gameWorld.GetCamera(playerID)->GetHud().GetPlayerHealth()->GetHealth() <= 0)
+			debugPass->RenderWinLoseInformation(false);
+	}
 }

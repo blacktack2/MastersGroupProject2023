@@ -55,7 +55,7 @@ void NCL::CollisionDetection::ClosestRayPoints(const Vector3& centerA, const Vec
 	const Vector3& centerB, const Vector3& dirB, float lenB,
 	Vector3& bestA, Vector3& bestB) {
 	float t1, t2;
-	if (dirA == dirB) {
+	if ((dirA - dirB).GetAbsMaxElement() < 0.0001) {
 		t1 = 0;
 		t2 = 0;
 	} else {
@@ -207,7 +207,7 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
 	const CollisionVolume* volA = a->GetBoundingVolume();
 	const CollisionVolume* volB = b->GetBoundingVolume();
 
-	if (!volA || !volB || !DoCollisionLayersOverlap(volA->layer, volB->layer)) {
+	if (!volA || !volB || !DoCollisionLayersOverlap(volA->layer, volB->layer) || a->IsMarkedDelete() || b->IsMarkedDelete()) {
 		return false;
 	}
 
@@ -466,31 +466,55 @@ bool NCL::CollisionDetection::CapsuleIntersection(const CapsuleVolume& volumeA, 
 	Vector3 centerB = worldTransformB.GetGlobalPosition();
 	Quaternion orientationA = worldTransformA.GetGlobalOrientation();
 	Quaternion orientationB = worldTransformB.GetGlobalOrientation();
-	float radiusA = volumeA.GetRadius() * 0.5f;
-	float radiusB = volumeB.GetRadius() * 0.5f;
-	float halfHeightA = volumeA.GetHalfHeight();
-	float halfHeightB = volumeB.GetHalfHeight();
+	float radiusA = volumeA.GetRadius();
+	float radiusB = volumeB.GetRadius();
+	Vector3 halfHeightA = orientationA * Vector3(0, volumeA.GetHalfHeight() - radiusA,0);
+	Vector3 halfHeightB = orientationB * Vector3(0, volumeB.GetHalfHeight() - radiusB, 0);
+	
+	Vector3 AHead = centerA + halfHeightA;
+	Vector3 ATail = centerA - halfHeightA;
+	Vector3 BHead = centerB + halfHeightB;
+	Vector3 BTail = centerB - halfHeightB;
 
-	float offsetA = halfHeightA - radiusA;
-	float offsetB = halfHeightB - radiusB;
-	Vector3 dirA = orientationA * Vector3(0, 1, 0);
-	Vector3 dirB = orientationB * Vector3(0, 1, 0);
 
-	Vector3 pointA;
-	Vector3 pointB;
-	ClosestRayPoints(centerA, dirA, offsetA, centerB, dirB, offsetB, pointA, pointB);
+	//first come up with guess for best point on A
+	Vector3 v0 = BHead - AHead;
+	Vector3 v1 = BTail - AHead;
+	Vector3 v2 = BHead - ATail;
+	Vector3 v3 = BTail - ATail;
 
-	float distanceSquared = (pointA - pointB).LengthSquared();
+	float d0 = Vector3::Dot(v0, v0);
+	float d1 = Vector3::Dot(v1, v1);
+	float d2 = Vector3::Dot(v2, v2);
+	float d3 = Vector3::Dot(v3, v3);
+
+	Vector3 bestA;
+
+	if (d2 < d0 || d2 < d1 || d3 < d0 || d3 < d1)
+	{
+		bestA = ATail;
+	}
+	else {
+		bestA = AHead;
+	}
+
+	//with guess calculate best points
+	Vector3 bestB = ClosestPointOnLineSegment(BHead, BTail, bestA);
+	bestA = ClosestPointOnLineSegment(AHead, ATail, bestB);
+
+	//with best points do sphere sphere collision
 	float radii = radiusA + radiusB;
+	float distanceSquared = (bestA - bestB).LengthSquared();
 	if (distanceSquared > radii * radii) {
 		return false;
 	}
 
+	//Find contact info
 	float penetration = radii - std::sqrt(distanceSquared);
-	Vector3 normal = (pointB - pointA).Normalised();
+	Vector3 normal = (bestB - bestA).Normalised();
 
-	Vector3 localA = (normal * volumeA.GetRadius()) + (worldTransformA.GetGlobalPosition() - pointA);
-	Vector3 localB = (normal * volumeB.GetRadius()) + (worldTransformB.GetGlobalPosition() - pointB);
+	Vector3 localA = (normal * volumeA.GetRadius()) + (worldTransformA.GetGlobalPosition() - bestA);
+	Vector3 localB = (normal * volumeB.GetRadius()) + (worldTransformB.GetGlobalPosition() - bestB);
 
 	collisionInfo.AddContactPoint(normal, penetration, localA, localB);
 	return true;
@@ -524,7 +548,7 @@ bool NCL::CollisionDetection::AABBOBBIntersection(const AABBVolume& volumeA, con
 	Vector3 posB = worldTransformB.GetGlobalPosition();
 	Vector3 halfSizeB = volumeB.GetHalfDimensions();
 	Quaternion orientationB = worldTransformB.GetGlobalOrientation();
-	Matrix3 matrixB = worldTransformB.GetGlobalMatrix();
+	Matrix3 matrixB = Matrix3(worldTransformB.GetGlobalMatrix());
 
 	Matrix3 orientationMatB = Matrix3(orientationB);
 
@@ -566,7 +590,7 @@ bool CollisionDetection::AABBSphereIntersection(const AABBVolume& volumeA, const
 
 	Vector3 delta = worldTransformB.GetGlobalPosition() - worldTransformA.GetGlobalPosition();
 
-	Vector3 closestPointOnBox = Maths::Clamp(delta, -boxSize, boxSize);
+	Vector3 closestPointOnBox = Vector3::Clamp(delta, -boxSize, boxSize);
 
 	Vector3 localPoint = delta - closestPointOnBox;
 	float distance = localPoint.Length();
@@ -589,40 +613,76 @@ bool NCL::CollisionDetection::AABBCapsuleIntersection(const AABBVolume& volumeA,
 	Vector3 boxPos = worldTransformA.GetGlobalPosition();
 	Vector3 boxSize = volumeA.GetHalfDimensions();
 
-	Vector3 capsulePos = worldTransformB.GetGlobalPosition();
-	Vector3 capsuleDir = worldTransformB.GetGlobalOrientation() * Vector3(0, 1, 0);
 	float capsuleRadius = volumeB.GetRadius();
-	float capsuleHalfHeight = volumeB.GetHalfHeight();
+	Vector3 capsulePos = worldTransformB.GetGlobalPosition();
+	Vector3 capsuleHalfHeight = worldTransformB.GetGlobalOrientation() * Vector3(0, volumeB.GetHalfHeight() - capsuleRadius, 0);
 
-	float capsuleOffset = capsuleHalfHeight - capsuleRadius;
-	Vector3 capsuleHead = capsulePos + capsuleDir * capsuleOffset;
-	Vector3 capsuleTail = capsulePos - capsuleDir * capsuleOffset;
+	Vector3 capsuleHead = capsulePos + capsuleHalfHeight;
+	Vector3 capsuleTail = capsulePos - capsuleHalfHeight;
 
-	Vector3 headDelta = capsuleHead - boxPos;
-	Vector3 closestPointToHead = Maths::Clamp(headDelta, -boxSize, boxSize);
-	Vector3 localPointHead = headDelta - closestPointToHead;
-	float headDistanceSquared = localPointHead.LengthSquared();
+	Vector3 boxMin = boxPos - boxSize;
+	Vector3 boxMax = boxPos + boxSize;
 
-	Vector3 tailDelta = capsuleTail - boxPos;
-	Vector3 closestPointToTail = Maths::Clamp(tailDelta, -boxSize, boxSize);
-	Vector3 localPointTail = tailDelta - closestPointToTail;
-	float tailDistanceSquared = localPointTail.LengthSquared();
+	Vector3 rayPos = capsuleHead;
+	Vector3 rayDir = -capsuleHalfHeight.Normalised();
 
-	Vector3 boxPoint = boxPos + (headDistanceSquared < tailDistanceSquared ? closestPointToHead : closestPointToTail);
+	Vector3 tVals(-1, -1, -1);
 
-	float proj = Maths::Clamp(Vector3::Dot(boxPoint - capsulePos, capsuleDir), -capsuleOffset, capsuleOffset);
-	Vector3 capsulePoint = capsulePos + capsuleDir * proj;
+	const Vector3 dirs[] = { {1,0,0}, {0,1,0},{0,0,1} };
 
-	float distanceSquared = (capsulePoint - boxPoint).LengthSquared();
+	for (int i = 0; i < 3; i++)
+	{
+		if (rayDir[i] > 0) {
+			tVals[i] = (boxMin[i] - rayPos[i]) / rayDir[i];
+		}
+		else if (rayDir[i] < 0) {
+			tVals[i] = (boxMax[i] - rayPos[i]) / rayDir[i];
+		}
+	}
+	float bestT = tVals.GetMaxElement();
+	if (bestT < 0)
+	{
+		rayDir = -rayDir;
+		rayPos = capsuleTail;
+		capsuleTail = capsuleHead;
+		capsuleHead = rayPos;
+		for (int i = 0; i < 3; i++)
+		{
+			if (rayDir[i] > 0) {
+				tVals[i] = (boxMin[i] - rayPos[i]) / rayDir[i];
+			}
+			else if (rayDir[i] < 0) {
+				tVals[i] = (boxMax[i] - rayPos[i]) / rayDir[i];
+			}
+		}
+		bestT = tVals.GetMaxElement();
+
+	}
+
+	Vector3 tempBestBox;
+	if (bestT < 0) {
+		tempBestBox = Vector3::Clamp(capsulePos, boxMin, boxMax);
+	}
+	else {
+		Vector3 bestRefrence = rayPos + rayDir * bestT;
+		tempBestBox = Vector3::Clamp(bestRefrence, boxMin, boxMax);
+	}
+
+	Vector3 bestCapsule = ClosestPointOnLineSegment(capsuleHead, capsuleTail, tempBestBox);
+	Vector3 bestBox = Vector3::Clamp(bestCapsule, boxMin, boxMax);
+
+	
+
+	float distanceSquared = (bestCapsule - bestBox).LengthSquared();
 	if (distanceSquared > capsuleRadius * capsuleRadius) {
 		return false;
 	}
 
 	float penetration = capsuleRadius - std::sqrt(distanceSquared);
-	Vector3 normal = (capsulePoint - boxPoint).Normalised();
+	Vector3 normal = (bestCapsule - bestBox).Normalised();
 	
-	Vector3 localA = boxPoint + normal * boxSize;
-	Vector3 localB = capsulePoint - normal * capsuleRadius - capsulePos;
+	Vector3 localA = bestBox - boxPos;
+	Vector3 localB = bestCapsule - normal * capsuleRadius - capsulePos;
 
 	collisionInfo.AddContactPoint(normal, penetration, localA, localB);
 	return true;
@@ -637,7 +697,7 @@ bool CollisionDetection::OBBSphereIntersection(const OBBVolume& volumeA, const T
 	Vector3 spherePos = orientation.Conjugate() * (worldTransformB.GetGlobalPosition() - obbPos);
 	float sphereRadius = volumeB.GetRadius();
 
-	Vector3 closestPointOnBox = Maths::Clamp(spherePos, -boxSize, boxSize);
+	Vector3 closestPointOnBox = Vector3::Clamp(spherePos, -boxSize, boxSize);
 
 	Vector3 localPoint = spherePos - closestPointOnBox;
 	float distanceSquared = localPoint.LengthSquared();
@@ -672,11 +732,11 @@ bool NCL::CollisionDetection::OBBCapsuleIntersection(const OBBVolume& volumeA, c
 	Vector3 capsuleHead = capsulePos + capsuleDir * capsuleOffset;
 	Vector3 capsuleTail = capsulePos - capsuleDir * capsuleOffset;
 
-	Vector3 closestPointToHead = Maths::Clamp(capsuleHead, -boxSize, boxSize);
+	Vector3 closestPointToHead = Vector3::Clamp(capsuleHead, -boxSize, boxSize);
 	Vector3 localPointHead = capsuleHead - closestPointToHead;
 	float headDistanceSquared = localPointHead.LengthSquared();
 
-	Vector3 closestPointToTail = Maths::Clamp(capsuleTail, -boxSize, boxSize);
+	Vector3 closestPointToTail = Vector3::Clamp(capsuleTail, -boxSize, boxSize);
 	Vector3 localPointTail = capsuleTail - closestPointToTail;
 	float tailDistanceSquared = localPointTail.LengthSquared();
 
@@ -928,3 +988,8 @@ Vector3	CollisionDetection::UnprojectScreenPosition(Vector3 position, float aspe
 	return Vector3(transformed.x / transformed.w, transformed.y / transformed.w, transformed.z / transformed.w);
 }
 
+Vector3 CollisionDetection::ClosestPointOnLineSegment(Vector3 start, Vector3 end, Vector3 point) {
+	Vector3 ab = end - start;
+	float t = Vector3::Dot(point - start, ab) / Vector3::Dot(ab, ab);
+	return start + ab * Clamp(t, 0.0f, 1.0f);
+}

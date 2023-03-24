@@ -2,7 +2,7 @@
 #include "NetworkedGame.h"
 #include "NetworkObject.h"
 #include "GameServer.h"
-
+#include "Sound.h"
 using namespace NCL;
 using namespace CSC8503;
 
@@ -46,12 +46,13 @@ void NCL::CSC8503::NetworkPlayer::MoveInput(unsigned int keyPress, short int axi
 		this->pitch = rotationAxis.y;
 		RotateYaw(yaw);
 		MoveCamera(0.05f);
+		MoveAnimation();
 	}
 }
 
 void NCL::CSC8503::NetworkPlayer::ServerSideMovement(float dt)
 {
-	RotateToCamera();
+	//RotateToCamera();
 	Vector3 dir = Vector3(0, 0, 0);
 	lastKey = keyMap.GetButtonState();
 	keyMap.Update();
@@ -64,6 +65,8 @@ void NCL::CSC8503::NetworkPlayer::ServerSideMovement(float dt)
 
 		GetButtonInput(keyMap.GetButtonState());
 		Move(dir);
+		MoveAnimation();
+		RotateToCamera();
 	}
 }
 
@@ -95,8 +98,18 @@ void NetworkPlayer::Shoot()
 {
 	if (projectileFireRateTimer > 0)
 		return;
+	PlayAudio(PlayerAudio::ShootAudio);
 	projectileFireRateTimer = projectileFireRate;
 	PlayerBullet* bullet = PrepareBullet();
+	GameServer* server = game->GetServer();
+	bullet->OnDestroyCallback = [&, bullet, server](Bullet& b) {
+		if (server) {
+			ItemDestroyPacket packet;
+			packet.position = bullet->GetTransform().GetGlobalPosition();
+			packet.objectID = bullet->GetNetworkObject()->GetNetworkID();
+			server->SendGlobalPacket(&packet, true);
+		}
+	};
 
 	ItemInitPacket newObj;
 	Transform objTransform = bullet->GetTransform();
@@ -104,8 +117,16 @@ void NetworkPlayer::Shoot()
 	newObj.orientation = objTransform.GetGlobalOrientation();
 	newObj.scale = objTransform.GetScale();
 	newObj.velocity = bullet->GetPhysicsObject()->GetLinearVelocity();
+	newObj.angular = bullet->GetPhysicsObject()->GetAngularVelocity();
 	newObj.objectID = bullet->GetNetworkObject()->GetNetworkID();
+	newObj.paintRadius = bullet->GetPaintRadius() * 100;
+
 	
 	if(game->GetServer())
-		game->GetServer()->SendGlobalPacket(&newObj);
+		game->GetServer()->SendGlobalPacket(&newObj,true);
+}
+
+void NetworkPlayer::PlayShootSound()
+{
+	PlayAudio(PlayerAudio::ShootAudio);
 }

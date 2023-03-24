@@ -24,6 +24,10 @@
 
 #include "AnimatedRenderObject.h"
 
+#include "Vector3.h"
+
+#include "SoundSource.h"
+
 
 class BehaviourNodeWithChildren;
 
@@ -105,14 +109,19 @@ namespace NCL {
             {
                 return &health;
             }
+
+            void PlayAnimation();
         protected:
 
             void BuildTree();
             float SqrDistToTarget();
             float DistToTarget();
 
+            void SetBossOrientation(Vector3* facingDir);
+
+            void SetupAudio();
+
             float deltaTime = 0.0f;
-            bool isClient = false;
 
             Health health = Health(100);
 
@@ -137,6 +146,9 @@ namespace NCL {
             bool rainIsInitialised = false;
             int currentRainBomb = 0;
 
+            int consecutiveJumpCounter = 0;
+            int consecutiveLaserCounter = 0;
+
             std::vector<BossBullet*> rain;
             std::vector<Vector3> rainBombPositions;
 
@@ -145,6 +157,18 @@ namespace NCL {
 
             BehaviourNodeWithChildren* behaviourTree;
             BossAction bossAction = NoAction;
+
+            SoundSource* hurtSource;
+            SoundSource* inkRainSource;
+            SoundSource* fatherSource;
+            SoundSource* wowSource;
+            SoundSource* tuturuSource;
+            SoundSource* senpaiSource;
+            SoundSource* nyaSource;
+            SoundSource* waitSource;
+
+            //enable Spawn bullet (networking)
+            bool isSpawnBullet = true;
         };
     }
 }

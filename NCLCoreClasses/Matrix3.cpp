@@ -1,47 +1,22 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   Matrix3.cpp
+ * @brief  See Matrix3.h.
+ * 
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #include "Matrix3.h"
-#include "Matrix2.h"
-#include "Matrix4.h"
 
 #include "Maths.h"
-#include "Vector3.h"
+#include "Matrix2.h"
+#include "Matrix4.h"
 #include "Quaternion.h"
-#include <assert.h>
+#include "Vector3.h"
 
-using namespace NCL;
+#include <cassert>
+#include <cmath>
+
 using namespace NCL::Maths;
-
-Matrix3::Matrix3(void)	{
-	for (int i = 0; i < 3; ++i) {
-		for (int j = 0; j < 3; ++j) {
-			array[i][j] = 0.0f;
-		}
-	}
-	array[0][0] = 1.0f;
-	array[1][1] = 1.0f;
-	array[2][2] = 1.0f;
-}
-
-Matrix3::Matrix3(float elements[9]) {
-	array[0][0]  = elements[0];
-	array[0][1]  = elements[1];
-	array[0][2]  = elements[2];
-
-	array[1][0]  = elements[3];
-	array[1][1]  = elements[4];
-	array[1][2]  = elements[5];
-
-	array[2][0]  = elements[6];
-	array[2][1]  = elements[7];
-	array[2][2]  = elements[8];
-}
 
 Matrix3::Matrix3(const Matrix4 &m4) {
 	array[0][0] = m4.array[0][0];
@@ -60,7 +35,7 @@ Matrix3::Matrix3(const Matrix4 &m4) {
 Matrix3::Matrix3(const Matrix2 &m2) {
 	array[0][0] = m2.array[0][0];
 	array[0][1] = m2.array[0][1];
-	array[0][2] = 0;
+	array[0][2] = 0.0f;
 
 	array[1][0] = m2.array[1][0];
 	array[1][1] = m2.array[1][1];
@@ -95,7 +70,7 @@ Matrix3::Matrix3(const Quaternion &quat) {
 	array[2][2] = 1 - 2 * xx - 2 * yy;
 }
 
-Matrix3 Matrix3::Rotation(float degrees, const Vector3 &inaxis)	 {
+Matrix3 Matrix3::Rotation(float degrees, const Vector3 &inaxis) {
 	Matrix3 m;
 
 	Vector3 axis = inaxis;
@@ -120,101 +95,12 @@ Matrix3 Matrix3::Rotation(float degrees, const Vector3 &inaxis)	 {
 	return m;
 }
 
-Matrix3 Matrix3::Scale( const Vector3 &scale )	{
+Matrix3 Matrix3::Scale( const Vector3 &scale ) {
 	Matrix3 m;
 
 	m.array[0][0]  = scale.x;
 	m.array[1][1]  = scale.y;
-	m.array[2][2]  = scale.z;	
-
-	return m;
-}
-
-void	Matrix3::ToZero()	{
-	for(int i = 0; i < 9; ++i) {
-		array[0][0] = 0.0f;
-	}
-}
-
-//http://staff.city.ac.uk/~sbbh653/publications/euler.pdf
-Vector3 Matrix3::ToEuler() const {
-	//float h = (float)RadiansToDegrees(atan2(-values[6], values[0]));
-	//float b = (float)RadiansToDegrees(atan2(-values[5], values[4]));
-	//float a = (float)RadiansToDegrees(asin(values[3]));
-
-	//return Vector3(a, h, b);
-
-	//psi  = x;
-	//theta = y;
-	//phi = z
-
-
-
-	float testVal = abs(array[0][2]) + 0.00001f;
-
-	if (testVal < 1.0f) {
-		float theta1 = -asin(array[0][2]);
-		float theta2 = Maths::PI - theta1;
-
-		float cost1 = cos(theta1);
-		//float cost2 = cos(theta2);
-
-		float psi1 = Maths::RadiansToDegrees(atan2(array[1][2] / cost1, array[2][2] / cost1));
-		//float psi2 = Maths::RadiansToDegrees(atan2(array[1][2] / cost2, array[2][2] / cost2));
-
-		float phi1 = Maths::RadiansToDegrees(atan2(array[0][1] / cost1, array[0][0] / cost1));
-		//float phi2 = Maths::RadiansToDegrees(atan2(array[0][1] / cost2, array[0][0] / cost2));
-
-		theta1 = Maths::RadiansToDegrees(theta1);
-		//theta2 = Maths::RadiansToDegrees(theta2);
-
-		return Vector3(psi1, theta1, phi1);
-	}
-	else {
-		float phi	= 0.0f;	//x
-
-
-		float theta = 0.0f;	//y
-		float psi	= 0.0f;	//z
-
-		float delta = atan2(array[1][0], array[2][0]);
-
-		if (array[0][2] < 0.0f) {
-			theta = Maths::PI / 2.0f;
-			psi = phi + delta;
-		}
-		else {
-			theta = -Maths::PI / 2.0f;
-			psi = phi + delta;
-		}
-
-		return Vector3(Maths::RadiansToDegrees(psi), Maths::RadiansToDegrees(theta), Maths::RadiansToDegrees(phi));
-	}
-}
-
-Matrix3 Matrix3::FromEuler(const Vector3 &euler) {
-	Matrix3 m;
-
-	float heading	= Maths::DegreesToRadians(euler.y);
-	float attitude	= Maths::DegreesToRadians(euler.x);
-	float bank		= Maths::DegreesToRadians(euler.z);
-
-	float ch = cos(heading);
-	float sh = sin(heading);
-	float ca = cos(attitude);
-	float sa = sin(attitude);
-	float cb = cos(bank);
-	float sb = sin(bank);
-
-	m.array[0][0] = ch * ca;
-	m.array[1][0] = sh*sb - ch*sa*cb;
-	m.array[2][0] = ch*sa*sb + sh*cb;
-	m.array[0][1] = sa;
-	m.array[1][1] = ca*cb;
-	m.array[2][1] = -ca*sb;
-	m.array[0][2] = -sh*ca;
-	m.array[1][2] = sh*sa*cb + ch*sb;
-	m.array[2][2] = -sh*sa*sb + ch*cb;
+	m.array[2][2]  = scale.z;
 
 	return m;
 }
@@ -257,7 +143,7 @@ Vector3 Matrix3::GetDiagonal() const {
 	return Vector3(array[0][0], array[1][1], array[2][2]);
 }
 
-void	Matrix3::SetDiagonal(const Vector3 &in) {
+void Matrix3::SetDiagonal(const Vector3 &in) {
 	array[0][0] = in.x;
 	array[1][1] = in.y;
 	array[2][2] = in.z;
@@ -272,3 +158,63 @@ Vector3 Matrix3::operator*(const Vector3 &v) const {
 
 	return vec;
 };
+
+//http://staff.city.ac.uk/~sbbh653/publications/euler.pdf
+Vector3 Matrix3::ToEuler() const {
+	float testVal = abs(array[0][2]) + 0.00001f;
+
+	if (testVal < 1.0f) {
+		float theta = -asin(array[0][2]);
+
+		float cost = cos(theta);
+
+		float psi = Maths::RadiansToDegrees(atan2(array[1][2] / cost, array[2][2] / cost));
+		float phi = Maths::RadiansToDegrees(atan2(array[0][1] / cost, array[0][0] / cost));
+		theta = Maths::RadiansToDegrees(theta);
+
+		return Vector3(psi, theta, phi);
+	} else {
+		float phi = 0.0f;
+		float theta = 0.0f;
+		float psi = 0.0f;
+
+		float delta = atan2(array[1][0], array[2][0]);
+
+		if (array[0][2] < 0.0f) {
+			theta = Maths::PI / 2.0f;
+			psi = phi + delta;
+		} else {
+			theta = -Maths::PI / 2.0f;
+			psi = phi + delta;
+		}
+
+		return Vector3(Maths::RadiansToDegrees(psi), Maths::RadiansToDegrees(theta), Maths::RadiansToDegrees(phi));
+	}
+}
+
+Matrix3 Matrix3::FromEuler(const Vector3& euler) {
+	Matrix3 m;
+
+	float heading = Maths::DegreesToRadians(euler.y);
+	float attitude = Maths::DegreesToRadians(euler.x);
+	float bank = Maths::DegreesToRadians(euler.z);
+
+	float ch = cos(heading);
+	float sh = sin(heading);
+	float ca = cos(attitude);
+	float sa = sin(attitude);
+	float cb = cos(bank);
+	float sb = sin(bank);
+
+	m.array[0][0] = ch * ca;
+	m.array[1][0] = sh * sb - ch * sa * cb;
+	m.array[2][0] = ch * sa * sb + sh * cb;
+	m.array[0][1] = sa;
+	m.array[1][1] = ca * cb;
+	m.array[2][1] = -ca * sb;
+	m.array[0][2] = -sh * ca;
+	m.array[1][2] = sh * sa * cb + ch * sb;
+	m.array[2][2] = -sh * sa * sb + ch * cb;
+
+	return m;
+}

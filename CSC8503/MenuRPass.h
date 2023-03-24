@@ -15,37 +15,26 @@
 #include <optional>
 
 namespace NCL {
-	class MeshGeometry;
-}
-
-namespace NCL {
 	namespace Rendering {
-		class FrameBuffer;
 		class ShaderBase;
 		class TextureBase;
 	}
-}
 
-using namespace NCL;
-using namespace Rendering;
+	using namespace NCL::Rendering;
 
-namespace NCL {
 	namespace CSC8503 {
 		class GameTechRenderer;
-		class GameWorld;
 
 		class MenuManager;
-		class UIObject;
 
 		class MenuRPass : public OGLOverlayRenderPass {
 		public:
 			MenuRPass();
-			~MenuRPass();
+			~MenuRPass() = default;
 
 			virtual void Render() override;
 		private:
 			GameTechRenderer& renderer;
-			GameWorld& gameWorld;
 			MenuManager& menuManager;
 
 			std::unique_ptr<TextureBase> defaultTexture;

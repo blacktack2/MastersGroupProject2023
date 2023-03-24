@@ -4,6 +4,9 @@
 #include"UIObject.h"
 #include "Health.h"
 
+#include "Vector2.h"
+#include "Vector4.h"
+
 namespace NCL {
 	namespace CSC8503 {
 		class HealthBar : public UIObject

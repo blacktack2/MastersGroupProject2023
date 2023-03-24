@@ -9,6 +9,8 @@
 #include "Window.h"
 #include "Maths.h"
 
+#include "DebugViewPoint.h"
+
 #include <functional>
 using namespace NCL;
 using namespace CSC8503;
@@ -24,6 +26,21 @@ PhysicsSystem::~PhysicsSystem()	{
 
 void PhysicsSystem::SetGravity(const Vector3& g) {
 	gravity = g;
+}
+
+void PhysicsSystem::ClearObjTriggers(GameObject* target)
+{
+	for (auto i = allTriggers.begin(); i != allTriggers.end(); ) {
+		auto& info = const_cast<CollisionDetection::CollisionInfo&>(*i);
+		if (info.a->IsMarkedDelete() || info.b->IsMarkedDelete()) {
+			info.a->OnTriggerEnd(info.b);
+			info.b->OnTriggerEnd(info.a);
+			i = allTriggers.erase(i);
+		}
+		else {
+			++i;
+		}
+	}
 }
 
 /*
@@ -86,11 +103,36 @@ void PhysicsSystem::Update(float dt) {
 
 	UpdateObjectAABBs();
 	int iteratorCount = 0;
+
+	DebugViewPoint& debugView = DebugViewPoint::Instance();
+	debugView.SetCollisions(allCollisions.size() + allTriggers.size());
+	
 	while(dTOffset > realDT) {
+
+		if (iteratorCount == 0)
+		{
+			debugView.MarkTime("Physics-Accel Intergrat");
+		}
 		IntegrateAccel(realDT); //Update accelerations from external forces
 
+		if (iteratorCount == 0)
+		{
+			debugView.FinishTime("Physics-Accel Intergrate", 12.0f);
+			debugView.MarkTime("Physics-Broad Phase");
+		}
 		BroadPhase();
+		if (iteratorCount == 0)
+		{
+			debugView.FinishTime("Physics-Broad Phase", 12.0f);
+			debugView.MarkTime("Physics-Narrow Phase");
+		}
 		NarrowPhase();
+		if (iteratorCount == 0)
+		{
+			debugView.FinishTime("Physics-Narrow Phase", 12.0f);
+			debugView.MarkTime("Physics-Constraints");
+		}
+		
 
 		//This is our simple iterative solver - 
 		//we just run things multiple times, slowly moving things forward
@@ -99,11 +141,35 @@ void PhysicsSystem::Update(float dt) {
 		for (int i = 0; i < constraintIterationCount; ++i) {
 			UpdateConstraints(constraintDt);	
 		}
+		if (iteratorCount == 0)
+		{
+			debugView.FinishTime("Physics-Constraints", 12.0f);
+			debugView.MarkTime("Physics-Vel Intergrate");
+		}
+	
 		IntegrateVelocity(realDT); //update positions from new velocity changes
+		if (iteratorCount == 0)
+		{
+			debugView.FinishTime("Physics-Vel Intergrate", 12.0f);
+		}
 
 		dTOffset -= realDT;
 		iteratorCount++;
 	}
+	if (iteratorCount == 0)
+	{
+		debugView.MarkTime("Physics-Accel Intergrat");
+		debugView.FinishTime("Physics-Accel Intergrat", 12.0f);
+		debugView.MarkTime("Physics-Broad Phase");
+		debugView.FinishTime("Physics-Broad Phase", 12.0f);
+		debugView.MarkTime("Physics-Narrow Phase");
+		debugView.FinishTime("Physics-Narrow Phase", 12.0f);
+		debugView.MarkTime("Physics-Constraints");
+		debugView.FinishTime("Physics-Constraints", 12.0f);
+		debugView.MarkTime("Physics-Vel Intergrate");
+		debugView.FinishTime("Physics-Vel Intergrate", 12.0f);
+	}
+
 
 	ClearForces();	//Once we've finished with the forces, reset them to zero
 
@@ -271,9 +337,9 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 	Vector3 fullVelocityA = physA->GetLinearVelocity() + angVelocityA;
 	Vector3 fullVelocityB = physB->GetLinearVelocity() + angVelocityB;
 
-	Vector3 contactVelocity = fullVelocityB - fullVelocityA;
+	Vector3 contactVelocity = (fullVelocityB - fullVelocityA);
 
-	float impulseForce = Vector3::Dot(contactVelocity, p.normal);
+	float impulseForce = std::min(Vector3::Dot(contactVelocity, p.normal), 0.0f);
 
 	Vector3 inertiaA = Vector3::Cross(physA->GetInverseInertiaTensor() * Vector3::Cross(relativeA, p.normal), relativeA);
 	Vector3 inertiaB = Vector3::Cross(physB->GetInverseInertiaTensor() * Vector3::Cross(relativeB, p.normal), relativeB);

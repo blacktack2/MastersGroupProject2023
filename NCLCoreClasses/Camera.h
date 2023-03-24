@@ -1,24 +1,25 @@
-/*
-Part of Newcastle University's Game Engineering source code.
-
-Use as you see fit!
-
-Comments and queries to: richard-gordon.davison AT ncl.ac.uk
-https://research.ncl.ac.uk/game/
-*/
+/**
+ * @file   Camera.h
+ * @brief  Main camera class for handling 
+ * 
+ * @author Rich Davidson
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #pragma once
-#include "Matrix4.h"
-#include "../CSC8503CoreClasses/Transform.h"
 #include "Vector3.h"
-namespace NCL {
-	namespace CSC8503 {
-		class Hud;
-	}
-}
+#include "../CSC8503CoreClasses/Transform.h"
+#include "../CSC8503/Hud.h"
+
+#include <memory>
+
+using namespace NCL::CSC8503;
 
 namespace NCL {
-	using namespace Maths;
-	using namespace CSC8503;
+	namespace Maths {
+		class Matrix4;
+	}
+	using namespace NCL::Maths;
 
 	enum class CameraType {
 		Orthographic,
@@ -27,101 +28,128 @@ namespace NCL {
 
 	class Camera {
 	public:
-		Camera(void);
-
+		Camera();
 		Camera(float pitch, float yaw, const Vector3& position);
+		~Camera() = default;
 
-		~Camera(void);
-
-		void SetFollow(Transform* transform, bool isSmooth = false);
+		inline void SetFollow(Transform* transform) {
+			follow = transform;
+		}
 
 		void UpdateCamera(float dt);
 
-		int GetPlayerID()
-		{
+		inline int GetPlayerID() {
 			return playerID;
 		}
 
-		void SetPlayerID(int playerID)
-		{
+		inline void SetPlayerID(int playerID) {
 			this->playerID = playerID;
 		}
 
-		float GetFieldOfVision() const {
+		inline float GetFieldOfVision() const {
 			return fov;
 		}
 
-		float GetNearPlane() const {
+		inline float GetNearPlane() const {
 			return nearPlane;
 		}
-
-		float GetFarPlane() const {
-			return farPlane;
-		}
-
-		Camera& SetNearPlane(float val) {
+		inline Camera& SetNearPlane(float val) {
 			nearPlane = val;
 			return *this;
 		}
-		
-		Camera& SetFarPlane(float val) {
+
+		inline float GetFarPlane() const {
+			return farPlane;
+		}
+		inline Camera& SetFarPlane(float val) {
 			farPlane = val;
 			return *this;
 		}
 
-		//Builds a view matrix for the current camera variables, suitable for sending straight
-		//to a vertex shader (i.e it's already an 'inverse camera matrix').
+		/**
+		 * @return View matrix based on the current camera variables. Suitable
+		 * for sending directly to a shader.
+		 */
 		Matrix4 BuildViewMatrix() const;
-
+		/**
+		 * @return Projection matrix based on the current camera variables.
+		 * Suitable for sending directly to a shader.
+		 */
 		Matrix4 BuildProjectionMatrix(float aspectRatio) const;
 
-		//Gets position in world space
-		Vector3 GetPosition() const { return position; }
-		//Sets position in world space
-		Camera&	SetPosition(const Vector3& val) { position = val;  return *this; }
+		/**
+		 * @return World space position of the camera.
+		 */
+		inline Vector3 GetPosition() const {
+			return position;
+		}
+		/**
+		 * @brief Set the world space position of the camera. 
+		 */
+		inline Camera& SetPosition(const Vector3& val) {
+			position = val;
+			return *this;
+		}
 
-		//Gets yaw, in degrees
-		float	GetYaw()   const { return yaw; }
-		//Sets yaw, in degrees
-		Camera&	SetYaw(float y) { yaw = y;  return *this; }
+		/**
+		 * @return Yaw rotation component (in degrees).
+		 */
+		inline float GetYaw() const {
+			return yaw;
+		}
+		/**
+		 * @param y Yaw rotation component (in degrees).
+		 */
+		inline Camera& SetYaw(float y) {
+			yaw = y;
+			return *this;
+		}
 
-		//Gets pitch, in degrees
-		float	GetPitch() const { return pitch; }
-		//Sets pitch, in degrees
-		Camera& SetPitch(float p) { pitch = p; return *this; }
+		/**
+		 * @return Pitch rotation component (in degrees).
+		 */
+		inline float GetPitch() const {
+			return pitch;
+		}
+		/**
+		 * @param p Pitch rotation component (in degrees).
+		 */
+		inline Camera& SetPitch(float p) {
+			pitch = p;
+			return *this;
+		}
+
+		inline Hud& GetHud() {
+			return hud;
+		}
 
 		static Camera BuildPerspectiveCamera(const Vector3& pos, float pitch, float yaw, float fov, float near, float far);
 		static Camera BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, float left, float right, float top, float bottom, float near, float far);
+	private:
+		CameraType camType = CameraType::Perspective;
 
-		Hud& GetHud();
+		float left      = 0.0f;
+		float right     = 0.0f;
+		float top       = 0.0f;
+		float bottom    = 0.0f;
+		float nearPlane = 1.0f;
+		float farPlane  = 1500.0f;
+		float fov       = 50.0f;
 
-		//smoothing
-		bool isSmooth;
-		Vector3 LastPos;
-		float smoothFactor = 50.0f;
-	protected:
-		CameraType camType;
-
-		float	nearPlane;
-		float	farPlane;
-		float	left;
-		float	right;
-		float	top;
-		float	bottom;
-
-		float	fov;
-		float	yaw;
-		float	pitch;
+		float yaw;
+		float pitch;
 		Vector3 position;
 
-		Transform* follow = nullptr;
-		float followDistance;
-		float followLat;
-		float followLon;
-		Vector3 lookat;
+		Transform* follow    = nullptr;
+		float followDistance = 10.0f;
+		float followLat      = 0.0f;
+		float followLon      = 0.0f;
+		Vector3 lookat       = Vector3(1.0f, 0.0f, 0.0f);
+
+		float smoothFactor = 50.0f;
 
 		int playerID = 0;
 
-		Hud& hud;
+		Hud hud{};
 	};
 }

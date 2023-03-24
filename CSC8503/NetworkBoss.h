@@ -19,6 +19,7 @@ namespace NCL {
 
 			void ChangeLoseState() override;
 			void BulletModification(BossBullet* bullet);
+			void SetBossAction(Boss::BossAction action);
 		private:
 			NetworkedGame* game;
 		};

@@ -1,16 +1,21 @@
+/**
+ * @file   Win32Keyboard.cpp
+ * @brief  See Win32Keyboard.h.
+ * 
+ * @author Rich Davidson
+ * @date   March 2023
+ */
 #include "Win32Keyboard.h"
+
 #ifdef _WIN32
+using namespace NCL::Win32Code;
 
-using namespace NCL;
-using namespace Win32Code;
-
-Win32Keyboard::Win32Keyboard(HWND &hwnd)	{
-	//Tedious windows RAW input stuff
-	rid.usUsagePage		= HID_USAGE_PAGE_GENERIC;		//The keyboard isn't anything fancy
-    rid.usUsage			= HID_USAGE_GENERIC_KEYBOARD;	//but it's definitely a keyboard!
-    rid.dwFlags			= RIDEV_INPUTSINK;				//Yes, we want to always receive RAW input...
-    rid.hwndTarget		= hwnd;							//Windows OS window handle
-    RegisterRawInputDevices(&rid, 1, sizeof(rid));		//We just want one keyboard, please!
+Win32Keyboard::Win32Keyboard(HWND &hwnd) {
+	rid.usUsagePage = HID_USAGE_PAGE_GENERIC;
+	rid.usUsage     = HID_USAGE_GENERIC_KEYBOARD;
+	rid.dwFlags     = RIDEV_INPUTSINK;
+	rid.hwndTarget  = hwnd;
+	RegisterRawInputDevices(&rid, 1, sizeof(rid));
 
 	isAwake = true;
 }
@@ -18,17 +23,15 @@ Win32Keyboard::Win32Keyboard(HWND &hwnd)	{
 /*
 Updates the keyboard state with data received from the OS.
 */
-void Win32Keyboard::UpdateRAW(RAWINPUT* raw)	{
-	if(isAwake)	{
+void Win32Keyboard::UpdateRAW(RAWINPUT* raw) {
+	if(isAwake) {
 		DWORD key = (DWORD)raw->data.keyboard.VKey;
 
-		//We should do bounds checking!
-		if(key < 0 || key >(int)KeyboardKeys::MAXVALUE)	{
+		if(key < 0 || key >= (unsigned long)KeyboardKeys::MAXVALUE) {
 			return;
 		}
 
-		//First bit of the flags tag determines whether the key is down or up
-		keyStates[(int)key] = !(raw->data.keyboard.Flags & RI_KEY_BREAK);
+		keyStates[key] = !(raw->data.keyboard.Flags & RI_KEY_BREAK);
 	}
 }
 

@@ -35,6 +35,7 @@ private:
 		OnGoing,
 		StartServer,
 		StartClient,
+		IpAddress,
 		Quit
 	};
 	OptionManager& optionManager = OptionManager::instance();
@@ -42,7 +43,8 @@ private:
 
 	const std::string NAME = "ScreenMultiplayerOption";
 
-	bool StartPointer = false;
-	bool MultiPointer = false;
+	bool IPPointer = false;
+	bool HostPointer = false;
+	bool ConnectPointer = false;
 	bool QuitPointer = false;
 };

@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "GameWorld.h"
 #include "PhysicsObject.h"
+#include "PhysicsSystem.h"
 
 using namespace NCL;
 using namespace NCL::CSC8503;
@@ -61,6 +62,8 @@ void GameWorld::AddGameObject(GameObject* o) {
 void GameWorld::RemoveGameObject(GameObject* o, bool andDelete) {
 	gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), o), gameObjects.end());
 	if (andDelete) {
+		if(GetPhysicsSystem())
+			GetPhysicsSystem()->ClearObjTriggers(o);
 		delete o;
 	}
 	worldStateCounter++;
@@ -93,6 +96,14 @@ void GameWorld::GetLightIterators(LightIterator& first, LightIterator& last) con
 	last = lights.begin();
 }
 
+void NCL::CSC8503::GameWorld::SetPhysicsSystem(PhysicsSystem* sys)
+{
+	phys = sys;
+}
+PhysicsSystem* NCL::CSC8503::GameWorld::GetPhysicsSystem(){
+	return phys;
+}
+
 void GameWorld::OperateOnContents(GameObjectFunc f) {
 	for (GameObject* g : gameObjects) {
 		if (g->IsActive())
@@ -117,8 +128,10 @@ void GameWorld::OperateOnLights(LightFunc f) {
 void GameWorld::PreUpdateWorld() {
 	std::vector<GameObject*> delObjs;
 
-	gameObjects.erase(std::remove_if(gameObjects.begin(), gameObjects.end(), [](GameObject* g) {
+	gameObjects.erase(std::remove_if(gameObjects.begin(), gameObjects.end(), [&](GameObject* g) {
 		if (g->IsMarkedDelete()) {
+			if (GetPhysicsSystem())
+				GetPhysicsSystem()->ClearObjTriggers(g);
 			delete g;
 			return true;
 		}

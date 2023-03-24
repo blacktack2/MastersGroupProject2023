@@ -29,7 +29,9 @@ public:
 		return instance;
 	}
 	static void Destroy() { 
-		delete instance;
+		if (instance) {
+			delete instance;
+		}
 		instance = nullptr;
 	}
 

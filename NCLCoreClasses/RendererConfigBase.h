@@ -82,7 +82,6 @@ namespace NCL {
 		 */
 		class RendererConfigBase {
 		public:
-			RendererConfigBase(RendererBase& renderer);
 			virtual ~RendererConfigBase() = default;
 
 			/**
@@ -106,10 +105,10 @@ namespace NCL {
 				SetViewport(vpX, vpY, vpWidth, vpHeight);
 			}
 			inline void SetDefaultViewport(float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f) {
-				vpX = x * renderer.GetWidth();
-				vpY = y * renderer.GetHeight();
-				vpWidth = width * renderer.GetWidth();
-				vpHeight = height * renderer.GetHeight();
+				vpX = static_cast<int>(x * renderer.GetWidth());
+				vpY = static_cast<int>(y * renderer.GetHeight());
+				vpWidth = static_cast<int>(width * renderer.GetWidth());
+				vpHeight = static_cast<int>(height * renderer.GetHeight());
 				SetViewport();
 			}
 			/**
@@ -167,9 +166,19 @@ namespace NCL {
 			 * @brief Enable or disable writing to the depth buffer.
 			 */
 			virtual void SetDepthMask(bool enabled = false) = 0;
-		private:
-			RendererBase& renderer;
 
+			/**
+			 * @brief Set the number of vertices used to make a patch primitive
+			 * during tesselation (if present).
+			 * 
+			 * @param numVertices Number of patch vertices.
+			 */
+			virtual void SetPatchVertices(int numVertices = 3) = 0;
+		protected:
+			RendererConfigBase(const RendererBase& renderer);
+
+			const RendererBase& renderer;
+		private:
 			int vpX = 0, vpY = 0;
 			unsigned int vpWidth = 1, vpHeight = 1;
 		};
