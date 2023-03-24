@@ -46,7 +46,7 @@ void AttenuateLight(inout vec3 incident, inout float attenuation, vec3 worldPos,
 
 void GetShadow(inout float shadow, vec3 worldPos) {
 	vec3 shadowPos = (shadowMatrix * vec4(worldPos, 1.0)).xyz * 0.5 + 0.5;
-	shadowPos.z -= 0.0003;
+	shadowPos.z -= 0.0005;
 	shadow = texture(shadowTex, shadowPos).r;
 }
 
