@@ -50,7 +50,7 @@ Win32Window::Win32Window(const std::string& title, int sizeX, int sizeY, bool fu
 		windowClass.lpszClassName = WINDOWCLASS;
 
 		if(!RegisterClassEx(&windowClass)) {
-			std::cout << __FUNCTION__ << " Failed to register class!\n";
+			//std::cout << __FUNCTION__ << " Failed to register class!\n";
 			return;
 		}
 	}
@@ -67,7 +67,7 @@ Win32Window::Win32Window(const std::string& title, int sizeX, int sizeY, bool fu
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
 
 		if(ChangeDisplaySettings(&dmScreenSettings,CDS_FULLSCREEN)!=DISP_CHANGE_SUCCESSFUL) {
-			std::cout << __FUNCTION__ << " Failed to switch to fullscreen!\n";
+			//std::cout << __FUNCTION__ << " Failed to switch to fullscreen!\n";
 			return;
 		}
 	}
@@ -89,7 +89,7 @@ Win32Window::Win32Window(const std::string& title, int sizeX, int sizeY, bool fu
 	);
 
  	if(!windowHandle) {
-		std::cout << __FUNCTION__ << " Failed to create window!\n";
+		//std::cout << __FUNCTION__ << " Failed to create window!\n";
 		return;
 	}
 
@@ -157,7 +157,7 @@ void Win32Window::SetFullScreen(bool fullScreen) {
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
 
 		if (ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
-			std::cout << __FUNCTION__ << " Failed to switch to fullscreen!\n";
+			//std::cout << __FUNCTION__ << " Failed to switch to fullscreen!\n";
 		} else {
 			ResizeRenderer();
 		}
@@ -177,7 +177,7 @@ void Win32Window::SetFullScreen(bool fullScreen) {
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY | DM_POSITION;
 
 		if (ChangeDisplaySettings(&dmScreenSettings, 0) != DISP_CHANGE_SUCCESSFUL) {
-			std::cout << __FUNCTION__ << " Failed to switch out of fullscreen!\n";
+			//std::cout << __FUNCTION__ << " Failed to switch out of fullscreen!\n";
 		}
 	}
 }

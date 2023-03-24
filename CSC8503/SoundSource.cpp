@@ -121,7 +121,7 @@ void SoundSource::Play(ALuint bufferToPlay) {
 		if (isPlaying()) return;
 		alSourcePlay(mSource->source);
 	}
-	else std::cerr << "No source attached" << std::endl;
+	//else std::cerr << "No source attached" << std::endl;
 }
 
 void SoundSource::Pause() {

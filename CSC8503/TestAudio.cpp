@@ -32,8 +32,8 @@
 }
 
 #define alec(FUNCTION_CALL)\
-FUNCTION_CALL;\
-OpenAL_ErrorCheck(FUNCTION_CALL)
+FUNCTION_CALL;
+//OpenAL_ErrorCheck(FUNCTION_CALL)
 
 //vector<string> TestAudio::audioFiles;
 
@@ -69,7 +69,7 @@ void TestAudio::TestAudio1()
 
 	SoundSource* sn = new SoundSource();
 	OALSource* source = sndSystem->GetSource();
-	std::cout << "Using source:" << source->source<<std::endl;
+	//std::cout << "Using source:" << source->source<<std::endl;
 	sn->SetPosition(NCL::Maths::Vector3(1.0f, 1.0f, 0.0f));
 	sn->SetLooping(true);
 	
@@ -83,7 +83,7 @@ void TestAudio::TestAudio1()
 
 	int i;
 	std::cin >> i;
-	std::cout << "Played!\n";
+	//std::cout << "Played!\n";
 	//alec(alDeleteSources(1, &monoSource));
 	delete sn;
 	Sound::DeleteSounds();

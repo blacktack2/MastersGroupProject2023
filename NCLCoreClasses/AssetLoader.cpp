@@ -49,56 +49,56 @@ std::string AssetLoader::GetFileExtension(const std::string& fileExtension) {
 
 void AssetLoader::RegisterMeshLoadFunction(MeshLoadFunction f) {
 	if (meshLoad) {
-		std::cout << __FUNCTION__ << " replacing previously defined Mesh Load Function.\n";
+		//std::cout << __FUNCTION__ << " replacing previously defined Mesh Load Function.\n";
 	}
 	meshLoad = f;
 }
 
 void AssetLoader::RegisterTextureLoadFunction(TextureLoadFunction f) {
 	if (textureLoad) {
-		std::cout << __FUNCTION__ << " replacing previously defined Texture Load Function.\n";
+		//std::cout << __FUNCTION__ << " replacing previously defined Texture Load Function.\n";
 	}
 	textureLoad = f;
 }
 
 void AssetLoader::RegisterBufferObjectCreateFunction(BufferObjectCreateFunction f) {
 	if (bufferObjectCreate) {
-		std::cout << __FUNCTION__ << " replacing previously defined BufferObject Create Function.\n";
+		//std::cout << __FUNCTION__ << " replacing previously defined BufferObject Create Function.\n";
 	}
 	bufferObjectCreate = f;
 }
 
 void AssetLoader::RegisterFrameBufferCreateFunction(FrameBufferCreateFunction f) {
 	if (frameBufferCreate) {
-		std::cout << __FUNCTION__ << " replacing previously defined FrameBuffer Create Function.\n";
+		//std::cout << __FUNCTION__ << " replacing previously defined FrameBuffer Create Function.\n";
 	}
 	frameBufferCreate = f;
 }
 
 void AssetLoader::RegisterMeshCreateFunction(MeshCreateFunction f) {
 	if (meshCreate) {
-		std::cout << __FUNCTION__ << " replacing previously defined Mesh Create Function.\n";
+		//std::cout << __FUNCTION__ << " replacing previously defined Mesh Create Function.\n";
 	}
 	meshCreate = f;
 }
 
 void AssetLoader::RegisterShaderCreateFunction(ShaderCreateFunction f) {
 	if (shaderCreate) {
-		std::cout << __FUNCTION__ << " replacing previously defined Shader Create Function.\n";
+		//std::cout << __FUNCTION__ << " replacing previously defined Shader Create Function.\n";
 	}
 	shaderCreate = f;
 }
 
 void AssetLoader::RegisterShaderCreateAndInitFunction(ShaderCreateFunction f) {
 	if (shaderCreateAndInit) {
-		std::cout << __FUNCTION__ << " replacing previously defined Shader Create and init Function.\n";
+		//std::cout << __FUNCTION__ << " replacing previously defined Shader Create and init Function.\n";
 	}
 	shaderCreateAndInit = f;
 }
 
 void AssetLoader::RegisterTextureCreateFunction(TextureCreateFunction f) {
 	if (textureCreate) {
-		std::cout << __FUNCTION__ << " replacing previously defined Texture Create Function.\n";
+		//std::cout << __FUNCTION__ << " replacing previously defined Texture Create Function.\n";
 	}
 	textureCreate = f;
 }
@@ -135,7 +135,7 @@ bool AssetLoader::LoadTextureData(const std::string& filename, char*& outData, u
 
 std::unique_ptr<MeshGeometry> AssetLoader::LoadMesh(const std::string& filename) {
 	if (meshLoad == nullptr) {
-		std::cout << __FUNCTION__ << " no Mesh Load Function has been defined!\n";
+		//std::cout << __FUNCTION__ << " no Mesh Load Function has been defined!\n";
 		return nullptr;
 	}
 	return meshLoad(filename);
@@ -143,7 +143,7 @@ std::unique_ptr<MeshGeometry> AssetLoader::LoadMesh(const std::string& filename)
 
 std::unique_ptr<TextureBase> AssetLoader::LoadTexture(const std::string& filename) {
 	if (textureLoad == nullptr) {
-		std::cout << __FUNCTION__ << " no Texture Load Function has been defined!\n";
+		//std::cout << __FUNCTION__ << " no Texture Load Function has been defined!\n";
 		return nullptr;
 	}
 	return textureLoad(filename);
@@ -151,7 +151,7 @@ std::unique_ptr<TextureBase> AssetLoader::LoadTexture(const std::string& filenam
 
 std::unique_ptr<BufferObjectBase> AssetLoader::CreateBufferObject(size_t size, unsigned int binding) {
 	if (bufferObjectCreate == nullptr) {
-		std::cout << __FUNCTION__ << " no BufferObject Create Function has been defined!\n";
+		//std::cout << __FUNCTION__ << " no BufferObject Create Function has been defined!\n";
 		return nullptr;
 	}
 	return bufferObjectCreate(size, binding);
@@ -159,7 +159,7 @@ std::unique_ptr<BufferObjectBase> AssetLoader::CreateBufferObject(size_t size, u
 
 std::unique_ptr<FrameBuffer> AssetLoader::CreateFrameBuffer() {
 	if (frameBufferCreate == nullptr) {
-		std::cout << __FUNCTION__ << " no FrameBuffer Create Function has been defined!\n";
+		//std::cout << __FUNCTION__ << " no FrameBuffer Create Function has been defined!\n";
 		return nullptr;
 	}
 	return frameBufferCreate();
@@ -167,7 +167,7 @@ std::unique_ptr<FrameBuffer> AssetLoader::CreateFrameBuffer() {
 
 std::unique_ptr<MeshGeometry> AssetLoader::CreateMesh() {
 	if (meshCreate == nullptr) {
-		std::cout << __FUNCTION__ << " no Mesh Create Function has been defined!\n";
+		//std::cout << __FUNCTION__ << " no Mesh Create Function has been defined!\n";
 		return nullptr;
 	}
 	return meshCreate();
@@ -175,7 +175,7 @@ std::unique_ptr<MeshGeometry> AssetLoader::CreateMesh() {
 
 std::unique_ptr<ShaderBase> AssetLoader::CreateShader(const std::string& vertex, const std::string& fragment, const std::string& tessCont, const std::string& tessEval, const std::string& geometry) {
 	if (shaderCreate == nullptr) {
-		std::cout << __FUNCTION__ << " no Shader Create Function has been defined!\n";
+		//std::cout << __FUNCTION__ << " no Shader Create Function has been defined!\n";
 		return nullptr;
 	}
 	return shaderCreate(vertex, fragment, tessCont, tessEval, geometry);
@@ -183,7 +183,7 @@ std::unique_ptr<ShaderBase> AssetLoader::CreateShader(const std::string& vertex,
 
 std::unique_ptr<ShaderBase> AssetLoader::CreateShaderAndInit(const std::string& vertex, const std::string& fragment, const std::string& tessCont, const std::string& tessEval, const std::string& geometry) {
 	if (shaderCreateAndInit == nullptr) {
-		std::cout << __FUNCTION__ << " no Shader Create And Init Function has been defined!\n";
+		//std::cout << __FUNCTION__ << " no Shader Create And Init Function has been defined!\n";
 		return nullptr;
 	}
 	return shaderCreateAndInit(vertex, fragment, tessCont, tessEval, geometry);
@@ -191,7 +191,7 @@ std::unique_ptr<ShaderBase> AssetLoader::CreateShaderAndInit(const std::string& 
 
 std::unique_ptr<TextureBase> AssetLoader::CreateTexture(TextureType type, unsigned int width, unsigned int height) {
 	if (textureCreate == nullptr) {
-		std::cout << __FUNCTION__ << " no Create Function has been defined!\n";
+		//std::cout << __FUNCTION__ << " no Create Function has been defined!\n";
 		return nullptr;
 	}
 	return textureCreate(type, width, height);

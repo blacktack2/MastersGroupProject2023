@@ -54,7 +54,7 @@ SoundSystem::SoundSystem(unsigned int channels) {
 			break;
 		}
 	}
-	std::cout << "SoundSystem has " << mOALSources.size() << " channels available!" << std::endl;
+	//std::cout << "SoundSystem has " << mOALSources.size() << " channels available!" << std::endl;
 
 }
 

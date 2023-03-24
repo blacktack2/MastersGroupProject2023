@@ -156,7 +156,7 @@ void LoadGlobalAssets() {
 	AssetLibrary<ShaderBase>::AddAsset("shadowDefault", std::move(AssetLoader::CreateShader("shadowDefault.vert", "shadowDefault.frag")));
 	std::cout << "(35/36)\r";
 	AssetLibrary<ShaderBase>::AddAsset("shadowAnimated", std::move(AssetLoader::CreateShader("shadowAnimated.vert", "shadowDefault.frag")));
-	std::cout << "(36/36)\r";
+	std::cout << "(36/36)\n";
 }
 
 void LoadMenuAsset() {
@@ -298,7 +298,7 @@ void LoadAnimationAsset() {
 	AssetLibrary<MeshAnimation>::AddAsset("PlayerBackwardLeft", std::make_shared<MeshAnimation>("Player/PlayerBackwardLeft.anm"));
 	std::cout << "(21/22)\r";
 	AssetLibrary<MeshAnimation>::AddAsset("PlayerBackward", std::make_shared<MeshAnimation>("Player/PlayerBackward.anm"));
-	std::cout << "(22/22)\r";
+	std::cout << "(22/22)\n";
 }
 
 void LoadPrefabs() {
@@ -349,7 +349,7 @@ void StartPushdownAutomata(Window* w) {
 	while (w->UpdateWindow()) {
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
-			std::cout << "Skipping large time delta\n";
+			//std::cout << "Skipping large time delta\n";
 			continue;
 		}
 		if (!machine.Update(dt)) {
@@ -363,8 +363,6 @@ int main() {
 	GameTechRenderer& renderer = GameTechRenderer::instance();
 	OGLLoadingManager loadingScreen = OGLLoadingManager(w, renderer);
 
-	std::cout << "loading\n";
-	
 	loadingScreen.Load(LoadAsset);
 	renderer.InitPipeline();
 	
