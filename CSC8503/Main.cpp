@@ -349,7 +349,7 @@ void StartPushdownAutomata(Window* w) {
 	while (w->UpdateWindow()) {
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
-			std::cout << "Skipping large time delta\n";
+			//std::cout << "Skipping large time delta\n";
 			continue;
 		}
 		if (!machine.Update(dt)) {
@@ -363,8 +363,6 @@ int main() {
 	GameTechRenderer& renderer = GameTechRenderer::instance();
 	OGLLoadingManager loadingScreen = OGLLoadingManager(w, renderer);
 
-	std::cout << "loading\n";
-	
 	loadingScreen.Load(LoadAsset);
 	renderer.InitPipeline();
 	
