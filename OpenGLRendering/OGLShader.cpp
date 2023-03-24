@@ -56,10 +56,10 @@ void OGLShader::Unbind() {
 void OGLShader::ReloadShader() {
 	DeleteIDs();
 	programID = glCreateProgram();
-	std::string fileContents = "";
+	//std::string fileContents = "";
 	for (size_t i = 0; i < (size_t)ShaderStage::Max; i++) {
-		if (!(shaderFiles[i].empty() || !Assets::ReadTextFile(Assets::SHADERDIR + shaderFiles[i], fileContents))) {
-			LoadPass((GLchar*)fileContents.c_str(), (ShaderStage)i);
+		if (!(fileContents[i].empty())) {
+			LoadPass((GLchar*)fileContents[i].c_str(), (ShaderStage)i);
 		}
 	}
 	glLinkProgram(programID);

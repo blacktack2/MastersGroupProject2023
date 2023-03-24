@@ -83,6 +83,8 @@ namespace NCL {
 			virtual int GetUniformLocation(const std::string& uniform) = 0;
 		protected:
 			std::string shaderFiles[(size_t)ShaderStage::Max];
+
+			std::string fileContents[(size_t)ShaderStage::Max];
 		};
 	}
 }
