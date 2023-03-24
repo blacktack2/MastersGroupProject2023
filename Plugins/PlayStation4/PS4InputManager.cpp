@@ -19,7 +19,7 @@ void PS4InputManager::Initialize() {
 		memset((void*)&params, 0, sizeof(params));
 		params.priority = SCE_KERNEL_PRIO_FIFO_DEFAULT;
 		if (sceUserServiceInitialize(&params) != SCE_OK) {
-			std::cout << "PS4Input: Failed to initialise User Service!" << std::endl;
+			//std::cout << "PS4Input: Failed to initialise User Service!" << std::endl;
 		};
 
 		SceUserServiceLoginUserIdList usersList;

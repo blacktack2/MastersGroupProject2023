@@ -115,10 +115,10 @@ void GameGrid::DrawDebugGameGrid()
 			switch (currentNode.inkType)
 			{
 			case paintHell::InkType::BossDamage:
-				Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0, 0.5f, 0 }, Vector4(0, 1, 0.2f, 1), 0.01f);
+				Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0, 0.5f, 0 }, Vector4(0, 1, 0.2f, 1));
 				break;
 			case paintHell::InkType::PlayerDamage:
-				Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0, 0.5f, 0 }, Vector4(1, 0, 0, 1), 0.01f);
+				Debug::DrawLine(currentNode.worldPosition, currentNode.worldPosition + Vector3{ 0, 0.5f, 0 }, Vector4(1, 0, 0, 1));
 				break;
 			default:
 				break;

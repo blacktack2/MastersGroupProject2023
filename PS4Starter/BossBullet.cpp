@@ -37,7 +37,7 @@ void BossBullet::OnTriggerBegin(GameObject* other) {
 
 	if (PlayerObject* player = dynamic_cast<PlayerObject*>(other)) {
 		player->GetHealth()->Damage(10);
-		std::cout << "Player health:" << player->GetHealth()->GetHealth() << std::endl;
+		//std::cout << "Player health:" << player->GetHealth()->GetHealth() << std::endl;
 	}
 	/*if (Obstacle* obj = dynamic_cast<Obstacle*>(other)) {
 		obj->Damage(10);

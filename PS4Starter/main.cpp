@@ -44,31 +44,20 @@ int main(void) {
 		/*renderer.Update(time);
 		renderer.Render();*/
 		//Player1
-		if (PS4InputManager::GetButtons(0, 0)) {
-			std::cout << "Player 1:Triangle button pressed" << std::endl;
-		}
-		if (PS4InputManager::GetButtons(0, 1)) {
-			std::cout << "Player 1: Circle button pressed" << std::endl;
+		if (PS4InputManager::GetButtons(PS4::Player1, PS4::CIRCLE)) {
+			//std::cout << "Player 1: Circle button pressed" << std::endl;
 			return 1;
 		}
 
 		//Player2
 		if (PS4InputManager::GetButtons(1, 0)) {
-			std::cout << "Player 2:Triangle button pressed" << std::endl;
+			//std::cout << "Player 2:Triangle button pressed" << std::endl;
 		}
-		if (PS4InputManager::GetButtons(1, 1)) {
-			std::cout << "Player 2:Circle button pressed" << std::endl;
+		if (PS4InputManager::GetButtons(PS4::Player2, PS4::CIRCLE)) {
+			//std::cout << "Player 2:Circle button pressed" << std::endl;
 			return 1;
 		}
 
-
-		//if (input.GetButton(0)) {
-		//	std::cout << "LOL BUTTON" << std::endl;
-		//}
-	
-		//if (input.GetButton(1)) {
-		//	return 1;
-		//}
 	}
 
 	delete audioSystem;

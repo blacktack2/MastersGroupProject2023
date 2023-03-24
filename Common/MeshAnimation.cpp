@@ -22,7 +22,7 @@ MeshAnimation::MeshAnimation(const std::string& filename) : MeshAnimation() {
 	file >> filetype;
 
 	if (filetype != "MeshAnim") {
-		std::cout << "File is not a MeshAnim file!" << std::endl;
+		//std::cout << "File is not a MeshAnim file!" << std::endl;
 		return;
 	}
 	file >> fileVersion;

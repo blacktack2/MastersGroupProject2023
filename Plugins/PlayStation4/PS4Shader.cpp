@@ -54,7 +54,7 @@ void PS4Shader::GenerateVertexShader(const std::string&name, bool makeFetch) {
 			vertexShader->patchShaderGpuAddress(shaderBinary);
 		}
 		else {
-			std::cout << "Failed to generate vertex shader: " << name << " from binary. " << std::endl;
+			//std::cout << "Failed to generate vertex shader: " << name << " from binary. " << std::endl;
 			return;
 		}
 	}
@@ -65,7 +65,7 @@ void PS4Shader::GenerateVertexShader(const std::string&name, bool makeFetch) {
 			//MAGIC GOES HERE
 		}
 		else {
-			std::cout << "Failed to generate vertex shader: " << name << " from raw text. " << std::endl;
+			//std::cout << "Failed to generate vertex shader: " << name << " from raw text. " << std::endl;
 			return;
 		}
 	}

@@ -38,7 +38,7 @@ void PlayerBullet::OnTriggerBegin(GameObject* other) {
 	//not work as it is not colliding with boss
 	if (Boss* boss = dynamic_cast<Boss*>(other)) {
 		boss->GetHealth()->Damage(10);
-		std::cout << "Boss health:" << boss->GetHealth()->GetHealth() << std::endl;
+		//std::cout << "Boss health:" << boss->GetHealth()->GetHealth() << std::endl;
 
 	}
 }

@@ -90,9 +90,9 @@ void NavigationGrid::UpdateConnections() {
 	}
 	for (int y = 0; y < gridHeight; y++) {
 		for (int x = 0; x < gridWidth; x++) {
-			std::cout << (allNodes[x + y * gridWidth].type == GridNodeType::DEFAULT ? '.' : '#');
+			//std::cout << (allNodes[x + y * gridWidth].type == GridNodeType::DEFAULT ? '.' : '#');
 		}
-		std::cout << "\n";
+		//std::cout << "\n";
 	}
 }
 
