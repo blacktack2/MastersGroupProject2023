@@ -67,12 +67,12 @@ void PS4Frame::BlockUntilReady() {
 				++spinCount;
 
 				if (spinCount > 1000) {
-					std::cerr << "Frame block took too long?" << std::endl;
+					//std::cerr << "Frame block took too long?" << std::endl;
 					break;
 				}
 			}
 			if (spinCount > 0) {
-				std::cerr << "Frame submission span for " << spinCount << " ticks" << std::endl;
+				//std::cerr << "Frame submission span for " << spinCount << " ticks" << std::endl;
 			}
 			*newFrameTag = FRAME_READY;
 		}break;

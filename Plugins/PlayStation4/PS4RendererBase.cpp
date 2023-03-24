@@ -35,7 +35,7 @@ PS4RendererBase::PS4RendererBase(PS4Window*window)
 	currentScreenBuffer	 = 0;
 	prevScreenBuffer	 = 0;
 
-	std::cerr << "Starting Rich Code!" << std::endl;
+	//std::cerr << "Starting Rich Code!" << std::endl;
 
 	currentGFXContext	 = nullptr;
 
