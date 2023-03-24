@@ -4,18 +4,32 @@
 
 This project is our coursework submission for the Newcastle University CSC8508 module.
 
+GitHub URL: https://github.com/blacktack2/MastersGroupProject2023
+
 ## Authors
 
 - Daniel T. Abraham ([DaTA677](https://github.com/DaTA677)) - adanthomas677@gmail.com
-  +
+  + PS4
+  + Audio System
+  + CI using Integration
+  + Some bug fixing
 - Harry G. Brettell (HazzerIO) - harrygbrettell4@gmail.com
-  +
+  + Bullet object Pooling
+  + Texture Painting
+  + Loading Manager/Screen
+  + Significant bugfixes
 - Cho Hin Chiu (Felix) - chiuchohin2@gmail.com
-  +
+  + Network multiplayer
+  + Player controller
+  + Initial Input Keymapping
+  + Ink damage Mechanics
+  + General Bugfixing
 - Yifei Hu - yingjinglinlin@gmail.com
   + UI (menu system)
 - Shashwat Kashyap (Kash) - shashwatk1999@gmail.com
-  +
+  + Fix Original Physics Framework
+  + Add Physics Features
+  + Bugfixes
 - Stuart Manfred Lewis (blacktack2) - stuart.manfred.lewis@gmail.com
   + Original framework (see [https://github.com/blacktack2/CSC8503_Coursework]())
   + Shaders
@@ -30,7 +44,7 @@ This project is our coursework submission for the Newcastle University CSC8508 m
   + HUD
 - Xiaoyang Liu ([IQ404](https://github.com/IQ404)) - seanxiaoyangliu@gmail.com
   + AI
-  + Game Level
+  + Game Level Implementation
   + Animation
   + Controller Support
   + Audio Support
