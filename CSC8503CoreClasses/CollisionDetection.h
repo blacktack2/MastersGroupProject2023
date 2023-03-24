@@ -1,3 +1,11 @@
+/**
+ * @file   CollisionDetection.h
+ * @brief  A file to detect collisions between volumes and calculate their contact points.
+ * 
+ * @author Shashwat Kashyap
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #pragma once
 
 #include "Camera.h"

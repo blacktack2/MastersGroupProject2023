@@ -1,3 +1,11 @@
+/**
+ * @file   CollisionVolume.cpp
+ * @brief  See header file.
+ * 
+ * @author Shashwat Kashyap
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #include "CollisionVolume.h"
 
 #include "AABBVolume.h"
