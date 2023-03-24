@@ -1,3 +1,13 @@
+/**
+ * @file   PhysicsSystem.h
+ * @brief  See header file.
+ *
+ * @author Shashwat Kashyap
+ * @author Stuart Lewis
+ * @author Harry Brettell
+ * @author Rich Davidson
+ * @date   March 2023
+ */
 #include "PhysicsSystem.h"
 
 #include "CollisionDetection.h"

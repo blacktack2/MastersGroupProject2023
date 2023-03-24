@@ -1,3 +1,11 @@
+/**
+ * @file   Collision.h
+ * @brief  A file to store collision layers and modify the interactions between them.
+ * 
+ * @author Shashwat Kashyap
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #pragma once
 
 namespace NCL {

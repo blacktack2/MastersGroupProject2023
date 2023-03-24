@@ -1,3 +1,11 @@
+/**
+ * @file   OBBVolume.h
+ * @brief  A file to store OBB volume methods and arguments.
+ * 
+ * @author Shashwat Kashyap
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #pragma once
 #include "CollisionVolume.h"
 
