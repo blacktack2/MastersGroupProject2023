@@ -92,6 +92,7 @@ namespace NCL {
 			GameServer* thisServer;
 			GameClient* thisClient;
 			float timeToNextPacket;
+			float gameTime;
 			float game_dt;
 			int packetsToSnapshot;
 
@@ -106,7 +107,7 @@ namespace NCL {
 			PlayerObject* localPlayer;
 			std::string name;
 
-			float packetGap = 1.0f / 120.0f; //120hz server/client update
+			float packetGap = 1.0f / 60.0f; //60hz server/client update
 			int fullPacketToDeltaRate = 30;
 
 			bool canJoin;

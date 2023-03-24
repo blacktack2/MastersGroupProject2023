@@ -108,7 +108,6 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	newPacket.lastID = stateID;
 
 	thisClient->SendPacket(&newPacket);
-
 	StartLobby();
 }
 
@@ -187,6 +186,7 @@ void NetworkedGame::BroadcastGameStateChange()
 void NetworkedGame::UpdateGame(float dt) {
 	game_dt = dt;
 	timeToNextPacket -= dt;
+	gameTime += dt;
 	if (timeToNextPacket < 0) {
 		if (thisServer && thisServer->IsInitialise()){
 			UpdateAsServer(dt);
@@ -726,28 +726,44 @@ NetworkBoss* NetworkedGame::AddNetworkBossToWorld(const Vector3& position, Vecto
 }
 
 void NetworkedGame::ProcessState() {
-	if(localPlayer)
-	switch (gameStateManager.GetGameState()) {
-	case GameState::Win:
-	case GameState::Lose:
-		if(thisServer){
-			Debug::Print("Press [R] or [Start] to return to lobby", Vector2(5, 80), Debug::WHITE,20.0f, localPlayer->GetPlayerID());
+	if (gameTime > 3) {
+		gameTime = 0;
+	}
+	if (localPlayer) {
+		switch (gameStateManager.GetGameState()) {
+		case GameState::Win:
+		case GameState::Lose:
+			if (thisServer) {
+				Debug::Print("Press [R] or [Start] to return to lobby", Vector2(5, 80), Debug::WHITE, 20.0f, localPlayer->GetPlayerID());
+			}
+			if (thisClient) {
+				Debug::Print("Please Wait for server to return to lobby", Vector2(5, 80), Debug::WHITE, 20.0f, localPlayer->GetPlayerID());
+			}
+			break;
+		case GameState::Lobby:
+			std::string s = "Player in Lobby: ";
+			s += std::to_string(connectedPlayerIDs.size() + 1) + " - Max: " + std::to_string(MAXPLAYER);
+			Debug::Print(s.c_str(), Vector2(40, 06), Debug::WHITE, 20.0f, localPlayer->GetPlayerID());
+			if (thisServer) {
+				Debug::Print("Press [R] or [Start] to Start the Game", Vector2(5, 80), Debug::WHITE, 20.0f, localPlayer->GetPlayerID());
+			}
+			if (thisClient) {
+				Debug::Print("Please Wait for server to Start the Game", Vector2(5, 80), Debug::WHITE, 20.0f, localPlayer->GetPlayerID());
+			}
+			break;
 		}
-		if (thisClient) {
-			Debug::Print("Please Wait for server to return to lobby", Vector2(5, 80), Debug::WHITE, 20.0f, localPlayer->GetPlayerID());
+	}
+	else {
+		std::string s = "Connecting to server";
+		switch (((int)gameTime)) {
+		case 2:
+			s += ".";
+		case 1:
+			s += ".";
+		case 0:
+			s += ".";
 		}
-		break;
-	case GameState::Lobby:
-		std::string s = "Connected Player: ";
-		s += std::to_string(connectedPlayerIDs.size() + 1 ) + "/" + std::to_string(MAXPLAYER);
-		Debug::Print(s.c_str(), Vector2(55, 06), Debug::WHITE, 20.0f, localPlayer->GetPlayerID());
-		if (thisServer) {
-			Debug::Print("Press [R] or [Start] to Start the Game", Vector2(5, 80), Debug::WHITE, 20.0f, localPlayer->GetPlayerID());
-		}
-		if (thisClient) {
-			Debug::Print("Please Wait for server to Start the Game", Vector2(5, 80), Debug::WHITE, 20.0f, localPlayer->GetPlayerID());
-		}
-		break;
+		Debug::Print(s, Vector2(30, 50), Debug::CYAN, 20.0f );
 	}
 
 	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
