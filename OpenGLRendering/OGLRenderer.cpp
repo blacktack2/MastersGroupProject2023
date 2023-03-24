@@ -100,7 +100,7 @@ void OGLRenderer::InitWithWin32(Window& w) {
 	Win32Code::Win32Window* realWindow = (Win32Code::Win32Window*)&w;
 
 	if (!(deviceContext = GetDC(realWindow->GetHandle()))) {
-		std::cout << __FUNCTION__ << " Failed to create window!\n";
+		//std::cout << __FUNCTION__ << " Failed to create window!\n";
 		return;
 	}
 
@@ -119,29 +119,29 @@ void OGLRenderer::InitWithWin32(Window& w) {
 
 	GLuint PixelFormat;
 	if (!(PixelFormat = ChoosePixelFormat(deviceContext, &pfd))) { // Did Windows Find A Matching Pixel Format for our PFD?
-		std::cout << __FUNCTION__ << " Failed to choose a pixel format!\n";
+		//std::cout << __FUNCTION__ << " Failed to choose a pixel format!\n";
 		return;
 	}
 
 	if (!SetPixelFormat(deviceContext, PixelFormat, &pfd)) { // Are We Able To Set The Pixel Format?
-		std::cout << __FUNCTION__ << " Failed to set a pixel format!\n";
+		//std::cout << __FUNCTION__ << " Failed to set a pixel format!\n";
 		return;
 	}
 
 	HGLRC tempContext; //We need a temporary OpenGL context to check for OpenGL 3.2 compatibility...stupid!!!
 	if (!(tempContext = wglCreateContext(deviceContext))) { // Are We Able To get the temporary context?
-		std::cout << __FUNCTION__ << " Cannot create a temporary context!\n";
+		//std::cout << __FUNCTION__ << " Cannot create a temporary context!\n";
 		wglDeleteContext(tempContext);
 		return;
 	}
 
 	if (!wglMakeCurrent(deviceContext, tempContext)) { // Try To Activate The Rendering Context
-		std::cout << __FUNCTION__ << " Cannot set temporary context!\n";
+		//std::cout << __FUNCTION__ << " Cannot set temporary context!\n";
 		wglDeleteContext(tempContext);
 		return;
 	}
 	if (!gladLoaderLoadGL()) {
-		std::cout << __FUNCTION__ << " Cannot initialise GLAD!\n";
+		//std::cout << __FUNCTION__ << " Cannot initialise GLAD!\n";
 		return;
 	}
 	//Now we have a temporary context, we can find out if we support OGL 4.x
@@ -150,13 +150,13 @@ void OGLRenderer::InitWithWin32(Window& w) {
 	int minor = ver[2] - '0'; //casts the 'correct' minor version integer from our version string
 
 	if (major < 3) {
-		std::cout << __FUNCTION__ << " Device does not support OpenGL 4.x!\n";
+		//std::cout << __FUNCTION__ << " Device does not support OpenGL 4.x!\n";
 		wglDeleteContext(tempContext);
 		return;
 	}
 
 	if (major == 4 && minor < 1) {
-		std::cout << __FUNCTION__ << " Device does not support OpenGL 4.1!\n";
+		//std::cout << __FUNCTION__ << " Device does not support OpenGL 4.1!\n";
 		wglDeleteContext(tempContext);
 		return;
 	}
@@ -179,7 +179,7 @@ void OGLRenderer::InitWithWin32(Window& w) {
 
 	// Check for the context, and try to make it the current rendering context
 	if (!renderContext || !wglMakeCurrent(deviceContext, renderContext)) {
-		std::cout << __FUNCTION__ << " Cannot set OpenGL 3 context!\n";
+		//std::cout << __FUNCTION__ << " Cannot set OpenGL 3 context!\n";
 		wglDeleteContext(renderContext);
 		wglDeleteContext(tempContext);
 		return;
@@ -187,7 +187,7 @@ void OGLRenderer::InitWithWin32(Window& w) {
 
 	wglDeleteContext(tempContext);
 
-	std::cout << __FUNCTION__ << " Initialised OpenGL " << major << "." << minor << " rendering context\n";
+	//std::cout << __FUNCTION__ << " Initialised OpenGL " << major << "." << minor << " rendering context\n";
 
 #ifdef OPENGL_DEBUGGING
 	glDebugMessageCallback(DebugCallback, nullptr);
@@ -225,7 +225,7 @@ HGLRC OGLRenderer::CreateContext() {
 	context = wglCreateContextAttribsARB(deviceContext, 0, attribs);
 	if (!wglShareLists(renderContext, context)) {
 		wglDeleteContext(context);
-		std::cout << "Error Sharing Between Files\n";
+		//std::cout << "Error Sharing Between Files\n";
 	}
 
 	return context;
@@ -283,6 +283,6 @@ static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum
 		case GL_DEBUG_SEVERITY_LOW    : severityName = "Priority(Low)"   ; break;
 	}
 
-	std::cout << "OpenGL Debug Output: " + sourceName + ", " + typeName + ", " + severityName + ", " + std::string(message) << "\n";
+	//std::cout << "OpenGL Debug Output: " + sourceName + ", " + typeName + ", " + severityName + ", " + std::string(message) << "\n";
 }
 #endif

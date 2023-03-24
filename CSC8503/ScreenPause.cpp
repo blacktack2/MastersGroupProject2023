@@ -11,6 +11,7 @@
 
 #include "AssetLibrary.h"
 #include "MenuRenderObject.h"
+#include "SoundSystem.h"
 
 #include <functional>
 #include <optional>
@@ -38,6 +39,9 @@ PushdownState::PushdownResult ScreenPause::OnUpdate(float dt, PushdownState** ne
 			netGame->FreezeSelf();
 		}
 		game->UpdateGame(dt);
+	}
+	else {
+		SoundSystem::GetSoundSystem()->SetMasterVolume(0.0f);
 	}
 	
 	if (keyMap.GetButton(InputType::Pause)) {
