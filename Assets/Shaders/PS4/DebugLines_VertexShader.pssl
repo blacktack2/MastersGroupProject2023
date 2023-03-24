@@ -1,0 +1,26 @@
+ConstantBuffer ShaderConstants
+{
+	column_major matrix ViewProj;
+};
+
+struct VS_INPUT
+{
+	float3 Position		: POSITION0;
+	float4 Colour		: COLOR0;
+};
+
+struct VS_OUTPUT
+{
+	float4 Position		: S_POSITION;
+	float4 Colour		: TEXCOORD0;
+};
+
+VS_OUTPUT main(VS_INPUT Input)
+{
+	VS_OUTPUT Output;
+
+	Output.Position = mul(ViewProj, float4(Input.Position.xyz, 1));
+	Output.Colour = Input.Colour;
+
+	return Output;
+}

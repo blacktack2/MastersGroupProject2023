@@ -118,7 +118,7 @@ void PlayerObject::Update(float dt) {
 	if (onGround) {
 		GameNode* node = GameGridManager::instance().NearestNode(this->GetTransform().GetGlobalPosition());
 		if (node)
-			std::cout << "ON ink" << std::endl;
+			//std::cout << "ON ink" << std::endl;
 			InkEffectManager::instance().ApplyInkEffect(node->inkType, &health, 0);
 	}
 

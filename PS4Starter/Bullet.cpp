@@ -95,5 +95,5 @@ void Bullet::PaintCollision(GameObject& other) {
 		return;
 	}*/
 	//renderObj->AddPaintCollision(transform.GetGlobalPosition(), paintRadius, colour);
-	//GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), paintRadius, inkType);
+	GameGridManager::instance().PaintPosition(GetTransform().GetGlobalPosition(), paintRadius, inkType);
 }

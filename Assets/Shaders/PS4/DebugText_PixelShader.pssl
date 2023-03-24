@@ -7,19 +7,17 @@ Texture2D colorMap : register( t0 );
 struct VS_OUTPUT
 {
 	float4 Position		: S_POSITION;
-	float4 Colour		: TEXCOORD0;
-	float2 UV			: TEXCOORD1;
+	float2 UV			: TEXCOORD0;
+	float4 Colour		: COLOR;
 };
 
 float4 main(VS_OUTPUT In) : S_TARGET_OUTPUT
 {
-	float4 test = colorMap.Sample(samp0, In.UV.xy);
+	float alpha = colorMap.Sample(samp0, In.UV.xy).a;
 
-	float alpha =test.w;
-
-	if(alpha < 0.00001f)
+	if (alpha < 0.00001f)
 		discard;
 
-
-	return In.Colour*float4(float3(1),alpha);
+	return (In.Colour * float4(float3(1), alpha));
+	//return colorMap.Sample(samp0, In.UV.xy);
 }  

@@ -113,7 +113,7 @@ namespace NCL
 			GameGrid(Vector3 gridOrigin, float totalLength, float totalWidth, float unitLength);
 			~GameGrid();
 			void Update(float dt) {
-				//DrawDebugGameGrid();
+				DrawDebugGameGrid();
 			}
 
 			GameNode* NearestNode(Vector3 position);

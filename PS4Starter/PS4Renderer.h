@@ -31,7 +31,8 @@ namespace NCL {
 			void Update(float dt) override;
 
 			void SetDefaultShader(PS4Shader* s) { defaultShader = s; }
-			void SetDebugShader(PS4Shader* s) { debugShader = s; }
+			void SetDebugTextShader(PS4Shader* s) { debugTextShader = s; }
+			void SetDebugLinesShader(PS4Shader* s) { debugLinesShader = s; }
 			//void SetPaintShader(PS4Shader* s) { paintShader = s; }
 
 		protected:
@@ -49,7 +50,8 @@ namespace NCL {
 			
 
 			PS4Shader* defaultShader;
-			PS4Shader* debugShader;
+			PS4Shader* debugTextShader;
+			PS4Shader* debugLinesShader;
 			//PS4Shader* paintShader;
 
 			//PS4Texture* defaultPaintTex;

@@ -47,7 +47,7 @@ VS_OUTPUT main(VS_INPUT Input)
 
 	column_major float3x3 tempMatrix= float3x3(modelMatrix);
 	//tempMatrix = inverse();
-	column_major float3x3 normalMatrix = transpose(tempMatrix);
+	column_major float3x3 normalMatrix = tempMatrix;
 
 	float3 worldNormal  = normalize(mul(normalMatrix, normalize(Input.Normal)));
 	float3 worldTangent = normalize(mul(normalMatrix, normalize(Input.Tangent.xyz)));

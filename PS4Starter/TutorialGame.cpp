@@ -99,6 +99,8 @@ void NCL::CSC8503::TutorialGame::InitWorld(InitMode mode)
 {
 	world->ClearAndErase();
 	physics->Clear();
+	gridManager.Clear();
+	gameStateManager.SetGameState(GameState::OnGoing);
 	gridManager.AddGameGrid(new GameGrid(Vector3(0.0f), 400, 400, 1));
 	BuildLevel();
 
@@ -123,8 +125,17 @@ void NCL::CSC8503::TutorialGame::UpdateGame(float dt)
 	world->PreUpdateWorld();
 	world->UpdateWorld(dt);
 	
-	Debug::Print("Health:"+std::to_string(player->GetHealth()->GetHealth()), Vector2(5, 10));
-	Debug::Print("Boss Health:"+std::to_string(boss->GetHealth()->GetHealth()), Vector2(50, 10));
+	std::string playerHealth = "";
+	for (int i = 0; i < ((int)player->GetHealth()->GetHealth() / 10); i++) {
+		playerHealth += "l";
+	}
+	Debug::Print(playerHealth, Vector2(5, 10));
+	//Debug::Print("Health:"+std::to_string(player->GetHealth()->GetHealth()/10), Vector2(5, 10));
+	
+	for (int i = 0; i < ((int)boss->GetHealth()->GetHealth() / 10); i++) {
+		playerHealth += "h";
+	}
+	Debug::Print(playerHealth, Vector2(50, 10));
 	
 	/*player->Update(dt);
 	if(timePassed>30.0f)
@@ -143,9 +154,10 @@ void NCL::CSC8503::TutorialGame::UpdateGame(float dt)
 	ProcessState();
 
 	renderer->UpdateViewProjectionMatrix((PS4::PS4Camera*)world->GetMainCamera());
-	Debug::UpdateRenderables(dt);
+	
 	renderer->BuildObjectList();
 	renderer->Render();
+	Debug::UpdateRenderables(dt);
 	//gameStateManager.Update(dt);
 		
 }
@@ -173,7 +185,10 @@ void NCL::CSC8503::TutorialGame::InitialiseAssets()
 	renderer->SetDefaultShader(shader);
 	PS4::PS4Shader* shader1 = (PS4::PS4Shader*)renderer->LoadShader("/app0/Assets/Shaders/PS4/DebugText_VertexShader.sb",
 		"/app0/Assets/Shaders/PS4/DebugText_PixelShader.sb");
-	renderer->SetDebugShader(shader1);
+	renderer->SetDebugTextShader(shader1);
+	PS4::PS4Shader* shader2 = (PS4::PS4Shader*)renderer->LoadShader("/app0/Assets/Shaders/PS4/DebugLines_VertexShader.sb",
+		"/app0/Assets/Shaders/PS4/DebugLines_PixelShader.sb");
+	renderer->SetDebugLinesShader(shader2);
 	/*PS4::PS4Shader* paintShader = (PS4::PS4Shader*)renderer->LoadShader("/app0/Assets/Shaders/PS4/PaintVertexShader.sb",
 		"/app0/Assets/Shaders/PS4/PaintPixelShader.sb");
 	renderer->SetPaintShader(paintShader);*/
@@ -412,13 +427,17 @@ void NCL::CSC8503::TutorialGame::ProcessState()
 		Debug::Print("Press [R] or [Start] to play again", Vector2(5, 80), Debug::WHITE);
 		break;
 	}
-
-	NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
-	if (keyMap.GetButton(InputType::Restart)) {
-		this->InitWorld();
-	}
-	if (keyMap.GetButton(InputType::Return)) {
-		gameStateManager.SetGameState(GameState::Quit);
+	switch (gameStateManager.GetGameState()) {
+	case GameState::Win:
+	case GameState::Lose:
+		NCL::InputKeyMap& keyMap = NCL::InputKeyMap::instance();
+		if (keyMap.GetButton(InputType::Restart)) {
+			this->InitWorld();
+		}
+		if (keyMap.GetButton(InputType::Return)) {
+			gameStateManager.SetGameState(GameState::Quit);
+		}
+		break;
 	}
 }
 

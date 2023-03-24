@@ -28,7 +28,8 @@ namespace NCL::PS4 {
 		static PS4Mesh* GenerateSinglePoint();
 
 		void	UploadToGPU() override;
-		void	UploadDebugToGPU() ;
+		void	UploadDebugTextToGPU() ;
+		void	UploadDebugLinesToGPU() ;
 		void	SubmitDraw(Gnmx::GnmxGfxContext& cmdList, Gnm::ShaderStage stage);
 
 		void	InitAttributeBuffer(sce::Gnm::Buffer &buffer, Gnm::DataFormat format, void*offset);
