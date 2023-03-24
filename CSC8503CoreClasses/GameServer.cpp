@@ -17,7 +17,9 @@ GameServer::~GameServer()	{
 }
 
 void GameServer::Shutdown() {
-	SendGlobalPacket(BasicNetworkMessages::Shutdown,false);
+	if (IsInitialise()) {
+		SendGlobalPacket(BasicNetworkMessages::Shutdown,false);
+	}
 	enet_host_destroy(netHandle);
 	netHandle = nullptr;
 }
@@ -36,6 +38,13 @@ bool GameServer::Initialise() {
 	return true;
 }
 
+bool GameServer::IsInitialise() {
+	if (!netHandle) {
+		std::cout << __FUNCTION__ << " failed to create network handle!" << std::endl;
+		return false;
+	}
+	return true;
+}
 bool GameServer::SendGlobalPacket(int msgID, bool isReliable) {
 	GamePacket packet;
 	packet.type = msgID;
@@ -73,11 +82,11 @@ void GameServer::UpdateServer() {
 
 			ProcessPacket(&packet, nextClientID);
 
-			std::cout << "Server: New client connected" << std::endl;
+			//std::cout << "Server: New client connected" << std::endl;
 			nextClientID++;
 		}
 		else if (type == ENetEventType::ENET_EVENT_TYPE_DISCONNECT) {
-			std::cout << "Server: A client has disconnected" << peerToClientID[p] << std::endl;
+			//std::cout << "Server: A client has disconnected" << peerToClientID[p] << std::endl;
 			PlayerConnectionPacket packet = PlayerConnectionPacket();
 			packet.type = Player_Disconnected;
 			packet.playerID = peerToClientID[p];

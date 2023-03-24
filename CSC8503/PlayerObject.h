@@ -5,7 +5,7 @@
 #include "GameStateManager.h"
 #include "Health.h"
 #include "PlayerBullet.h"
-#include"AnimatedRenderObject.h"
+#include "AnimatedRenderObject.h"
 namespace NCL {
 	class Camera;
 	class CapsuleVolume;
@@ -27,6 +27,13 @@ namespace NCL {
 
 		class PlayerObject : public GameObject {
 		public:
+			enum PlayerAudio {
+				JumpAudio,
+				ShootAudio,
+				MoveAudio,
+				HurtAudio
+			};
+
 			PlayerObject(int playerID);
 			~PlayerObject();
 
@@ -115,9 +122,20 @@ namespace NCL {
 			//animation
 			void MoveAnimation();
 			PlayerMovingDirection playerMovingDirection = PlayerMovingDirection::Idle;
-		private:
 
+			//sound
 			void SetupAudio();
+			void PlayAudio(PlayerAudio);
+
+			SoundSource* attackSource;
+			SoundSource* hurtSource;
+
+			SoundSource* foot1;
+			SoundSource* foot2;
+			SoundSource* foot3;
+
+			SoundSource* jumpSource;
+		private:
 
 			//jump related 
 			bool onGround = false;
@@ -142,16 +160,6 @@ namespace NCL {
 
 			// legacy variables
 			std::set<int> collidedWith;
-
-			//sound
-			SoundSource* attackSource;
-			SoundSource* hurtSource;
-
-			SoundSource* foot1;
-			SoundSource* foot2;
-			SoundSource* foot3;
-
-			SoundSource* jumpSource;
 
 			//game state
 			GameStateManager* gameStateManager = &GameStateManager::instance();

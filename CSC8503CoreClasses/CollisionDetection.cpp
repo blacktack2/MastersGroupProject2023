@@ -207,7 +207,7 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
 	const CollisionVolume* volA = a->GetBoundingVolume();
 	const CollisionVolume* volB = b->GetBoundingVolume();
 
-	if (!volA || !volB || !DoCollisionLayersOverlap(volA->layer, volB->layer)) {
+	if (!volA || !volB || !DoCollisionLayersOverlap(volA->layer, volB->layer) || a->IsMarkedDelete() || b->IsMarkedDelete()) {
 		return false;
 	}
 

@@ -109,6 +109,8 @@ namespace NCL {
             {
                 return &health;
             }
+
+            void PlayAnimation();
         protected:
 
             void BuildTree();
@@ -120,7 +122,6 @@ namespace NCL {
             void SetupAudio();
 
             float deltaTime = 0.0f;
-            bool isClient = false;
 
             Health health = Health(100);
 
@@ -145,6 +146,9 @@ namespace NCL {
             bool rainIsInitialised = false;
             int currentRainBomb = 0;
 
+            int consecutiveJumpCounter = 0;
+            int consecutiveLaserCounter = 0;
+
             std::vector<BossBullet*> rain;
             std::vector<Vector3> rainBombPositions;
 
@@ -162,6 +166,9 @@ namespace NCL {
             SoundSource* senpaiSource;
             SoundSource* nyaSource;
             SoundSource* waitSource;
+
+            //enable Spawn bullet (networking)
+            bool isSpawnBullet = true;
         };
     }
 }

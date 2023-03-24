@@ -153,7 +153,7 @@ namespace NCL {
 		}
 	private:
 		inline void UpdateShadowMatrix() {
-			shadowMatrix = Matrix4::Orthographic(-150.0f, 150.0f, -150.0f, 150.0f, -1.0f, 500.0f) *
+			shadowMatrix = Matrix4::Orthographic(-200.0f, 200.0f, -200.0f, 200.0f, -1.0f, 500.0f) *
 						   Matrix4::BuildViewMatrix(direction * 250.0f, Vector3(0.0f), Vector3(0.0f, 1.0f, 0.0f));
 		}
 
