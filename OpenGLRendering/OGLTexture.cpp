@@ -214,6 +214,6 @@ std::unique_ptr<TextureBase> OGLTexture::CreateTextureFromData(char* data, unsig
 
 	std::unique_ptr<TextureBase> tex = std::make_unique<OGLTexture>(TextureType::ColourRGBA32F, width, height);
 	tex->SoftUpload(data, (size_t)width * (size_t)height * channels, format, PixelDataType::UnsignedByte);
-
+	tex->Initialize();
 	return tex;
 }

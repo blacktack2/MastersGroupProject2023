@@ -146,7 +146,7 @@ namespace NCL {
 			float radius = 0;
 
 			//movement related
-			float moveSpeed = 0.4f;
+			float moveSpeed = 1.0f;
 			Vector3 lastDir = Vector3(0,0,0);
 			
 			//camera related

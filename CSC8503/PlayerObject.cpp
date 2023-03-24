@@ -145,7 +145,7 @@ This is a temporary member function. Feel free to merge this into PlayerObject::
 }
 
 void PlayerObject::Move(Vector3 dir) {
-	this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed);
+	this->GetPhysicsObject()->ApplyLinearImpulse(dir * moveSpeed * (onGround? 2.0f : 0.7f));
 
 	if ((dir != Vector3(0)) && this->GetPhysicsObject()->GetLinearVelocity().y < 0.01f) {
 		PlayAudio(PlayerAudio::MoveAudio);
@@ -276,7 +276,12 @@ void PlayerObject::CheckGround() {
 		if (groundDist < jumpTriggerDist)
 		{
 			onGround = true;
+			physicsObject->SetDampingWeight(10.0f);
 		}
+	}
+	if (!onGround)
+	{
+		physicsObject->SetDampingWeight(1.0f);
 	}
 }
 
@@ -366,7 +371,7 @@ void NCL::CSC8503::PlayerObject::Jump()
 		PlayAudio(PlayerAudio::JumpAudio);
 		Vector3 upDir = Vector3(0, 1, 0);
 		jumpTimer = jumpCooldown;
-		this->GetPhysicsObject()->ApplyLinearImpulse(upDir * jumpSpeed);
+		this->GetPhysicsObject()->ApplyLinearImpulse(upDir * jumpSpeed * 2.0f);
 	}
 }
 

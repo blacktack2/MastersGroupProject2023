@@ -725,7 +725,7 @@ bool NCL::CollisionDetection::OBBCapsuleIntersection(const OBBVolume& volumeA, c
 
 	Vector3 capsulePos = boxOrientationInv * (worldTransformB.GetGlobalPosition() - boxPos);
 	Vector3 capsuleDir = boxOrientationInv * worldTransformB.GetGlobalOrientation() * Vector3(0, 1, 0);
-	float capsuleRadius = volumeB.GetRadius() * 0.5f;
+	float capsuleRadius = volumeB.GetRadius();
 	float capsuleHalfHeight = volumeB.GetHalfHeight();
 
 	float capsuleOffset = capsuleHalfHeight - capsuleRadius;
