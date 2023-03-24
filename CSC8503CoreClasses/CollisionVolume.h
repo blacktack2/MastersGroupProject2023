@@ -1,3 +1,11 @@
+/**
+ * @file   CollisionVolume.h
+ * @brief  A file to define collision volume and their methods and arguments.
+ * 
+ * @author Shashwat Kashyap
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #pragma once
 #include "Collision.h"
 

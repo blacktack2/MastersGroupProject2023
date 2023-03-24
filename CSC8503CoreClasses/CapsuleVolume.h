@@ -1,3 +1,11 @@
+/**
+ * @file   CapsuleVolume.h
+ * @brief  A file to store capsule volume methods and arguments.
+ * 
+ * @author Shashwat Kashyap
+ * @author Stuart Lewis
+ * @date   March 2023
+ */
 #pragma once
 #include "CollisionVolume.h"
 

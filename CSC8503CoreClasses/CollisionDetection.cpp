@@ -1,3 +1,12 @@
+/**
+ * @file   CollisionDetection.cpp
+ * @brief  See header file.
+ * 
+ * @author Shashwat Kashyap
+ * @author Stuart Lewis
+ * @author Harry Brettell
+ * @date   March 2023
+ */
 #include "CollisionDetection.h"
 #include "CollisionVolume.h"
 #include "AABBVolume.h"
