@@ -1,3 +1,13 @@
+/**
+ * @file   PhysicsSystem.h
+ * @brief  A class that handles physics interactions and calculations after collision detection.
+ * 
+ * @author Shashwat Kashyap
+ * @author Stuart Lewis
+ * @author Harry Brettell
+ * @author Rich Davidson
+ * @date   March 2023
+ */
 #pragma once
 #include "GameWorld.h"
 #include "QuadTree.h"
