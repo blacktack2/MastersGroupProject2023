@@ -42,6 +42,7 @@ GitHub URL: https://github.com/blacktack2/MastersGroupProject2023
   + Assets
   + Sound Design
   + HUD
+  + Support Xiaoyang's work
 - Xiaoyang Liu ([IQ404](https://github.com/IQ404)) - seanxiaoyangliu@gmail.com
   + AI
   + Game Level Implementation
